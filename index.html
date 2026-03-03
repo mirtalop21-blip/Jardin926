@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGE - Jardín N° 926</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore-compat.js"></script>
+</head>
+<body class="bg-slate-50 flex h-screen overflow-hidden font-sans">
+
+    <aside class="w-72 bg-blue-900 text-white flex flex-col shadow-2xl">
+        <div class="p-6 border-b border-blue-800 text-center">
+            <h1 class="text-xl font-black tracking-tighter">JARDÍN N° 926</h1>
+            <p class="text-[10px] text-blue-300 uppercase tracking-widest">Gestión Digital</p>
+        </div>
+        <nav class="flex-1 px-4 py-6 space-y-2">
+            <button onclick="switchTab('dash')" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-blue-800 transition text-sm">
+                <i class="fas fa-th-large text-yellow-400"></i> Dashboard
+            </button>
+            <button onclick="switchTab('registro')" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-blue-800 transition text-sm">
+                <i class="fas fa-user-plus text-pink-400"></i> Inscripción
+            </button>
+            <button onclick="switchTab('asistencia')" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-blue-800 transition text-sm">
+                <i class="fas fa-check-double text-green-400"></i> Asistencia
+            </button>
+            <hr class="border-blue-800 my-4">
+            <button onclick="generarReporteSemanal()" class="w-full bg-indigo-600 hover:bg-indigo-700 p-3 rounded-xl font-bold text-xs shadow-lg transition">
+                <i class="fas fa-file-pdf mr-2"></i> REPORTE SEMANAL
+            </button>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-white h-16 shadow-sm flex items-center justify-between px-8 border-b">
+            <div id="tab-title" class="text-blue-900 font-bold uppercase text-xs tracking-widest">Panel de Control</div>
+            <div id="reloj" class="text-slate-400 text-xs font-mono"></div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-6">
+            <div id="dash" class="tab-content active space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border h-80">
+                        <canvas id="chartAsistencia"></canvas>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border overflow-y-auto h-80">
+                        <h3 class="text-xs font-bold mb-4 text-slate-500 uppercase">Estado de Cupos por Sala</h3>
+                        <div id="monitor-cupos" class="space-y-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="registro" class="tab-content hidden space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-blue-600">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <select id="reg-sec" class="border p-3 rounded-xl text-sm bg-slate-50"></select>
+                        <input type="text" id="reg-dni" placeholder="DNI del Alumno" class="border p-3 rounded-xl text-sm">
+                        <input type="text" id="reg-nom" placeholder="Apellido y Nombre" class="border p-3 rounded-xl text-sm">
+                        <input type="date" id="reg-fnac" class="border p-3 rounded-xl text-sm" onchange="calcularEdad()">
+                        <input type="text" id="reg-edad" placeholder="Edad" class="border p-3 rounded-xl text-sm bg-gray-100" readonly>
+                        <input type="text" id="reg-nac" placeholder="Nacionalidad" class="border p-3 rounded-xl text-sm">
+                        <input type="text" id="reg-tut" placeholder="Nombre del Tutor" class="border p-3 rounded-xl text-sm">
+                        <input type="text" id="reg-tel" placeholder="WhatsApp (ej: 1122334455)" class="border p-3 rounded-xl text-sm">
+                        <button onclick="guardarAlumno()" class="bg-blue-600 text-white font-bold rounded-xl p-3 hover:bg-blue-700 shadow-lg transition">REGISTRAR ALUMNO</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="asistencia" class="tab-content hidden space-y-4">
+                <div class="bg-blue-900 p-4 rounded-2xl text-white flex justify-between items-center">
+                    <span class="font-bold">Planilla de Asistencia</span>
+                    <select id="asi-sec" onchange="renderPlanilla()" class="bg-blue-800 p-2 rounded-lg text-xs outline-none border-none"></select>
+                </div>
+                <div id="planilla-cont" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+                <button onclick="salvarAsistencia()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold shadow-xl hover:bg-green-700 transition mt-4">GUARDAR ASISTENCIA DEL DÍA</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // CONFIGURACIÓN QUE COPIASTE DE TU FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyCyWaTWwtmK7Zg_azI_s",
+            authDomain: "jardin-926.firebaseapp.com",
+            projectId: "jardin-926",
+            storageBucket: "jardin-926.firebasestorage.app",
+            messagingSenderId: "929769896084",
+            appId: "1:929769896084:web:c3a983",
+            measurementId: "G-Y34YXZMD58"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const dbCloud = firebase.firestore();
+
+        const salas926 = [
+            { nombre: "Sala Rosa T.M.", color: "#f472b6" }, { nombre: "Sala Rosa T.T.", color: "#db2777" },
+            { nombre: "Sala Roja T.M.", color: "#ef4444" }, { nombre: "Sala Roja T.T.", color: "#b91c1c" },
+            { nombre: "Sala Naranja T.M.", color: "#fb923c" }, { nombre: "Sala Naranja T.T.", color: "#ea580c" },
+            { nombre: "Sala Celeste T.M.", color: "#7dd3fc" }, { nombre: "Sala Celeste T.T.", color: "#0284c7" },
+            { nombre: "Sala Violeta T.M.", color: "#a78bfa" }, { nombre: "Sala Violeta T.T.", color: "#7c3aed" },
+            { nombre: "Sala Amarilla T.M.", color: "#fde047" }, { nombre: "Sala Amarilla T.T.", color: "#ca8a04" },
+            { nombre: "Sala Azul T.M.", color: "#60a5fa" }, { nombre: "Sala Azul T.T.", color: "#1d4ed8" }
+        ];
+
+        let db = { alumnos: [], asistencias: {} };
+
+        window.onload = () => {
+            const sels = ['reg-sec', 'asi-sec'];
+            sels.forEach(s => {
+                const el = document.getElementById(s);
+                salas926.forEach(sala => {
+                    el.innerHTML += `<option value="${sala.nombre}">${sala.nombre}</option>`;
+                });
+            });
+            
+            // Escuchar datos en tiempo real de la nube
+            dbCloud.collection("alumnos").onSnapshot(snap => {
+                db.alumnos = snap.docs.map(doc => doc.data());
+                renderMonitorCupos();
+                renderTablaAlumnos();
+            });
+
+            setInterval(() => {
+                document.getElementById('reloj').innerText = new Date().toLocaleString();
+            }, 1000);
+        };
+
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            document.getElementById('tab-title').innerText = id;
+        }
+
+        function calcularEdad() {
+            const f = new Date(document.getElementById('reg-fnac').value);
+            const hoy = new Date();
+            let edad = hoy.getFullYear() - f.getFullYear();
+            if (hoy.getMonth() < f.getMonth() || (hoy.getMonth() == f.getMonth() && hoy.getDate() < f.getDate())) edad--;
+            document.getElementById('reg-edad').value = edad + " años";
+        }
+
+        async function guardarAlumno() {
+            const dni = document.getElementById('reg-dni').value;
+            const nom = document.getElementById('reg-nom').value;
+            if(!dni || !nom) return alert("DNI y Nombre son obligatorios");
+
+            const alu = {
+                id: dni,
+                dni: dni,
+                nombre: nom,
+                fnac: document.getElementById('reg-fnac').value,
+                edad: document.getElementById('reg-edad').value,
+                nac: document.getElementById('reg-nac').value,
+                seccion: document.getElementById('reg-sec').value,
+                tutor: document.getElementById('reg-tut').value,
+                tel: document.getElementById('reg-tel').value,
+                activo: true
+            };
+
+            await dbCloud.collection("alumnos").doc(alu.id).set(alu);
+            alert("Alumno guardado en la nube correctamente.");
+            document.querySelectorAll('input').forEach(i => i.value = "");
+        }
+
+        function renderPlanilla() {
+            const sec = document.getElementById('asi-sec').value;
+            const cont = document.getElementById('planilla-cont');
+            const lista = db.alumnos.filter(a => a.seccion === sec && a.activo);
+            
+            cont.innerHTML = lista.map(a => `
+                <div class="bg-white p-4 rounded-xl shadow-sm border flex flex-col justify-between gap-3">
+                    <span class="font-bold text-sm text-blue-900">${a.nombre}</span>
+                    <div class="flex gap-2">
+                        <button onclick="enviarWhatsApp('${a.id}')" class="bg-green-100 text-green-700 p-2 rounded-lg text-xs flex-1">
+                            <i class="fab fa-whatsapp"></i> Avisar
+                        </button>
+                        <select id="asist-${a.id}" class="text-xs border rounded-lg p-2 bg-slate-50">
+                            <option value="P">Presente</option>
+                            <option value="A">Ausente</option>
+                        </select>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function enviarWhatsApp(id) {
+            const alu = db.alumnos.find(a => a.id === id);
+            if(!alu.tel) return alert("No tiene teléfono");
+            const msg = `Hola Familia de ${alu.nombre}, le escribimos del Jardín 926 para consultar el motivo de su inasistencia a la ${alu.seccion}. Saludos.`;
+            window.open(`https://api.whatsapp.com/send?phone=549${alu.tel}&text=${encodeURIComponent(msg)}`);
+        }
+
+        function renderMonitorCupos() {
+            const cont = document.getElementById('monitor-cupos');
+            cont.innerHTML = salas926.map(s => {
+                const cant = db.alumnos.filter(a => a.seccion === s.nombre && a.activo).length;
+                const porc = (cant / 25) * 100;
+                return `
+                    <div class="text-[10px] space-y-1">
+                        <div class="flex justify-between font-bold">
+                            <span style="color: ${s.color}">${s.nombre}</span>
+                            <span>${cant}/25</span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                            <div class="h-full transition-all" style="width:${porc}%; background-color:${s.color}"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>
