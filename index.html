@@ -3,251 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGE - Jardín N° 926</title>
+    <title>SGE PROFESIONAL - JARDÍN 926</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Estilos para el menú móvil */
-        @media (max-width: 768px) {
-            .sidebar-closed { transform: translateX(-100%); }
-            .sidebar-open { transform: translateX(0); }
-        }
+        @media (max-width: 768px) { .sidebar-closed { transform: translateX(-100%); } .sidebar-open { transform: translateX(0); } }
         .transition-transform { transition: transform 0.3s ease-in-out; }
+        .tabla-asistencia input[type="radio"] { width: 1.5rem; height: 1.5rem; cursor: pointer; }
     </style>
 </head>
-<body class="bg-slate-100 flex h-screen overflow-hidden font-sans">
+<body class="bg-slate-50 flex h-screen overflow-hidden text-slate-900">
 
-    <button onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 md:hidden bg-indigo-900 text-white p-2 rounded-lg shadow-lg">
-        <i class="fas fa-bars"></i>
-    </button>
+    <button onclick="toggleSidebar()" class="fixed top-4 left-4 z-50 md:hidden bg-indigo-900 text-white p-2 rounded-lg shadow-xl"><i class="fas fa-bars"></i></button>
 
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-72 bg-indigo-900 text-white flex flex-col shadow-2xl transition-transform sidebar-closed md:translate-x-0 md:relative md:flex">
-        <div class="p-6 border-b border-indigo-800 flex justify-between items-center">
-            <div>
-                <h1 class="text-xl font-bold">Jardín 926</h1>
-                <p class="text-[10px] text-indigo-300 uppercase tracking-widest mt-1">Gestión Profesional</p>
-            </div>
-            <button onclick="toggleSidebar()" class="md:hidden text-indigo-300"><i class="fas fa-times"></i></button>
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-80 bg-slate-900 text-white flex flex-col shadow-2xl transition-transform sidebar-closed md:translate-x-0 md:relative md:flex">
+        <div class="p-6 border-b border-slate-800">
+            <h1 class="text-xl font-black tracking-tighter text-indigo-400">JARDÍN N° 926</h1>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Gestión de 14 Salas</p>
         </div>
         
         <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-            <button onclick="showTab('dashboard')" class="w-full flex items-center p-3 rounded-lg hover:bg-white/10 transition">
-                <i class="fas fa-chart-line mr-3"></i> Panel de Control
-            </button>
-            <button onclick="showTab('alumnos')" class="w-full flex items-center p-3 rounded-lg hover:bg-white/10 transition">
-                <i class="fas fa-user-graduate mr-3"></i> Gestión 30 Alumnos
-            </button>
-            <button onclick="showTab('asistencia')" class="w-full flex items-center p-3 rounded-lg hover:bg-white/10 transition">
-                <i class="fas fa-calendar-check mr-3"></i> Asistencia Anual
-            </button>
+            <button onclick="showTab('dashboard')" class="w-full flex items-center p-3 rounded-xl hover:bg-indigo-600 transition"><i class="fas fa-chart-pie mr-3"></i> Dashboard</button>
+            <button onclick="showTab('matricula')" class="w-full flex items-center p-3 rounded-xl hover:bg-indigo-600 transition"><i class="fas fa-address-book mr-3"></i> Libro de Matrícula</button>
+            <button onclick="showTab('asistencia')" class="w-full flex items-center p-3 rounded-xl hover:bg-indigo-600 transition"><i class="fas fa-check-double mr-3"></i> Asistencia Diaria</button>
+            <button onclick="showTab('config')" class="w-full flex items-center p-3 rounded-xl hover:bg-slate-700 transition"><i class="fas fa-user-shield mr-3"></i> Autoridades</button>
+            
+            <div class="pt-6">
+                <p class="text-[10px] text-slate-500 font-black px-3 mb-2 uppercase">Sala Seleccionada</p>
+                <select id="salaActiva" onchange="cambiarSala()" class="w-full bg-slate-800 border-none p-3 rounded-xl text-sm outline-none ring-2 ring-indigo-900 focus:ring-indigo-500">
+                    <optgroup label="Turno Mañana">
+                        <option value="Rosa TM">Rosa TM</option><option value="Roja TM">Roja TM</option>
+                        <option value="Naranja TM">Naranja TM</option><option value="Celeste TM">Celeste TM</option>
+                        <option value="Violeta TM">Violeta TM</option><option value="Amarilla TM">Amarilla TM</option>
+                        <option value="Azul TM">Azul TM</option>
+                    </optgroup>
+                    <optgroup label="Turno Tarde">
+                        <option value="Rosa TT">Rosa TT</option><option value="Roja TT">Roja TT</option>
+                        <option value="Naranja TT">Naranja TT</option><option value="Celeste TT">Celeste TT</option>
+                        <option value="Violeta TT">Violeta TT</option><option value="Amarilla TT">Amarilla TT</option>
+                        <option value="Azul TT">Azul TT</option>
+                    </optgroup>
+                </select>
+            </div>
         </nav>
-
-        <div class="p-4 bg-indigo-950 border-t border-indigo-800">
-            <label class="text-[10px] text-indigo-400 block mb-1 uppercase">Docente Responsable:</label>
-            <input type="text" id="docente" onchange="saveDocente()" placeholder="Nombre de la docente..." class="bg-indigo-900 border border-indigo-700 text-sm w-full rounded p-2 outline-none focus:border-white">
-        </div>
     </aside>
 
-    <main class="flex-1 overflow-y-auto p-4 md:p-8 w-full">
+    <main class="flex-1 overflow-y-auto bg-white p-4 md:p-10 relative">
         
-        <section id="dashboard" class="tab-content block space-y-6">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-indigo-500">
-                    <p class="text-xs text-gray-500 font-bold uppercase">Matrícula Inicial</p>
-                    <h2 id="m-inicial" class="text-3xl font-black text-gray-800">0</h2>
+        <section id="dashboard" class="tab-content space-y-8">
+            <div class="border-b pb-4">
+                <h2 class="text-3xl font-black text-slate-800">Sala: <span class="nombreSalaText"></span></h2>
+                <p id="fechaHoy" class="text-indigo-600 font-bold uppercase text-xs"></p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-blue-50 p-6 rounded-3xl border border-blue-100">
+                    <p class="text-[10px] font-black text-blue-600 uppercase">Inicial</p>
+                    <h3 id="stat-inicial" class="text-4xl font-black">0</h3>
                 </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500">
-                    <p class="text-xs text-gray-500 font-bold uppercase">Matrícula Actual</p>
-                    <h2 id="m-actual" class="text-3xl font-black text-green-600">0</h2>
+                <div class="bg-green-50 p-6 rounded-3xl border border-green-100">
+                    <p class="text-[10px] font-black text-green-600 uppercase">Actual (Final)</p>
+                    <h3 id="stat-actual" class="text-4xl font-black text-green-700">0</h3>
                 </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-red-500">
-                    <p class="text-xs text-gray-500 font-bold uppercase">Bajas</p>
-                    <h2 id="m-bajas" class="text-3xl font-black text-red-500">0</h2>
+                <div class="bg-red-50 p-6 rounded-3xl border border-red-100">
+                    <p class="text-[10px] font-black text-red-600 uppercase">Bajas</p>
+                    <h3 id="stat-bajas" class="text-4xl font-black text-red-700">0</h3>
                 </div>
             </div>
-            <div class="bg-white p-4 rounded-xl shadow-sm">
-                <canvas id="mainChart" height="150"></canvas>
+            <div class="bg-slate-50 p-6 rounded-3xl border h-96">
+                <canvas id="mainChart"></canvas>
             </div>
         </section>
 
-        <section id="alumnos" class="tab-content hidden space-y-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h2 class="text-2xl font-bold text-gray-800">Ficha de Alumnos (Máx 30)</h2>
-                <button onclick="abrirFormulario()" class="bg-indigo-600 text-white px-6 py-2 rounded-full shadow-lg hover:bg-indigo-700 w-full sm:w-auto">
-                    <i class="fas fa-plus mr-2"></i> Nuevo Ingreso
-                </button>
-            </div>
-            
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead class="bg-gray-100 text-gray-700 text-xs uppercase">
-                            <tr>
-                                <th class="p-4">Alumno / DNI</th>
-                                <th class="p-4">Familia y Contacto</th>
-                                <th class="p-4">Domicilio</th>
-                                <th class="p-4 text-center">Estado</th>
-                                <th class="p-4 text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tablaAlumnos" class="text-sm divide-y">
-                            </tbody>
-                    </table>
+        <section id="matricula" class="tab-content hidden space-y-6">
+            <div class="flex justify-between items-center bg-slate-900 p-6 rounded-3xl text-white shadow-xl">
+                <div>
+                    <h2 class="text-xl font-bold uppercase">Libro de Matrícula</h2>
+                    <p class="text-xs text-indigo-300 italic">Sala: <span class="nombreSalaText"></span></p>
                 </div>
+                <button onclick="document.getElementById('modalRegistro').classList.remove('hidden')" class="bg-indigo-500 hover:bg-indigo-400 px-6 py-2 rounded-full font-bold transition">Nuevo Registro</button>
+            </div>
+
+            <div class="overflow-x-auto rounded-3xl border shadow-sm">
+                <table class="w-full text-xs text-left">
+                    <thead class="bg-slate-100 border-b">
+                        <tr>
+                            <th class="p-4">Alumno / DNI / Edad</th>
+                            <th class="p-4">Datos Familiares</th>
+                            <th class="p-4">Domicilio</th>
+                            <th class="p-4">Movimiento (Alta/Baja)</th>
+                            <th class="p-4 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaMatricula" class="divide-y divide-slate-100 bg-white"></tbody>
+                </table>
             </div>
         </section>
 
         <section id="asistencia" class="tab-content hidden space-y-6">
-            <div class="bg-white p-4 rounded-xl shadow-md">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold">Asistencia Marzo - Diciembre</h2>
-                    <select id="selectMes" class="border rounded p-2 text-sm bg-gray-50">
-                        <option value="3">Marzo</option><option value="4">Abril</option>
-                        <option value="5">Mayo</option><option value="6">Junio</option>
-                        <option value="7">Julio</option><option value="8">Agosto</option>
-                        <option value="9">Septiembre</option><option value="10">Octubre</option>
-                        <option value="11">Noviembre</option><option value="12">Diciembre</option>
-                    </select>
+            <div class="bg-indigo-900 p-6 rounded-3xl text-white flex flex-col md:flex-row justify-between items-center gap-4">
+                <h2 class="text-xl font-bold">REGISTRO DIARIO DE ASISTENCIA</h2>
+                <div class="flex gap-2">
+                    <input type="date" id="inputFecha" onchange="cargarAsistencia()" class="bg-indigo-800 border-none p-2 rounded-xl text-white outline-none">
+                    <button onclick="guardarAsistencia()" class="bg-green-500 px-6 py-2 rounded-xl font-bold shadow-lg">Firmar Libro</button>
                 </div>
-                <div class="overflow-x-auto border rounded">
-                    <table class="w-full text-[10px] text-center">
-                        <thead id="headAsist" class="bg-indigo-50 border-b"></thead>
-                        <tbody id="bodyAsist" class="divide-y"></tbody>
-                    </table>
+            </div>
+            <div class="bg-white rounded-3xl border overflow-hidden">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 border-b">
+                        <tr>
+                            <th class="p-4">Alumno</th>
+                            <th class="p-4 text-center text-green-600">Presente</th>
+                            <th class="p-4 text-center text-red-600">Ausente</th>
+                            <th class="p-4 text-center font-bold">Faltas Mes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaAsistencia" class="divide-y"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="config" class="tab-content hidden space-y-6">
+            <h2 class="text-2xl font-bold">Avisos y Autoridades</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-3xl border shadow-sm space-y-4">
+                    <h3 class="font-bold border-b pb-2">WhatsApp Directivo/Secretaría</h3>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400">Teléfono Dirección</label>
+                        <input type="text" id="telDire" placeholder="54911..." class="w-full border p-3 rounded-xl mt-1 outline-none focus:ring-2 ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400">Teléfono Secretaría</label>
+                        <input type="text" id="telSecre" placeholder="54911..." class="w-full border p-3 rounded-xl mt-1 outline-none focus:ring-2 ring-indigo-500">
+                    </div>
+                    <button onclick="saveConfig()" class="bg-slate-900 text-white w-full py-3 rounded-xl font-bold">Guardar Configuración</button>
                 </div>
             </div>
         </section>
     </main>
 
-    <script>
-        // --- LÓGICA DE CONTROL ---
-        let db = JSON.parse(localStorage.getItem('jardin926_data')) || { alumnos: [], docente: "" };
-        let currentChart;
+    <div id="modalRegistro" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+            <div class="bg-slate-900 p-6 text-white flex justify-between">
+                <h3 class="text-xl font-bold">Ficha de Inscripción Sala <span class="nombreSalaText"></span></h3>
+                <button onclick="document.getElementById('modalRegistro').classList.add('hidden')" class="text-slate-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 h-[70vh] overflow-y-auto">
+                <div class="md:col-span-2 bg-indigo-50 p-2 rounded-lg text-xs font-bold text-indigo-700 uppercase">Datos del Alumno</div>
+                <input type="text" id="regNombre" placeholder="Nombre y Apellido del Niño" class="border p-3 rounded-xl outline-none focus:ring-2 ring-indigo-500">
+                <input type="text" id="regDni" placeholder="DNI Alumno" class="border p-3 rounded-xl outline-none focus:ring-2 ring-indigo-500">
+                <input type="date" id="regFechaNac" class="border p-3 rounded-xl outline-none focus:ring-2 ring-indigo-500">
+                <input type="number" id="regEdad" placeholder="Edad" class="border p-3 rounded-xl outline-none focus:ring-2 ring-indigo-500">
+                <input type="text" id="regDomicilio" placeholder="Domicilio Alumno" class="md:col-span-2 border p-3 rounded-xl outline-none focus:ring-2 ring-indigo-500">
+                
+                <div class="md:col-span-2 bg-indigo-50 p-2 rounded-lg text-xs font-bold text-indigo-700 uppercase">Responsables (Padre/Madre/Tutor)</div>
+                <input type="text" id="regPadre" placeholder="Nombre Madre/Padre 1" class="border p-3 rounded-xl outline-none focus:ring-2 ring-indigo-500">
+                <input type="text" id="regPadreTel" placeholder="WhatsApp Padre/Madre 1 (54911...)" class="border p-3 rounded-xl outline-none focus:ring-2 ring-indigo-500">
+                <input type="text" id="regMadre" placeholder="Nombre Madre/Padre 2" class="border p-3 rounded-xl outline-none focus:ring-2 ring-indigo-500">
+                <input type="text" id="regMadreTel" placeholder="WhatsApp Padre/Madre 2 (54911...)" class="border p-3 rounded-xl outline-none focus:ring-2 ring-indigo-500">
+            </div>
+            <div class="p-6 border-t bg-slate-50 flex gap-2">
+                <button onclick="guardarNuevoAlumno()" class="flex-1 bg-indigo-600 text-white py-3 rounded-2xl font-bold shadow-lg hover:bg-indigo-500">CONFIRMAR ALTA</button>
+            </div>
+        </div>
+    </div>
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('sidebar-closed');
-            sidebar.classList.toggle('sidebar-open');
-        }
+    <script>
+        let db = JSON.parse(localStorage.getItem('j926_SGE_MASTER')) || {
+            config: { dire: "", secre: "" },
+            salas: { "Rosa TM": [], "Rosa TT": [], "Roja TM": [], "Roja TT": [], "Naranja TM": [], "Naranja TT": [], "Celeste TM": [], "Celeste TT": [], "Violeta TM": [], "Violeta TT": [], "Amarilla TM": [], "Amarilla TT": [], "Azul TM": [], "Azul TT": [] },
+            asistencia: {}
+        };
+        let salaActual = "Rosa TM";
+        let myChart;
+
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('sidebar-closed'); document.getElementById('sidebar').classList.toggle('sidebar-open'); }
 
         function showTab(id) {
-            document.querySelectorAll('.tab-content').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
             if(window.innerWidth < 768) toggleSidebar();
-            if(id === 'dashboard') initChart();
-            if(id === 'alumnos') renderAlumnos();
-            if(id === 'asistencia') renderAsistencia();
+            if(id === 'dashboard') updateDashboard();
+            if(id === 'matricula') renderMatricula();
         }
 
-        function saveDocente() {
-            db.docente = document.getElementById('docente').value;
-            localStorage.setItem('jardin926_data', JSON.stringify(db));
+        function cambiarSala() {
+            salaActual = document.getElementById('salaActiva').value;
+            document.querySelectorAll('.nombreSalaText').forEach(e => e.innerText = salaActual);
+            updateDashboard(); renderMatricula(); cargarAsistencia();
         }
 
-        function abrirFormulario() {
-            if(db.alumnos.filter(a => a.status === 'alta').length >= 30) return alert("Sección completa");
-            const nombre = prompt("Nombre completo del alumno:");
-            if(!nombre) return;
-            const dni = prompt("DNI del alumno:");
-            const madre = prompt("Datos Madre (Nombre, DNI, Tel):");
-            const padre = prompt("Datos Padre (Nombre, DNI, Tel):");
-            const domicilio = prompt("Domicilio (Si es diferente al del menor):");
+        // --- GESTIÓN DE MATRÍCULA ---
+        function guardarNuevoAlumno() {
+            const data = {
+                id: Date.now(),
+                nombre: document.getElementById('regNombre').value,
+                dni: document.getElementById('regDni').value,
+                nac: document.getElementById('regFechaNac').value,
+                edad: document.getElementById('regEdad').value,
+                domi: document.getElementById('regDomicilio').value,
+                p1: document.getElementById('regPadre').value,
+                p1Tel: document.getElementById('regPadreTel').value,
+                p2: document.getElementById('regMadre').value,
+                p2Tel: document.getElementById('regMadreTel').value,
+                alta: new Date().toLocaleDateString(),
+                baja: '-', motivo: 'Regular', status: 'ALTA', faltas: 0
+            };
+            if(!data.nombre || !data.dni) return alert("Nombre y DNI obligatorios");
+            db.salas[salaActual].push(data);
+            save(); document.getElementById('modalRegistro').classList.add('hidden'); renderMatricula();
+        }
 
-            db.alumnos.push({
-                nombre, dni, madre, padre, domicilio,
-                status: 'alta', faltas: 0, registro: new Date().toLocaleDateString()
-            });
-            saveAndRefresh();
+        function renderMatricula() {
+            const container = document.getElementById('listaMatricula');
+            container.innerHTML = db.salas[salaActual].map((a, i) => `
+                <tr class="${a.status === 'BAJA' ? 'bg-red-50 text-slate-400' : ''}">
+                    <td class="p-4 font-bold">#${i+1} ${a.nombre}<br><span class="font-normal text-indigo-500">${a.dni} | ${a.edad} años</span></td>
+                    <td class="p-4 text-[10px]">1: ${a.p1} (${a.p1Tel})<br>2: ${a.p2} (${a.p2Tel})</td>
+                    <td class="p-4 text-[10px] italic">${a.domi}</td>
+                    <td class="p-4 text-[10px]">A: ${a.alta}<br>B: ${a.baja}</td>
+                    <td class="p-4 text-center">
+                        ${a.status === 'ALTA' ? `<button onclick="darBaja(${i})" class="bg-red-500 text-white px-3 py-1 rounded-full text-[9px] font-bold">DAR BAJA</button>` : `<span class="text-red-600 font-bold">BAJA</span>`}
+                    </td>
+                </tr>
+            `).join('');
         }
 
         function darBaja(idx) {
-            if(confirm("¿Confirmar baja definitiva?")) {
-                db.alumnos[idx].status = 'baja';
-                saveAndRefresh();
+            const mot = prompt("Motivo de la baja:");
+            if(mot) {
+                db.salas[salaActual][idx].status = 'BAJA';
+                db.salas[salaActual][idx].baja = new Date().toLocaleDateString();
+                db.salas[salaActual][idx].motivo = mot;
+                alert("Baja procesada. Notificando a Dirección...");
+                notificarDireccion(`⚠️ BAJA: ${db.salas[salaActual][idx].nombre} (Sala: ${salaActual})`);
+                save(); renderMatricula();
             }
         }
 
-        function checkFaltas(idx) {
-            db.alumnos[idx].faltas++;
-            if(db.alumnos[idx].faltas >= 10) {
-                const tel = prompt("¡ALERTA 10 FALTAS! Ingrese Teléfono para WhatsApp:");
-                if(tel) {
-                    const msg = `Jardín 926: El alumno ${db.alumnos[idx].nombre} tiene 10 inasistencias. Favor de comunicarse.`;
-                    window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`, '_blank');
-                }
-            }
-            saveAndRefresh();
-        }
+        // --- ASISTENCIA ---
+        function cargarAsistencia() {
+            const fecha = document.getElementById('inputFecha').value;
+            const container = document.getElementById('listaAsistencia');
+            if(!fecha) { container.innerHTML = '<tr><td colspan="4" class="p-10 text-center text-slate-300">Seleccione fecha...</td></tr>'; return; }
+            
+            const activos = db.salas[salaActual].filter(a => a.status === 'ALTA');
+            const key = `${salaActual}_${fecha}`;
+            const hoy = db.asistencia[key] || {};
 
-        function saveAndRefresh() {
-            localStorage.setItem('jardin926_data', JSON.stringify(db));
-            renderAlumnos();
-            updateStats();
-        }
-
-        function renderAlumnos() {
-            const container = document.getElementById('tablaAlumnos');
-            container.innerHTML = db.alumnos.map((a, i) => `
-                <tr class="${a.status === 'baja' ? 'bg-red-50' : ''}">
-                    <td class="p-4"><b>${a.nombre}</b><br><span class="text-xs text-gray-400">${a.dni}</span></td>
-                    <td class="p-4 text-xs">M: ${a.madre}<br>P: ${a.padre}</td>
-                    <td class="p-4 text-xs">${a.domicilio || 'El mismo'}</td>
-                    <td class="p-4 text-center">
-                        <span class="px-2 py-1 rounded text-[10px] ${a.status==='alta'?'bg-green-100 text-green-700':'bg-red-200 text-red-800'}">${a.status.toUpperCase()}</span>
-                    </td>
-                    <td class="p-4 text-center space-x-2">
-                        <button onclick="checkFaltas(${i})" class="text-orange-500" title="Sumar falta"><i class="fas fa-user-clock"></i></button>
-                        <button onclick="darBaja(${i})" class="text-red-400"><i class="fas fa-user-minus"></i></button>
-                    </td>
+            container.innerHTML = activos.map(a => `
+                <tr>
+                    <td class="p-4 font-bold text-slate-700">${a.nombre}</td>
+                    <td class="p-4 text-center"><input type="radio" name="as_${a.id}" value="P" ${hoy[a.id] === 'P' ? 'checked' : ''}></td>
+                    <td class="p-4 text-center"><input type="radio" name="as_${a.id}" value="A" ${hoy[a.id] === 'A' ? 'checked' : ''}></td>
+                    <td class="p-4 text-center font-black ${a.faltas >= 10 ? 'text-red-600' : ''}">${a.faltas}</td>
                 </tr>
             `).join('');
         }
 
-        function updateStats() {
-            const inicial = db.alumnos.length;
-            const actual = db.alumnos.filter(a => a.status === 'alta').length;
-            const bajas = db.alumnos.filter(a => a.status === 'baja').length;
-            document.getElementById('m-inicial').innerText = inicial;
-            document.getElementById('m-actual').innerText = actual;
-            document.getElementById('m-bajas').innerText = bajas;
-        }
+        function guardarAsistencia() {
+            const fecha = document.getElementById('inputFecha').value;
+            if(!fecha) return alert("Fecha obligatoria");
+            const key = `${salaActual}_${fecha}`;
+            const registros = {};
 
-        function initChart() {
-            const ctx = document.getElementById('mainChart').getContext('2d');
-            if(currentChart) currentChart.destroy();
-            currentChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Inicial', 'Actual', 'Bajas'],
-                    datasets: [{
-                        label: 'Cant. Alumnos',
-                        data: [db.alumnos.length, db.alumnos.filter(a=>a.status==='alta').length, db.alumnos.filter(a=>a.status==='baja').length],
-                        backgroundColor: ['#4338ca', '#10b981', '#ef4444']
-                    }]
+            db.salas[salaActual].forEach(a => {
+                if(a.status === 'ALTA') {
+                    const val = document.querySelector(`input[name="as_${a.id}"]:checked`)?.value;
+                    if(val) {
+                        registros[a.id] = val;
+                        if(val === 'A') {
+                            a.faltas++;
+                            if(a.faltas === 10) notificarFamilia(a);
+                        }
+                    }
                 }
             });
+            db.asistencia[key] = registros;
+            save(); alert("Libro firmado."); cargarAsistencia();
         }
 
-        function renderAsistencia() {
-            const head = document.getElementById('headAsist');
-            const body = document.getElementById('bodyAsist');
-            let th = '<tr><th class="p-2 border">Alumno</th>';
-            for(let d=1; d<=31; d++) th += `<th class="border">${d}</th>`;
-            head.innerHTML = th + '</tr>';
-
-            body.innerHTML = db.alumnos.filter(a=>a.status==='alta').map(a => `
-                <tr>
-                    <td class="p-1 border text-left font-bold">${a.nombre.split(' ')[0]}</td>
-                    ${Array(31).fill(0).map(() => `<td class="border p-0"><input type="checkbox" class="scale-75"></td>`).join('')}
-                </tr>
-            `).join('');
+        function notificarFamilia(a) {
+            const msg = `Jardín 926: El alumno ${a.nombre} registra 10 inasistencias. Solicitamos comunicación urgente con la docente de sala ${salaActual}.`;
+            if(a.p1Tel) window.open(`https://wa.me/${a.p1Tel}?text=${encodeURIComponent(msg)}`, '_blank');
         }
+
+        function notificarDireccion(msg) { if(db.config.dire) window.open(`https://wa.me/${db.config.dire}?text=${encodeURIComponent(msg)}`, '_blank'); }
+
+        function saveConfig() {
+            db.config.dire = document.getElementById('telDire').value;
+            db.config.secre = document.getElementById('telSecre').value;
+            save(); alert("Configuración guardada.");
+        }
+
+        function updateDashboard() {
+            const sala = db.salas[salaActual];
+            const inicial = sala.length;
+            const actual = sala.filter(a => a.status === 'ALTA').length;
+            const bajas = sala.filter(a => a.status === 'BAJA').length;
+            document.getElementById('stat-inicial').innerText = inicial;
+            document.getElementById('stat-actual').innerText = actual;
+            document.getElementById('stat-bajas').innerText = bajas;
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            if(myChart) myChart.destroy();
+            myChart = new Chart(ctx, { type: 'bar', data: { labels: ['Inicial', 'Activos', 'Bajas'], datasets: [{ label: 'Alumnos', data: [inicial, actual, bajas], backgroundColor: ['#6366f1', '#10b981', '#ef4444'] }] }, options: { maintainAspectRatio: false } });
+        }
+
+        function save() { localStorage.setItem('j926_SGE_MASTER', JSON.stringify(db)); }
 
         window.onload = () => {
-            document.getElementById('docente').value = db.docente;
-            updateStats();
-            showTab('dashboard');
+            document.getElementById('fechaHoy').innerText = new Date().toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
+            document.getElementById('telDire').value = db.config.dire;
+            document.getElementById('telSecre').value = db.config.secre;
+            cambiarSala(); showTab('dashboard');
         };
     </script>
 </body>
