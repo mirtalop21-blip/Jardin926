@@ -1,35 +1,249 @@
- type="number" id="fnEdad" placeholder="Edad" class="w-full p-4 rounded-2xl border border-slate-200 outline-none font-bold">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGE V4 - GESTIÓN INTEGRAL JARDÍN 926</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #0f172a; --accent: #4f46e5; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .tab-content { animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .mic-active { animation: pulse 1s infinite; background-color: #fee2e2 !important; color: #ef4444 !important; border-color: #ef4444 !important; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <aside class="w-72 bg-[#0f172a] text-slate-300 flex flex-col shadow-2xl z-50">
+        <div class="p-8 border-b border-slate-800">
+            <h1 class="text-white text-2xl font-black tracking-tighter">SGE <span class="text-indigo-500">926</span></h1>
+            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Legajo Socio-Educativo</p>
+        </div>
+        
+        <nav class="flex-1 p-4 space-y-1">
+            <button onclick="showTab('dashboard')" class="w-full flex items-center p-3 rounded-xl hover:bg-slate-800 transition-all text-sm font-semibold"><i class="fas fa-home mr-3 opacity-50"></i> Inicio</button>
+            <button onclick="showTab('matricula')" class="w-full flex items-center p-3 rounded-xl hover:bg-slate-800 transition-all text-sm font-semibold"><i class="fas fa-child mr-3 opacity-50"></i> Matrícula / Fichas</button>
+            <button onclick="showTab('asistencia')" class="w-full flex items-center p-3 rounded-xl hover:bg-slate-800 transition-all text-sm font-semibold"><i class="fas fa-check-circle mr-3 opacity-50"></i> Asistencia</button>
+            <button onclick="showTab('config')" class="w-full flex items-center p-3 rounded-xl hover:bg-slate-800 transition-all text-sm font-semibold"><i class="fas fa-cog mr-3 opacity-50"></i> Configuración</button>
+            
+            <div class="mt-8 pt-4 border-t border-slate-800">
+                <label class="text-[10px] font-black text-slate-500 uppercase px-3 block mb-2 tracking-widest">Sección</label>
+                <select id="salaActiva" onchange="cambiarSala()" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-xs text-indigo-300 outline-none">
+                    <optgroup label="TURNO MAÑANA">
+                        <option value="Rosa TM">Sala Rosa TM</option><option value="Roja TM">Sala Roja TM</option>
+                        <option value="Naranja TM">Sala Naranja TM</option><option value="Celeste TM">Sala Celeste TM</option>
+                        <option value="Violeta TM">Sala Violeta TM</option><option value="Amarilla TM">Sala Amarilla TM</option>
+                        <option value="Azul TM">Sala Azul TM</option>
+                    </optgroup>
+                    <optgroup label="TURNO TARDE">
+                        <option value="Rosa TT">Sala Rosa TT</option><option value="Roja TT">Sala Roja TT</option>
+                        <option value="Naranja TT">Sala Naranja TT</option><option value="Celeste TT">Sala Celeste TT</option>
+                        <option value="Violeta TT">Sala Violeta TT</option><option value="Amarilla TT">Sala Amarilla TT</option>
+                        <option value="Azul TT">Sala Azul TT</option>
+                    </optgroup>
+                </select>
+            </div>
+        </nav>
+
+        <div class="p-4 bg-slate-900/50 border-t border-slate-800">
+            <div class="flex items-center justify-center">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></span>
+                <span class="text-[10px] text-green-500 font-bold uppercase tracking-tighter">Motor V4.0 Activo</span>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto">
+        <header class="bg-white border-b p-6 sticky top-0 z-30 flex justify-between items-center">
+            <div>
+                <h2 id="tabTitle" class="text-xl font-black text-slate-800 uppercase italic">Control de Gestión</h2>
+                <p id="fechaHoy" class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest"></p>
+            </div>
+            <button onclick="exportToExcel()" class="bg-emerald-600 text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-emerald-700 flex items-center shadow-lg transition-all">
+                <i class="fas fa-file-excel mr-2"></i> RESPALDO EXCEL
+            </button>
+        </header>
+
+        <div class="p-8 max-w-7xl mx-auto">
+            
+            <section id="dashboard" class="tab-content space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-3xl border shadow-sm border-b-4 border-b-indigo-500">
+                        <p class="text-[10px] font-black text-slate-400 uppercase mb-1">Inscripción</p>
+                        <h3 id="stat-inicial" class="text-3xl font-black">0</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border shadow-sm border-b-4 border-b-green-500">
+                        <p class="text-[10px] font-black text-slate-400 uppercase mb-1">Activos</p>
+                        <h3 id="stat-actual" class="text-3xl font-black text-green-600">0</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border shadow-sm border-b-4 border-b-red-500">
+                        <p class="text-[10px] font-black text-slate-400 uppercase mb-1">Bajas</p>
+                        <h3 id="stat-bajas" class="text-3xl font-black text-red-600">0</h3>
+                    </div>
                 </div>
-                <div class="md:col-span-2 relative">
-                    <input type="text" id="fnDomi" placeholder="Domicilio Real" class="w-full p-4 rounded-2xl border border-slate-200 outline-none focus:ring-2 ring-indigo-500 font-bold pr-12">
-                    <button onclick="startVoiceDictation('fnDomi')" class="absolute right-4 top-4 text-slate-300 hover:text-red-500 transition-colors"><i class="fas fa-microphone"></i></button>
+                <div class="bg-white p-8 rounded-[2rem] border shadow-sm h-[400px]">
+                    <canvas id="mainChart"></canvas>
+                </div>
+            </section>
+
+            <section id="matricula" class="tab-content hidden space-y-6">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-2xl font-black text-slate-800 tracking-tight">Sala: <span class="sala-display"></span></h3>
+                    <button onclick="openModal()" class="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-black hover:bg-indigo-700 shadow-xl shadow-indigo-100">
+                        NUEVO REGISTRO
+                    </button>
+                </div>
+                <div class="bg-white rounded-[2rem] border overflow-x-auto shadow-sm">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-50 border-b">
+                            <tr>
+                                <th class="p-5 font-black text-slate-400 uppercase">Alumno / DNI</th>
+                                <th class="p-5 font-black text-slate-400 uppercase">Obra Soc. / AUH</th>
+                                <th class="p-5 font-black text-slate-400 uppercase">Contexto Familiar</th>
+                                <th class="p-5 text-center font-black text-slate-400 uppercase">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matriculaList" class="divide-y"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="asistencia" class="tab-content hidden space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-center bg-[#0f172a] p-8 rounded-[2.5rem] text-white gap-4 shadow-xl">
+                    <div>
+                        <h3 class="font-bold text-lg">Control Diario</h3>
+                        <p class="text-indigo-300 text-[10px] uppercase font-bold tracking-tighter">Firma de asistencia por fecha</p>
+                    </div>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <input type="date" id="asistenciaDate" onchange="loadAsistencia()" class="bg-slate-800 text-white p-3 rounded-xl border-none outline-none text-sm font-bold flex-1">
+                        <button onclick="saveAsistencia()" class="bg-indigo-500 px-6 py-3 rounded-xl font-black text-sm hover:bg-indigo-400 transition-all">FIRMAR</button>
+                    </div>
+                </div>
+                <div class="bg-white rounded-[2rem] border overflow-hidden shadow-sm">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 border-b">
+                            <tr>
+                                <th class="p-5 text-[10px] font-black text-slate-400 uppercase">Nombre</th>
+                                <th class="p-5 text-center text-[10px] font-black text-green-600">P</th>
+                                <th class="p-5 text-center text-[10px] font-black text-red-600">A</th>
+                                <th class="p-5 text-center text-[10px] font-black text-slate-400 uppercase">Acumuladas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="asistenciaList" class="divide-y"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="config" class="tab-content hidden space-y-6">
+                <div class="max-w-xl bg-white p-10 rounded-[2.5rem] border shadow-sm">
+                    <h3 class="text-2xl font-black text-slate-800 mb-6 italic"><i class="fas fa-user-shield mr-2"></i> Autoridades</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">WhatsApp Directora</label>
+                            <input type="text" id="cfgDire" placeholder="54911..." class="w-full bg-slate-50 border p-4 rounded-2xl outline-none focus:ring-2 ring-indigo-500 font-bold">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">WhatsApp Secretaría</label>
+                            <input type="text" id="cfgSecre" placeholder="54911..." class="w-full bg-slate-50 border p-4 rounded-2xl outline-none focus:ring-2 ring-indigo-500 font-bold">
+                        </div>
+                        <button onclick="saveConfig()" class="w-full bg-slate-900 text-white py-5 rounded-3xl font-black tracking-widest hover:bg-slate-800 transition-all">GUARDAR AJUSTES</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div id="regModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-3xl rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300">
+            <div class="bg-[#0f172a] p-6 text-white flex justify-between items-center border-b border-indigo-500/30">
+                <h4 class="text-lg font-black italic">FICHA NOMINAL SOCIO-EDUCATIVA</h4>
+                <button onclick="closeModal()" class="text-3xl text-slate-500 hover:text-white">&times;</button>
+            </div>
+            <div class="p-8 h-[75vh] overflow-y-auto bg-slate-50 grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <div class="md:col-span-2 text-[10px] font-black text-indigo-600 uppercase border-b pb-1">Datos del Alumno</div>
+                <div class="relative">
+                    <input type="text" id="fNombre" placeholder="Nombre completo" class="w-full p-4 rounded-2xl border outline-none focus:ring-2 ring-indigo-500 font-bold">
+                    <button onclick="dictar('fNombre')" class="absolute right-4 top-4 text-slate-300 hover:text-red-500"><i class="fas fa-microphone"></i></button>
+                </div>
+                <div class="relative">
+                    <input type="text" id="fDni" placeholder="DNI" class="w-full p-4 rounded-2xl border outline-none font-bold">
+                    <button onclick="dictar('fDni')" class="absolute right-4 top-4 text-slate-300 hover:text-red-500"><i class="fas fa-microphone"></i></button>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="date" id="fNac" class="p-4 rounded-2xl border font-bold text-xs">
+                    <input type="number" id="fEdad" placeholder="Edad" class="p-4 rounded-2xl border font-bold text-xs">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" id="fObra" placeholder="Obra Social" class="p-4 rounded-2xl border font-bold text-xs">
+                    <select id="fAuh" class="p-4 rounded-2xl border font-bold text-xs">
+                        <option value="NO">PERCIBE AUH: NO</option>
+                        <option value="SI">PERCIBE AUH: SI</option>
+                    </select>
                 </div>
 
-                <div class="md:col-span-2 text-[10px] font-black text-indigo-500 uppercase border-b border-indigo-100 pb-2 mt-4">Responsables Adultos</div>
-                <input type="text" id="fnPadre" placeholder="Tutor 1 (Nombre)" class="w-full p-4 rounded-2xl border border-slate-200 font-bold">
-                <input type="text" id="fnPadreTel" placeholder="WhatsApp 1 (549...)" class="w-full p-4 rounded-2xl border border-slate-200 font-bold">
-                <input type="text" id="fnMadre" placeholder="Tutor 2 (Nombre)" class="w-full p-4 rounded-2xl border border-slate-200 font-bold">
-                <input type="text" id="fnMadreTel" placeholder="WhatsApp 2 (549...)" class="w-full p-4 rounded-2xl border border-slate-200 font-bold">
+                <div class="md:col-span-2 text-[10px] font-black text-indigo-600 uppercase border-b pb-1 mt-4">Responsable 1 (Padre/Madre/Tutor)</div>
+                <input type="text" id="p1Nombre" placeholder="Nombre completo" class="p-4 rounded-2xl border font-bold text-xs">
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" id="p1Nac" placeholder="Nacionalidad" class="p-4 rounded-2xl border font-bold text-xs">
+                    <input type="number" id="p1Edad" placeholder="Edad" class="p-4 rounded-2xl border font-bold text-xs">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" id="p1Trabajo" placeholder="Trabajo / Ama de casa" class="p-4 rounded-2xl border font-bold text-xs">
+                    <input type="text" id="p1Tel" placeholder="WhatsApp" class="p-4 rounded-2xl border font-bold text-xs">
+                </div>
+                <select id="p1Estudio" class="md:col-span-2 p-4 rounded-2xl border font-bold text-xs">
+                    <option value="">Nivel de Estudios...</option>
+                    <option value="Primario Incompleto">Primario Incompleto</option>
+                    <option value="Primario Completo">Primario Completo</option>
+                    <option value="Secundario Incompleto">Secundario Incompleto</option>
+                    <option value="Secundario Completo">Secundario Completo</option>
+                    <option value="Terciario/Universitario">Terciario/Universitario</option>
+                    <option value="Otros">Otros</option>
+                </select>
+
+                <div class="md:col-span-2 text-[10px] font-black text-indigo-600 uppercase border-b pb-1 mt-4">Responsable 2 (Padre/Madre/Tutor)</div>
+                <input type="text" id="p2Nombre" placeholder="Nombre completo" class="p-4 rounded-2xl border font-bold text-xs">
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" id="p2Nac" placeholder="Nacionalidad" class="p-4 rounded-2xl border font-bold text-xs">
+                    <input type="number" id="p2Edad" placeholder="Edad" class="p-4 rounded-2xl border font-bold text-xs">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" id="p2Trabajo" placeholder="Trabajo / Ama de casa" class="p-4 rounded-2xl border font-bold text-xs">
+                    <input type="text" id="p2Tel" placeholder="WhatsApp" class="p-4 rounded-2xl border font-bold text-xs">
+                </div>
+                <select id="p2Estudio" class="md:col-span-2 p-4 rounded-2xl border font-bold text-xs">
+                    <option value="">Nivel de Estudios...</option>
+                    <option value="Primario Incompleto">Primario Incompleto</option>
+                    <option value="Primario Completo">Primario Completo</option>
+                    <option value="Secundario Incompleto">Secundario Incompleto</option>
+                    <option value="Secundario Completo">Secundario Completo</option>
+                    <option value="Terciario/Universitario">Terciario/Universitario</option>
+                    <option value="Otros">Otros</option>
+                </select>
             </div>
-            <div class="p-8 bg-white flex gap-3">
-                <button onclick="closeModal()" class="flex-1 py-4 text-slate-400 font-bold hover:bg-slate-50 rounded-2xl transition-all">DESCARTAR</button>
-                <button onclick="processAlumno()" class="flex-[2] bg-indigo-600 text-white py-4 rounded-2xl font-black tracking-widest shadow-xl shadow-indigo-100 hover:bg-indigo-700">GRABAR FICHA</button>
+            <div class="p-8 bg-white flex gap-3 border-t">
+                <button onclick="closeModal()" class="flex-1 py-4 text-slate-400 font-bold hover:bg-slate-50 rounded-2xl">DESCARTAR</button>
+                <button onclick="guardarAlumno()" class="flex-[2] bg-indigo-600 text-white py-4 rounded-2xl font-black tracking-widest shadow-xl shadow-indigo-100">GUARDAR LEGAJO</button>
             </div>
         </div>
     </div>
 
     <script>
-        // CORE DEL SISTEMA - J926 V3
-        let DB = JSON.parse(localStorage.getItem('J926_SGE_CORE_V3')) || {
+        let DATA = JSON.parse(localStorage.getItem('J926_V4_DATA')) || {
             config: { dire: "", secre: "" },
             salas: { "Rosa TM": [], "Rosa TT": [], "Roja TM": [], "Roja TT": [], "Naranja TM": [], "Naranja TT": [], "Celeste TM": [], "Celeste TT": [], "Violeta TM": [], "Violeta TT": [], "Amarilla TM": [], "Amarilla TT": [], "Azul TM": [], "Azul TT": [] },
             asistencia: {}
         };
-        let salaActual = "Rosa TM";
-        let chart;
+        let salaActiva = "Rosa TM";
+        let grafico;
 
-        // DICTADO POR VOZ PRO
-        function startVoiceDictation(id) {
+        function dictar(id) {
             const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!Speech) return alert("Dictado no soportado.");
             const reco = new Speech();
@@ -44,87 +258,75 @@
             reco.start();
         }
 
-        // GESTIÓN DE SALAS
         function cambiarSala() {
-            salaActual = document.getElementById('salaActiva').value;
-            document.querySelectorAll('.sala-display').forEach(e => e.innerText = salaActual);
+            salaActiva = document.getElementById('salaActiva').value;
+            document.querySelectorAll('.sala-display').forEach(e => e.innerText = salaActiva);
             updateDashboard(); renderMatricula(); loadAsistencia();
         }
 
-        // TABS
         function showTab(id) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
-            const titles = { dashboard: "Dashboard Institucional", matricula: "Control de Matrícula", asistencia: "Libro de Asistencia", config: "Ajustes de Red" };
-            document.getElementById('mainTitle').innerText = titles[id];
+            document.getElementById('tabTitle').innerText = id === 'dashboard' ? "Control Institucional" : id === 'matricula' ? "Matrícula / Legajos" : id === 'asistencia' ? "Registro Asistencia" : "Configuración";
             if(id === 'dashboard') updateDashboard();
         }
 
-        // OPERACIONES DE MATRÍCULA
         function openModal() { document.getElementById('regModal').classList.remove('hidden'); }
         function closeModal() { document.getElementById('regModal').classList.add('hidden'); }
 
-        function processAlumno() {
-            const alumno = {
+        function guardarAlumno() {
+            const a = {
                 id: Date.now(),
-                nombre: document.getElementById('fnNombre').value.trim(),
-                dni: document.getElementById('fnDni').value.trim(),
-                nac: document.getElementById('fnNac').value,
-                edad: document.getElementById('fnEdad').value,
-                domi: document.getElementById('fnDomi').value,
-                p1: document.getElementById('fnPadre').value, t1: document.getElementById('fnPadreTel').value,
-                p2: document.getElementById('fnMadre').value, t2: document.getElementById('fnMadreTel').value,
-                status: 'ALTA', faltas: 0, fechaAlta: new Date().toLocaleDateString()
+                nombre: document.getElementById('fNombre').value.toUpperCase(),
+                dni: document.getElementById('fDni').value,
+                nac: document.getElementById('fNac').value,
+                edad: document.getElementById('fEdad').value,
+                obra: document.getElementById('fObra').value,
+                auh: document.getElementById('fAuh').value,
+                p1: { nom: document.getElementById('p1Nombre').value, nac: document.getElementById('p1Nac').value, ed: document.getElementById('p1Edad').value, tr: document.getElementById('p1Trabajo').value, es: document.getElementById('p1Estudio').value, tel: document.getElementById('p1Tel').value },
+                p2: { nom: document.getElementById('p2Nombre').value, nac: document.getElementById('p2Nac').value, ed: document.getElementById('p2Edad').value, tr: document.getElementById('p2Trabajo').value, es: document.getElementById('p2Estudio').value, tel: document.getElementById('p2Tel').value },
+                status: 'ALTA', faltas: 0
             };
-
-            if(!alumno.nombre || !alumno.dni) return alert("Nombre y DNI son campos obligatorios.");
-            
-            // Verificación de duplicados
-            if(DB.salas[salaActual].some(a => a.dni === alumno.dni)) return alert("Error: Este DNI ya está registrado en esta sala.");
-
-            DB.salas[salaActual].push(alumno);
-            saveData(); closeModal(); renderMatricula();
-            ['fnNombre','fnDni','fnNac','fnEdad','fnDomi','fnPadre','fnPadreTel','fnMadre','fnMadreTel'].forEach(i => document.getElementById(i).value = "");
+            if(!a.nombre || !a.dni) return alert("Nombre y DNI obligatorios.");
+            DATA.salas[salaActiva].push(a);
+            save(); closeModal(); renderMatricula();
+            ['fNombre','fDni','fNac','fEdad','fObra','p1Nombre','p1Nac','p1Edad','p1Trabajo','p1Estudio','p1Tel','p2Nombre','p2Nac','p2Edad','p2Trabajo','p2Estudio','p2Tel'].forEach(i => document.getElementById(i).value = "");
         }
 
         function renderMatricula() {
             const list = document.getElementById('matriculaList');
-            list.innerHTML = DB.salas[salaActual].map((a, i) => `
+            list.innerHTML = DATA.salas[salaActiva].map((a, i) => `
                 <tr class="${a.status === 'BAJA' ? 'bg-red-50 text-slate-400' : 'hover:bg-slate-50 transition-colors'}">
-                    <td class="p-5 font-bold"><span class="text-indigo-400 mr-2">#${i+1}</span> ${a.nombre}</td>
-                    <td class="p-5 text-xs font-bold">${a.dni}<br><span class="text-[9px] text-slate-400 font-normal italic">${a.nac}</span></td>
-                    <td class="p-5 text-[10px] font-bold">📍 ${a.domi}<br><span class="text-indigo-500">Tutor: ${a.p1} (${a.t1})</span></td>
-                    <td class="p-5 text-center"><span class="px-3 py-1 rounded-full text-[9px] font-black ${a.status === 'ALTA' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}">${a.status}</span></td>
+                    <td class="p-5 font-bold uppercase"><span class="text-indigo-400 mr-2">#${i+1}</span> ${a.nombre}<br><span class="text-[10px] text-slate-400 font-normal">DNI: ${a.dni}</span></td>
+                    <td class="p-5 font-bold text-slate-500">${a.obra || 'S/D'}<br><span class="text-[9px] ${a.auh === 'SI' ? 'text-green-600' : 'text-slate-400'}">AUH: ${a.auh}</span></td>
+                    <td class="p-5 text-[10px] leading-tight">
+                        <b>T1:</b> ${a.p1.nom} (${a.p1.tr} - ${a.p1.es})<br>
+                        <b>T2:</b> ${a.p2.nom} (${a.p2.tr} - ${a.p2.es})
+                    </td>
                     <td class="p-5 text-center">
-                        ${a.status === 'ALTA' ? `<button onclick="confirmBaja(${i})" class="text-red-400 hover:text-red-600"><i class="fas fa-user-minus"></i></button>` : '<i class="fas fa-lock text-slate-300"></i>'}
+                        ${a.status === 'ALTA' ? `<button onclick="darBaja(${i})" class="text-red-300 hover:text-red-600"><i class="fas fa-user-times"></i></button>` : '<i class="fas fa-lock"></i>'}
                     </td>
                 </tr>
             `).join('');
         }
 
-        function confirmBaja(idx) {
-            const mot = prompt("Indique motivo de la baja institucional:");
-            if(mot) {
-                DB.salas[salaActual][idx].status = 'BAJA';
-                DB.salas[salaActual][idx].motivoBaja = mot;
-                notifyAdmin(`🚨 ALERTA BAJA: Alumno ${DB.salas[salaActual][idx].nombre} - Sala ${salaActual}.`);
-                saveData(); renderMatricula();
+        function darBaja(idx) {
+            if(confirm("¿Confirmar baja?")) {
+                DATA.salas[salaActiva][idx].status = 'BAJA';
+                save(); renderMatricula();
             }
         }
 
-        // GESTIÓN ASISTENCIA
         function loadAsistencia() {
             const date = document.getElementById('asistenciaDate').value;
             const list = document.getElementById('asistenciaList');
-            if(!date) { list.innerHTML = '<tr><td colspan="4" class="p-20 text-center text-slate-300 italic">Seleccione fecha de apertura del libro...</td></tr>'; return; }
-            
-            const activos = DB.salas[salaActual].filter(a => a.status === 'ALTA');
-            const key = `${salaActual}_${date}`;
-            const hoy = DB.asistencia[key] || {};
-
+            if(!date) { list.innerHTML = '<tr><td colspan="4" class="p-20 text-center text-slate-300 font-bold">ELIJA UNA FECHA...</td></tr>'; return; }
+            const activos = DATA.salas[salaActiva].filter(a => a.status === 'ALTA');
+            const key = `${salaActiva}_${date}`;
+            const hoy = DATA.asistencia[key] || {};
             list.innerHTML = activos.map(a => `
-                <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="p-5 font-black text-slate-700 uppercase text-xs">${a.nombre}</td>
+                <tr class="hover:bg-slate-50">
+                    <td class="p-5 font-black uppercase text-xs">${a.nombre}</td>
                     <td class="p-5 text-center"><input type="radio" name="as_${a.id}" value="P" class="w-5 h-5 accent-green-600" ${hoy[a.id] === 'P' ? 'checked' : ''}></td>
                     <td class="p-5 text-center"><input type="radio" name="as_${a.id}" value="A" class="w-5 h-5 accent-red-600" ${hoy[a.id] === 'A' ? 'checked' : ''}></td>
                     <td class="p-5 text-center font-black ${a.faltas >= 10 ? 'text-red-600 animate-pulse' : 'text-slate-300'}">${a.faltas}</td>
@@ -134,85 +336,70 @@
 
         function saveAsistencia() {
             const date = document.getElementById('asistenciaDate').value;
-            if(!date) return alert("Debe seleccionar una fecha.");
-            const key = `${salaActual}_${date}`;
+            if(!date) return;
+            const key = `${salaActiva}_${date}`;
             const regs = {};
-            DB.salas[salaActual].forEach(a => {
+            DATA.salas[salaActiva].forEach(a => {
                 if(a.status === 'ALTA') {
                     const v = document.querySelector(`input[name="as_${a.id}"]:checked`)?.value;
                     if(v) {
                         regs[a.id] = v;
                         if(v === 'A') {
                             a.faltas++;
-                            if(a.faltas === 10) notifyFamily(a);
+                            if(a.faltas === 10) notificar(a);
                         }
                     }
                 }
             });
-            DB.asistencia[key] = regs;
-            saveData(); alert("Libro de asistencia actualizado y guardado."); loadAsistencia();
+            DATA.asistencia[key] = regs;
+            save(); alert("Libro firmado."); loadAsistencia();
         }
 
-        // UTILIDADES Y EXPORTACIÓN
+        function notificar(a) {
+            const m = `Jardín 926: El alumno ${a.nombre} alcanzó 10 inasistencias. Solicitamos comunicación con sala ${salaActiva}.`;
+            if(a.p1.tel) window.open(`https://wa.me/${a.p1.tel}?text=${encodeURIComponent(m)}`, '_blank');
+        }
+
         function exportToExcel() {
-            const data = DB.salas[salaActual].map((a, i) => ({
-                Folio: i+1, Apellido_Nombre: a.nombre, DNI: a.dni, Nacimiento: a.nac, Edad: a.edad,
-                Domicilio: a.domi, Tutor1: a.p1, Tel1: a.t1, Tutor2: a.p2, Tel2: a.t2,
-                Fecha_Alta: a.fechaAlta, Estado: a.status, Inasistencias: a.faltas
+            const rows = DATA.salas[salaActiva].map((a, i) => ({
+                FOLIO: i+1, ALUMNO: a.nombre, DNI: a.dni, NAC: a.nac, EDAD: a.edad, OBRA_SOC: a.obra, AUH: a.auh,
+                TUTOR1_NOM: a.p1.nom, T1_NAC: a.p1.nac, T1_EDAD: a.p1.ed, T1_TRABAJO: a.p1.tr, T1_ESTUDIO: a.p1.es, T1_TEL: a.p1.tel,
+                TUTOR2_NOM: a.p2.nom, T2_NAC: a.p2.nac, T2_EDAD: a.p2.ed, T2_TRABAJO: a.p2.tr, T2_ESTUDIO: a.p2.es, T2_TEL: a.p2.tel,
+                ESTADO: a.status, FALTAS: a.faltas
             }));
-            const ws = XLSX.utils.json_to_sheet(data);
+            const ws = XLSX.utils.json_to_sheet(rows);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "MATRICULA");
-            XLSX.writeFile(wb, `J926_MATRICULA_${salaActual.replace(" ", "_")}.xlsx`);
+            XLSX.utils.book_append_sheet(wb, ws, "Matricula");
+            XLSX.writeFile(wb, `J926_SocioEducativo_${salaActiva}.xlsx`);
         }
 
-        function notifyFamily(a) {
-            const m = `Jardín 926: El alumno ${a.nombre} alcanzó 10 inasistencias. Solicitamos comunicación con sala ${salaActual}.`;
-            if(a.t1) window.open(`https://wa.me/${a.t1}?text=${encodeURIComponent(m)}`, '_blank');
-        }
-
-        function notifyAdmin(m) {
-            if(DB.config.dire) window.open(`https://wa.me/${DB.config.dire}?text=${encodeURIComponent(m)}`, '_blank');
-        }
-
-        function saveGlobalConfig() {
-            DB.config.dire = document.getElementById('cfgDire').value;
-            DB.config.secre = document.getElementById('cfgSecre').value;
-            saveData(); alert("Configuración guardada.");
+        function saveConfig() {
+            DATA.config.dire = document.getElementById('cfgDire').value;
+            DATA.config.secre = document.getElementById('cfgSecre').value;
+            save(); alert("Configuración guardada.");
         }
 
         function updateDashboard() {
-            const s = DB.salas[salaActual];
-            const ini = s.length;
-            const act = s.filter(a => a.status === 'ALTA').length;
-            const baj = s.filter(a => a.status === 'BAJA').length;
+            const s = DATA.salas[salaActiva];
+            const ini = s.length, act = s.filter(a => a.status === 'ALTA').length, baj = s.filter(a => a.status === 'BAJA').length;
             document.getElementById('stat-inicial').innerText = ini;
             document.getElementById('stat-actual').innerText = act;
             document.getElementById('stat-bajas').innerText = baj;
-
             const ctx = document.getElementById('mainChart').getContext('2d');
-            if(chart) chart.destroy();
-            chart = new Chart(ctx, {
+            if(grafico) grafico.destroy();
+            grafico = new Chart(ctx, {
                 type: 'bar',
-                data: {
-                    labels: ['INICIAL', 'MATRÍCULA ACTIVA', 'BAJAS'],
-                    datasets: [{
-                        label: 'Cant. Alumnos',
-                        data: [ini, act, baj],
-                        backgroundColor: ['#6366f1', '#10b981', '#ef4444'],
-                        borderRadius: 15
-                    }]
-                },
+                data: { labels: ['MATRÍCULA INICIAL', 'ALUMNOS ACTIVOS', 'BAJAS'], datasets: [{ label: 'Cant.', data: [ini, act, baj], backgroundColor: ['#6366f1', '#10b981', '#ef4444'], borderRadius: 12 }] },
                 options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
 
-        function saveData() { localStorage.setItem('J926_SGE_CORE_V3', JSON.stringify(DB)); }
+        function save() { localStorage.setItem('J926_V4_DATA', JSON.stringify(DATA)); }
 
         window.onload = () => {
-            document.getElementById('currentDate').innerText = new Date().toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-            document.getElementById('cfgDire').value = DB.config.dire;
-            document.getElementById('cfgSecre').value = DB.config.secre;
+            document.getElementById('fechaHoy').innerText = new Date().toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            document.getElementById('cfgDire').value = DATA.config.dire;
+            document.getElementById('cfgSecre').value = DATA.config.secre;
             cambiarSala();
         };
     </script>
