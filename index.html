@@ -15,7 +15,7 @@
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         .voice-btn { cursor: pointer; color: #2563eb; transition: transform 0.2s; }
         .voice-btn:hover { transform: scale(1.2); }
-    </select>
+    </style>
 </head>
 <body class="p-4 bg-slate-100">
 
@@ -30,22 +30,21 @@
                     <i class="fas fa-file-excel mr-2"></i> EXCEL
                 </button>
                 <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-800 px-4 py-2 rounded-lg text-xs font-bold transition">
-                    <i class="fas fa-print mr-2"></i> IMPRIMIR REPORTE
+                    <i class="fas fa-print mr-2"></i> IMPRIMIR
                 </button>
             </div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
             <div class="lg:col-span-2">
                 <div class="card">
-                    <h2 class="text-blue-800 font-bold mb-4 uppercase text-sm border-b pb-2"><i class="fas fa-user-plus mr-2"></i> Nueva Matriculación</h2>
+                    <h2 class="text-blue-800 font-bold mb-4 uppercase text-sm border-b pb-2"><i class="fas fa-user-plus mr-2"></i> Matriculación</h2>
                     <form id="studentForm" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-[10px] font-bold text-gray-500 uppercase">Nombre Completo</label>
                                 <div class="relative">
-                                    <input type="text" id="name" class="w-full border p-2 rounded bg-gray-50 focus:ring-2 ring-blue-500 outline-none" required>
+                                    <input type="text" id="name" class="w-full border p-2 rounded bg-gray-50" required>
                                     <i class="fas fa-microphone voice-btn absolute right-3 top-3" onclick="startVoice('name')"></i>
                                 </div>
                             </div>
@@ -54,19 +53,15 @@
                                 <input type="number" id="dni" class="w-full border p-2 rounded bg-gray-50" required>
                             </div>
                         </div>
-
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="text-[10px] font-bold text-gray-500 uppercase">Fecha Nacimiento</label>
-                                <input type="date" id="birth" onchange="checkAge()" class="w-full border p-2 rounded bg-gray-50" required>
+                                <input type="date" id="birth" class="w-full border p-2 rounded bg-gray-50" required>
                             </div>
                             <div>
                                 <label class="text-[10px] font-bold text-gray-500 uppercase">Sala</label>
                                 <select id="section" class="w-full border p-2 rounded bg-gray-50">
-                                    <option>Sala Rosa (3)</option>
-                                    <option>Sala Roja (4)</option>
-                                    <option>Sala Azul (5)</option>
-                                    <option>Sala Verde (Multi)</option>
+                                    <option>Sala Rosa (3)</option><option>Sala Roja (4)</option><option>Sala Azul (5)</option><option>Sala Verde (Multi)</option>
                                 </select>
                             </div>
                             <div>
@@ -74,36 +69,20 @@
                                 <input type="text" id="phone" placeholder="54911..." class="w-full border p-2 rounded bg-gray-50">
                             </div>
                         </div>
-
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">Antecedentes de Salud / Situación Social</label>
-                            <div class="relative">
-                                <textarea id="obs" rows="2" class="w-full border p-2 rounded bg-gray-50 focus:ring-2 ring-blue-500 outline-none"></textarea>
-                                <i class="fas fa-microphone voice-btn absolute right-3 top-3" onclick="startVoice('obs')"></i>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="w-full bg-blue-700 text-white font-bold py-3 rounded-lg hover:bg-blue-800 shadow-lg transition">
-                            GUARDAR EN LEGAJO DIGITAL
-                        </button>
+                        <button type="submit" class="w-full bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg">GUARDAR LEGAJO</button>
                     </form>
                 </div>
 
                 <div class="card">
-                    <h2 class="text-blue-800 font-bold mb-4 uppercase text-sm border-b pb-2"><i class="fas fa-calendar-check mr-2"></i> Control de Asistencia y Alertas Críticas</h2>
+                    <h2 class="text-blue-800 font-bold mb-4 uppercase text-sm border-b pb-2">Control de Asistencia</h2>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs">
                             <thead>
-                                <tr class="bg-slate-100 text-slate-600">
-                                    <th class="p-3">Alumno</th>
-                                    <th class="p-3">Sala</th>
-                                    <th class="p-3">Faltas Totales</th>
-                                    <th class="p-3">Acción</th>
-                                    <th class="p-3">Informar a Directivo</th>
+                                <tr class="bg-slate-100">
+                                    <th class="p-3">Alumno</th><th class="p-3">Faltas</th><th class="p-3">Acción</th><th class="p-3">Informar</th>
                                 </tr>
                             </thead>
-                            <tbody id="attendanceBody">
-                                </tbody>
+                            <tbody id="attendanceBody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -111,21 +90,14 @@
 
             <div class="space-y-6">
                 <div class="card">
-                    <h2 class="text-blue-800 font-bold mb-4 uppercase text-[10px] tracking-widest"><i class="fas fa-chart-pie mr-2"></i> Informe para Supervisión</h2>
+                    <h2 class="text-blue-800 font-bold mb-4 uppercase text-[10px]">Informe Inspección</h2>
                     <canvas id="attendanceChart" height="200"></canvas>
-                    <div class="mt-4 p-3 bg-blue-50 rounded text-[10px] text-blue-700">
-                        * Este gráfico se actualiza en tiempo real para reportar el porcentaje de presentismo por sala a inspección.
-                    </div>
                 </div>
-
                 <div class="card">
-                    <h2 class="text-blue-800 font-bold mb-4 uppercase text-[10px] tracking-widest"><i class="fas fa-bullhorn mr-2"></i> Resumen de Alertas</h2>
-                    <div id="alertSummary" class="space-y-2">
-                        <p class="text-xs text-gray-500 italic">No hay alertas críticas registradas.</p>
-                    </div>
+                    <h2 class="text-blue-800 font-bold mb-4 uppercase text-[10px]">Alertas Críticas</h2>
+                    <div id="alertSummary" class="space-y-2 text-xs"></div>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -133,112 +105,80 @@
         let students = [];
         let chart;
 
-        // INICIALIZAR GRÁFICO
         function initChart() {
             const ctx = document.getElementById('attendanceChart').getContext('2d');
             chart = new Chart(ctx, {
                 type: 'doughnut',
-                data: {
-                    labels: ['Presentes', 'Ausentes'],
-                    datasets: [{
-                        data: [0, 0],
-                        backgroundColor: ['#10b981', '#ef4444']
-                    }]
-                },
+                data: { labels: ['Presentes', 'Ausentes'], datasets: [{ data: [0, 0], backgroundColor: ['#10b981', '#ef4444'] }] },
                 options: { responsive: true, maintainAspectRatio: false }
             });
         }
 
-        // CARGA POR VOZ
         function startVoice(id) {
             const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.lang = 'es-AR';
-            recognition.start();
+            recognition.lang = 'es-AR'; recognition.start();
             recognition.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript; };
         }
 
-        // AGREGAR ALUMNO
         document.getElementById('studentForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const student = {
+            students.push({
                 name: document.getElementById('name').value,
                 dni: document.getElementById('dni').value,
                 section: document.getElementById('section').value,
                 phone: document.getElementById('phone').value,
                 absences: 0,
                 status: 'Presente'
-            };
-            students.push(student);
-            renderAll();
-            e.target.reset();
+            });
+            renderAll(); e.target.reset();
         });
 
         function renderAll() {
             const body = document.getElementById('attendanceBody');
             body.innerHTML = '';
-            let totalPres = 0;
-            let totalAbs = 0;
+            let pres = 0; let abs = 0;
             const alertBox = document.getElementById('alertSummary');
             alertBox.innerHTML = '';
 
             students.forEach((s, i) => {
-                if(s.status === 'Presente') totalPres++; else totalAbs++;
-                
+                if(s.status === 'Presente') pres++; else abs++;
                 const isCritical = s.absences >= 10;
-                if(isCritical) {
-                    alertBox.innerHTML += `<div class="p-2 bg-red-50 border-l-4 border-red-500 text-[10px] text-red-700"><b>${s.name}</b> alcanzó las 10 faltas.</div>`;
-                }
+                if(isCritical) alertBox.innerHTML += `<div class="p-2 bg-red-50 text-red-700"><b>${s.name}</b>: 10 FALTAS</div>`;
 
                 body.innerHTML += `
-                    <tr class="border-b hover:bg-gray-50">
+                    <tr class="border-b">
                         <td class="p-3 ${isCritical ? 'absent-critical' : ''}">${s.name}</td>
-                        <td class="p-3">${s.section}</td>
                         <td class="p-3 font-bold">${s.absences}</td>
                         <td class="p-3">
-                            <button onclick="markAbsent(${i})" class="bg-red-100 text-red-600 px-2 py-1 rounded text-[10px] font-bold">MARCAR FALTA</button>
-                            ${isCritical ? `<button onclick="sendWA(${i}, 'family')" class="bg-green-500 text-white px-2 py-1 rounded text-[10px] ml-1"><i class="fab fa-whatsapp"></i> AVISO</button>` : ''}
+                            <button onclick="markAbsent(${i})" class="bg-red-100 text-red-600 px-2 py-1 rounded text-[10px]">FALTA</button>
+                            ${isCritical ? `<button onclick="sendWA(${i}, 'family')" class="bg-green-500 text-white px-2 py-1 rounded text-[10px] ml-1">AVISO WA</button>` : ''}
                         </td>
                         <td class="p-3">
-                            <button onclick="sendWA(${i}, 'staff')" class="text-blue-600 border border-blue-600 px-2 py-1 rounded text-[10px]">INFORMAR</button>
+                            <button onclick="sendWA(${i}, 'staff')" class="text-blue-600 border px-2 py-1 rounded text-[10px]">DIRECTIVO</button>
                         </td>
-                    </tr>
-                `;
+                    </tr>`;
             });
-
-            // Actualizar Gráfico
-            chart.data.datasets[0].data = [totalPres, totalAbs];
-            chart.update();
+            chart.data.datasets[0].data = [pres, abs]; chart.update();
         }
 
-        function markAbsent(i) {
-            students[i].absences++;
-            students[i].status = 'Ausente';
-            renderAll();
-        }
+        function markAbsent(i) { students[i].absences++; students[i].status = 'Ausente'; renderAll(); }
 
         function sendWA(i, type) {
             const s = students[i];
-            let msg = "";
-            let targetPhone = s.phone;
-
-            if(type === 'family') {
-                msg = `Hola, familia de ${s.name}. Le informamos desde el Jardín 926 que el alumno ha alcanzado las ${s.absences} inasistencias. Solicitamos se acerque a la institución.`;
-            } else {
-                targetPhone = "5491100000000"; // PONER ACÁ EL CELU DE SECRETARÍA
-                msg = `INFORME DIRECTIVO: El alumno ${s.name} de ${s.section} presenta un cuadro crítico de ${s.absences} inasistencias. Se requiere intervención de secretaría/dirección.`;
-            }
-            
-            window.open(`https://wa.me/${targetPhone}?text=${encodeURIComponent(msg)}`);
+            let msg = type === 'family' 
+                ? `Jardín 926: ${s.name} alcanzó las ${s.absences} inasistencias. Por favor acercarse.`
+                : `ALERTA DIRECTIVO: Alumno ${s.name} (${s.section}) con ${s.absences} faltas.`;
+            let phone = type === 'family' ? s.phone : "5491166860054"; // Tu número de gestión
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`);
         }
 
         function exportToExcel() {
             const ws = XLSX.utils.json_to_sheet(students);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Alumnos");
-            XLSX.writeFile(wb, "Reporte_Inspeccion_926.xlsx");
+            XLSX.writeFile(wb, "Reporte_Jardin926.xlsx");
         }
-
         initChart();
     </script>
 </body>
-    </html>
+</html>
