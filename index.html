@@ -3,198 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión Jardín 926 - Lomas de Zamora</title>
+    <title>Sistema Directivo Jardín 926 - Lomas de Zamora</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { background-color: #f1f5f9; font-family: 'Inter', sans-serif; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .card { background: white; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .voice-btn { color: #2563eb; cursor: pointer; margin-left: -35px; font-size: 1.2rem; transition: all 0.2s; }
-        .voice-btn:active { color: #ef4444; transform: scale(1.2); }
-        label { display: block; font-size: 0.65rem; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 0.3rem; }
-        input, select, textarea { width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0.6rem; font-size: 0.85rem; background: #fff; }
-        .alert-critical { background-color: #fee2e2; border: 2px solid #ef4444; }
-        .btn-presente { background-color: #10b981; color: white; width: 35px; height: 35px; border-radius: 6px; font-weight: 900; }
-        .btn-falta { background-color: #ef4444; color: white; width: 35px; height: 35px; border-radius: 6px; font-weight: 900; }
+        .card { background: white; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .voice-btn { color: #2563eb; cursor: pointer; margin-left: -35px; font-size: 1.2rem; }
+        label { display: block; font-size: 0.7rem; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 0.3rem; }
+        input, select, textarea { width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0.7rem; font-size: 0.9rem; }
+        .p-btn { background-color: #10b981; color: white; width: 42px; height: 42px; border-radius: 8px; font-weight: 900; transition: 0.2s; }
+        .a-btn { background-color: #ef4444; color: white; width: 42px; height: 42px; border-radius: 8px; font-weight: 900; transition: 0.2s; }
+        .selected-p { outline: 4px solid #064e3b; transform: scale(1.1); }
+        .selected-a { outline: 4px solid #7f1d1d; transform: scale(1.1); }
+        .search-results { position: absolute; width: 100%; background: white; border: 1px solid #cbd5e1; border-radius: 0 0 8px 8px; z-index: 50; max-height: 150px; overflow-y: auto; }
+        .search-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #f1f5f9; font-size: 0.8rem; }
+        .search-item:hover { background: #eff6ff; }
     </style>
 </head>
-<body class="p-2 md:p-6">
+<body class="p-2 md:p-6" onclick="closeSearch()">
 
     <div class="max-w-7xl mx-auto">
-        <header class="bg-[#0f172a] text-white p-6 rounded-t-2xl flex flex-wrap justify-between items-center shadow-xl">
+        <header class="bg-[#0f172a] text-white p-6 rounded-t-2xl flex flex-wrap justify-between items-center shadow-xl border-b-4 border-blue-500">
             <div>
-                <h1 class="text-2xl font-black tracking-tighter uppercase">Jardín de Infantes N° 926</h1>
-                <p class="text-sky-400 text-xs font-bold uppercase tracking-widest">Lomas de Zamora - Gestión de 14 Secciones</p>
+                <h1 class="text-2xl font-black uppercase tracking-tight">Jardín de Infantes N° 926</h1>
+                <p class="text-sky-400 text-xs font-bold uppercase tracking-widest">Lomas de Zamora - Panel de Supervisión y Asistencia</p>
             </div>
-            <div class="flex gap-3 mt-4 md:mt-0">
-                <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 px-5 py-2 rounded-lg text-xs font-black uppercase transition">Exportar Excel</button>
-            </div>
+            <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 px-5 py-2 rounded-lg text-xs font-black uppercase transition shadow-lg">Exportar Gestión Excel</button>
         </header>
 
-        <nav class="flex bg-white border-x border-b border-slate-200 rounded-b-2xl mb-6 shadow-md overflow-hidden text-[10px] font-black uppercase">
-            <button onclick="openTab('registro')" class="flex-1 py-5 hover:bg-slate-50 border-r border-slate-100 transition">1. Registro Matrícula</button>
-            <button onclick="openTab('asistencia')" class="flex-1 py-5 hover:bg-slate-50 border-r border-slate-100 transition">2. Asistencia y Listados</button>
-            <button onclick="openTab('supervision')" class="flex-1 py-5 hover:bg-slate-50 transition">3. Supervisión Directiva</button>
+        <nav class="flex bg-white border-x border-slate-200 shadow-md overflow-hidden text-[10px] font-black uppercase">
+            <button onclick="openTab('registro')" class="flex-1 py-5 hover:bg-slate-50 border-r border-slate-100 transition">1. Registro de Matrícula</button>
+            <button onclick="openTab('asistencia')" class="flex-1 py-5 hover:bg-slate-50 border-r border-slate-100 transition">2. Cuaderno de Asistencia</button>
+            <button onclick="openTab('supervision')" class="flex-1 py-5 hover:bg-slate-50 transition text-blue-600">3. Supervisión y Seguimiento</button>
         </nav>
 
-        <div id="registro" class="tab-content active">
-            <form id="mainForm">
-                <input type="hidden" id="editIndex" value="-1">
-                
-                <div class="card border-l-8 border-blue-600">
-                    <h2 class="text-blue-700 font-black mb-6 text-sm uppercase flex items-center"><i class="fas fa-child mr-2 text-lg"></i> Datos del Alumno</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="md:col-span-2"><label>Nombre y Apellido</label><div class="flex items-center"><input type="text" id="name" required><i class="fas fa-microphone voice-btn" onclick="startVoice('name')"></i></div></div>
-                        <div><label>DNI del Alumno</label><input type="number" id="dni" required></div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
-                        <div><label>Fecha de Nacimiento</label><input type="date" id="birth" onchange="calculateAge()" required></div>
-                        <div><label>Edad Actual</label><div id="ageBox" class="p-2 bg-slate-100 border rounded-md font-black text-slate-700 text-center text-sm">--</div></div>
-                        <div><label>Sección / Sala</label>
-                            <select id="section">
-                                <option>Sala Rosa TM</option><option>Sala Roja TM</option><option>Sala Naranja TM</option><option>Sala Amarilla TM</option><option>Sala Violeta TM</option><option>Sala Azul TM</option><option>Sala Celeste TM</option>
-                                <option>Sala Rosa TT</option><option>Sala Roja TT</option><option>Sala Naranja TT</option><option>Sala Amarilla TT</option><option>Sala Violeta TT</option><option>Sala Azul TT</option><option>Sala Celeste TT</option>
-                            </select>
-                        </div>
-                        <div><label>Nacionalidad</label><div class="flex items-center"><input type="text" id="alumnoNac" value="Argentina"><i class="fas fa-microphone voice-btn" onclick="startVoice('alumnoNac')"></i></div></div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                        <div><label>Hermanos en la Institución (Nombre/Sala)</label><div class="flex items-center"><input type="text" id="siblings"><i class="fas fa-microphone voice-btn" onclick="startVoice('siblings')"></i></div></div>
-                        <div><label>Salud / Alergias / Medicación</label><div class="flex items-center"><textarea id="health" rows="1"></textarea><i class="fas fa-microphone voice-btn" onclick="startVoice('health')"></i></div></div>
-                    </div>
+        <div id="registro" class="tab-content">
+            <div class="card border-l-8 border-blue-600">
+                <div class="relative mb-6">
+                    <label class="text-blue-700 font-black mb-2">🔍 Buscador de Legajos (Nombre y Apellido)</label>
+                    <input type="text" id="autoSearch" onkeyup="searchStudent(this.value)" placeholder="Escriba para editar datos de un alumno..." class="border-2 border-blue-200 shadow-inner">
+                    <div id="searchResults" class="search-results hidden"></div>
                 </div>
 
-                <div class="card border-l-8 border-emerald-600">
-                    <h2 class="text-emerald-700 font-black mb-6 text-sm uppercase flex items-center"><i class="fas fa-users mr-2 text-lg"></i> Información de los Padres</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                            <p class="text-[10px] font-black text-emerald-800 mb-4 border-b pb-1">RESPONSABLE 1</p>
-                            <label>Nombre y Apellido</label><div class="flex items-center mb-2"><input type="text" id="p1Name"><i class="fas fa-microphone voice-btn" onclick="startVoice('p1Name')"></i></div>
-                            <div class="grid grid-cols-2 gap-2 mb-2">
-                                <div><label>DNI</label><input type="number" id="p1Dni"></div>
-                                <div><label>Nacionalidad</label><div class="flex items-center"><input type="text" id="p1Nac" value="Argentina"><i class="fas fa-microphone voice-btn" onclick="startVoice('p1Nac')"></i></div></div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2 mb-2">
-                                <div><label>WhatsApp</label><input type="text" id="p1Tel" placeholder="54911..."></div>
-                                <div><label>¿Trabaja?</label><select id="p1Work"><option value="Si">Sí</option><option value="No">No</option></select></div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2 mb-2">
-                                <div><label>Obra Social</label><div class="flex items-center"><input type="text" id="p1Os"><i class="fas fa-microphone voice-btn" onclick="startVoice('p1Os')"></i></div></div>
-                                <div><label>¿Cobra AUH?</label><select id="p1Auh"><option value="No">No</option><option value="Si">Sí</option></select></div>
-                            </div>
-                            <label>Domicilio</label><div class="flex items-center"><input type="text" id="p1Address"><i class="fas fa-microphone voice-btn" onclick="startVoice('p1Address')"></i></div>
+                <form id="studentForm">
+                    <input type="hidden" id="editIdx" value="-1">
+                    <h3 class="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">Información del Alumno</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="md:col-span-2"><label>Nombre y Apellido</label><div class="flex items-center"><input type="text" id="name" required><i class="fas fa-microphone voice-btn" onclick="startVoice('name')"></i></div></div>
+                        <div><label>DNI</label><input type="number" id="dni" required></div>
+                        <div><label>Fecha de Nacimiento</label><input type="date" id="birth" onchange="calculateAge()" required></div>
+                        <div><label>Edad al 30/06</label><div id="ageBox" class="p-3 bg-slate-100 border rounded-lg font-black text-center">--</div></div>
+                        <div><label>Sala</label><select id="regSection"></select></div>
+                    </div>
+                    
+                    <h3 class="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">Salud y Familia</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div><label>Hermanos en el Jardín</label><div class="flex items-center"><input type="text" id="siblings"><i class="fas fa-microphone voice-btn" onclick="startVoice('siblings')"></i></div></div>
+                        <div><label>Salud / Alergias</label><div class="flex items-center"><textarea id="health" rows="1"></textarea><i class="fas fa-microphone voice-btn" onclick="startVoice('health')"></i></div></div>
+                    </div>
+
+                    <h3 class="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">Datos de los Padres</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-4 bg-slate-50 rounded-xl border">
+                            <label>Padre/Madre 1 (Nombre, DNI, Trabajo, AUH, Tel)</label>
+                            <div class="flex items-center"><textarea id="p1Data" rows="3"></textarea><i class="fas fa-microphone voice-btn" onclick="startVoice('p1Data')"></i></div>
                         </div>
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                            <p class="text-[10px] font-black text-emerald-800 mb-4 border-b pb-1">RESPONSABLE 2</p>
-                            <label>Nombre y Apellido</label><div class="flex items-center mb-2"><input type="text" id="p2Name"><i class="fas fa-microphone voice-btn" onclick="startVoice('p2Name')"></i></div>
-                            <div class="grid grid-cols-2 gap-2 mb-2">
-                                <div><label>DNI</label><input type="number" id="p2Dni"></div>
-                                <div><label>Nacionalidad</label><div class="flex items-center"><input type="text" id="p2Nac" value="Argentina"><i class="fas fa-microphone voice-btn" onclick="startVoice('p2Nac')"></i></div></div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2 mb-2">
-                                <div><label>WhatsApp</label><input type="text" id="p2Tel"></div>
-                                <div><label>¿Trabaja?</label><select id="p2Work"><option value="Si">Sí</option><option value="No">No</option></select></div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2 mb-2">
-                                <div><label>Obra Social</label><div class="flex items-center"><input type="text" id="p2Os"><i class="fas fa-microphone voice-btn" onclick="startVoice('p2Os')"></i></div></div>
-                                <div><label>¿Cobra AUH?</label><select id="p2Auh"><option value="No">No</option><option value="Si">Sí</option></select></div>
-                            </div>
-                            <label>Domicilio</label><div class="flex items-center"><input type="text" id="p2Address"><i class="fas fa-microphone voice-btn" onclick="startVoice('p2Address')"></i></div>
+                        <div class="p-4 bg-slate-50 rounded-xl border">
+                            <label>Padre/Madre 2 (Nombre, DNI, Trabajo, AUH, Tel)</label>
+                            <div class="flex items-center"><textarea id="p2Data" rows="3"></textarea><i class="fas fa-microphone voice-btn" onclick="startVoice('p2Data')"></i></div>
                         </div>
                     </div>
-                    <button type="submit" id="submitBtn" class="w-full bg-slate-900 text-white font-black py-4 rounded-xl mt-8 shadow-2xl uppercase tracking-widest hover:bg-black transition">Guardar Legajo y Sincronizar</button>
-                </div>
-            </form>
+                    <button type="submit" id="saveBtn" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl mt-6 uppercase shadow-lg hover:bg-blue-700 transition">Guardar Legajo en Sistema</button>
+                </form>
+            </div>
         </div>
 
         <div id="asistencia" class="tab-content">
             <div class="card">
-                <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
-                    <div class="flex flex-wrap gap-4">
-                        <div><label>Filtrar por Sala</label><select id="filterSection" onchange="renderAll()" class="w-48 font-bold"></select></div>
-                        <div><label>Fecha de Asistencia</label><input type="date" id="attendanceDate" class="w-40 font-bold"></div>
-                        <div><label>Buscar Alumno</label><input type="text" id="searchName" onkeyup="renderAll()" placeholder="Escriba nombre..." class="w-48 border-blue-500"></div>
-                    </div>
-                    <div class="bg-blue-600 text-white p-3 rounded-xl text-center shadow-lg min-w-[120px]">
-                        <p class="text-[9px] font-black opacity-80 uppercase">Inscripción</p>
-                        <p id="roomCount" class="text-xl font-black">0 / 30</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 items-end">
+                    <div><label>📅 Fecha de Registro</label><input type="date" id="attDate" onchange="renderAttendance()" class="font-bold border-2 border-blue-500"></div>
+                    <div><label>🏫 Seleccionar mi Sala</label><select id="attSection" onchange="renderAttendance()" class="font-bold border-2 border-blue-500"></select></div>
+                    <div class="bg-blue-600 text-white p-3 rounded-lg text-center shadow-lg">
+                        <p class="text-[10px] font-black uppercase">Presentismo Sala</p>
+                        <p id="roomStats" class="text-xl font-black">0%</p>
                     </div>
                 </div>
-                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                <div class="overflow-x-auto rounded-xl border">
                     <table class="w-full text-left text-[11px]">
-                        <thead><tr class="bg-slate-900 text-white uppercase"><th class="p-4">Alumno / DNI</th><th class="p-4 text-center">Registrar</th><th class="p-4 text-center">Faltas Acum.</th><th class="p-4 text-center">% Asistencia</th><th class="p-4 text-right">Acciones</th></tr></thead>
-                        <tbody id="attendanceBody" class="divide-y divide-slate-100"></tbody>
+                        <thead><tr class="bg-slate-900 text-white uppercase"><th class="p-4">Alumno</th><th class="p-4 text-center">Presente / Ausente</th><th class="p-4 text-center">Faltas Total</th><th class="p-4 text-right">Estado</th></tr></thead>
+                        <tbody id="attBody" class="divide-y divide-slate-100 bg-white"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <div id="supervision" class="tab-content">
+        <div id="supervision" class="tab-content active">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-slate-900 text-white p-4 rounded-2xl shadow-lg border-b-4 border-blue-500">
-                    <p class="text-[10px] font-black opacity-60 uppercase">Matrícula Total</p>
-                    <p id="statTotal" class="text-3xl font-black mt-1">0</p>
+                <div class="bg-white p-5 rounded-2xl shadow-md border-b-4 border-blue-600">
+                    <p class="text-[10px] font-black text-slate-400 uppercase">Matrícula Total</p>
+                    <p id="totalMat" class="text-3xl font-black text-slate-800">0</p>
                 </div>
-                <div class="bg-white p-4 rounded-2xl shadow-lg border-b-4 border-emerald-500">
-                    <p class="text-[10px] font-black text-slate-500 uppercase">Padres que Trabajan</p>
-                    <p id="statWork" class="text-3xl font-black text-emerald-600 mt-1">0%</p>
+                <div class="bg-white p-5 rounded-2xl shadow-md border-b-4 border-emerald-500">
+                    <p class="text-[10px] font-black text-slate-400 uppercase">Asistencia Hoy</p>
+                    <p id="totalPres" class="text-3xl font-black text-emerald-600">0</p>
                 </div>
-                <div class="bg-white p-4 rounded-2xl shadow-lg border-b-4 border-orange-500">
-                    <p class="text-[10px] font-black text-slate-500 uppercase">Beneficiarios AUH</p>
-                    <p id="statAuh" class="text-3xl font-black text-orange-600 mt-1">0</p>
+                <div class="bg-white p-5 rounded-2xl shadow-md border-b-4 border-red-500">
+                    <p class="text-[10px] font-black text-slate-400 uppercase">Inasistencias Hoy</p>
+                    <p id="totalAbs" class="text-3xl font-black text-red-600">0</p>
                 </div>
-                <div class="bg-red-600 text-white p-4 rounded-2xl shadow-lg border-b-4 border-red-900">
-                    <p class="text-[10px] font-black opacity-60 uppercase">Faltas Críticas</p>
-                    <p id="statCritical" class="text-3xl font-black mt-1">0</p>
+                <div class="bg-red-600 p-5 rounded-2xl shadow-md text-white">
+                    <p class="text-[10px] font-black opacity-80 uppercase">Faltas Críticas (10+)</p>
+                    <p id="totalAlerts" class="text-3xl font-black">0</p>
                 </div>
             </div>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="card"><h3 class="font-black text-xs uppercase mb-4 text-slate-500">Configuración Contactos Alerta</h3>
-                    <label>WhatsApp Directivo</label><input type="text" id="confDir" value="5491166860054" onchange="saveConfig()" class="mb-2">
-                    <label>WhatsApp Secretaría</label><input type="text" id="confSec" value="5491166860054" onchange="saveConfig()">
-                    <div id="alertArea" class="mt-4 space-y-2"></div>
+                <div class="card">
+                    <h3 class="font-black text-xs uppercase mb-4 text-red-600 tracking-tighter"><i class="fas fa-bell mr-2"></i> Alumnos en Alerta Directiva (Seguimiento 10 faltas)</h3>
+                    <div id="alertArea" class="space-y-2"></div>
                 </div>
-                <div class="card"><h3 class="font-black text-xs uppercase mb-4 text-slate-500">Estadísticas por Nacionalidad</h3><canvas id="chartNac" height="180"></canvas></div>
-                <div class="card md:col-span-2"><h3 class="font-black text-xs uppercase mb-4 text-slate-500">Asistencia por Sala</h3><canvas id="chartSalas" height="100"></canvas></div>
+                <div class="card">
+                    <h3 class="font-black text-xs uppercase mb-4 text-blue-700 tracking-tighter">Comparativa de Asistencia por Sala</h3>
+                    <canvas id="roomChart" height="200"></canvas>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('jardin926_db_v3')) || [];
-        let config = JSON.parse(localStorage.getItem('jardin926_conf_v3')) || { dir: "5491166860054", sec: "5491166860054" };
-        let charts = {};
-
-        const SALAS = ["Sala Rosa TM", "Sala Roja TM", "Sala Naranja TM", "Sala Amarilla TM", "Sala Violeta TM", "Sala Azul TM", "Sala Celeste TM", "Sala Rosa TT", "Sala Roja TT", "Sala Naranja TT", "Sala Amarilla TT", "Sala Violeta TT", "Sala Azul TT", "Sala Celeste TT"];
+        let alumnos = JSON.parse(localStorage.getItem('j926_db_alumnos')) || [];
+        let asistencia = JSON.parse(localStorage.getItem('j926_db_asistencia')) || {};
+        const SECCIONES = ["Sala Rosa TM", "Sala Roja TM", "Sala Naranja TM", "Sala Amarilla TM", "Sala Violeta TM", "Sala Azul TM", "Sala Celeste TM", "Sala Rosa TT", "Sala Roja TT", "Sala Naranja TT", "Sala Amarilla TT", "Sala Violeta TT", "Sala Azul TT", "Sala Celeste TT"];
 
         function init() {
-            document.getElementById('attendanceDate').valueAsDate = new Date();
-            const filter = document.getElementById('filterSection');
-            filter.innerHTML = '<option value="Todas">Ver Todo el Jardín</option>';
-            SALAS.forEach(s => filter.innerHTML += `<option value="${s}">${s}</option>`);
-            document.getElementById('confDir').value = config.dir;
-            document.getElementById('confSec').value = config.sec;
-            renderAll();
+            document.getElementById('attDate').valueAsDate = new Date();
+            const selReg = document.getElementById('regSection');
+            const selAtt = document.getElementById('attSection');
+            SECCIONES.forEach(s => {
+                selReg.innerHTML += `<option value="${s}">${s}</option>`;
+                selAtt.innerHTML += `<option value="${s}">${s}</option>`;
+            });
+            updateSupervision();
         }
 
         function openTab(id) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            if(id === 'supervision') updateStats();
+            if(id === 'asistencia') renderAttendance();
+            if(id === 'supervision') updateSupervision();
         }
 
-        function startVoice(id) {
-            const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            rec.lang = 'es-AR'; rec.start();
-            rec.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript; };
+        // --- MATRÍCULA ---
+        function searchStudent(q) {
+            const res = document.getElementById('searchResults');
+            if(q.length < 2) { res.classList.add('hidden'); return; }
+            const filtered = alumnos.filter(a => a.name.toLowerCase().includes(q.toLowerCase()));
+            res.innerHTML = '';
+            if(filtered.length > 0) {
+                res.classList.remove('hidden');
+                filtered.forEach(a => {
+                    const idx = alumnos.indexOf(a);
+                    res.innerHTML += `<div class="search-item" onclick="loadStudent(${idx})"><b>${a.name}</b> (DNI: ${a.dni} - ${a.section})</div>`;
+                });
+            }
         }
 
+        function loadStudent(idx) {
+            const a = alumnos[idx];
+            document.getElementById('name').value = a.name;
+            document.getElementById('dni').value = a.dni;
+            document.getElementById('birth').value = a.birth;
+            document.getElementById('regSection').value = a.section;
+            document.getElementById('siblings').value = a.siblings || '';
+            document.getElementById('health').value = a.health || '';
+            document.getElementById('p1Data').value = a.p1Data || '';
+            document.getElementById('p2Data').value = a.p2Data || '';
+            document.getElementById('editIdx').value = idx;
+            document.getElementById('saveBtn').innerText = "ACTUALIZAR DATOS DE " + a.name.toUpperCase();
+            calculateAge(); closeSearch();
+        }
+
+        document.getElementById('studentForm').onsubmit = function(e) {
+            e.preventDefault();
+            const idx = document.getElementById('editIdx').value;
+            const data = {
+                name: document.getElementById('name').value,
+                dni: document.getElementById('dni').value,
+                birth: document.getElementById('birth').value,
+                section: document.getElementById('regSection').value,
+                siblings: document.getElementById('siblings').value,
+                health: document.getElementById('health').value,
+                p1Data: document.getElementById('p1Data').value,
+                p2Data: document.getElementById('p2Data').value,
+                status: 'Alta'
+            };
+            if(idx == -1) alumnos.push(data); else alumnos[idx] = data;
+            localStorage.setItem('j926_db_alumnos', JSON.stringify(alumnos));
+            this.reset(); document.getElementById('editIdx').value = "-1";
+            document.getElementById('saveBtn').innerText = "Guardar Legajo en Sistema";
+            alert("Sincronizado con éxito.");
+        };
+
+        // --- ASISTENCIA ---
+        function renderAttendance() {
+            const date = document.getElementById('attDate').value;
+            const section = document.getElementById('attSection').value;
+            const body = document.getElementById('attBody');
+            body.innerHTML = '';
+            const list = alumnos.filter(a => a.section === section);
+            let presences = 0;
+
+            list.forEach(a => {
+                const totalFaltas = calcularFaltas(a.dni);
+                const estado = (asistencia[date] && asistencia[date][a.dni]) ? asistencia[date][a.dni] : '';
+                if(estado === 'P') presences++;
+                
+                body.innerHTML += `<tr class="${totalFaltas >= 10 ? 'bg-red-50' : ''} border-b">
+                    <td class="p-4"><b>${a.name}</b><br><span class="text-[9px]">DNI: ${a.dni}</span></td>
+                    <td class="p-4 text-center">
+                        <button onclick="marcar('${a.dni}', 'P')" class="p-btn ${estado === 'P' ? 'selected-p' : ''}">P</button>
+                        <button onclick="marcar('${a.dni}', 'A')" class="a-btn ${estado === 'A' ? 'selected-a' : ''} ml-2">A</button>
+                    </td>
+                    <td class="p-4 text-center text-lg font-black ${totalFaltas >= 10 ? 'text-red-600' : ''}">${totalFaltas}</td>
+                    <td class="p-4 text-right">
+                        <button onclick="darBaja(${alumnos.indexOf(a)})" class="text-[8px] bg-slate-200 px-2 py-1 rounded font-bold uppercase">Baja/Pase</button>
+                    </td>
+                </tr>`;
+            });
+            document.getElementById('roomStats').innerText = list.length > 0 ? Math.round((presences/list.length)*100) + "%" : "0%";
+        }
+
+        function marcar(dni, val) {
+            const date = document.getElementById('attDate').value;
+            if(!asistencia[date]) asistencia[date] = {};
+            asistencia[date][dni] = (asistencia[date][dni] === val) ? '' : val;
+            localStorage.setItem('j926_db_asistencia', JSON.stringify(asistencia));
+            renderAttendance();
+        }
+
+        function calcularFaltas(dni) {
+            return Object.values(asistencia).filter(dia => dia[dni] === 'A').length;
+        }
+
+        // --- SUPERVISIÓN ---
+        function updateSupervision() {
+            const date = document.getElementById('attDate').value;
+            const total = alumnos.length;
+            let pres = 0, abs = 0, critics = 0;
+            
+            const area = document.getElementById('alertArea');
+            area.innerHTML = '';
+
+            alumnos.forEach(a => {
+                const f = calcularFaltas(a.dni);
+                if(asistencia[date] && asistencia[date][a.dni] === 'P') pres++;
+                if(asistencia[date] && asistencia[date][a.dni] === 'A') abs++;
+                
+                if(f >= 10) {
+                    critics++;
+                    area.innerHTML += `<div class="p-3 bg-red-100 border-l-4 border-red-600 flex justify-between items-center rounded-r-lg">
+                        <span class="text-[10px] font-black uppercase text-red-800">${a.name} (${a.section}) - ${f} FALTAS</span>
+                        <button onclick="window.open('https://wa.me/5491166860054?text=Alerta: ${a.name} llegó a las ${f} faltas')" class="bg-red-600 text-white px-3 py-1 rounded text-[9px] font-bold">INFORMAR</button>
+                    </div>`;
+                }
+            });
+
+            document.getElementById('totalMat').innerText = total;
+            document.getElementById('totalPres').innerText = pres;
+            document.getElementById('totalAbs').innerText = abs;
+            document.getElementById('totalAlerts').innerText = critics;
+            renderChart();
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('roomChart').getContext('2d');
+            const dataSalas = SECCIONES.map(s => {
+                const total = alumnos.filter(a => a.section === s).length;
+                return total;
+            });
+
+            if(window.myChart) window.myChart.destroy();
+            window.myChart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: SECCIONES.map(s => s.split(' ')[1]), datasets: [{ label: 'Alumnos por Sala', data: dataSalas, backgroundColor: '#2563eb' }] },
+                options: { plugins: { legend: { display: false } } }
+            });
+        }
+
+        // --- UTILIDADES ---
         function calculateAge() {
             const birth = new Date(document.getElementById('birth').value);
             const cutoff = new Date(2026, 5, 30);
@@ -202,158 +303,17 @@
             if (cutoff.getMonth() < birth.getMonth() || (cutoff.getMonth() === birth.getMonth() && cutoff.getDate() < birth.getDate())) age--;
             document.getElementById('ageBox').innerText = age + " años";
         }
-
-        document.getElementById('mainForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const idx = document.getElementById('editIndex').value;
-            const student = {
-                name: document.getElementById('name').value,
-                dni: document.getElementById('dni').value,
-                section: document.getElementById('section').value,
-                birth: document.getElementById('birth').value,
-                alumnoNac: document.getElementById('alumnoNac').value,
-                siblings: document.getElementById('siblings').value,
-                health: document.getElementById('health').value,
-                p1: { name: document.getElementById('p1Name').value, dni: document.getElementById('p1Dni').value, nac: document.getElementById('p1Nac').value, tel: document.getElementById('p1Tel').value, work: document.getElementById('p1Work').value, os: document.getElementById('p1Os').value, auh: document.getElementById('p1Auh').value, address: document.getElementById('p1Address').value },
-                p2: { name: document.getElementById('p2Name').value, dni: document.getElementById('p2Dni').value, nac: document.getElementById('p2Nac').value, tel: document.getElementById('p2Tel').value, work: document.getElementById('p2Work').value, os: document.getElementById('p2Os').value, auh: document.getElementById('p2Auh').value, address: document.getElementById('p2Address').value },
-                absences: idx == -1 ? 0 : db[idx].absences,
-                status: idx == -1 ? 'Alta' : db[idx].status,
-                motivo: idx == -1 ? '' : db[idx].motivo
-            };
-            if(idx == -1) db.push(student); else db[idx] = student;
-            localStorage.setItem('jardin926_db_v3', JSON.stringify(db));
-            e.target.reset(); document.getElementById('editIndex').value = "-1";
-            document.getElementById('submitBtn').innerText = "Guardar Legajo y Sincronizar";
-            renderAll(); alert("Datos guardados correctamente.");
-        });
-
-        function renderAll() {
-            const body = document.getElementById('attendanceBody');
-            const filter = document.getElementById('filterSection').value;
-            const search = document.getElementById('searchName').value.toLowerCase();
-            body.innerHTML = '';
-            let count = 0;
-
-            db.forEach((s, i) => {
-                if(filter !== 'Todas' && s.section !== filter) return;
-                if(search && !s.name.toLowerCase().includes(search)) return;
-                count++;
-                const isBaja = s.status === 'Baja';
-                const critical = s.absences >= 10 && !isBaja;
-
-                body.innerHTML += `<tr class="${critical ? 'alert-critical' : ''} ${isBaja ? 'opacity-40 bg-slate-50' : 'hover:bg-blue-50'} transition">
-                    <td class="p-4"><p class="font-black text-slate-800 uppercase">${s.name}</p><p class="text-[9px] text-slate-500">DNI: ${s.dni} | Sala: ${s.section}</p></td>
-                    <td class="p-4 text-center">
-                        ${!isBaja ? `<div class="flex gap-2 justify-center"><button onclick="markAbs(${i}, false)" class="btn-presente">P</button><button onclick="markAbs(${i}, true)" class="btn-falta">F</button></div>` : '---'}
-                    </td>
-                    <td class="p-4 text-center font-black text-lg ${s.absences >= 10 ? 'text-red-600' : ''}">${isBaja ? '-' : s.absences}</td>
-                    <td class="p-4 text-center font-bold text-slate-600">${isBaja ? '-' : Math.max(0, 100 - (s.absences * 5))}%</td>
-                    <td class="p-4 text-right space-y-1">
-                        <button onclick="edit(${i})" class="bg-amber-500 text-white px-3 py-1 rounded-md font-bold text-[9px] uppercase">Editar</button>
-                        <button onclick="toggleStatus(${i})" class="bg-slate-700 text-white px-3 py-1 rounded-md font-bold text-[9px] uppercase">${isBaja ? 'Dar Alta' : 'Dar Baja'}</button>
-                        ${isBaja ? `<p class="text-[8px] text-red-600 font-bold uppercase mt-1">Motivo: ${s.motivo}</p>` : ''}
-                    </td>
-                </tr>`;
-            });
-            document.getElementById('roomCount').innerText = `${count} / 30`;
+        function startVoice(id) {
+            const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            rec.lang = 'es-AR'; rec.start();
+            rec.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript; };
         }
-
-        function markAbs(i, isFalta) {
-            if(isFalta) db[i].absences++;
-            localStorage.setItem('jardin926_db_v3', JSON.stringify(db));
-            renderAll();
-        }
-
-        function edit(i) {
-            const s = db[i];
-            document.getElementById('name').value = s.name;
-            document.getElementById('dni').value = s.dni;
-            document.getElementById('section').value = s.section;
-            document.getElementById('birth').value = s.birth;
-            document.getElementById('alumnoNac').value = s.alumnoNac;
-            document.getElementById('siblings').value = s.siblings;
-            document.getElementById('health').value = s.health;
-            document.getElementById('p1Name').value = s.p1.name;
-            document.getElementById('p1Dni').value = s.p1.dni;
-            document.getElementById('p1Nac').value = s.p1.nac;
-            document.getElementById('p1Tel').value = s.p1.tel;
-            document.getElementById('p1Work').value = s.p1.work;
-            document.getElementById('p1Os').value = s.p1.os;
-            document.getElementById('p1Auh').value = s.p1.auh;
-            document.getElementById('p1Address').value = s.p1.address;
-            document.getElementById('p2Name').value = s.p2.name;
-            document.getElementById('p2Dni').value = s.p2.dni;
-            document.getElementById('p2Nac').value = s.p2.nac;
-            document.getElementById('p2Tel').value = s.p2.tel;
-            document.getElementById('p2Work').value = s.p2.work;
-            document.getElementById('p2Os').value = s.p2.os;
-            document.getElementById('p2Auh').value = s.p2.auh;
-            document.getElementById('p2Address').value = s.p2.address;
-            document.getElementById('editIndex').value = i;
-            document.getElementById('submitBtn').innerText = "Corregir Datos de " + s.name.toUpperCase();
-            calculateAge(); openTab('registro');
-        }
-
-        function toggleStatus(i) {
-            const s = db[i];
-            if(s.status === 'Alta') {
-                const m = prompt("Motivo de la Baja (Pase, Mudanza, etc):");
-                if(m) { s.status = 'Baja'; s.motivo = m; }
-            } else { s.status = 'Alta'; s.motivo = ''; }
-            localStorage.setItem('jardin926_db_v3', JSON.stringify(db));
-            renderAll();
-        }
-
-        function updateStats() {
-            const total = db.filter(s => s.status === 'Alta').length;
-            const work = db.filter(s => s.status === 'Alta' && (s.p1.work === 'Si' || s.p2.work === 'Si')).length;
-            const auh = db.filter(s => s.status === 'Alta' && (s.p1.auh === 'Si' || s.p2.auh === 'Si')).length;
-            const critical = db.filter(s => s.status === 'Alta' && s.absences >= 10).length;
-
-            document.getElementById('statTotal').innerText = total;
-            document.getElementById('statWork').innerText = total > 0 ? Math.round((work/total)*100) + "%" : "0%";
-            document.getElementById('statAuh').innerText = auh;
-            document.getElementById('statCritical').innerText = critical;
-
-            // Alertas Directivas
-            const alertArea = document.getElementById('alertArea');
-            alertArea.innerHTML = '';
-            db.filter(s => s.status === 'Alta' && s.absences >= 10).forEach(s => {
-                alertArea.innerHTML += `<div class="p-2 bg-red-50 border-l-4 border-red-600 flex justify-between items-center">
-                    <span class="text-[9px] font-black uppercase text-red-800">${s.name} (${s.absences} faltas)</span>
-                    <button onclick="sendWA('${s.name}', ${s.absences})" class="text-[10px] bg-emerald-600 text-white px-2 py-1 rounded">AVISAR</button>
-                </div>`;
-            });
-
-            // Grafico Nacionalidad
-            const nacs = {}; db.forEach(s => nacs[s.alumnoNac] = (nacs[s.alumnoNac] || 0) + 1);
-            if(charts.nac) charts.nac.destroy();
-            charts.nac = new Chart(document.getElementById('chartNac'), { type: 'pie', data: { labels: Object.keys(nacs), datasets: [{ data: Object.values(nacs), backgroundColor: ['#0f172a','#2563eb','#f59e0b','#ef4444','#10b981'] }] }});
-        }
-
-        function sendWA(name, count) {
-            const msg = `JARDÍN 926 INFORMA: El alumno ${name} ha alcanzado ${count} faltas. Se requiere intervención de supervisión.`;
-            window.open(`https://wa.me/${config.dir}?text=${encodeURIComponent(msg)}`);
-        }
-
-        function saveConfig() {
-            config.dir = document.getElementById('confDir').value;
-            config.sec = document.getElementById('confSec').value;
-            localStorage.setItem('jardin926_conf_v3', JSON.stringify(config));
-        }
-
+        function closeSearch() { setTimeout(() => document.getElementById('searchResults').classList.add('hidden'), 200); }
         function exportToExcel() {
-            const ws = XLSX.utils.json_to_sheet(db.map(s => ({
-                ALUMNO: s.name, DNI: s.dni, SALA: s.section, EDAD: s.birth, NACIONALIDAD: s.alumnoNac, 
-                PADRE1: s.p1.name, TEL1: s.p1.tel, TRABAJA1: s.p1.work, AUH1: s.p1.auh, OS1: s.p1.os,
-                PADRE2: s.p2.name, TEL2: s.p2.tel, TRABAJA2: s.p2.work, AUH2: s.p2.auh, OS2: s.p2.os,
-                FALTAS: s.absences, ESTADO: s.status, MOTIVO_BAJA: s.motivo
-            })));
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Matricula_J926");
-            XLSX.writeFile(wb, "Gestion_Directiva_Jardin926_Lomas.xlsx");
+            const ws = XLSX.utils.json_to_sheet(alumnos.map(a => ({ Nombre: a.name, DNI: a.dni, Sala: a.section, Faltas: calcularFaltas(a.dni) })));
+            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Jardin926");
+            XLSX.writeFile(wb, "Gestion_Directiva_926.xlsx");
         }
-
         init();
     </script>
 </body>
