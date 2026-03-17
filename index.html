@@ -3,245 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión Institucional - Jardín 926</title>
+    <title>Sistema Integral - Jardín 926</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f3f4f6; font-family: 'Segoe UI', sans-serif; }
-        .form-section { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 2rem; margin-bottom: 2rem; }
-        h2 { color: #1e40af; border-bottom: 2px solid #e5e7eb; padding-bottom: 0.5rem; margin-bottom: 1.5rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; font-weight: bold; }
-        label { display: block; font-size: 0.75rem; font-weight: 600; color: #4b5563; margin-bottom: 0.25rem; }
-        input, select, textarea { width: 100%; border: 1px solid #d1d5db; border-radius: 4px; padding: 0.5rem; font-size: 0.85rem; margin-bottom: 1rem; }
-        .age-badge { padding: 0.5rem; border-radius: 4px; font-weight: bold; text-align: center; border: 1px solid; transition: all 0.3s; }
-        .age-normal { background: #dbeafe; color: #1e40af; border-color: #bfdbfe; }
-        .age-alert { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
-    </style>
+        body { background-color: #f0f2f5; font-family: 'Inter', sans-serif; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); padding: 1.5rem; margin-bottom: 1.5rem; }
+        .absent-critical { color: #dc2626; font-weight: bold; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .voice-btn { cursor: pointer; color: #2563eb; transition: transform 0.2s; }
+        .voice-btn:hover { transform: scale(1.2); }
+    </select>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4 bg-slate-100">
 
-    <div class="max-w-6xl mx-auto">
-        <header class="flex justify-between items-center mb-8 bg-blue-800 p-6 rounded-lg text-white shadow-lg">
+    <div class="max-w-7xl mx-auto">
+        <header class="flex flex-col md:flex-row justify-between items-center mb-6 bg-blue-900 p-6 rounded-xl text-white shadow-2xl">
             <div>
-                <h1 class="text-2xl font-bold">Jardín de Infantes N° 926</h1>
-                <p class="text-blue-100 text-sm">Matriculación Digital Automática</p>
+                <h1 class="text-2xl font-black tracking-tight">JARDÍN N° 926 - GESTIÓN TOTAL</h1>
+                <p class="text-blue-200 text-sm">Panel de Control: Inscripción, Asistencia y Supervisión</p>
             </div>
-            <i class="fas fa-user-check text-4xl opacity-50"></i>
+            <div class="flex gap-2 mt-4 md:mt-0">
+                <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-lg text-xs font-bold transition">
+                    <i class="fas fa-file-excel mr-2"></i> EXCEL
+                </button>
+                <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-800 px-4 py-2 rounded-lg text-xs font-bold transition">
+                    <i class="fas fa-print mr-2"></i> IMPRIMIR REPORTE
+                </button>
+            </div>
         </header>
 
-        <form id="enrollmentForm" class="form-section">
-            <input type="hidden" id="editIndex" value="-1">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <h2><i class="fas fa-child mr-2"></i> Datos del Alumno</h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="md:col-span-2"><label>Nombre y Apellido</label><input type="text" id="studentName" required></div>
-                <div><label>DNI Alumno</label><input type="number" id="studentDni" required></div>
-                <div><label>Lugar de Nacimiento</label><input type="text" id="birthPlace" placeholder="Ej: Merlo"></div>
-            </div>
+            <div class="lg:col-span-2">
+                <div class="card">
+                    <h2 class="text-blue-800 font-bold mb-4 uppercase text-sm border-b pb-2"><i class="fas fa-user-plus mr-2"></i> Nueva Matriculación</h2>
+                    <form id="studentForm" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase">Nombre Completo</label>
+                                <div class="relative">
+                                    <input type="text" id="name" class="w-full border p-2 rounded bg-gray-50 focus:ring-2 ring-blue-500 outline-none" required>
+                                    <i class="fas fa-microphone voice-btn absolute right-3 top-3" onclick="startVoice('name')"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase">DNI Alumno</label>
+                                <input type="number" id="dni" class="w-full border p-2 rounded bg-gray-50" required>
+                            </div>
+                        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-                <div><label>Fecha de Nacimiento</label><input type="date" id="birthDate" onchange="calculateAge()" required></div>
-                <div>
-                    <label>Edad (al 30/06/2026)</label>
-                    <div id="displayAge" class="age-badge age-normal">-- años</div>
-                    <input type="hidden" id="studentAge">
-                </div>
-                <div><label>Sección/Sala Sugerida</label>
-                    <select id="studentSection">
-                        <option value="Sala Rosa">Sala Rosa (3 años)</option>
-                        <option value="Sala Roja">Sala Roja (4 años)</option>
-                        <option value="Sala Azul">Sala Azul (5 años)</option>
-                        <option value="Sala Verde">Sala Verde (Multiedad)</option>
-                    </select>
-                </div>
-                <div><label>Género</label>
-                    <select id="studentGender">
-                        <option value="Masculino">Masculino</option>
-                        <option value="Femenino">Femenino</option>
-                        <option value="X">X</option>
-                    </select>
-                </div>
-            </div>
-            <div id="ageWarning" class="hidden mb-4 p-3 bg-red-100 text-red-700 text-xs font-bold rounded border border-red-200">
-                <i class="fas fa-exclamation-triangle mr-2"></i> ATENCIÓN: El alumno está fuera del rango de edad reglamentario para el Nivel Inicial.
-            </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase">Fecha Nacimiento</label>
+                                <input type="date" id="birth" onchange="checkAge()" class="w-full border p-2 rounded bg-gray-50" required>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase">Sala</label>
+                                <select id="section" class="w-full border p-2 rounded bg-gray-50">
+                                    <option>Sala Rosa (3)</option>
+                                    <option>Sala Roja (4)</option>
+                                    <option>Sala Azul (5)</option>
+                                    <option>Sala Verde (Multi)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase">WhatsApp Familia</label>
+                                <input type="text" id="phone" placeholder="54911..." class="w-full border p-2 rounded bg-gray-50">
+                            </div>
+                        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
-                <div>
-                    <h2><i class="fas fa-notes-medical mr-2"></i> Salud y Observaciones</h2>
-                    <label>Antecedentes de Salud (Alergias, asma, medicación, etc.)</label>
-                    <textarea id="healthHistory" rows="2" placeholder="Información médica relevante..."></textarea>
-                    <label>Situación Social / Familiar / Otros antecedentes</label>
-                    <textarea id="otherInfo" rows="2"></textarea>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase">Antecedentes de Salud / Situación Social</label>
+                            <div class="relative">
+                                <textarea id="obs" rows="2" class="w-full border p-2 rounded bg-gray-50 focus:ring-2 ring-blue-500 outline-none"></textarea>
+                                <i class="fas fa-microphone voice-btn absolute right-3 top-3" onclick="startVoice('obs')"></i>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-blue-700 text-white font-bold py-3 rounded-lg hover:bg-blue-800 shadow-lg transition">
+                            GUARDAR EN LEGAJO DIGITAL
+                        </button>
+                    </form>
                 </div>
-                <div>
-                    <h2><i class="fas fa-users mr-2"></i> Hermanos</h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div><label>Cant. de Hermanos</label><input type="number" id="siblingCount" value="0"></div>
-                        <div><label>Asisten a este Jardín</label><input type="number" id="siblingInSchool" value="0"></div>
+
+                <div class="card">
+                    <h2 class="text-blue-800 font-bold mb-4 uppercase text-sm border-b pb-2"><i class="fas fa-calendar-check mr-2"></i> Control de Asistencia y Alertas Críticas</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-600">
+                                    <th class="p-3">Alumno</th>
+                                    <th class="p-3">Sala</th>
+                                    <th class="p-3">Faltas Totales</th>
+                                    <th class="p-3">Acción</th>
+                                    <th class="p-3">Informar a Directivo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceBody">
+                                </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
-                <div class="bg-blue-50/50 p-4 rounded border border-blue-100">
-                    <h3 class="font-bold text-xs mb-3 text-blue-800 uppercase italic">Responsable 1</h3>
-                    <label>Nombre Completo</label><input type="text" id="parent1Name">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div><label>DNI</label><input type="number" id="parent1Dni"></div>
-                        <div><label>Teléfono</label><input type="text" id="parent1Phone"></div>
+            <div class="space-y-6">
+                <div class="card">
+                    <h2 class="text-blue-800 font-bold mb-4 uppercase text-[10px] tracking-widest"><i class="fas fa-chart-pie mr-2"></i> Informe para Supervisión</h2>
+                    <canvas id="attendanceChart" height="200"></canvas>
+                    <div class="mt-4 p-3 bg-blue-50 rounded text-[10px] text-blue-700">
+                        * Este gráfico se actualiza en tiempo real para reportar el porcentaje de presentismo por sala a inspección.
                     </div>
-                    <label>Domicilio</label><input type="text" id="parent1Address">
                 </div>
-                <div class="bg-blue-50/50 p-4 rounded border border-blue-100">
-                    <h3 class="font-bold text-xs mb-3 text-blue-800 uppercase italic">Responsable 2</h3>
-                    <label>Nombre Completo</label><input type="text" id="parent2Name">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div><label>DNI</label><input type="number" id="parent2Dni"></div>
-                        <div><label>Teléfono</label><input type="text" id="parent2Phone"></div>
+
+                <div class="card">
+                    <h2 class="text-blue-800 font-bold mb-4 uppercase text-[10px] tracking-widest"><i class="fas fa-bullhorn mr-2"></i> Resumen de Alertas</h2>
+                    <div id="alertSummary" class="space-y-2">
+                        <p class="text-xs text-gray-500 italic">No hay alertas críticas registradas.</p>
                     </div>
-                    <label>Domicilio</label><input type="text" id="parent2Address">
                 </div>
             </div>
 
-            <div class="mt-8 flex gap-4">
-                <button type="submit" id="submitBtn" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded shadow hover:bg-blue-700 transition uppercase text-sm">
-                    <i class="fas fa-save mr-2"></i> Grabar en Base de Datos
-                </button>
-                <button type="button" onclick="resetForm()" class="bg-gray-400 text-white px-6 py-3 rounded font-bold hover:bg-gray-500 uppercase text-sm">
-                    Limpiar
-                </button>
-            </div>
-        </form>
-
-        <div class="form-section overflow-x-auto">
-            <h2 class="flex justify-between items-center text-blue-800">
-                <span>Registros Cargados - Ciclo 2026</span>
-                <span id="recordCount" class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded font-bold">0 Alumnos</span>
-            </h2>
-            <table class="w-full text-left text-[11px]">
-                <thead>
-                    <tr class="bg-gray-100 text-gray-700">
-                        <th class="p-3">Alumno / Edad</th>
-                        <th class="p-3">Sala</th>
-                        <th class="p-3">Salud y Obs.</th>
-                        <th class="p-3">Padres / DNI / Domicilio</th>
-                        <th class="p-3 text-center">Hermanos</th>
-                        <th class="p-3 text-center">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="dataTableBody"></tbody>
-            </table>
         </div>
     </div>
 
     <script>
-        let db = [];
+        let students = [];
+        let chart;
 
-        function calculateAge() {
-            const birthInput = document.getElementById('birthDate').value;
-            if (!birthInput) return;
-            const birthDate = new Date(birthInput);
-            const cutoffDate = new Date(2026, 5, 30); // 30 de Junio 2026
-            let years = cutoffDate.getFullYear() - birthDate.getFullYear();
-            let months = cutoffDate.getMonth() - birthDate.getMonth();
-            if (months < 0 || (months === 0 && cutoffDate.getDate() < birthDate.getDate())) {
-                years--;
-                months += 12;
-            }
-            const ageText = `${years} años y ${months} meses`;
-            const badge = document.getElementById('displayAge');
-            const warning = document.getElementById('ageWarning');
-            badge.innerText = ageText;
-            document.getElementById('studentAge').value = ageText;
-            if (years < 3 || years > 5) {
-                badge.className = 'age-badge age-alert';
-                warning.classList.remove('hidden');
-            } else {
-                badge.className = 'age-badge age-normal';
-                warning.classList.add('hidden');
-            }
-        }
-
-        document.getElementById('enrollmentForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const record = {
-                student: { 
-                    name: document.getElementById('studentName').value, 
-                    dni: document.getElementById('studentDni').value, 
-                    section: document.getElementById('studentSection').value,
-                    birth: document.getElementById('birthDate').value,
-                    age: document.getElementById('studentAge').value
+        // INICIALIZAR GRÁFICO
+        function initChart() {
+            const ctx = document.getElementById('attendanceChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Presentes', 'Ausentes'],
+                    datasets: [{
+                        data: [0, 0],
+                        backgroundColor: ['#10b981', '#ef4444']
+                    }]
                 },
-                health: { history: document.getElementById('healthHistory').value, other: document.getElementById('otherInfo').value },
-                family: { siblings: document.getElementById('siblingCount').value, inSchool: document.getElementById('siblingInSchool').value },
-                p1: { name: document.getElementById('parent1Name').value, dni: document.getElementById('parent1Dni').value, phone: document.getElementById('parent1Phone').value, address: document.getElementById('parent1Address').value },
-                p2: { name: document.getElementById('parent2Name').value, dni: document.getElementById('parent2Dni').value, phone: document.getElementById('parent2Phone').value, address: document.getElementById('parent2Address').value }
-            };
-            const editIndex = document.getElementById('editIndex').value;
-            if (editIndex == -1) db.push(record); else db[editIndex] = record;
-            renderTable();
-            resetForm();
-        });
-
-        function renderTable() {
-            const tbody = document.getElementById('dataTableBody');
-            tbody.innerHTML = '';
-            document.getElementById('recordCount').innerText = `${db.length} Alumnos`;
-            db.forEach((item, index) => {
-                tbody.innerHTML += `
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="p-3"><b>${item.student.name}</b><br><span class="text-blue-600 font-bold">${item.student.age}</span></td>
-                        <td class="p-3 text-blue-800 font-semibold">${item.student.section}</td>
-                        <td class="p-3"><i>H:</i> ${item.health.history || '-'}<br><i>O:</i> ${item.health.other || '-'}</td>
-                        <td class="p-3">
-                            1: ${item.p1.name} (${item.p1.dni}) - Dom: ${item.p1.address}<br>
-                            2: ${item.p2.name} (${item.p2.dni}) - Dom: ${item.p2.address}
-                        </td>
-                        <td class="p-3 text-center">${item.family.siblings} (${item.family.inSchool} en Jardín)</td>
-                        <td class="p-3 text-center flex justify-center gap-2">
-                            <button onclick="editRecord(${index})" class="text-blue-600 hover:scale-110 transition"><i class="fas fa-edit"></i></button>
-                            <button onclick="deleteRecord(${index})" class="text-red-600 hover:scale-110 transition"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>`;
+                options: { responsive: true, maintainAspectRatio: false }
             });
         }
 
-        function editRecord(index) {
-            const item = db[index];
-            document.getElementById('studentName').value = item.student.name;
-            document.getElementById('studentDni').value = item.student.dni;
-            document.getElementById('studentSection').value = item.student.section;
-            document.getElementById('birthDate').value = item.student.birth;
-            document.getElementById('healthHistory').value = item.health.history;
-            document.getElementById('otherInfo').value = item.health.other;
-            document.getElementById('siblingCount').value = item.family.siblings;
-            document.getElementById('siblingInSchool').value = item.family.inSchool;
-            document.getElementById('parent1Name').value = item.p1.name;
-            document.getElementById('parent1Dni').value = item.p1.dni;
-            document.getElementById('parent1Phone').value = item.p1.phone;
-            document.getElementById('parent1Address').value = item.p1.address;
-            document.getElementById('parent2Name').value = item.p2.name;
-            document.getElementById('parent2Dni').value = item.p2.dni;
-            document.getElementById('parent2Phone').value = item.p2.phone;
-            document.getElementById('parent2Address').value = item.p2.address;
-            calculateAge();
-            document.getElementById('editIndex').value = index;
-            document.getElementById('submitBtn').innerHTML = '<i class="fas fa-sync mr-2"></i> Actualizar Registro';
-            document.getElementById('submitBtn').classList.replace('bg-blue-600', 'bg-orange-500');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        // CARGA POR VOZ
+        function startVoice(id) {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'es-AR';
+            recognition.start();
+            recognition.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript; };
         }
 
-        function deleteRecord(index) { if (confirm('¿Eliminar registro?')) { db.splice(index, 1); renderTable(); } }
-        
-        function resetForm() {
-            document.getElementById('enrollmentForm').reset();
-            document.getElementById('displayAge').innerText = '-- años';
-            document.getElementById('ageWarning').classList.add('hidden');
-            document.getElementById('editIndex').value = -1;
-            document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save mr-2"></i> Grabar en Base de Datos';
-            document.getElementById('submitBtn').classList.replace('bg-orange-500', 'bg-blue-600');
+        // AGREGAR ALUMNO
+        document.getElementById('studentForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const student = {
+                name: document.getElementById('name').value,
+                dni: document.getElementById('dni').value,
+                section: document.getElementById('section').value,
+                phone: document.getElementById('phone').value,
+                absences: 0,
+                status: 'Presente'
+            };
+            students.push(student);
+            renderAll();
+            e.target.reset();
+        });
+
+        function renderAll() {
+            const body = document.getElementById('attendanceBody');
+            body.innerHTML = '';
+            let totalPres = 0;
+            let totalAbs = 0;
+            const alertBox = document.getElementById('alertSummary');
+            alertBox.innerHTML = '';
+
+            students.forEach((s, i) => {
+                if(s.status === 'Presente') totalPres++; else totalAbs++;
+                
+                const isCritical = s.absences >= 10;
+                if(isCritical) {
+                    alertBox.innerHTML += `<div class="p-2 bg-red-50 border-l-4 border-red-500 text-[10px] text-red-700"><b>${s.name}</b> alcanzó las 10 faltas.</div>`;
+                }
+
+                body.innerHTML += `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-3 ${isCritical ? 'absent-critical' : ''}">${s.name}</td>
+                        <td class="p-3">${s.section}</td>
+                        <td class="p-3 font-bold">${s.absences}</td>
+                        <td class="p-3">
+                            <button onclick="markAbsent(${i})" class="bg-red-100 text-red-600 px-2 py-1 rounded text-[10px] font-bold">MARCAR FALTA</button>
+                            ${isCritical ? `<button onclick="sendWA(${i}, 'family')" class="bg-green-500 text-white px-2 py-1 rounded text-[10px] ml-1"><i class="fab fa-whatsapp"></i> AVISO</button>` : ''}
+                        </td>
+                        <td class="p-3">
+                            <button onclick="sendWA(${i}, 'staff')" class="text-blue-600 border border-blue-600 px-2 py-1 rounded text-[10px]">INFORMAR</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            // Actualizar Gráfico
+            chart.data.datasets[0].data = [totalPres, totalAbs];
+            chart.update();
         }
+
+        function markAbsent(i) {
+            students[i].absences++;
+            students[i].status = 'Ausente';
+            renderAll();
+        }
+
+        function sendWA(i, type) {
+            const s = students[i];
+            let msg = "";
+            let targetPhone = s.phone;
+
+            if(type === 'family') {
+                msg = `Hola, familia de ${s.name}. Le informamos desde el Jardín 926 que el alumno ha alcanzado las ${s.absences} inasistencias. Solicitamos se acerque a la institución.`;
+            } else {
+                targetPhone = "5491100000000"; // PONER ACÁ EL CELU DE SECRETARÍA
+                msg = `INFORME DIRECTIVO: El alumno ${s.name} de ${s.section} presenta un cuadro crítico de ${s.absences} inasistencias. Se requiere intervención de secretaría/dirección.`;
+            }
+            
+            window.open(`https://wa.me/${targetPhone}?text=${encodeURIComponent(msg)}`);
+        }
+
+        function exportToExcel() {
+            const ws = XLSX.utils.json_to_sheet(students);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Alumnos");
+            XLSX.writeFile(wb, "Reporte_Inspeccion_926.xlsx");
+        }
+
+        initChart();
     </script>
 </body>
-    </html>
+               </html>
