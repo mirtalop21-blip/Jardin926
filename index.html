@@ -3,276 +3,411 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA PROFESIONAL JARDÍN 926</title>
+    <title>SISTEMA LÍDER - JARDÍN 926 LOMAS DE ZAMORA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
+        body { font-family: 'Montserrat', sans-serif; background: #f0f4f8; color: #1a202c; }
         .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .input-field { width: 100%; border: 1.5px solid #cbd5e1; padding: 10px; border-radius: 8px; font-size: 13px; text-transform: uppercase; transition: 0.3s; }
-        .input-field:focus { border-color: #2563eb; outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-        .label-style { font-size: 11px; font-weight: 800; color: #475569; display: block; margin-bottom: 4px; text-transform: uppercase; }
-        .asis-cell { min-width: 32px; height: 32px; text-align: center; border: 1px solid #e2e8f0; cursor: pointer; font-weight: 900; }
-        .asis-cell:hover { background: #f8fafc; }
+        .tab-content.active { display: block; animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .input-inst { width: 100%; border: 2px solid #e2e8f0; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; text-transform: uppercase; transition: 0.3s; }
+        .input-inst:focus { border-color: #2563eb; outline: none; background: #f8faff; }
+        .btn-action { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .asis-cell { min-width: 38px; height: 38px; border: 1px solid #cbd5e1; text-align: center; cursor: pointer; font-weight: 900; }
+        .voice-active { color: #ef4444 !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
-    <header class="bg-[#0f172a] text-white p-6 border-b-4 border-blue-600 shadow-xl sticky top-0 z-[100]">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-black italic tracking-tighter">JARDÍN DE INFANTES N° 926</h1>
-                <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Lomas de Zamora | Gestión de Matrícula y Asistencia</p>
+    <header class="bg-slate-900 text-white p-6 shadow-2xl border-b-4 border-blue-600">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-5">
+                <div class="bg-blue-600 p-4 rounded-2xl shadow-lg rotate-3"><i class="fas fa-shield-halved text-3xl"></i></div>
+                <div>
+                    <h1 class="text-2xl font-black tracking-tighter italic">JARDÍN DE INFANTES 926</h1>
+                    <p class="text-[10px] text-blue-400 font-black uppercase tracking-[0.4em]">Distrito Lomas de Zamora | Consola Directiva</p>
+                </div>
             </div>
-            <button onclick="exportarDatos()" class="mt-4 md:mt-0 bg-emerald-600 hover:bg-emerald-700 px-6 py-2 rounded-lg text-xs font-black uppercase transition-all">
-                <i class="fas fa-file-excel mr-2"></i> Exportar Supervisión
-            </button>
+            <div class="flex flex-wrap gap-3 justify-center">
+                <label class="bg-amber-500 hover:bg-amber-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase cursor-pointer btn-action">
+                    <i class="fas fa-upload mr-2"></i> Importar Backup <input type="file" id="importFile" class="hidden" onchange="importarDatos()">
+                </label>
+                <button onclick="descargarBackup()" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase btn-action">
+                    <i class="fas fa-download mr-2"></i> Backup Sistema
+                </button>
+                <button onclick="exportarExcelInstitucional()" class="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-xl text-[10px] font-black uppercase btn-action">
+                    <i class="fas fa-file-excel mr-2"></i> Excel Supervisión
+                </button>
+            </div>
         </div>
     </header>
 
-    <nav class="bg-white border-b sticky top-[88px] z-50 shadow-md">
-        <div class="max-w-7xl mx-auto flex">
-            <button onclick="openTab('matricula')" id="btn-matricula" class="flex-1 py-4 font-black border-b-4 border-blue-600 text-blue-600 uppercase text-[11px]">Matrícula y Legajos</button>
-            <button onclick="openTab('asistencia')" id="btn-asistencia" class="flex-1 py-4 font-black border-b-4 border-transparent text-slate-500 uppercase text-[11px]">Libro de Asistencia</button>
-            <button onclick="openTab('supervision')" id="btn-supervision" class="flex-1 py-4 font-black border-b-4 border-transparent text-slate-500 uppercase text-[11px]">Supervisión y Estadísticas</button>
+    <nav class="bg-white border-b sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto flex overflow-x-auto">
+            <button onclick="showTab('inscripcion')" id="btn-inscripcion" class="flex-1 py-5 font-black text-[11px] uppercase border-b-4 border-blue-600 text-blue-600 tracking-widest">Inscripción y Legajos</button>
+            <button onclick="showTab('asistencia')" id="btn-asistencia" class="flex-1 py-5 font-black text-[11px] uppercase border-b-4 border-transparent text-slate-500 tracking-widest">Libro de Asistencia</button>
+            <button onclick="showTab('supervision')" id="btn-supervision" class="flex-1 py-5 font-black text-[11px] uppercase border-b-4 border-transparent text-slate-500 tracking-widest">Supervisión Estratégica</button>
         </div>
     </nav>
 
     <main class="max-w-7xl mx-auto p-6">
         
-        <div id="matricula" class="tab-content active space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <form id="formMatricula" class="lg:col-span-2 bg-white rounded-2xl p-8 shadow-xl border space-y-6">
-                    <h3 class="font-black text-slate-700 uppercase text-sm border-b pb-2 italic">Carga de Datos del Alumno</h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div id="inscripcion" class="tab-content active space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <form id="formAlu" class="lg:col-span-8 bg-white rounded-3xl p-8 shadow-xl border-t-8 border-blue-600 space-y-6">
+                    <div class="flex justify-between items-center border-b pb-4">
+                        <h2 class="font-black text-slate-700 uppercase italic">Registro de Nuevo Ingreso</h2>
+                        <i class="fas fa-headset text-blue-500 text-xl"></i>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                         <div class="md:col-span-2">
-                            <label class="label-style">Nombre y Apellido <i class="fas fa-microphone text-blue-500 cursor-pointer" onclick="voz('alu_nombre')"></i></label>
-                            <input type="text" id="alu_nombre" class="input-field" required>
+                            <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Apellido y Nombre <i class="fas fa-microphone ml-2 voice-btn text-blue-600 cursor-pointer" onclick="voiceIn('alu_nom')"></i></label>
+                            <input type="text" id="alu_nom" class="input-inst" required>
                         </div>
                         <div>
-                            <label class="label-style">DNI <i class="fas fa-microphone text-blue-500 cursor-pointer" onclick="voz('alu_dni')"></i></label>
-                            <input type="text" id="alu_dni" class="input-field" required>
+                            <label class="text-[10px] font-black text-slate-400 uppercase ml-2">DNI <i class="fas fa-microphone ml-2 voice-btn text-blue-600 cursor-pointer" onclick="voiceIn('alu_dni')"></i></label>
+                            <input type="text" id="alu_dni" class="input-inst" required>
                         </div>
                         <div>
-                            <label class="label-style">Sala / Sección</label>
-                            <select id="alu_sala" class="input-field font-bold text-blue-700 bg-blue-50"></select>
+                            <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Nacionalidad <i class="fas fa-microphone ml-2 voice-btn text-blue-600 cursor-pointer" onclick="voiceIn('alu_nac')"></i></label>
+                            <input type="text" id="alu_nac" class="input-inst" value="ARGENTINA">
                         </div>
                         <div>
-                            <label class="label-style">Edad al 30/06</label>
-                            <input type="text" id="alu_edad" class="input-field">
+                            <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Sección / Sala</label>
+                            <select id="alu_sala" class="input-inst font-black text-blue-700 bg-blue-50"></select>
                         </div>
                         <div>
-                            <label class="label-style text-red-600 font-black">Salud / Alergias <i class="fas fa-microphone" onclick="voz('alu_salud')"></i></label>
-                            <input type="text" id="alu_salud" class="input-field border-red-200">
+                            <label class="text-[10px] font-black text-red-500 uppercase ml-2 italic">Salud/Alergias <i class="fas fa-microphone ml-2 voice-btn cursor-pointer" onclick="voiceIn('alu_salud')"></i></label>
+                            <input type="text" id="alu_salud" class="input-inst border-red-200">
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-                        <div class="bg-slate-50 p-4 rounded-xl border border-blue-100">
-                            <h4 class="font-black text-[10px] text-blue-600 mb-3 uppercase italic">Padre / Tutor 1</h4>
-                            <input type="text" id="p1_nom" placeholder="Nombre" class="input-field mb-2 bg-white">
-                            <input type="text" id="p1_dni" placeholder="DNI" class="input-field mb-2 bg-white">
-                            <select id="p1_esc" class="input-field mb-2 bg-white"><option value="">Escolaridad...</option><option>Completa</option><option>Incompleta</option></select>
-                            <select id="p1_auh" class="input-field bg-white"><option>AUH: NO</option><option>AUH: SI</option></select>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t">
+                        <div class="bg-blue-50/50 p-6 rounded-2xl border border-blue-100 space-y-4">
+                            <h4 class="text-[11px] font-black text-blue-800 uppercase italic underline decoration-blue-300">Responsable 1 (Padre/Tutor)</h4>
+                            <input type="text" id="p1_nom" placeholder="NOMBRE COMPLETO" class="input-inst bg-white">
+                            <input type="text" id="p1_tel" placeholder="TELÉFONO DE CONTACTO" class="input-inst bg-white">
+                            <input type="text" id="p1_dom" placeholder="DOMICILIO REAL" class="input-inst bg-white">
+                            <select id="p1_esc" class="input-inst bg-white">
+                                <option value="">ESCOLARIDAD...</option>
+                                <option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option>
+                                <option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option>
+                                <option>TERCIARIA COMPLETA</option><option>TERCIARIA INCOMPLETA</option>
+                                <option>UNIVERSITARIA COMPLETA</option><option>UNIVERSITARIA INCOMPLETA</option>
+                            </select>
                         </div>
-                        <div class="bg-slate-50 p-4 rounded-xl border border-pink-100">
-                            <h4 class="font-black text-[10px] text-pink-600 mb-3 uppercase italic">Madre / Tutor 2</h4>
-                            <input type="text" id="p2_nom" placeholder="Nombre" class="input-field mb-2 bg-white">
-                            <input type="text" id="p2_dni" placeholder="DNI" class="input-field mb-2 bg-white">
-                            <select id="p2_esc" class="input-field mb-2 bg-white"><option value="">Escolaridad...</option><option>Completa</option><option>Incompleta</option></select>
-                            <select id="p2_auh" class="input-field bg-white"><option>AUH: NO</option><option>AUH: SI</option></select>
+                        <div class="bg-pink-50/50 p-6 rounded-2xl border border-pink-100 space-y-4">
+                            <h4 class="text-[11px] font-black text-pink-800 uppercase italic underline decoration-pink-300">Responsable 2 (Madre/Tutora)</h4>
+                            <input type="text" id="p2_nom" placeholder="NOMBRE COMPLETO" class="input-inst bg-white">
+                            <input type="text" id="p2_tel" placeholder="TELÉFONO DE CONTACTO" class="input-inst bg-white">
+                            <input type="text" id="p2_dom" placeholder="DOMICILIO REAL" class="input-inst bg-white">
+                            <select id="p2_esc" class="input-inst bg-white">
+                                <option value="">ESCOLARIDAD...</option>
+                                <option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option>
+                                <option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option>
+                                <option>TERCIARIA COMPLETA</option><option>TERCIARIA INCOMPLETA</option>
+                                <option>UNIVERSITARIA COMPLETA</option><option>UNIVERSITARIA INCOMPLETA</option>
+                            </select>
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl shadow-lg hover:bg-blue-700 transition-all uppercase tracking-tighter">Guardar y Actualizar Matrícula</button>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-800 text-white font-black py-5 rounded-2xl shadow-lg transition-all uppercase tracking-tighter flex items-center justify-center gap-4">
+                        <i class="fas fa-check-double text-xl"></i> Validar y Guardar en Matrícula
+                    </button>
                 </form>
 
-                <div class="bg-white rounded-2xl shadow-xl border overflow-hidden flex flex-col">
-                    <div class="bg-slate-800 p-4">
-                        <select id="filtro_sala" class="w-full bg-slate-700 text-white p-2 rounded text-xs mb-2" onchange="renderMatricula()"></select>
-                        <input type="text" id="bus_nom" class="w-full bg-slate-700 text-white p-2 rounded text-xs" placeholder="Buscar por Nombre o DNI..." oninput="renderMatricula()">
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="bg-slate-800 rounded-3xl p-6 shadow-2xl text-white">
+                        <h3 class="font-black text-xs uppercase mb-4 text-blue-400 italic">Vista Previa por Sala</h3>
+                        <select id="filtro_sala" class="w-full bg-slate-700 p-3 rounded-xl border-none font-bold text-xs mb-4" onchange="renderLista()"></select>
+                        <input type="text" id="search" class="w-full bg-slate-700 p-3 rounded-xl border-none text-[11px]" placeholder="BUSCAR POR NOMBRE O DNI..." oninput="renderLista()">
                     </div>
-                    <div class="flex-1 overflow-y-auto p-2">
-                        <table class="w-full text-[10px]">
-                            <tbody id="tbody_mat" class="divide-y"></tbody>
-                        </table>
-                    </div>
+                    <div id="cont_lista" class="space-y-3 overflow-y-auto max-h-[600px] pr-2">
+                        </div>
                 </div>
             </div>
         </div>
 
         <div id="asistencia" class="tab-content">
-            <div class="bg-white rounded-2xl shadow-xl border p-6 overflow-x-auto">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-black uppercase text-sm italic">Libro de Registro Mensual</h3>
-                    <select id="asis_sala" class="border-2 p-2 rounded-lg font-black text-xs bg-slate-50" onchange="renderAsistencia()"></select>
+            <div class="bg-white rounded-3xl p-8 shadow-xl border">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 border-b pb-6">
+                    <div>
+                        <h2 class="text-xl font-black text-slate-800 italic uppercase">Libro de Asistencia</h2>
+                        <p class="text-[10px] font-black text-blue-500 uppercase tracking-widest">Carga diaria por fila (P = Punto / A = Ausente)</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <select id="asis_mes" class="input-inst !w-40 font-black" onchange="renderAsistencia()"></select>
+                        <select id="asis_sala" class="input-inst !w-56 font-black bg-blue-50" onchange="renderAsistencia()"></select>
+                    </div>
                 </div>
-                <table class="min-w-full border-collapse">
-                    <thead class="bg-slate-800 text-white text-[9px] uppercase font-black">
-                        <tr id="asis_head"></tr>
-                    </thead>
-                    <tbody id="asis_body" class="text-[10px] font-bold divide-y"></tbody>
-                </table>
+                <div class="overflow-x-auto rounded-xl border">
+                    <table class="w-full border-collapse">
+                        <thead class="bg-slate-800 text-white text-[9px] font-black uppercase">
+                            <tr id="asis_head"></tr>
+                        </thead>
+                        <tbody id="asis_body" class="text-[11px] font-bold divide-y"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <div id="supervision" class="tab-content space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
-                <div class="bg-white p-6 rounded-2xl shadow border-b-4 border-blue-600"><p class="text-[10px] font-black text-slate-400">MATRÍCULA ACTIVA</p><h4 id="st_total" class="text-3xl font-black">0</h4></div>
-                <div class="bg-white p-6 rounded-2xl shadow border-b-4 border-red-600"><p class="text-[10px] font-black text-slate-400">ALERTAS (+10 FALTAS)</p><h4 id="st_alertas" class="text-3xl font-black text-red-600">0</h4></div>
-                <div class="bg-white p-6 rounded-2xl shadow border-b-4 border-emerald-500"><p class="text-[10px] font-black text-slate-400">% ASISTENCIA</p><h4 id="st_pres" class="text-3xl font-black text-emerald-600">0%</h4></div>
-                <div class="bg-white p-6 rounded-2xl shadow border-b-4 border-orange-500"><p class="text-[10px] font-black text-slate-400">BAJAS</p><h4 id="st_bajas" class="text-3xl font-black">0</h4></div>
+        <div id="supervision" class="tab-content space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-3xl shadow-xl border-b-8 border-blue-600">
+                    <p class="text-[10px] font-black text-slate-400 uppercase">Matrícula Real</p>
+                    <h4 id="st_total" class="text-4xl font-black">0</h4>
+                </div>
+                <div class="bg-white p-6 rounded-3xl shadow-xl border-b-8 border-red-600">
+                    <p class="text-[10px] font-black text-slate-400 uppercase">Alertas (>10 Faltas)</p>
+                    <h4 id="st_alertas" class="text-4xl font-black text-red-600">0</h4>
+                </div>
+                <div class="bg-white p-6 rounded-3xl shadow-xl border-b-8 border-emerald-500">
+                    <p class="text-[10px] font-black text-slate-400 uppercase">% Asistencia General</p>
+                    <h4 id="st_pres" class="text-4xl font-black text-emerald-600">0%</h4>
+                </div>
+                <div class="bg-white p-6 rounded-3xl shadow-xl border-b-8 border-orange-500">
+                    <p class="text-[10px] font-black text-slate-400 uppercase">Inasistencias Totales</p>
+                    <h4 id="st_inasis" class="text-4xl font-black text-orange-600">0</h4>
+                </div>
             </div>
-            <div class="bg-white p-8 rounded-3xl shadow-xl border h-96">
-                <canvas id="chartMat"></canvas>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-3xl shadow-xl border h-[450px]">
+                    <h3 class="font-black text-xs uppercase text-slate-600 mb-6 italic"><i class="fas fa-chart-line mr-2"></i> Distribución de Matrícula por Sección</h3>
+                    <canvas id="chartMat"></canvas>
+                </div>
+                <div class="bg-white p-8 rounded-3xl shadow-xl border overflow-y-auto max-h-[450px]">
+                    <h3 class="font-black text-xs uppercase text-red-600 mb-6 italic"><i class="fas fa-bullhorn mr-2"></i> Reporte Crítico de Ausentismo</h3>
+                    <div id="alerta_lista" class="space-y-3"></div>
+                </div>
             </div>
         </div>
 
     </main>
 
     <script>
-        const SALAS = ["SALA ROSA TM", "SALA ROJA TM", "SALA NARANJA TM", "SALA AMARILLA TM", "SALA VIOLETA TM", "SALA AZUL TM", "SALA CELESTE TM", "SALA ROSA TT", "SALA ROJA TT", "SALA NARANJA TT", "SALA AMARILLA TT", "SALA VIOLETA TT", "SALA AZUL TT", "SALA CELESTE TT"];
-        let db = JSON.parse(localStorage.getItem('j926_v4_final')) || [];
+        const SALAS = ["SALA ROSA TM", "SALA ROJA TM", "SALA NARANJA TM", "SALA AMARILLA TM", "SALA VIOLETA TM", "SALA AZUL TM", "SALA CELESTE TM", 
+                       "SALA ROSA TT", "SALA ROJA TT", "SALA NARANJA TT", "SALA AMARILLA TT", "SALA VIOLETA TT", "SALA AZUL TT", "SALA CELESTE TT"];
+        
+        const MESES = ["MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+        
+        let db = JSON.parse(localStorage.getItem('j926_pro_final')) || [];
 
         function init() {
-            const selects = ['alu_sala', 'filtro_sala', 'asis_sala'];
-            selects.forEach(id => {
+            const sc = ['alu_sala', 'filtro_sala', 'asis_sala'];
+            sc.forEach(id => {
                 const el = document.getElementById(id);
                 SALAS.forEach(s => el.innerHTML += `<option value="${s}">${s}</option>`);
             });
-            renderMatricula();
+            const sm = document.getElementById('asis_mes');
+            MESES.forEach(m => sm.innerHTML += `<option value="${m}">${m}</option>`);
+
+            renderLista();
             renderAsistencia();
             actualizarEstadisticas();
         }
 
-        function openTab(id) {
+        function showTab(id) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
             document.querySelectorAll('nav button').forEach(b => {
                 b.classList.remove('text-blue-600', 'border-blue-600');
                 b.classList.add('text-slate-500', 'border-transparent');
             });
-            document.getElementById('btn-' + id).classList.add('text-blue-600', 'border-blue-600');
+            document.getElementById(id).classList.add('active');
+            document.getElementById('btn-'+id).classList.add('text-blue-600', 'border-blue-600');
             if(id === 'supervision') actualizarEstadisticas();
         }
 
-        function voz(id) {
-            const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        // CARGA POR VOZ
+        function voiceIn(id) {
+            const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if(!Speech) return alert("Soporte de voz no disponible");
+            const rec = new Speech();
             rec.lang = 'es-AR';
-            rec.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); };
+            const icon = event.target;
+            icon.classList.add('voice-active');
+            rec.onresult = (e) => {
+                document.getElementById(id).value = e.results[0][0].transcript.toUpperCase();
+                icon.classList.remove('voice-active');
+            };
+            rec.onerror = () => icon.classList.remove('voice-active');
             rec.start();
         }
 
-        document.getElementById('formMatricula').onsubmit = function(e) {
+        // GESTIÓN DE MATRÍCULA
+        document.getElementById('formAlu').onsubmit = function(e) {
             e.preventDefault();
             const dni = document.getElementById('alu_dni').value;
             const alu = {
-                dni: dni,
-                nom: document.getElementById('alu_nombre').value.toUpperCase(),
+                dni,
+                nom: document.getElementById('alu_nom').value.toUpperCase(),
+                nac: document.getElementById('alu_nac').value.toUpperCase(),
                 sala: document.getElementById('alu_sala').value,
-                edad: document.getElementById('alu_edad').value,
-                salud: document.getElementById('alu_salud').value,
+                salud: document.getElementById('alu_salud').value.toUpperCase(),
                 status: 'ACTIVO',
                 asis: {},
-                p1: { nom: document.getElementById('p1_nom').value, dni: document.getElementById('p1_dni').value, esc: document.getElementById('p1_esc').value, auh: document.getElementById('p1_auh').value },
-                p2: { nom: document.getElementById('p2_nom').value, dni: document.getElementById('p2_dni').value, esc: document.getElementById('p2_esc').value, auh: document.getElementById('p2_auh').value }
+                p1: { nom: document.getElementById('p1_nom').value, tel: document.getElementById('p1_tel').value, dom: document.getElementById('p1_dom').value, esc: document.getElementById('p1_esc').value },
+                p2: { nom: document.getElementById('p2_nom').value, tel: document.getElementById('p2_tel').value, dom: document.getElementById('p2_dom').value, esc: document.getElementById('p2_esc').value }
             };
             const idx = db.findIndex(x => x.dni === dni);
             if(idx > -1) {
-                alu.asis = db[idx].asis; // Preservar asistencias cargadas
+                alu.asis = db[idx].asis; // Preservar asistencias al editar
                 db[idx] = alu;
-            } else {
-                db.push(alu);
-            }
-            save(); renderMatricula(); this.reset();
-            alert("REGISTRO EXITOSO");
+            } else { db.push(alu); }
+            save(); renderLista(); this.reset();
+            alert("SISTEMA ACTUALIZADO CON ÉXITO");
         };
 
-        function renderMatricula() {
-            const tb = document.getElementById('tbody_mat');
-            const sl = document.getElementById('filtro_sala').value;
-            const bus = document.getElementById('bus_nom').value.toUpperCase();
-            tb.innerHTML = '';
-            db.filter(a => a.sala === sl && (a.nom.includes(bus) || a.dni.includes(bus))).forEach(a => {
-                tb.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-3 font-black">${a.nom}<br><span class="text-[8px] text-slate-400">DNI: ${a.dni} | SALUD: ${a.salud}</span></td>
-                <td class="text-right p-3"><button onclick="editAlu('${a.dni}')" class="text-blue-600 mr-2 font-bold">EDITAR</button>
-                <button onclick="cambiarEstado('${a.dni}')" class="text-red-500 font-bold">${a.status === 'ACTIVO' ? 'BAJA' : 'ALTA'}</button></td></tr>`;
+        function renderLista() {
+            const cont = document.getElementById('cont_lista');
+            const sala = document.getElementById('filtro_sala').value;
+            const bus = document.getElementById('search').value.toUpperCase();
+            cont.innerHTML = '';
+            db.filter(a => a.sala === sala && (a.nom.includes(bus) || a.dni.includes(bus))).forEach(a => {
+                cont.innerHTML += `
+                    <div class="bg-white p-4 rounded-2xl shadow border-l-4 ${a.status==='ACTIVO'?'border-blue-500':'border-red-500'}">
+                        <h4 class="font-black text-[11px]">${a.nom}</h4>
+                        <p class="text-[9px] text-slate-400 font-bold uppercase">DNI: ${a.dni} | ${a.status}</p>
+                        <div class="mt-3 flex gap-2">
+                            <button onclick="editAlu('${a.dni}')" class="text-[9px] font-black bg-blue-50 text-blue-700 px-3 py-1 rounded-lg">EDITAR/CORREGIR</button>
+                            <button onclick="toggleStatus('${a.dni}')" class="text-[9px] font-black bg-slate-100 px-3 py-1 rounded-lg">BAJA/ALTA</button>
+                        </div>
+                    </div>`;
             });
-        }
-
-        function renderAsistencia() {
-            const h = document.getElementById('asis_head');
-            const b = document.getElementById('asis_body');
-            const s = document.getElementById('asis_sala').value;
-            h.innerHTML = '<th class="p-2 border">NOMBRE DEL ALUMNO</th>';
-            for(let i=1; i<=30; i++) h.innerHTML += `<th class="border w-6 text-center">${i}</th>`;
-            h.innerHTML += '<th class="p-2 border bg-red-700">TOTAL</th>';
-            b.innerHTML = '';
-            db.filter(a => a.sala === s).forEach(a => {
-                let f = 0;
-                let fila = `<tr><td class="p-2 border font-bold">${a.nom}</td>`;
-                for(let d=1; d<=30; d++) {
-                    const v = a.asis[d] || '.';
-                    if(v === 'A') f++;
-                    fila += `<td class="asis-cell ${v==='A'?'text-red-600 bg-red-50':'text-emerald-500'}" onclick="toggleAsis('${a.dni}', ${d})">${v}</td>`;
-                }
-                fila += `<td class="p-2 border text-center font-black ${f>=10?'bg-red-600 text-white':''}">${f}</td></tr>`;
-                b.innerHTML += fila;
-            });
-        }
-
-        function toggleAsis(dni, d) {
-            const a = db.find(x => x.dni === dni);
-            if(a.status === 'BAJA') return;
-            a.asis[d] = (a.asis[d] || '.') === '.' ? 'A' : '.';
-            save(); renderAsistencia();
         }
 
         function editAlu(dni) {
             const a = db.find(x => x.dni === dni);
-            document.getElementById('alu_nombre').value = a.nom;
+            document.getElementById('alu_nom').value = a.nom;
             document.getElementById('alu_dni').value = a.dni;
+            document.getElementById('alu_nac').value = a.nac;
             document.getElementById('alu_sala').value = a.sala;
-            document.getElementById('alu_edad').value = a.edad;
             document.getElementById('alu_salud').value = a.salud;
-            window.scrollTo({top: 0, behavior: 'smooth'});
+            document.getElementById('p1_nom').value = a.p1.nom; document.getElementById('p1_tel').value = a.p1.tel;
+            document.getElementById('p1_dom').value = a.p1.dom; document.getElementById('p1_esc').value = a.p1.esc;
+            document.getElementById('p2_nom').value = a.p2.nom; document.getElementById('p2_tel').value = a.p2.tel;
+            document.getElementById('p2_dom').value = a.p2.dom; document.getElementById('p2_esc').value = a.p2.esc;
+            showTab('inscripcion'); window.scrollTo({top: 0, behavior: 'smooth'});
         }
 
-        function cambiarEstado(dni) {
+        // ASISTENCIA
+        function renderAsistencia() {
+            const h = document.getElementById('asis_head');
+            const b = document.getElementById('asis_body');
+            const s = document.getElementById('asis_sala').value;
+            const m = document.getElementById('asis_mes').value;
+            h.innerHTML = '<th class="p-3 border min-w-[200px] sticky left-0 bg-slate-800">NOMBRE DEL ALUMNO</th>';
+            for(let i=1; i<=31; i++) h.innerHTML += `<th class="asis-cell bg-slate-700">${i}</th>`;
+            h.innerHTML += '<th class="p-3 border bg-red-600">TOTAL</th>';
+            b.innerHTML = '';
+            db.filter(a => a.sala === s).sort((a,b)=>a.nom.localeCompare(b.nom)).forEach(a => {
+                let f = 0;
+                let fila = `<tr><td class="p-2 border font-black bg-white sticky left-0 shadow-sm">${a.nom}</td>`;
+                for(let d=1; d<=31; d++) {
+                    const key = `${m}_${d}`;
+                    const val = a.asis[key] || '.';
+                    if(val === 'A') f++;
+                    fila += `<td class="asis-cell ${val==='A'?'text-red-600 bg-red-50':'text-emerald-500'}" onclick="mark('${a.dni}','${key}')">${val}</td>`;
+                }
+                fila += `<td class="p-2 border text-center font-black ${f>=10?'bg-red-600 text-white animate-pulse':''}">${f}</td></tr>`;
+                b.innerHTML += fila;
+            });
+        }
+
+        function mark(dni, key) {
             const a = db.find(x => x.dni === dni);
-            a.status = a.status === 'ACTIVO' ? 'BAJA' : 'ACTIVO';
-            save(); renderMatricula();
+            if(a.status === 'BAJA') return;
+            a.asis[key] = (a.asis[key] || '.') === '.' ? 'A' : '.';
+            save(); renderAsistencia();
         }
 
+        // SUPERVISIÓN Y ESTADÍSTICAS
         function actualizarEstadisticas() {
             const activos = db.filter(a => a.status === 'ACTIVO');
             document.getElementById('st_total').innerText = activos.length;
             document.getElementById('st_bajas').innerText = db.filter(a => a.status === 'BAJA').length;
-            let al = 0;
-            activos.forEach(a => { if(Object.values(a.asis).filter(v => v === 'A').length >= 10) al++; });
-            document.getElementById('st_alertas').innerText = al;
-            renderChart(activos);
+            
+            let alertas = 0; let totalInasistencias = 0;
+            const listAlert = document.getElementById('alerta_lista');
+            listAlert.innerHTML = '';
+
+            activos.forEach(a => {
+                const f = Object.values(a.asis).filter(v => v === 'A').length;
+                totalInasistencias += f;
+                if(f >= 10) {
+                    alertas++;
+                    listAlert.innerHTML += `
+                        <div class="p-4 bg-red-50 border-r-4 border-red-600 rounded-2xl flex justify-between items-center">
+                            <div><p class="font-black text-xs text-red-800">${a.nom}</p><p class="text-[9px] font-bold uppercase">${a.sala}</p></div>
+                            <span class="bg-red-600 text-white px-4 py-1 rounded-full text-[10px] font-black">${f} FALTAS</span>
+                        </div>`;
+                }
+            });
+            document.getElementById('st_alertas').innerText = alertas;
+            document.getElementById('st_inasis').innerText = totalInasistencias;
+            drawChart(activos);
         }
 
-        function renderChart(activos) {
+        function drawChart(activos) {
             const ctx = document.getElementById('chartMat').getContext('2d');
             if(window.myChart) window.myChart.destroy();
             window.myChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: SALAS,
-                    datasets: [{ label: 'Matrícula Real', data: SALAS.map(s => activos.filter(a => a.sala === s).length), backgroundColor: '#2563eb' }]
+                    datasets: [{ label: 'MATRÍCULA ACTIVA', data: SALAS.map(s => activos.filter(a => a.sala === s).length), backgroundColor: '#2563eb', borderRadius: 8 }]
                 },
                 options: { responsive: true, maintainAspectRatio: false }
             });
         }
 
-        function save() { localStorage.setItem('j926_v4_final', JSON.stringify(db)); }
-        function exportarDatos() { alert("Exportando a Formato Institucional..."); }
+        // BACKUP Y EXCEL
+        function save() { localStorage.setItem('j926_pro_final', JSON.stringify(db)); }
+        
+        function descargarBackup() {
+            const blob = new Blob([JSON.stringify(db)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `RESPALDO_JARDIN_926_${new Date().toLocaleDateString()}.json`;
+            a.click();
+        }
+
+        function importarDatos() {
+            const file = document.getElementById('importFile').files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                db = JSON.parse(e.target.result);
+                save(); init(); alert("BASE DE DATOS RESTAURADA");
+            };
+            reader.readAsText(file);
+        }
+
+        function exportarExcelInstitucional() {
+            let csv = "JARDIN DE INFANTES 926 - LOMAS DE ZAMORA\n";
+            csv += "REPORTE INSTITUCIONAL DE MATRICULA Y ASISTENCIA\n\n";
+            csv += "APELLIDO Y NOMBRE,DNI,SALA,STATUS,SALUD,PADRE,TEL_P1,MADRE,TEL_P2,FALTAS_TOTALES\n";
+            db.forEach(a => {
+                const f = Object.values(a.asis).filter(v => v === 'A').length;
+                csv += `${a.nom},${a.dni},${a.sala},${a.status},${a.salud},${a.p1.nom},${a.p1.tel},${a.p2.nom},${a.p2.tel},${f}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.setAttribute("href", URL.createObjectURL(blob));
+            link.setAttribute("download", "MATRICULA_JARDIN_926.csv");
+            link.click();
+        }
+
+        function toggleStatus(dni) {
+            const a = db.find(x => x.dni === dni);
+            a.status = a.status === 'ACTIVO' ? 'BAJA' : 'ACTIVO';
+            save(); renderLista();
+        }
 
         init();
     </script>
