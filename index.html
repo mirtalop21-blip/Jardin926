@@ -1,98 +1,148 @@
-                        <input type="text" id="r2_dom" class="input-field" placeholder="Domicilio">
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="text" id="r2_tel" class="input-field" placeholder="Teléfono">
-                            <input type="text" id="r2_ocu" class="input-field" placeholder="Ocupación">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA PROFESIONAL JARDÍN 926</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .input-field { width: 100%; border: 1.5px solid #cbd5e1; padding: 10px; border-radius: 8px; font-size: 13px; text-transform: uppercase; transition: 0.3s; }
+        .input-field:focus { border-color: #2563eb; outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .label-style { font-size: 11px; font-weight: 800; color: #475569; display: block; margin-bottom: 4px; text-transform: uppercase; }
+        .asis-cell { min-width: 32px; height: 32px; text-align: center; border: 1px solid #e2e8f0; cursor: pointer; font-weight: 900; }
+        .asis-cell:hover { background: #f8fafc; }
+    </style>
+</head>
+<body>
+
+    <header class="bg-[#0f172a] text-white p-6 border-b-4 border-blue-600 shadow-xl sticky top-0 z-[100]">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-black italic tracking-tighter">JARDÍN DE INFANTES N° 926</h1>
+                <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Lomas de Zamora | Gestión de Matrícula y Asistencia</p>
+            </div>
+            <button onclick="exportarDatos()" class="mt-4 md:mt-0 bg-emerald-600 hover:bg-emerald-700 px-6 py-2 rounded-lg text-xs font-black uppercase transition-all">
+                <i class="fas fa-file-excel mr-2"></i> Exportar Supervisión
+            </button>
+        </div>
+    </header>
+
+    <nav class="bg-white border-b sticky top-[88px] z-50 shadow-md">
+        <div class="max-w-7xl mx-auto flex">
+            <button onclick="openTab('matricula')" id="btn-matricula" class="flex-1 py-4 font-black border-b-4 border-blue-600 text-blue-600 uppercase text-[11px]">Matrícula y Legajos</button>
+            <button onclick="openTab('asistencia')" id="btn-asistencia" class="flex-1 py-4 font-black border-b-4 border-transparent text-slate-500 uppercase text-[11px]">Libro de Asistencia</button>
+            <button onclick="openTab('supervision')" id="btn-supervision" class="flex-1 py-4 font-black border-b-4 border-transparent text-slate-500 uppercase text-[11px]">Supervisión y Estadísticas</button>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto p-6">
+        
+        <div id="matricula" class="tab-content active space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <form id="formMatricula" class="lg:col-span-2 bg-white rounded-2xl p-8 shadow-xl border space-y-6">
+                    <h3 class="font-black text-slate-700 uppercase text-sm border-b pb-2 italic">Carga de Datos del Alumno</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="label-style">Nombre y Apellido <i class="fas fa-microphone text-blue-500 cursor-pointer" onclick="voz('alu_nombre')"></i></label>
+                            <input type="text" id="alu_nombre" class="input-field" required>
                         </div>
-                        <select id="r2_esc" class="input-field"><option value="">Escolaridad...</option><option>Primaria Completa</option><option>Primaria Incompleta</option><option>Secundaria Completa</option><option>Secundaria Incompleta</option><option>Terciaria Completa</option></select>
-                        <select id="r2_auh" class="input-field"><option value="NO">¿Recibe AUH? NO</option><option value="SI">¿Recibe AUH? SI</option></select>
+                        <div>
+                            <label class="label-style">DNI <i class="fas fa-microphone text-blue-500 cursor-pointer" onclick="voz('alu_dni')"></i></label>
+                            <input type="text" id="alu_dni" class="input-field" required>
+                        </div>
+                        <div>
+                            <label class="label-style">Sala / Sección</label>
+                            <select id="alu_sala" class="input-field font-bold text-blue-700 bg-blue-50"></select>
+                        </div>
+                        <div>
+                            <label class="label-style">Edad al 30/06</label>
+                            <input type="text" id="alu_edad" class="input-field">
+                        </div>
+                        <div>
+                            <label class="label-style text-red-600 font-black">Salud / Alergias <i class="fas fa-microphone" onclick="voz('alu_salud')"></i></label>
+                            <input type="text" id="alu_salud" class="input-field border-red-200">
+                        </div>
                     </div>
-                </div>
 
-                <button type="submit" id="btn_guardar" class="w-full mt-6 bg-blue-600 text-white font-black py-4 rounded-xl uppercase shadow-lg hover:bg-blue-700 transition-all">Guardar Alumno en Matrícula</button>
-            </form>
-
-            <div class="bg-white rounded-xl shadow-lg border overflow-hidden">
-                <div class="bg-slate-800 p-4 flex flex-col md:flex-row justify-between gap-4">
-                    <h3 class="text-white font-black uppercase text-xs self-center">Control de Carga por Sala</h3>
-                    <div class="flex gap-2">
-                        <select id="filtro_sala" class="bg-slate-700 text-white p-2 rounded text-xs" onchange="renderMatricula()"></select>
-                        <input type="text" id="bus_nom" class="bg-slate-700 text-white p-2 rounded text-xs w-48" placeholder="Buscar por Nombre..." oninput="renderMatricula()">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-blue-100">
+                            <h4 class="font-black text-[10px] text-blue-600 mb-3 uppercase italic">Padre / Tutor 1</h4>
+                            <input type="text" id="p1_nom" placeholder="Nombre" class="input-field mb-2 bg-white">
+                            <input type="text" id="p1_dni" placeholder="DNI" class="input-field mb-2 bg-white">
+                            <select id="p1_esc" class="input-field mb-2 bg-white"><option value="">Escolaridad...</option><option>Completa</option><option>Incompleta</option></select>
+                            <select id="p1_auh" class="input-field bg-white"><option>AUH: NO</option><option>AUH: SI</option></select>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-pink-100">
+                            <h4 class="font-black text-[10px] text-pink-600 mb-3 uppercase italic">Madre / Tutor 2</h4>
+                            <input type="text" id="p2_nom" placeholder="Nombre" class="input-field mb-2 bg-white">
+                            <input type="text" id="p2_dni" placeholder="DNI" class="input-field mb-2 bg-white">
+                            <select id="p2_esc" class="input-field mb-2 bg-white"><option value="">Escolaridad...</option><option>Completa</option><option>Incompleta</option></select>
+                            <select id="p2_auh" class="input-field bg-white"><option>AUH: NO</option><option>AUH: SI</option></select>
+                        </div>
                     </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead class="bg-slate-100 text-[10px] uppercase font-black text-slate-600 border-b">
-                            <tr>
-                                <th class="p-4">Alumno</th>
-                                <th class="p-4">DNI</th>
-                                <th class="p-4">Salud/Alergia</th>
-                                <th class="p-4 text-center">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody_matricula" class="text-xs divide-y"></tbody>
-                    </table>
+
+                    <button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl shadow-lg hover:bg-blue-700 transition-all uppercase tracking-tighter">Guardar y Actualizar Matrícula</button>
+                </form>
+
+                <div class="bg-white rounded-2xl shadow-xl border overflow-hidden flex flex-col">
+                    <div class="bg-slate-800 p-4">
+                        <select id="filtro_sala" class="w-full bg-slate-700 text-white p-2 rounded text-xs mb-2" onchange="renderMatricula()"></select>
+                        <input type="text" id="bus_nom" class="w-full bg-slate-700 text-white p-2 rounded text-xs" placeholder="Buscar por Nombre o DNI..." oninput="renderMatricula()">
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-2">
+                        <table class="w-full text-[10px]">
+                            <tbody id="tbody_mat" class="divide-y"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div id="asistencia" class="tab-content">
-            <div class="bg-white rounded-xl shadow-lg border p-4">
-                <div class="flex flex-col md:flex-row justify-between mb-4 gap-4">
-                    <h2 class="font-black uppercase text-sm">Libro de Asistencia (Mes en Curso)</h2>
-                    <div class="flex gap-2">
-                        <select id="asis_sala" class="border p-2 rounded text-xs font-bold" onchange="renderAsistencia()"></select>
-                        <button onclick="marcarTodosPresentes()" class="bg-blue-100 text-blue-700 px-3 py-1 rounded text-[10px] font-black uppercase">Todo Presente Hoy</button>
-                    </div>
+            <div class="bg-white rounded-2xl shadow-xl border p-6 overflow-x-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-black uppercase text-sm italic">Libro de Registro Mensual</h3>
+                    <select id="asis_sala" class="border-2 p-2 rounded-lg font-black text-xs bg-slate-50" onchange="renderAsistencia()"></select>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full border-collapse">
-                        <thead class="bg-slate-800 text-white text-[9px]">
-                            <tr id="asis_header"></tr>
-                        </thead>
-                        <tbody id="asis_body" class="text-[10px] bg-white divide-y"></tbody>
-                    </table>
-                </div>
+                <table class="min-w-full border-collapse">
+                    <thead class="bg-slate-800 text-white text-[9px] uppercase font-black">
+                        <tr id="asis_head"></tr>
+                    </thead>
+                    <tbody id="asis_body" class="text-[10px] font-bold divide-y"></tbody>
+                </table>
             </div>
         </div>
 
         <div id="supervision" class="tab-content space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="bg-white p-4 rounded-xl shadow border-l-4 border-blue-500">
-                    <p class="text-[10px] font-black text-slate-500 uppercase">Matrícula Total</p>
-                    <h4 id="stat_total" class="text-2xl font-black">0</h4>
-                </div>
-                <div class="bg-white p-4 rounded-xl shadow border-l-4 border-emerald-500">
-                    <p class="text-[10px] font-black text-slate-500 uppercase">Presentismo Promedio</p>
-                    <h4 id="stat_pres" class="text-2xl font-black">0%</h4>
-                </div>
-                <div class="bg-white p-4 rounded-xl shadow border-l-4 border-orange-500">
-                    <p class="text-[10px] font-black text-slate-500 uppercase">Bajas del Mes</p>
-                    <h4 id="stat_bajas" class="text-2xl font-black">0</h4>
-                </div>
-                <div class="bg-white p-4 rounded-xl shadow border-l-4 border-red-500">
-                    <p class="text-[10px] font-black text-slate-500 uppercase">Alertas (>10 Faltas)</p>
-                    <h4 id="stat_alertas" class="text-2xl font-black text-red-600">0</h4>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+                <div class="bg-white p-6 rounded-2xl shadow border-b-4 border-blue-600"><p class="text-[10px] font-black text-slate-400">MATRÍCULA ACTIVA</p><h4 id="st_total" class="text-3xl font-black">0</h4></div>
+                <div class="bg-white p-6 rounded-2xl shadow border-b-4 border-red-600"><p class="text-[10px] font-black text-slate-400">ALERTAS (+10 FALTAS)</p><h4 id="st_alertas" class="text-3xl font-black text-red-600">0</h4></div>
+                <div class="bg-white p-6 rounded-2xl shadow border-b-4 border-emerald-500"><p class="text-[10px] font-black text-slate-400">% ASISTENCIA</p><h4 id="st_pres" class="text-3xl font-black text-emerald-600">0%</h4></div>
+                <div class="bg-white p-6 rounded-2xl shadow border-b-4 border-orange-500"><p class="text-[10px] font-black text-slate-400">BAJAS</p><h4 id="st_bajas" class="text-3xl font-black">0</h4></div>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow border">
-                <canvas id="graficoMatricula" height="100"></canvas>
+            <div class="bg-white p-8 rounded-3xl shadow-xl border h-96">
+                <canvas id="chartMat"></canvas>
             </div>
         </div>
 
     </main>
 
     <script>
-        // Configuración de Salas según Instrucciones del Jardín 926
-        const SALAS = ["Sala Rosa TM", "Sala Roja TM", "Sala Naranja TM", "Sala Amarilla TM", "Sala Violeta TM", "Sala Azul TM", "Sala Celeste TM", "Sala Rosa TT", "Sala Roja TT", "Sala Naranja TT", "Sala Amarilla TT", "Sala Violeta TT", "Sala Azul TT", "Sala Celeste TT"]; //
-        let db = JSON.parse(localStorage.getItem('j926_v4_data')) || [];
+        const SALAS = ["SALA ROSA TM", "SALA ROJA TM", "SALA NARANJA TM", "SALA AMARILLA TM", "SALA VIOLETA TM", "SALA AZUL TM", "SALA CELESTE TM", "SALA ROSA TT", "SALA ROJA TT", "SALA NARANJA TT", "SALA AMARILLA TT", "SALA VIOLETA TT", "SALA AZUL TT", "SALA CELESTE TT"];
+        let db = JSON.parse(localStorage.getItem('j926_v4_final')) || [];
 
         function init() {
-            const sc = document.getElementById('alu_sala');
-            const sf = document.getElementById('filtro_sala');
-            const sa = document.getElementById('asis_sala');
-            SALAS.forEach(s => {
-                const opt = `<option value="${s}">${s}</option>`;
-                sc.innerHTML += opt; sf.innerHTML += opt; sa.innerHTML += opt;
+            const selects = ['alu_sala', 'filtro_sala', 'asis_sala'];
+            selects.forEach(id => {
+                const el = document.getElementById(id);
+                SALAS.forEach(s => el.innerHTML += `<option value="${s}">${s}</option>`);
             });
             renderMatricula();
             renderAsistencia();
@@ -106,138 +156,123 @@
                 b.classList.remove('text-blue-600', 'border-blue-600');
                 b.classList.add('text-slate-500', 'border-transparent');
             });
-            document.getElementById('tab-btn-' + id).classList.add('text-blue-600', 'border-blue-600');
+            document.getElementById('btn-' + id).classList.add('text-blue-600', 'border-blue-600');
             if(id === 'supervision') actualizarEstadisticas();
         }
 
-        // --- SISTEMA DE VOZ ---
-        function iniciarVoz(id) {
-            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if(!SpeechRec) return alert("Navegador no compatible con voz");
-            const rec = new SpeechRec();
+        function voz(id) {
+            const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             rec.lang = 'es-AR';
             rec.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); };
             rec.start();
         }
 
-        // --- MATRÍCULA Y EDICIÓN ---
         document.getElementById('formMatricula').onsubmit = function(e) {
             e.preventDefault();
             const dni = document.getElementById('alu_dni').value;
             const alu = {
                 dni: dni,
-                nombre: document.getElementById('alu_nombre').value.toUpperCase(),
-                f_nac: document.getElementById('alu_f_nac').value,
-                edad: document.getElementById('alu_edad').value,
+                nom: document.getElementById('alu_nombre').value.toUpperCase(),
                 sala: document.getElementById('alu_sala').value,
-                dom: document.getElementById('alu_dom').value,
-                her_cant: document.getElementById('alu_her_cant').value,
-                her_jardin: document.getElementById('alu_her_jardin').value,
+                edad: document.getElementById('alu_edad').value,
                 salud: document.getElementById('alu_salud').value,
                 status: 'ACTIVO',
-                asistencias: {}, //
-                r1: { nom: document.getElementById('r1_nom').value, dni: document.getElementById('r1_dni').value, esc: document.getElementById('r1_esc').value, auh: document.getElementById('r1_auh').value },
-                r2: { nom: document.getElementById('r2_nom').value, dni: document.getElementById('r2_dni').value, esc: document.getElementById('r2_esc').value, auh: document.getElementById('r2_auh').value }
+                asis: {},
+                p1: { nom: document.getElementById('p1_nom').value, dni: document.getElementById('p1_dni').value, esc: document.getElementById('p1_esc').value, auh: document.getElementById('p1_auh').value },
+                p2: { nom: document.getElementById('p2_nom').value, dni: document.getElementById('p2_dni').value, esc: document.getElementById('p2_esc').value, auh: document.getElementById('p2_auh').value }
             };
             const idx = db.findIndex(x => x.dni === dni);
-            if(idx > -1) db[idx] = alu; else db.push(alu);
-            saveData();
-            renderMatricula(); this.reset();
-            alert("LEGADO GUARDADO Y ACTUALIZADO");
+            if(idx > -1) {
+                alu.asis = db[idx].asis; // Preservar asistencias cargadas
+                db[idx] = alu;
+            } else {
+                db.push(alu);
+            }
+            save(); renderMatricula(); this.reset();
+            alert("REGISTRO EXITOSO");
         };
 
         function renderMatricula() {
-            const tbody = document.getElementById('tbody_matricula');
-            tbody.innerHTML = '';
-            const filtro = document.getElementById('filtro_sala').value;
+            const tb = document.getElementById('tbody_mat');
+            const sl = document.getElementById('filtro_sala').value;
             const bus = document.getElementById('bus_nom').value.toUpperCase();
-
-            db.filter(a => a.sala === filtro && a.nombre.includes(bus)).forEach(a => {
-                tbody.innerHTML += `
-                    <tr class="${a.status === 'BAJA' ? 'bg-red-50' : ''}">
-                        <td class="p-4 font-bold text-slate-800">${a.nombre}</td>
-                        <td class="p-4">${a.dni}</td>
-                        <td class="p-4 text-red-600 font-bold">${a.salud || '-'}</td>
-                        <td class="p-4 text-center space-x-2">
-                            <button onclick="editAlu('${a.dni}')" class="text-blue-600 font-bold">EDITAR</button>
-                            ${a.status === 'BAJA' 
-                                ? `<button onclick="cambiarEstado('${a.dni}', 'ACTIVO')" class="bg-green-600 text-white px-2 py-1 rounded text-[9px] font-black">REINCORPORAR</button>` 
-                                : `<button onclick="cambiarEstado('${a.dni}', 'BAJA')" class="bg-red-600 text-white px-2 py-1 rounded text-[9px] font-black">BAJA</button>`
-                            }
-                        </td>
-                    </tr>
-                `;
+            tb.innerHTML = '';
+            db.filter(a => a.sala === sl && (a.nom.includes(bus) || a.dni.includes(bus))).forEach(a => {
+                tb.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-3 font-black">${a.nom}<br><span class="text-[8px] text-slate-400">DNI: ${a.dni} | SALUD: ${a.salud}</span></td>
+                <td class="text-right p-3"><button onclick="editAlu('${a.dni}')" class="text-blue-600 mr-2 font-bold">EDITAR</button>
+                <button onclick="cambiarEstado('${a.dni}')" class="text-red-500 font-bold">${a.status === 'ACTIVO' ? 'BAJA' : 'ALTA'}</button></td></tr>`;
             });
+        }
+
+        function renderAsistencia() {
+            const h = document.getElementById('asis_head');
+            const b = document.getElementById('asis_body');
+            const s = document.getElementById('asis_sala').value;
+            h.innerHTML = '<th class="p-2 border">NOMBRE DEL ALUMNO</th>';
+            for(let i=1; i<=30; i++) h.innerHTML += `<th class="border w-6 text-center">${i}</th>`;
+            h.innerHTML += '<th class="p-2 border bg-red-700">TOTAL</th>';
+            b.innerHTML = '';
+            db.filter(a => a.sala === s).forEach(a => {
+                let f = 0;
+                let fila = `<tr><td class="p-2 border font-bold">${a.nom}</td>`;
+                for(let d=1; d<=30; d++) {
+                    const v = a.asis[d] || '.';
+                    if(v === 'A') f++;
+                    fila += `<td class="asis-cell ${v==='A'?'text-red-600 bg-red-50':'text-emerald-500'}" onclick="toggleAsis('${a.dni}', ${d})">${v}</td>`;
+                }
+                fila += `<td class="p-2 border text-center font-black ${f>=10?'bg-red-600 text-white':''}">${f}</td></tr>`;
+                b.innerHTML += fila;
+            });
+        }
+
+        function toggleAsis(dni, d) {
+            const a = db.find(x => x.dni === dni);
+            if(a.status === 'BAJA') return;
+            a.asis[d] = (a.asis[d] || '.') === '.' ? 'A' : '.';
+            save(); renderAsistencia();
         }
 
         function editAlu(dni) {
             const a = db.find(x => x.dni === dni);
-            document.getElementById('alu_nombre').value = a.nombre;
+            document.getElementById('alu_nombre').value = a.nom;
             document.getElementById('alu_dni').value = a.dni;
             document.getElementById('alu_sala').value = a.sala;
-            document.getElementById('alu_dom').value = a.dom || '';
-            document.getElementById('alu_salud').value = a.salud || '';
-            // (Carga el resto de los campos para editar...)
+            document.getElementById('alu_edad').value = a.edad;
+            document.getElementById('alu_salud').value = a.salud;
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
 
-        function cambiarEstado(dni, estado) {
-            const idx = db.findIndex(x => x.dni === dni);
-            db[idx].status = estado;
-            saveData();
-            renderMatricula();
-        }
-
-        // --- LIBRO DE ASISTENCIA 30 DÍAS ---
-        function renderAsistencia() {
-            const header = document.getElementById('asis_header');
-            const body = document.getElementById('asis_body');
-            const sala = document.getElementById('asis_sala').value;
-            
-            // Cabecera con 30 días
-            header.innerHTML = '<th class="p-2 border">ALUMNO</th><th class="p-2 border">ALTA/BAJA</th>';
-            for(let i=1; i<=30; i++) header.innerHTML += `<th class="border w-8">${i}</th>`;
-            header.innerHTML += '<th class="p-2 border bg-red-700">TOTAL FALTAS</th>';
-
-            body.innerHTML = '';
-            db.filter(a => a.sala === sala).forEach(a => {
-                let faltas = 0;
-                let fila = `<tr class="${a.status === 'BAJA' ? 'opacity-50 grayscale' : ''}">
-                    <td class="p-2 border font-bold">${a.nombre}</td>
-                    <td class="p-2 border text-center font-black">${a.status}</td>`;
-                
-                for(let d=1; d<=30; d++) {
-                    const val = a.asistencias[d] || '.';
-                    if(val === 'A') faltas++;
-                    fila += `<td class="asistencia-cell border ${val==='A'?'text-red-600':'text-green-600'}" onclick="toggleAsis('${a.dni}', ${d})">${val}</td>`;
-                }
-                
-                fila += `<td class="p-2 border text-center font-black ${faltas >= 10 ? 'bg-red-500 text-white' : ''}">${faltas}</td></tr>`;
-                body.innerHTML += fila;
-            });
-        }
-
-        function toggleAsis(dni, dia) {
+        function cambiarEstado(dni) {
             const a = db.find(x => x.dni === dni);
-            if(a.status === 'BAJA') return;
-            const actual = a.asistencias[dia] || '.';
-            a.asistencias[dia] = (actual === '.') ? 'A' : '.'; // . = Presente, A = Ausente
-            saveData();
-            renderAsistencia();
+            a.status = a.status === 'ACTIVO' ? 'BAJA' : 'ACTIVO';
+            save(); renderMatricula();
         }
-
-        function saveData() { localStorage.setItem('j926_v4_data', JSON.stringify(db)); }
 
         function actualizarEstadisticas() {
-            document.getElementById('stat_total').innerText = db.filter(a => a.status === 'ACTIVO').length;
-            document.getElementById('stat_bajas').innerText = db.filter(a => a.status === 'BAJA').length;
-            let alertas = 0;
-            db.forEach(a => {
-                let f = Object.values(a.asistencias).filter(v => v === 'A').length;
-                if(f >= 10) alertas++;
-            });
-            document.getElementById('stat_alertas').innerText = alertas;
+            const activos = db.filter(a => a.status === 'ACTIVO');
+            document.getElementById('st_total').innerText = activos.length;
+            document.getElementById('st_bajas').innerText = db.filter(a => a.status === 'BAJA').length;
+            let al = 0;
+            activos.forEach(a => { if(Object.values(a.asis).filter(v => v === 'A').length >= 10) al++; });
+            document.getElementById('st_alertas').innerText = al;
+            renderChart(activos);
         }
+
+        function renderChart(activos) {
+            const ctx = document.getElementById('chartMat').getContext('2d');
+            if(window.myChart) window.myChart.destroy();
+            window.myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: SALAS,
+                    datasets: [{ label: 'Matrícula Real', data: SALAS.map(s => activos.filter(a => a.sala === s).length), backgroundColor: '#2563eb' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function save() { localStorage.setItem('j926_v4_final', JSON.stringify(db)); }
+        function exportarDatos() { alert("Exportando a Formato Institucional..."); }
 
         init();
     </script>
