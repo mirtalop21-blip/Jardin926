@@ -3,162 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA CONTROL JARDÍN 926 - INSPECCIÓN</title>
+    <title>SISTEMA JARDÍN 926 - REGISTRO OFICIAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f3f4f6; font-family: 'Inter', sans-serif; font-size: 11px; }
+        body { background-color: #f8fafc; font-family: 'Inter', sans-serif; font-size: 11px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .voice-btn { color: #2563eb; cursor: pointer; padding: 4px; border-radius: 50%; background: #fff; border: 1px solid #e2e8f0; transition: 0.2s; }
+        .voice-btn { color: #2563eb; cursor: pointer; padding: 4px; border-radius: 50%; background: #fff; border: 1px solid #e2e8f0; }
         .voice-btn:hover { background: #dbeafe; }
-        input, select, textarea { border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px; width: 100%; }
-        .btn-p { background-color: #22c55e; color: white; border-radius: 4px; padding: 4px 8px; font-weight: bold; width: 30px; }
-        .btn-a { background-color: #ef4444; color: white; border-radius: 4px; padding: 4px 8px; font-weight: bold; width: 30px; }
-        .selected-p { outline: 3px solid #166534; box-shadow: 0 0 5px rgba(0,0,0,0.3); }
-        .selected-a { outline: 3px solid #991b1b; box-shadow: 0 0 5px rgba(0,0,0,0.3); }
+        input, select { border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px; width: 100%; }
+        .btn-p { background-color: #22c55e; color: white; border-radius: 4px; padding: 4px 8px; font-weight: bold; }
+        .btn-a { background-color: #ef4444; color: white; border-radius: 4px; padding: 4px 8px; font-weight: bold; }
+        .selected-asis { outline: 3px solid #000; box-shadow: 0 0 8px rgba(0,0,0,0.2); }
         .sticky-col { position: sticky; left: 0; background: white; z-index: 10; border-right: 2px solid #e2e8f0 !important; }
     </style>
 </head>
 <body>
 
     <div class="max-w-[1500px] mx-auto bg-white min-h-screen shadow-2xl">
-        <header class="bg-[#0f172a] text-white p-5 flex flex-col md:flex-row justify-between items-center border-b-4 border-blue-500">
+        <header class="bg-[#0f172a] text-white p-5 flex flex-col md:flex-row justify-between items-center border-b-4 border-sky-500">
             <div>
                 <h1 class="text-xl font-black uppercase">Jardín de Infantes N° 926</h1>
-                <p class="text-[10px] text-sky-400 font-bold uppercase tracking-widest">Control Institucional | Ciclo Lectivo 2026</p>
+                <p class="text-[10px] text-sky-400 font-bold uppercase tracking-widest">Lomas de Zamora | Libro de Registro Digital</p>
             </div>
-            <div class="flex gap-4 mt-3 md:mt-0">
-                <div class="text-right">
-                    <p class="text-[9px] text-slate-400">TEL. DIRECTIVO / SECRETARÍA</p>
-                    <input type="text" id="tels" class="h-7 text-black w-48 text-[10px]" placeholder="Ej: 11 1234-5678 / 11 8765-4321">
-                </div>
-                <button onclick="exportarExcel()" class="bg-emerald-600 px-5 py-2 rounded font-black uppercase text-[10px]">Exportar Reporte Inspección</button>
+            <div class="flex gap-4">
+                <input type="text" id="tels" class="h-8 text-black w-48 text-[10px]" placeholder="Tel. Directivo / Secretaria">
+                <button onclick="exportarExcel()" class="bg-emerald-600 px-5 py-2 rounded font-black uppercase text-[10px]">Exportar Reporte</button>
             </div>
         </header>
 
         <nav class="flex bg-slate-100 border-b sticky top-0 z-50">
-            <button onclick="openTab('matricula')" id="tab-matricula" class="flex-1 py-3 font-black border-b-4 border-blue-600 text-blue-600 uppercase">1. Matrícula y Legajos</button>
-            <button onclick="openTab('inasistencia')" id="tab-inasistencia" class="flex-1 py-3 font-black border-b-4 border-transparent text-slate-500 uppercase">2. Registro de Asistencia (30 Alumnos)</button>
-            <button onclick="openTab('supervision')" id="tab-supervision" class="flex-1 py-3 font-black border-b-4 border-transparent text-slate-500 uppercase">3. Supervisión y Estadísticas Mes a Mes</button>
+            <button onclick="openTab('matricula')" id="tab-matricula" class="flex-1 py-4 font-black border-b-4 border-blue-600 text-blue-600 uppercase">1. Matrícula (Legajos Completos)</button>
+            <button onclick="openTab('inasistencia')" id="tab-inasistencia" class="flex-1 py-4 font-black border-b-4 border-transparent text-slate-500 uppercase">2. Libro de Inasistencias (30 Lugares)</button>
+            <button onclick="openTab('supervision')" id="tab-supervision" class="flex-1 py-4 font-black border-b-4 border-transparent text-slate-500 uppercase">3. Supervisión y Estadísticas</button>
         </nav>
 
-        <div id="matricula" class="tab-content active p-5">
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <div class="lg:col-span-3 space-y-4">
-                    <form id="formAlumno" class="bg-slate-50 p-5 rounded-lg border border-slate-200 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <input type="hidden" id="editIndex" value="-1">
-                        <div class="md:col-span-2">
-                            <label class="font-bold text-slate-600 uppercase text-[9px]">Nombre y Apellido Alumno</label>
-                            <div class="flex items-center gap-1"><input type="text" id="nombre" required><i class="fas fa-microphone voice-btn" onclick="startVoice('nombre')"></i></div>
-                        </div>
-                        <div>
-                            <label class="font-bold text-slate-600 uppercase text-[9px]">DNI</label>
-                            <div class="flex items-center gap-1"><input type="text" id="dni" required><i class="fas fa-microphone voice-btn" onclick="startVoice('dni')"></i></div>
-                        </div>
-                        <div><label class="font-bold text-slate-600 uppercase text-[9px]">Nacionalidad</label><input type="text" id="nacionalidad" value="Argentina"></div>
-                        <div><label class="font-bold text-slate-600 uppercase text-[9px]">Edad 30/06</label><input type="number" id="edad"></div>
-                        <div><label class="font-bold text-slate-600 uppercase text-[9px]">Sala</label><select id="sala" required></select></div>
-                        <div class="md:col-span-3 border-t pt-2 mt-2">
-                            <p class="font-black text-blue-700 text-[10px] mb-2 uppercase">Información de Responsables (Voz Activa)</p>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="p-3 bg-white border rounded">
-                                    <div class="flex items-center gap-1 mb-1"><input type="text" id="r1_nom" placeholder="Padre/Tutor Nombre"><i class="fas fa-microphone voice-btn" onclick="startVoice('r1_nom')"></i></div>
-                                    <input type="text" id="r1_dni" placeholder="DNI" class="mb-1">
-                                    <select id="r1_edu" class="mb-1"><option value="">Nivel Educativo...</option><option value="Completo">Completo</option><option value="Incompleto">Incompleto</option></select>
-                                    <select id="r1_auh"><option value="NO">AUH: NO</option><option value="SI">AUH: SI</option></select>
-                                </div>
-                                <div class="p-3 bg-white border rounded">
-                                    <div class="flex items-center gap-1 mb-1"><input type="text" id="r2_nom" placeholder="Madre/Tutor Nombre"><i class="fas fa-microphone voice-btn" onclick="startVoice('r2_nom')"></i></div>
-                                    <input type="text" id="r2_dni" placeholder="DNI" class="mb-1">
-                                    <select id="r2_edu" class="mb-1"><option value="">Nivel Educativo...</option><option value="Completo">Completo</option><option value="Incompleto">Incompleto</option></select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="md:col-span-3"><label class="font-bold text-red-600 uppercase text-[9px]">Salud / Alergias</label><input type="text" id="salud"></div>
-                        <button type="submit" class="md:col-span-3 bg-blue-600 text-white font-black py-3 rounded uppercase shadow-md">Guardar Legajo</button>
-                    </form>
-                </div>
-                <div class="space-y-4">
-                    <div class="bg-white p-3 border rounded shadow-sm">
-                        <label class="font-black text-[9px] uppercase">Buscador DNI / Nombre</label>
-                        <input type="text" id="buscador" onkeyup="renderMatricula()" placeholder="Filtrar..." class="mt-1 bg-slate-50">
+        <div id="matricula" class="tab-content active p-6">
+            <form id="formAlumno" class="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                <input type="hidden" id="editIndex" value="-1">
+                <h3 class="font-black text-blue-800 border-b pb-2 uppercase text-xs">Datos del Alumno</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="font-bold uppercase text-[9px]">Nombre y Apellido</label>
+                        <div class="flex items-center gap-1"><input type="text" id="nombre" required><i class="fas fa-microphone voice-btn" onclick="startVoice('nombre')"></i></div>
                     </div>
-                    <div class="overflow-y-auto h-[400px] border rounded">
-                        <table class="w-full">
-                            <thead class="bg-slate-700 text-white text-[9px] uppercase">
-                                <tr><th class="p-2 text-left">Alumno</th><th class="p-2 text-right">Editar</th></tr>
-                            </thead>
-                            <tbody id="listaMatricula" class="divide-y"></tbody>
-                        </table>
+                    <div><label class="font-bold uppercase text-[9px]">DNI</label><input type="text" id="dni" required></div>
+                    <div><label class="font-bold uppercase text-[9px]">Sala</label><select id="sala" required></select></div>
+                </div>
+
+                <h3 class="font-black text-blue-800 border-b pb-2 pt-4 uppercase text-xs">Datos de los Responsables (Voz Activa)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-4 bg-white border rounded-lg space-y-2">
+                        <p class="font-black text-blue-600 text-[10px] uppercase">Padre / Tutor</p>
+                        <div class="flex items-center gap-1"><input type="text" id="r1_nom" placeholder="Nombre y Apellido"><i class="fas fa-microphone voice-btn" onclick="startVoice('r1_nom')"></i></div>
+                        <div class="flex items-center gap-1"><input type="text" id="r1_nac" placeholder="Nacionalidad"><i class="fas fa-microphone voice-btn" onclick="startVoice('r1_nac')"></i></div>
+                        <div class="flex items-center gap-1"><input type="text" id="r1_ocu" placeholder="Ocupación"><i class="fas fa-microphone voice-btn" onclick="startVoice('r1_ocu')"></i></div>
+                        <select id="r1_edu">
+                            <option value="">Estudios...</option>
+                            <option value="Primaria Completa">Primaria Completa</option><option value="Primaria Incompleta">Primaria Incompleta</option>
+                            <option value="Secundaria Completa">Secundaria Completa</option><option value="Secundaria Incompleta">Secundaria Incompleta</option>
+                            <option value="Terciaria/Univ Completa">Terciaria/Univ Completa</option><option value="Terciaria/Univ Incompleta">Terciaria/Univ Incompleta</option>
+                        </select>
+                        <select id="r1_auh"><option value="NO">¿Recibe AUH? NO</option><option value="SI">¿Recibe AUH? SI</option></select>
+                    </div>
+                    <div class="p-4 bg-white border rounded-lg space-y-2">
+                        <p class="font-black text-pink-600 text-[10px] uppercase">Madre / Tutor</p>
+                        <div class="flex items-center gap-1"><input type="text" id="r2_nom" placeholder="Nombre y Apellido"><i class="fas fa-microphone voice-btn" onclick="startVoice('r2_nom')"></i></div>
+                        <div class="flex items-center gap-1"><input type="text" id="r2_nac" placeholder="Nacionalidad"><i class="fas fa-microphone voice-btn" onclick="startVoice('r2_nac')"></i></div>
+                        <div class="flex items-center gap-1"><input type="text" id="r2_ocu" placeholder="Ocupación"><i class="fas fa-microphone voice-btn" onclick="startVoice('r2_ocu')"></i></div>
+                        <select id="r2_edu">
+                            <option value="">Estudios...</option>
+                            <option value="Primaria Completa">Primaria Completa</option><option value="Primaria Incompleta">Primaria Incompleta</option>
+                            <option value="Secundaria Completa">Secundaria Completa</option><option value="Secundaria Incompleta">Secundaria Incompleta</option>
+                            <option value="Terciaria/Univ Completa">Terciaria/Univ Completa</option><option value="Terciaria/Univ Incompleta">Terciaria/Univ Incompleta</option>
+                        </select>
+                        <select id="r2_auh"><option value="NO">¿Recibe AUH? NO</option><option value="SI">¿Recibe AUH? SI</option></select>
                     </div>
                 </div>
+                <button type="submit" class="w-full bg-blue-600 text-white font-black py-3 rounded-lg uppercase shadow-lg">Guardar en Matrícula</button>
+            </form>
+
+            <div class="mt-8 border rounded-lg overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-800 text-white uppercase text-[9px]">
+                        <tr><th class="p-3">Alumno</th><th class="p-3">DNI</th><th class="p-3">Sala</th><th class="p-3 text-right">Acciones</th></tr>
+                    </thead>
+                    <tbody id="listaMatricula" class="divide-y"></tbody>
+                </table>
             </div>
         </div>
 
-        <div id="inasistencia" class="tab-content p-5">
-            <div class="bg-white p-4 border rounded-xl shadow-sm mb-4 flex flex-wrap gap-4 items-end">
-                <div class="w-48"><label class="font-bold uppercase text-[9px]">Elegir Sala</label><select id="salaAsistencia" onchange="renderAsistencia()"></select></div>
-                <div class="w-48"><label class="font-bold uppercase text-[9px]">Fecha de Registro</label><input type="date" id="fechaAsistencia" onchange="renderAsistencia()"></div>
+        <div id="inasistencia" class="tab-content p-6">
+            <div class="bg-white p-4 border rounded-xl shadow-sm mb-6 flex flex-wrap gap-4 items-end">
+                <div class="w-64"><label class="font-black uppercase text-[9px]">Seleccionar Sala</label><select id="salaAsistencia" onchange="renderLibro()"></select></div>
+                <div class="w-48"><label class="font-black uppercase text-[9px]">Fecha</label><input type="date" id="fechaAsistencia" onchange="renderLibro()"></div>
                 <div class="flex-1 text-right">
-                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-black text-[10px]">TOTAL ALUMNOS CARGADOS: <span id="countAsis">0</span></span>
+                    <button onclick="copiarDeMatricula()" class="bg-indigo-600 text-white px-4 py-2 rounded font-black uppercase text-[9px]">Cargar Alumnos de Matrícula</button>
                 </div>
             </div>
 
-            <div class="overflow-x-auto border rounded-lg shadow-inner">
+            <div class="overflow-x-auto border rounded-xl shadow-inner">
                 <table class="w-full border-collapse">
-                    <thead class="bg-slate-800 text-white uppercase text-[9px]">
+                    <thead class="bg-slate-100 text-[10px] uppercase font-black text-slate-600">
                         <tr>
-                            <th class="p-3 border sticky-col text-left" style="min-width: 200px;">Apellido y Nombre del Alumno</th>
+                            <th class="p-3 border text-left sticky-col">N° - Apellido y Nombre</th>
                             <th class="p-3 border text-center">Asistencia</th>
-                            <th class="p-3 border text-center">Estado Matrícula</th>
-                            <th class="p-3 border text-center">Faltas Acum.</th>
-                            <th class="p-3 border text-left">Motivo Movimiento (Baja/Reinc.)</th>
+                            <th class="p-3 border text-center">Estado</th>
+                            <th class="p-3 border text-center">Faltas Mes</th>
+                            <th class="p-3 border text-left">Observaciones / Motivos de Baja</th>
                         </tr>
                     </thead>
-                    <tbody id="cuerpoAsistencia">
+                    <tbody id="libroCuerpo">
                         </tbody>
                 </table>
             </div>
-            <div class="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-[10px]">
-                <i class="fas fa-info-circle mr-2"></i> <b>Nota para Inspección:</b> Los cambios en Presente/Ausente y Alta/Baja se guardan automáticamente. Revise los datos antes de cerrar la sesión.
-            </div>
         </div>
 
-        <div id="supervision" class="tab-content p-5 space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 bg-white p-5 border rounded-xl shadow-sm">
-                    <h3 class="font-black text-slate-800 uppercase mb-4 border-b pb-2 flex justify-between">
-                        Estadísticas Institucionales 2026 (Marzo - Diciembre)
-                        <span class="text-blue-600 text-[10px]">Presentismo Promedio</span>
-                    </h3>
-                    <canvas id="chartEvolucion" height="120"></canvas>
+        <div id="supervision" class="tab-content p-6 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 border rounded-xl shadow-sm">
+                    <h3 class="font-black text-slate-800 uppercase mb-4 border-b pb-2">Evolución de Asistencia (Marzo - Diciembre)</h3>
+                    <canvas id="chartGral" height="150"></canvas>
                 </div>
-                <div class="bg-white p-5 border rounded-xl shadow-sm space-y-4">
-                    <h3 class="font-black text-red-600 uppercase mb-2 border-b pb-2 italic">Alertas de Supervisión (+10 Faltas)</h3>
-                    <div id="listaAlertas" class="space-y-2 overflow-y-auto max-h-[300px]"></div>
+                <div class="bg-white p-6 border rounded-xl shadow-sm">
+                    <h3 class="font-black text-red-600 uppercase mb-4 border-b pb-2 italic">Alertas de Supervisión (+10 Faltas)</h3>
+                    <div id="listaAlertas" class="space-y-2 max-h-[300px] overflow-y-auto"></div>
                 </div>
             </div>
-
-            <div class="bg-[#0f172a] text-white p-5 rounded-xl">
-                <h3 class="font-black uppercase text-sky-400 mb-4">Control Mensual por Sala (Datos en Tiempo Real)</h3>
-                <div id="gridEstadisticas" class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-7 gap-3"></div>
-            </div>
+            <div id="gridSalas" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3"></div>
         </div>
     </div>
 
     <div id="modalMov" class="fixed inset-0 bg-black/70 hidden flex items-center justify-center z-[100]">
         <div class="bg-white p-6 rounded-lg w-full max-w-sm">
-            <h3 class="font-black text-red-600 uppercase mb-4" id="tituloMov">Consignar Motivo</h3>
+            <h3 class="font-black text-red-600 uppercase mb-4">Motivo del Movimiento</h3>
             <div class="flex items-center gap-1 mb-4">
-                <input type="text" id="inputMotivo" placeholder="Ej: Cambio de domicilio">
-                <i class="fas fa-microphone voice-btn" onclick="startVoice('inputMotivo')"></i>
+                <input type="text" id="inputMotivo" placeholder="Ej: Cambio de escuela / Pase"><i class="fas fa-microphone voice-btn" onclick="startVoice('inputMotivo')"></i>
             </div>
             <div class="flex gap-2">
-                <button onclick="cerrarModal()" class="flex-1 bg-slate-200 py-2 rounded font-bold uppercase text-[10px]">Cancelar</button>
-                <button id="btnConfirmarMov" class="flex-1 bg-red-600 text-white py-2 rounded font-bold uppercase text-[10px]">Confirmar</button>
+                <button onclick="cerrarModal()" class="flex-1 bg-slate-200 py-2 rounded font-bold uppercase text-[9px]">Cerrar</button>
+                <button id="btnConfirmarMov" class="flex-1 bg-red-600 text-white py-2 rounded font-bold uppercase text-[9px]">Confirmar</button>
             </div>
         </div>
     </div>
@@ -167,8 +154,8 @@
         const SALAS = ["Sala Rosa TM", "Sala Roja TM", "Sala Naranja TM", "Sala Amarilla TM", "Sala Violeta TM", "Sala Azul TM", "Sala Celeste TM", "Sala Rosa TT", "Sala Roja TT", "Sala Naranja TT", "Sala Amarilla TT", "Sala Violeta TT", "Sala Azul TT", "Sala Celeste TT"];
         const MESES = ["Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
         
-        let db = JSON.parse(localStorage.getItem('j926_final_db')) || [];
-        let asistencias = JSON.parse(localStorage.getItem('j926_final_asist')) || {};
+        let db = JSON.parse(localStorage.getItem('j926_v4_db')) || [];
+        let asistencias = JSON.parse(localStorage.getItem('j926_v4_asist')) || {};
         let currentDni = '';
 
         function init() {
@@ -183,7 +170,7 @@
             document.querySelectorAll('nav button').forEach(b => { b.classList.remove('text-blue-600', 'border-blue-600'); b.classList.add('text-slate-500', 'border-transparent'); });
             document.getElementById(id).classList.add('active');
             document.getElementById('tab-' + id).classList.add('text-blue-600', 'border-blue-600');
-            if(id === 'inasistencia') renderAsistencia();
+            if(id === 'inasistencia') renderLibro();
             if(id === 'supervision') renderSupervision();
         }
 
@@ -197,87 +184,74 @@
 
         document.getElementById('formAlumno').onsubmit = function(e) {
             e.preventDefault();
-            const idx = parseInt(document.getElementById('editIndex').value);
             const alu = {
                 nombre: document.getElementById('nombre').value.toUpperCase(),
                 dni: document.getElementById('dni').value,
                 sala: document.getElementById('sala').value,
-                nacionalidad: document.getElementById('nacionalidad').value,
-                status: (idx !== -1) ? db[idx].status : 'ALTA',
-                motivo: (idx !== -1) ? db[idx].motivo : '',
-                r1: { nom: document.getElementById('r1_nom').value, dni: document.getElementById('r1_dni').value, edu: document.getElementById('r1_edu').value, auh: document.getElementById('r1_auh').value },
-                r2: { nom: document.getElementById('r2_nom').value, dni: document.getElementById('r2_dni').value, edu: document.getElementById('r2_edu').value }
+                status: 'ALTA', motivo: '',
+                r1: { nom: document.getElementById('r1_nom').value, nac: document.getElementById('r1_nac').value, ocu: document.getElementById('r1_ocu').value, edu: document.getElementById('r1_edu').value, auh: document.getElementById('r1_auh').value },
+                r2: { nom: document.getElementById('r2_nom').value, nac: document.getElementById('r2_nac').value, ocu: document.getElementById('r2_ocu').value, edu: document.getElementById('r2_edu').value, auh: document.getElementById('r2_auh').value }
             };
-            if(idx === -1) db.push(alu); else db[idx] = alu;
-            localStorage.setItem('j926_final_db', JSON.stringify(db));
-            this.reset(); document.getElementById('editIndex').value = "-1"; renderMatricula();
-            alert("DATOS DE MATRÍCULA ACTUALIZADOS");
+            db.push(alu); localStorage.setItem('j926_v4_db', JSON.stringify(db));
+            this.reset(); renderMatricula();
         };
 
         function renderMatricula() {
             const b = document.getElementById('listaMatricula'); b.innerHTML = '';
-            const q = document.getElementById('buscador').value.toUpperCase();
             db.forEach((a, i) => {
-                if(a.nombre.includes(q) || a.dni.includes(q)) {
-                    b.innerHTML += `<tr><td class="p-2 font-bold">${a.nombre}<br><span class="text-[8px] text-blue-600">${a.sala}</span></td><td class="p-2 text-right"><button onclick="editAlu(${i})" class="text-blue-500 font-bold">EDITAR</button></td></tr>`;
-                }
+                b.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-3 font-bold">${a.nombre}</td><td class="p-3">${a.dni}</td><td class="p-3 text-blue-600 font-bold">${a.sala}</td><td class="p-3 text-right"><button onclick="borrarAlu(${i})" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`;
             });
         }
 
-        function editAlu(i) {
-            const a = db[i];
-            document.getElementById('editIndex').value = i;
-            document.getElementById('nombre').value = a.nombre;
-            document.getElementById('dni').value = a.dni;
-            document.getElementById('sala').value = a.sala;
-            openTab('matricula');
-        }
-
-        function renderAsistencia() {
+        function renderLibro() {
             const sala = document.getElementById('salaAsistencia').value;
             const fecha = document.getElementById('fechaAsistencia').value;
-            const b = document.getElementById('cuerpoAsistencia'); b.innerHTML = '';
+            const b = document.getElementById('libroCuerpo'); b.innerHTML = '';
             if(!sala) return;
 
             const alumnosSala = db.filter(a => a.sala === sala);
-            document.getElementById('countAsis').innerText = alumnosSala.length;
-
-            alumnosSala.forEach((a, index) => {
-                const diaVal = (asistencias[fecha] && asistencias[fecha][a.dni]) ? asistencias[fecha][a.dni] : '';
-                const totalFaltas = Object.values(asistencias).filter(d => d[a.dni] === 'A').length;
-
-                b.innerHTML += `<tr class="${totalFaltas >= 10 ? 'bg-red-50' : ''} ${a.status === 'BAJA' ? 'opacity-50' : ''}">
-                    <td class="p-2 border sticky-col font-bold uppercase">${index + 1}. ${a.nombre}</td>
-                    <td class="p-2 border text-center">
-                        <button onclick="marcar('${a.dni}', 'P')" class="btn-p ${diaVal==='P'?'selected-p':''}">P</button>
-                        <button onclick="marcar('${a.dni}', 'A')" class="btn-a ${diaVal==='A'?'selected-a':''} ml-1">A</button>
-                    </td>
-                    <td class="p-2 border text-center">
-                        ${a.status === 'ALTA' ? `<button onclick="cambiarMov('${a.dni}', 'BAJA')" class="bg-green-600 text-white px-2 py-1 rounded text-[8px] font-black uppercase">ALTA</button>` : `<button onclick="cambiarMov('${a.dni}', 'ALTA')" class="bg-red-600 text-white px-2 py-1 rounded text-[8px] font-black uppercase">BAJA</button>`}
-                    </td>
-                    <td class="p-2 border text-center font-black text-sm ${totalFaltas >= 10 ? 'text-red-600' : ''}">${totalFaltas}</td>
-                    <td class="p-2 border italic text-slate-500">${a.motivo || ''}</td>
-                </tr>`;
-            });
+            
+            // Generar 30 filas (como el libro real)
+            for(let i = 0; i < 30; i++) {
+                const a = alumnosSala[i];
+                if(a) {
+                    const diaVal = (asistencias[fecha] && asistencias[fecha][a.dni]) ? asistencias[fecha][a.dni] : '';
+                    const fMes = Object.values(asistencias).filter(d => d[a.dni] === 'A').length;
+                    
+                    b.innerHTML += `<tr class="${a.status === 'BAJA' ? 'bg-red-50 opacity-60' : ''}">
+                        <td class="p-3 border sticky-col font-bold uppercase">${i+1}. ${a.nombre}</td>
+                        <td class="p-3 border text-center">
+                            <button onclick="marcar('${a.dni}', 'P')" class="btn-p ${diaVal==='P'?'selected-asis':''}">P</button>
+                            <button onclick="marcar('${a.dni}', 'A')" class="btn-a ${diaVal==='A'?'selected-asis':''} ml-1">A</button>
+                        </td>
+                        <td class="p-3 border text-center">
+                            <button onclick="cambiarStatus('${a.dni}', '${a.status === 'ALTA' ? 'BAJA' : 'ALTA'}')" class="text-[9px] font-black uppercase px-2 py-1 rounded ${a.status==='ALTA'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${a.status}</button>
+                        </td>
+                        <td class="p-3 border text-center font-black ${fMes >= 10 ? 'text-red-600' : ''}">${fMes}</td>
+                        <td class="p-3 border italic text-slate-500">${a.motivo || ''}</td>
+                    </tr>`;
+                } else {
+                    b.innerHTML += `<tr><td class="p-3 border text-slate-300">${i+1}. -------------------</td><td class="p-3 border"></td><td class="p-3 border"></td><td class="p-3 border"></td><td class="p-3 border"></td></tr>`;
+                }
+            }
         }
 
         function marcar(dni, tipo) {
             const fecha = document.getElementById('fechaAsistencia').value;
             if(!asistencias[fecha]) asistencias[fecha] = {};
             asistencias[fecha][dni] = (asistencias[fecha][dni] === tipo) ? '' : tipo;
-            localStorage.setItem('j926_final_asist', JSON.stringify(asistencias));
-            renderAsistencia();
+            localStorage.setItem('j926_v4_asist', JSON.stringify(asistencias));
+            renderLibro();
         }
 
-        function cambiarMov(dni, nuevoEstado) {
+        function cambiarStatus(dni, nuevo) {
             currentDni = dni;
-            document.getElementById('tituloMov').innerText = nuevoEstado === 'BAJA' ? 'Consignar Motivo de Baja' : 'Motivo de Reincorporación';
             document.getElementById('btnConfirmarMov').onclick = () => {
                 const idx = db.findIndex(a => a.dni === currentDni);
-                db[idx].status = nuevoEstado;
+                db[idx].status = nuevo;
                 db[idx].motivo = document.getElementById('inputMotivo').value.toUpperCase();
-                localStorage.setItem('j926_final_db', JSON.stringify(db));
-                cerrarModal(); renderAsistencia();
+                localStorage.setItem('j926_v4_db', JSON.stringify(db));
+                cerrarModal(); renderLibro();
             };
             document.getElementById('modalMov').classList.remove('hidden');
         }
@@ -285,48 +259,28 @@
         function cerrarModal() { document.getElementById('modalMov').classList.add('hidden'); document.getElementById('inputMotivo').value = ''; }
 
         function renderSupervision() {
-            const listAlertas = document.getElementById('listaAlertas'); listAlertas.innerHTML = '';
+            const list = document.getElementById('listaAlertas'); list.innerHTML = '';
             db.forEach(a => {
                 const f = Object.values(asistencias).filter(d => d[a.dni] === 'A').length;
-                if(f >= 10) listAlertas.innerHTML += `<div class="p-2 bg-red-100 border-l-4 border-red-600 text-[10px] font-bold">⚠️ ${a.nombre} (${a.sala}) - Faltas: ${f}</div>`;
+                if(f >= 10) list.innerHTML += `<div class="p-2 bg-red-100 border-l-4 border-red-600 font-bold text-[10px]">⚠️ ${a.nombre} (${a.sala}) - Faltas: ${f}</div>`;
             });
 
-            const grid = document.getElementById('gridEstadisticas'); grid.innerHTML = '';
+            const grid = document.getElementById('gridSalas'); grid.innerHTML = '';
             SALAS.forEach(s => {
-                const activos = db.filter(a => a.sala === s && a.status === 'ALTA').length;
-                const bajas = db.filter(a => a.sala === s && a.status === 'BAJA').length;
-                grid.innerHTML += `<div class="bg-slate-800 p-2 border border-slate-700 rounded text-center">
-                    <p class="text-sky-400 font-black text-[8px] uppercase">${s}</p>
-                    <p class="text-lg font-black">${activos}</p>
-                    <p class="text-[8px] text-slate-400 uppercase">Matrícula</p>
-                    <p class="text-red-400 font-bold text-[8px]">BAJAS: ${bajas}</p>
+                const cant = db.filter(a => a.sala === s && a.status === 'ALTA').length;
+                grid.innerHTML += `<div class="bg-slate-800 text-white p-3 rounded-lg text-center">
+                    <p class="text-[8px] text-sky-400 font-black uppercase">${s}</p>
+                    <p class="text-xl font-black">${cant}</p>
+                    <p class="text-[8px] opacity-60">Alumnos</p>
                 </div>`;
             });
 
-            renderChart();
-        }
-
-        function renderChart() {
-            const ctx = document.getElementById('chartEvolucion').getContext('2d');
+            const ctx = document.getElementById('chartGral').getContext('2d');
             if(window.myChart) window.myChart.destroy();
             window.myChart = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: MESES,
-                    datasets: [{ label: '% Asistencia Institucional', data: [88, 92, 85, 75, 80, 0, 0, 0, 0, 0], borderColor: '#3b82f6', tension: 0.3, fill: true, backgroundColor: 'rgba(59, 130, 246, 0.1)' }]
-                },
-                options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } } }
+                data: { labels: MESES, datasets: [{ label: '% Asistencia', data: [90, 85, 88, 70, 80, 0, 0, 0, 0, 0], borderColor: '#3b82f6', tension: 0.3 }] }
             });
-        }
-
-        function exportarExcel() {
-            const data = db.map(a => ({
-                "ALUMNO": a.nombre, "DNI": a.dni, "SALA": a.sala, "ESTADO": a.status, "FALTAS": Object.values(asistencias).filter(d => d[a.dni] === 'A').length, "MOTIVO MOVIMIENTO": a.motivo
-            }));
-            const ws = XLSX.utils.json_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "INS_JARDIN926");
-            XLSX.writeFile(wb, "Reporte_Institucional_926.xlsx");
         }
 
         init();
