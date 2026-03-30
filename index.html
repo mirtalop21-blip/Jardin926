@@ -3,77 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA DE GESTIÓN INSTITUCIONAL - JARDÍN 926</title>
+    <title>SISTEMA JARDÍN 926 - ELITE V5</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --azul: #001f3f; --amarillo: #facc15; --rojo: #dc2626; --verde: #16a34a; --gris: #e2e8f0; }
-        body { font-family: 'Arial Black', sans-serif; text-transform: uppercase; background: var(--gris); margin: 0; font-size: 11px; font-weight: 900; color: #000; }
-        
-        /* Navegación Profesional */
-        nav { background: var(--azul); display: flex; border-bottom: 5px solid #000; position: sticky; top: 0; z-index: 1000; }
-        nav button { flex: 1; background: var(--azul); color: white; border: none; padding: 18px; cursor: pointer; font-weight: 900; border-right: 2px solid #000; font-size: 12px; transition: 0.3s; }
-        nav button.active { background: var(--amarillo); color: #000; box-shadow: inset 0 -5px 0 #000; }
-
-        .container { max-width: 100%; margin: 20px; }
-        .card { background: white; border: 4px solid #000; padding: 25px; box-shadow: 10px 10px 0px #000; margin-bottom: 30px; display: none; }
-        .card.active { display: block; animation: fadeIn 0.5s; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .header-seccion { background: var(--azul); color: white; padding: 15px; margin-bottom: 20px; border-left: 15px solid var(--amarillo); font-size: 18px; display: flex; justify-content: space-between; }
-        
-        /* Grilla de Formulario */
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
-        .grupo-titulo { grid-column: 1 / -1; background: #000; color: #fff; padding: 12px; margin-top: 20px; border-left: 8px solid var(--rojo); font-size: 14px; }
-        
-        .campo { display: flex; flex-direction: column; background: #f8fafc; padding: 10px; border: 1px solid #cbd5e1; }
-        label { font-size: 10px; margin-bottom: 5px; color: #1e293b; }
-        
-        .input-mic { display: flex; gap: 5px; }
-        input, select { border: 3px solid #000; padding: 12px; font-weight: 900; background: #fff; font-size: 14px; text-transform: uppercase; width: 100%; }
-        input:focus { background: #fffbe6; outline: none; }
-        
-        .btn-mic { background: var(--rojo); color: white; border: 3px solid #000; padding: 10px 15px; cursor: pointer; font-size: 18px; }
-        .btn-accion { background: var(--verde); color: white; border: 5px solid #000; padding: 20px; width: 100%; font-size: 20px; cursor: pointer; font-weight: 900; margin-top: 20px; transition: 0.2s; }
-        .btn-accion:active { transform: translate(4px, 4px); box-shadow: none; }
-
-        /* Tabla de Supervisión */
-        .tabla-wrapper { overflow-x: auto; margin-top: 20px; border: 4px solid #000; }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        th { background: #000; color: #fff; padding: 15px; font-size: 11px; text-align: center; position: sticky; top: 0; }
-        td { border: 2px solid #000; padding: 12px; text-align: center; font-size: 11px; font-weight: 900; }
-        tr:nth-child(even) { background: #f1f5f9; }
-        .alerta-inasistencia { background: #fecaca !important; color: #991b1b; animation: blink 2s infinite; }
-        
-        @keyframes blink { 50% { background: #f87171; } }
-
-        /* Modales */
-        #modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index: 2000; overflow-y: auto; padding: 20px; }
-        .modal-body { background: white; border: 6px solid #000; max-width: 1200px; margin: auto; padding: 30px; box-shadow: 15px 15px 0 var(--amarillo); }
-
-        #buscador { background: var(--amarillo); color: #000; border: 4px solid #000; padding: 20px; font-size: 18px; width: 100%; margin-bottom: 20px; }
+        :root { --azul: #001f3f; --amarillo: #facc15; --rojo: #dc2626; --verde: #16a34a; --gris: #f1f5f9; }
+        body { font-family: 'Arial Black', sans-serif; text-transform: uppercase; background: var(--gris); margin: 0; font-size: 11px; font-weight: 900; }
+        nav { background: var(--azul); display: flex; border-bottom: 5px solid #000; position: sticky; top: 0; z-index: 100; }
+        nav button { flex: 1; background: var(--azul); color: white; border: none; padding: 15px; cursor: pointer; font-weight: 900; border-right: 1px solid #334155; font-size: 10px; }
+        nav button.active { background: var(--amarillo); color: #000; }
+        .container { max-width: 1400px; margin: 15px auto; padding: 0 10px; }
+        .card { background: white; border: 3px solid #000; padding: 20px; box-shadow: 7px 7px 0px #000; margin-bottom: 20px; display: none; }
+        .card.active { display: block; }
+        .header-seccion { background: var(--azul); color: white; padding: 10px; margin-bottom: 15px; border-left: 10px solid var(--amarillo); font-size: 14px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+        .grupo-titulo { grid-column: 1 / -1; background: #000; color: #fff; padding: 8px; margin-top: 15px; border-left: 5px solid var(--rojo); }
+        .campo { display: flex; flex-direction: column; }
+        .input-mic { display: flex; gap: 4px; }
+        input, select { border: 2px solid #000; padding: 8px; font-weight: 900; background: #fff; font-size: 12px; text-transform: uppercase; width: 100%; box-sizing: border-box;}
+        .btn-mic { background: var(--rojo); color: white; border: 2px solid #000; padding: 0 10px; cursor: pointer; border-radius: 4px; }
+        .btn-accion { background: var(--verde); color: white; border: 4px solid #000; padding: 15px; width: 100%; font-size: 16px; cursor: pointer; font-weight: 900; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; border: 3px solid #000; }
+        th { background: #000; color: #fff; padding: 10px; font-size: 10px; }
+        td { border: 1px solid #000; padding: 8px; text-align: center; font-size: 10px; vertical-align: top; }
+        #modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; }
+        .modal-body { background: white; border: 5px solid #000; width: 95%; max-width: 1000px; margin: 10px auto; padding: 20px; }
+        #buscador { background: #fffbe6; padding: 15px; border: 3px solid #000; width: 100%; font-size: 16px; margin-bottom: 15px; }
     </style>
 </head>
 <body onload="iniciar()">
 
 <nav>
-    <button id="b1" class="active" onclick="ver(1)">1. CARGA DE MATRÍCULA 🎤</button>
-    <button id="b2" onclick="ver(2)">2. ASISTENCIA POR VOZ</button>
-    <button id="b3" onclick="ver(3)">3. SUPERVISIÓN Y ALERTAS 📊</button>
+    <button id="b1" class="active" onclick="ver(1)">1. MATRÍCULA 🎤</button>
+    <button id="b2" onclick="ver(2)">2. ASISTENCIA</button>
+    <button id="b3" onclick="ver(3)">3. SUPERVISIÓN / EXCEL 📊</button>
 </nav>
 
 <div class="container">
-    
     <section id="s1" class="card active">
-        <div class="header-seccion">NUEVO LEGAJO DIGITAL - CARGA POR VOZ ACTIVA 🎤</div>
-        <div class="form-grid">
-            <div class="grupo-titulo">INFORMACIÓN DEL ALUMNO/A</div>
+        <div class="header-seccion">CARGA DE LEGAJO INSTITUCIONAL 🎤</div>
+        <div class="form-grid" id="formCarga">
+            <div class="grupo-titulo">DATOS DEL ALUMNO/A</div>
             <div class="campo"><label>APELLIDO Y NOMBRE</label><div class="input-mic"><input type="text" id="n"><button onclick="dictar('n')" class="btn-mic">🎤</button></div></div>
             <div class="campo"><label>DNI</label><input type="number" id="d"></div>
-            <div class="campo"><label>FECHA DE NACIMIENTO</label><input type="date" id="f"></div>
+            <div class="campo"><label>FECHA NACIMIENTO</label><input type="date" id="f"></div>
             <div class="campo"><label>NACIONALIDAD</label><div class="input-mic"><input type="text" id="nac" value="ARGENTINA"><button onclick="dictar('nac')" class="btn-mic">🎤</button></div></div>
             <div class="campo">
-                <label>SALA (14 SALAS DISPONIBLES)</label>
+                <label>SALA (14 SALAS)</label>
                 <select id="sala">
                     <option>SALA ROSA TM</option><option>SALA ROSA TT</option>
                     <option>SALA NARANJA TM</option><option>SALA NARANJA TT</option>
@@ -84,72 +59,45 @@
                     <option>SALA TURQUESA TM</option><option>SALA TURQUESA TT</option>
                 </select>
             </div>
-            <div class="campo"><label>CANTIDAD DE HERMANOS</label><input type="number" id="h_c"></div>
-            <div class="campo"><label>¿HERMANOS EN ESTE JARDÍN?</label><select id="h_j"><option>NO</option><option>SÍ</option></select></div>
-
-            <div class="grupo-titulo">DATOS FILIATORIOS: MADRE</div>
-            <div class="campo"><label>NOMBRE Y APELLIDO MADRE</label><div class="input-mic"><input type="text" id="m_n"><button onclick="dictar('m_n')" class="btn-mic">🎤</button></div></div>
-            <div class="campo"><label>DNI MADRE</label><input type="number" id="m_d"></div>
-            <div class="campo"><label>NACIONALIDAD MADRE</label><div class="input-mic"><input type="text" id="m_nac" value="ARGENTINA"><button onclick="dictar('m_nac')" class="btn-mic">🎤</button></div></div>
-            <div class="campo"><label>OCUPACIÓN / TRABAJO</label><div class="input-mic"><input type="text" id="m_o"><button onclick="dictar('m_o')" class="btn-mic">🎤</button></div></div>
-            <div class="campo"><label>NIVEL DE ESTUDIOS</label><select id="m_e"><option>SECUNDARIO COMPLETO</option><option>SECUNDARIO INCOMPLETO</option><option>PRIMARIO COMPLETO</option><option>PRIMARIO INCOMPLETO</option><option>TERCIARIO COMPLETO</option><option>UNIVERSITARIO COMPLETO</option></select></div>
             <div class="campo"><label>DOMICILIO</label><div class="input-mic"><input type="text" id="m_dom"><button onclick="dictar('m_dom')" class="btn-mic">🎤</button></div></div>
-            <div class="campo"><label>TELÉFONO CONTACTO</label><input type="text" id="m_t"></div>
-
-            <div class="grupo-titulo">DATOS FILIATORIOS: PADRE</div>
-            <div class="campo"><label>NOMBRE Y APELLIDO PADRE</label><div class="input-mic"><input type="text" id="p_n"><button onclick="dictar('p_n')" class="btn-mic">🎤</button></div></div>
-            <div class="campo"><label>DNI PADRE</label><input type="number" id="p_d"></div>
-            <div class="campo"><label>NACIONALIDAD PADRE</label><div class="input-mic"><input type="text" id="p_nac" value="ARGENTINA"><button onclick="dictar('p_nac')" class="btn-mic">🎤</button></div></div>
-            <div class="campo"><label>OCUPACIÓN / TRABAJO</label><div class="input-mic"><input type="text" id="p_o"><button onclick="dictar('p_o')" class="btn-mic">🎤</button></div></div>
-            <div class="campo"><label>NIVEL DE ESTUDIOS</label><select id="p_e"><option>SECUNDARIO COMPLETO</option><option>SECUNDARIO INCOMPLETO</option><option>PRIMARIO COMPLETO</option><option>PRIMARIO INCOMPLETO</option><option>TERCIARIO COMPLETO</option><option>UNIVERSITARIO COMPLETO</option></select></div>
-
-            <div class="grupo-titulo">ASISTENCIA SOCIAL</div>
-            <div class="campo"><label>¿RECIBE AUH?</label><select id="auh"><option>SÍ</option><option>NO</option></select></div>
+            
+            <div class="grupo-titulo">DATOS DE LOS PADRES</div>
+            <div class="campo"><label>MADRE: NOMBRE Y DNI</label><div class="input-mic"><input type="text" id="m_n"><button onclick="dictar('m_n')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>MADRE: ESTUDIOS</label><select id="m_e"><option>SECUNDARIO COMPLETO</option><option>SECUNDARIO INCOMPLETO</option><option>PRIMARIO COMPLETO</option><option>PRIMARIO INCOMPLETO</option></select></div>
+            <div class="campo"><label>TELÉFONO MADRE</label><input type="text" id="m_t"></div>
+            
+            <div class="campo"><label>PADRE: NOMBRE Y DNI</label><div class="input-mic"><input type="text" id="p_n"><button onclick="dictar('p_n')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>PADRE: ESTUDIOS</label><select id="p_e"><option>SECUNDARIO COMPLETO</option><option>SECUNDARIO INCOMPLETO</option><option>PRIMARIO COMPLETO</option><option>PRIMARIO INCOMPLETO</option></select></div>
+            
+            <div class="grupo-titulo">OTROS</div>
+            <div class="campo"><label>RECIBE AUH</label><select id="auh"><option>SÍ</option><option>NO</option></select></div>
         </div>
-        <button onclick="previa()" class="btn-accion">👁️ VERIFICAR CARGA Y GUARDAR</button>
+        <button onclick="previa()" class="btn-accion">👁️ VISTA PREVIA Y GUARDAR</button>
     </section>
 
     <section id="s2" class="card">
-        <div class="header-seccion">CONTROL DE ASISTENCIA DIARIA 🗓️</div>
-        <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px; margin-bottom:20px;">
-            <select id="f_sala" onchange="renderAsis()">
-                <option value="">SELECCIONE UNA SALA...</option>
-                <option>SALA ROSA TM</option><option>SALA ROSA TT</option><option>SALA NARANJA TM</option><option>SALA NARANJA TT</option><option>SALA VERDE TM</option><option>SALA VERDE TT</option><option>SALA AZUL TM</option><option>SALA AZUL TT</option><option>SALA ROJA TM</option><option>SALA ROJA TT</option><option>SALA AMARILLA TM</option><option>SALA AMARILLA TT</option><option>SALA TURQUESA TM</option><option>SALA TURQUESA TT</option>
-            </select>
-            <input type="date" id="f_fecha" value="2026-03-30">
-        </div>
-        <div id="listaAsis"></div>
+        <div class="header-seccion">ASISTENCIA DIARIA</div>
+        <div id="listaAsis">Cargue alumnos para ver la lista de asistencia.</div>
     </section>
 
     <section id="s3" class="card">
-        <div class="header-seccion">
-            <span>PANEL DE SUPERVISIÓN E INSPECCIÓN</span>
-            <span id="contadorMatricula">CARGADOS: 0</span>
+        <div class="header-seccion" style="display:flex; justify-content:space-between;">
+            <span>RESUMEN PARA INSPECCIÓN 📊</span>
+            <span id="totalTxt">MATRÍCULA: 0</span>
         </div>
-        
-        <input type="text" id="buscador" placeholder="🔍 BUSCAR POR DNI, APELLIDO O NOMBRE..." onkeyup="renderTabla()">
-
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
-            <div style="background:#fff; border:4px solid #000; padding:15px;"><canvas id="c_mat" height="200"></canvas></div>
-            <div style="display:flex; flex-direction:column; gap:10px;">
-                <button onclick="descargarExcel()" class="btn-accion" style="background:var(--azul); margin-top:0;">📊 EXCEL DE INSPECCIÓN</button>
-                <button onclick="exportar()" class="btn-accion" style="background:gray; margin-top:0;">💾 GENERAR BACKUP PARA OTRA PC</button>
-                <button onclick="document.getElementById('fileIn').click()" class="btn-accion" style="background:#000; margin-top:0;">📂 CARGAR BACKUP</button>
-                <input type="file" id="fileIn" style="display:none" onchange="importar(event)">
-            </div>
-        </div>
-
-        <div class="tabla-wrapper">
-            <table>
+        <input type="text" id="buscador" placeholder="🔍 BUSCAR POR APELLIDO O DNI..." onkeyup="renderTabla()">
+        <button onclick="descargarExcel()" class="btn-accion" style="background:var(--azul);">📊 DESCARGAR EXCEL COMPLETO</button>
+        <div style="overflow-x:auto;">
+            <table id="tablaPrincipal">
                 <thead>
                     <tr>
                         <th>ALUMNO / DNI</th>
-                        <th>SALA / EDAD</th>
-                        <th>DATOS MADRE</th>
-                        <th>DATOS PADRE</th>
-                        <th>FALTAS</th>
+                        <th>EDAD</th>
+                        <th>SALA</th>
+                        <th>DOMICILIO</th>
+                        <th>FAMILIA</th>
                         <th>AUH</th>
-                        <th>GESTIÓN</th>
+                        <th>ACCIÓN</th>
                     </tr>
                 </thead>
                 <tbody id="cuerpo"></tbody>
@@ -160,10 +108,10 @@
 
 <div id="modal">
     <div class="modal-body">
-        <h2 style="margin-top:0; border-bottom:4px solid #000; padding-bottom:10px;">VISTA PREVIA DEL LEGAJO</h2>
+        <h2>REVISAR DATOS ANTES DE GUARDAR</h2>
         <div id="edicion" class="form-grid"></div>
-        <div style="display:flex; gap:15px; margin-top:25px;">
-            <button onclick="document.getElementById('modal').style.display='none'" class="btn-accion" style="background:var(--rojo);">❌ CORREGIR</button>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button onclick="document.getElementById('modal').style.display='none'" class="btn-accion" style="background:gray;">EDITAR</button>
             <button onclick="guardar()" class="btn-accion">✅ CONFIRMAR Y GUARDAR</button>
         </div>
     </div>
@@ -171,8 +119,7 @@
 
 <script>
     let alumnos = [];
-    let asistencia = JSON.parse(localStorage.getItem('J926_ASIS_V_ELITE')) || {};
-    const CAMPOS = ['n','d','f','nac','sala','m_n','m_d','m_nac','m_o','m_e','m_dom','m_t','p_n','p_d','p_nac','p_o','p_e','auh'];
+    const CAMPOS = ['n','d','f','nac','sala','m_dom','m_n','m_e','m_t','p_n','p_e','auh'];
 
     function ver(n) {
         document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
@@ -183,9 +130,8 @@
     }
 
     function dictar(id) {
-        const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if(!Speech) return alert("Navegador no compatible con voz");
-        const rec = new Speech(); rec.lang = 'es-AR'; rec.start();
+        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        rec.lang = 'es-AR'; rec.start();
         rec.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); };
     }
 
@@ -210,14 +156,11 @@
     function guardar() {
         let a = {};
         CAMPOS.forEach(id => { a[id] = document.getElementById('mod_'+id).value.toUpperCase(); });
-        
-        // Evitar duplicados por DNI
-        alumnos = alumnos.filter(item => item.d !== a.d);
         alumnos.push(a);
-        
-        localStorage.setItem('J926_DATA_ELITE', JSON.stringify(alumnos));
+        localStorage.setItem('J926_SISTEMA_V5', JSON.stringify(alumnos));
         document.getElementById('modal').style.display = 'none';
-        alert("SISTEMA ACTUALIZADO ✅");
+        alert("ALUMNO GUARDADO ✅");
+        renderTabla();
         ver(3);
     }
 
@@ -228,117 +171,65 @@
         
         alumnos.forEach((a, i) => {
             if (a.n.includes(bus) || a.d.toString().includes(bus)) {
-                let f = 0;
-                Object.values(asistencia).forEach(dia => { if(dia[a.d] === 'A') f++; });
-                
-                t.innerHTML += `<tr class="${f >= 10 ? 'alerta-inasistencia' : ''}">
-                    <td>${a.n}<br><small>DNI: ${a.d}</small></td>
-                    <td>${a.sala}<br>${calcularEdad(a.f)}</td>
-                    <td style="text-align:left; font-size:9px;">NOM: ${a.m_n}<br>EST: ${a.m_e}<br>TEL: ${a.m_t}</td>
-                    <td style="text-align:left; font-size:9px;">NOM: ${a.p_n}<br>EST: ${a.p_e}<br>TRAB: ${a.p_o}</td>
-                    <td style="font-size:16px;">${f}</td>
-                    <td>${a.auh}</td>
-                    <td>
-                        <button onclick="editarExistente(${i})" style="background:orange; border:none; margin-bottom:5px;">✏️</button><br>
-                        <button onclick="borrar(${i})" style="background:red; color:white; border:none;">❌</button>
+                t.innerHTML += `<tr>
+                    <td><b>${a.n}</b><br>DNI: ${a.d}</td>
+                    <td>${calcularEdad(a.f)}</td>
+                    <td>${a.sala}</td>
+                    <td>${a.m_dom || '-'}</td>
+                    <td style="text-align:left; font-size:9px">
+                        M: ${a.m_n || '-'} (${a.m_e})<br>
+                        P: ${a.p_n || '-'} (${a.p_e})<br>
+                        TEL: ${a.m_t || '-'}
                     </td>
+                    <td>${a.auh}</td>
+                    <td><button onclick="borrar(${i})" style="background:red; color:white; border:none; padding:5px;">BORRAR</button></td>
                 </tr>`;
             }
         });
-        document.getElementById('contadorMatricula').innerText = `TOTAL ALUMNOS: ${alumnos.length}`;
-        renderChart();
+        document.getElementById('totalTxt').innerText = "TOTAL MATRÍCULA: " + alumnos.length;
     }
 
-    function renderAsis() {
-        const s = document.getElementById('f_sala').value;
-        const c = document.getElementById('listaAsis'); c.innerHTML = "";
-        alumnos.filter(a => a.sala === s).forEach(a => {
-            c.innerHTML += `<div style="padding:15px; border-bottom:3px solid #000; display:flex; justify-content:space-between; align-items:center; background:white;">
-                <span style="font-size:14px;">${a.n}</span>
-                <select onchange="marcar('${a.d}', this.value)" style="width:150px; background: #e0f2fe;">
-                    <option value="P">✅ PRESENTE</option>
-                    <option value="A">❌ AUSENTE</option>
-                </select>
-            </div>`;
-        });
-    }
-
-    function marcar(dni, v) {
-        const f = document.getElementById('f_fecha').value;
-        if(!asistencia[f]) asistencia[f] = {};
-        asistencia[f][dni] = v;
-        localStorage.setItem('J926_ASIS_V_ELITE', JSON.stringify(asistencia));
-    }
-
-    function renderChart() {
-        const ctx = document.getElementById('c_mat').getContext('2d');
-        const d = {}; alumnos.forEach(a => d[a.sala] = (d[a.sala] || 0) + 1);
-        if(window.myCh) window.myCh.destroy();
-        window.myCh = new Chart(ctx, { 
-            type: 'bar', 
-            data: { 
-                labels: Object.keys(d), 
-                datasets: [{ label: 'ALUMNOS POR SALA', data: Object.values(d), backgroundColor: '#001f3f' }] 
-            },
-            options: { indexAxis: 'y' }
-        });
-    }
-
-    function editarExistente(i) {
-        const a = alumnos[i];
-        CAMPOS.forEach(id => { document.getElementById(id).value = a[id] || ""; });
-        ver(1);
-    }
-
-    function borrar(i) { if(confirm("¿CONFIRMA ELIMINAR ESTE LEGAJO?")) { alumnos.splice(i,1); localStorage.setItem('J926_DATA_ELITE', JSON.stringify(alumnos)); renderTabla(); } }
-
-    function descargarExcel() {
-        let csv = "\uFEFFALUMNO,DNI,EDAD,SALA,MADRE,ESTUDIOS_M,OCUPACION_M,DOMICILIO,TEL,PADRE,ESTUDIOS_P,AUH,FALTAS\n";
-        alumnos.forEach(a => {
-            let f = 0; Object.values(asistencia).forEach(dia => { if(dia[a.d] === 'A') f++; });
-            csv += `"${a.n}","${a.d}","${calcularEdad(a.f)}","${a.sala}","${a.m_n}","${a.m_e}","${a.m_o}","${a.m_dom}","${a.m_t}","${a.p_n}","${a.p_e}","${a.auh}","${f}"\n`;
-        });
-        const b = new Blob([csv], {type: 'text/csv;charset=utf-8'});
-        const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = 'INSPECCION_JARDIN_926.csv'; l.click();
-    }
-
-    function exportar() {
-        const blob = new Blob([JSON.stringify({alumnos, asistencia})], {type: 'application/json'});
-        const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'BACKUP_926.json'; link.click();
-    }
-
-    function importar(e) {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            const data = JSON.parse(ev.target.result);
-            alumnos = data.alumnos; asistencia = data.asistencia;
-            localStorage.setItem('J926_DATA_ELITE', JSON.stringify(alumnos));
-            localStorage.setItem('J926_ASIS_V_ELITE', JSON.stringify(asistencia));
-            location.reload();
-        };
-        reader.readAsText(e.target.files[0]);
-    }
+    function borrar(i) { if(confirm("¿ELIMINAR?")) { alumnos.splice(i,1); localStorage.setItem('J926_SISTEMA_V5', JSON.stringify(alumnos)); renderTabla(); } }
 
     function iniciar() {
-        // MOTOR DE RESCATE: Busca en todas las llaves posibles de tus versiones anteriores
-        const llaves = ['J926_SISTEMA_V4', 'J926_FINAL_V3', 'MATRICULA_V2_FINAL', 'MASTER_926_V1', 'J926_DATA_ELITE'];
-        let recuperados = [];
-        
-        llaves.forEach(k => {
-            const d = localStorage.getItem(k);
-            if(d) {
-                const parsed = JSON.parse(d);
-                if(Array.isArray(parsed)) recuperados = [...recuperados, ...parsed];
-            }
-        });
+        // BUSCADOR DE DATOS EN TODAS LAS VERSIONES ANTERIORES
+        const v5 = localStorage.getItem('J926_SISTEMA_V5');
+        const v4 = localStorage.getItem('J926_DATA_ELITE');
+        const v3 = localStorage.getItem('J926_SISTEMA_V4');
+        const v2 = localStorage.getItem('J926_FINAL_V3');
+        const v1 = localStorage.getItem('MATRICULA_V2_FINAL');
 
-        // Eliminar duplicados por DNI para que no se sumen repetidos
-        const unicos = {};
-        recuperados.forEach(a => { if(a.d) unicos[a.d] = a; });
-        alumnos = Object.values(unicos);
-        
-        localStorage.setItem('J926_DATA_ELITE', JSON.stringify(alumnos));
+        let base = v5 || v4 || v3 || v2 || v1;
+
+        if(base) {
+            alumnos = JSON.parse(base);
+            // Asegurar que si los datos vienen de versión vieja, se adapten
+            alumnos = alumnos.map(a => ({
+                n: a.n || a.nombre || "",
+                d: a.d || a.dni || "",
+                f: a.f || a.fecha || "",
+                nac: a.nac || "ARGENTINA",
+                sala: a.sala || "SALA ROSA TM",
+                m_dom: a.m_dom || a.dom || "",
+                m_n: a.m_n || "",
+                m_e: a.m_e || "SECUNDARIO COMPLETO",
+                m_t: a.m_t || a.tel || "",
+                p_n: a.p_n || "",
+                p_e: a.p_e || "SECUNDARIO COMPLETO",
+                auh: a.auh || "SÍ"
+            }));
+            localStorage.setItem('J926_SISTEMA_V5', JSON.stringify(alumnos));
+        }
         renderTabla();
+    }
+
+    function descargarExcel() {
+        let csv = "\uFEFFALUMNO,DNI,EDAD,SALA,DOMICILIO,MADRE,PADRE,AUH\n";
+        alumnos.forEach(a => {
+            csv += `"${a.n}","${a.d}","${calcularEdad(a.f)}","${a.sala}","${a.m_dom}","${a.m_n}","${a.p_n}","${a.auh}"\n`;
+        });
+        const b = new Blob([csv], {type: 'text/csv;charset=utf-8'});
+        const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = 'MATRICULA_926.csv'; l.click();
     }
 </script>
 </body>
