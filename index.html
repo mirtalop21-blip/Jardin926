@@ -1,39 +1,3 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA JARDÍN 926 - PROFESIONAL</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { font-family: 'Arial Black', sans-serif; text-transform: uppercase; background: #e5e7eb; }
-        .input-heavy { width: 100%; border: 3px solid #000; padding: 12px; font-weight: 900; background: white; font-size: 14px; }
-        .seccion-card { border: 5px solid #000; background: white; padding: 25px; box-shadow: 12px 12px 0px #000; margin-bottom: 40px; }
-        .btn-mic { background: #ff4444; color: white; padding: 10px; border: 3px solid #000; font-weight: 900; cursor: pointer; }
-        .btn-save { background: #2563eb; color: white; padding: 20px; border: 4px solid #000; font-weight: 900; width: 100%; font-size: 1.5rem; }
-    </style>
-</head>
-<body onload="cargarMemoria()">
-
-<header class="bg-[#001f3f] text-white p-8 border-b-[10px] border-blue-800 shadow-2xl">
-    <h1 class="text-4xl font-black italic text-center">ADMINISTRACIÓN INSTITUCIONAL - JARDÍN 926</h1>
-    <div class="flex flex-wrap justify-center gap-6 mt-6">
-        <button onclick="descargarBackup()" class="bg-amber-500 text-black px-6 py-3 border-4 border-black font-black">💾 GUARDAR BACKUP</button>
-        <button onclick="exportarExcelProfesional()" class="bg-emerald-600 text-white px-6 py-3 border-4 border-black font-black">📊 EXCEL PARA INSPECCIÓN</button>
-    </div>
-</header>
-
-<main class="max-w-7xl mx-auto p-6">
-    
-    <section class="seccion-card">
-        <h2 class="text-2xl font-black mb-6 bg-yellow-300 inline-block px-4 border-2 border-black">REGISTRO DE MATRÍCULA (CON CARGA DE VOZ)</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div>
-                <label class="block font-black text-sm">APELLIDO Y NOMBRE</label>
-                <div class="flex gap-1">
-                    <input type="text" id="n" class="input-heavy" placeholder="HABLAR...">
-                    <button onclick="dictar('n')" class="btn-mic">🎤</button>
                 </div>
             </div>
             <div>
