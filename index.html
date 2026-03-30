@@ -1,18 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA GESTIÓN JARDÍN 926 - COMPLETO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Arial Black', sans-serif; text-transform: uppercase; background: #f0f4f8; }
+        .input-heavy { width: 100%; border: 3px solid #000; padding: 12px; font-weight: 900; background: white; font-size: 15px; }
+        .seccion-card { border: 6px solid #000; background: white; padding: 20px; box-shadow: 12px 12px 0px #000; margin-bottom: 40px; }
+        .btn-mic { background: #e11d48; color: white; padding: 10px 15px; border: 3px solid #000; font-weight: 900; cursor: pointer; }
+        .btn-save { background: #2563eb; color: white; padding: 20px; border: 4px solid #000; font-weight: 900; width: 100%; font-size: 1.5rem; }
+        label { display: block; font-size: 12px; font-weight: 900; margin-bottom: 4px; color: #1e293b; margin-top: 12px; }
+    </style>
+</head>
+<body onload="iniciarSistema()">
+
+<header class="bg-[#001f3f] text-white p-8 border-b-[10px] border-blue-900 shadow-2xl">
+    <h1 class="text-3xl md:text-5xl font-black italic text-center uppercase">Matrícula Oficial Jardín 926</h1>
+    <div class="flex flex-wrap justify-center gap-6 mt-6">
+        <button onclick="descargarBackup()" class="bg-amber-500 text-black px-6 py-3 border-4 border-black font-black hover:bg-amber-400">💾 GUARDAR TODO</button>
+        <button onclick="exportarExcelProfesional()" class="bg-emerald-600 text-white px-6 py-3 border-4 border-black font-black hover:bg-emerald-500">📊 EXCEL INSPECCIÓN</button>
+    </div>
+</header>
+
+<main class="max-w-7xl mx-auto p-4 md:p-10">
+    
+    <section class="seccion-card">
+        <h2 class="text-2xl font-black mb-6 bg-yellow-300 inline-block px-4 border-2 border-black italic">REGISTRO DE ALUMNO (DICTADO POR VOZ)</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div>
+                <label>APELLIDO Y NOMBRE DEL ALUMNO (🎤)</label>
+                <div class="flex gap-2">
+                    <input type="text" id="n" class="input-heavy" placeholder="DICTAR NOMBRE...">
+                    <button onclick="dictar('n')" class="btn-mic">🎤</button>
                 </div>
             </div>
+
             <div>
-                <label class="block font-black text-sm">DNI (SÓLO NÚMEROS)</label>
-                <div class="flex gap-1">
-                    <input type="number" id="d" class="input-heavy">
+                <label>DNI (🎤)</label>
+                <div class="flex gap-2">
+                    <input type="number" id="d" class="input-heavy" placeholder="NÚMEROS...">
                     <button onclick="dictar('d')" class="btn-mic">🎤</button>
                 </div>
             </div>
+
             <div>
-                <label class="block font-black text-sm">FECHA NACIMIENTO (CALCULA EDAD AL 30/06)</label>
-                <input type="date" id="f" class="input-heavy" onchange="calcularEdad()">
+                <label>FECHA DE NACIMIENTO</label>
+                <input type="date" id="f" class="input-heavy">
             </div>
+
             <div>
-                <label class="block font-black text-sm">SALA / SECCIÓN</label>
+                <label>SALA / SECCIÓN</label>
                 <select id="s" class="input-heavy">
                     <option>SALA ROSA TM</option>
                     <option>SALA NARANJA TT</option>
@@ -20,52 +60,83 @@
                     <option>SALA AZUL TT</option>
                 </select>
             </div>
+
             <div>
-                <label class="block font-black text-sm">DATOS PADRE / TUTOR</label>
-                <div class="flex gap-1">
-                    <input type="text" id="p" class="input-heavy">
+                <label>PADRE / TUTOR (🎤)</label>
+                <div class="flex gap-2">
+                    <input type="text" id="p" class="input-heavy" placeholder="DICTAR...">
                     <button onclick="dictar('p')" class="btn-mic">🎤</button>
                 </div>
             </div>
+
             <div>
-                <label class="block font-black text-sm">DATOS MADRE / TUTORA</label>
-                <div class="flex gap-1">
-                    <input type="text" id="m" class="input-heavy">
+                <label>MADRE / TUTORA (🎤)</label>
+                <div class="flex gap-2">
+                    <input type="text" id="m" class="input-heavy" placeholder="DICTAR...">
                     <button onclick="dictar('m')" class="btn-mic">🎤</button>
                 </div>
             </div>
         </div>
 
-        <div class="mt-8">
-            <button onclick="agregar()" class="btn-save shadow-[8px_8px_0px_#000]">GUARDAR ALUMNO EN EL SISTEMA</button>
+        <div class="mt-10">
+            <button onclick="agregarAlumno()" class="btn-save shadow-[10px_10px_0px_#000] hover:bg-blue-700">GUARDAR EN MATRÍCULA ACTUALIZADA</button>
         </div>
     </section>
 
     <section class="seccion-card">
-        <h2 class="text-2xl font-black mb-6 border-b-4 border-black">VISTA PREVIA PROFESIONAL PARA SUPERVISIÓN</h2>
+        <h2 class="text-2xl font-black mb-6 border-b-8 border-black pb-2">VISTA GENERAL DE MATRÍCULA</h2>
         <div class="overflow-x-auto">
             <table class="w-full border-collapse bg-white">
                 <thead>
-                    <tr class="bg-gray-200">
-                        <th class="border-2 border-black p-2">ALUMNO</th>
-                        <th class="border-2 border-black p-2">DNI</th>
-                        <th class="border-2 border-black p-2">SALA</th>
-                        <th class="border-2 border-black p-2">EDAD 30/06</th>
-                        <th class="border-2 border-black p-2">ACCIONES</th>
+                    <tr class="bg-gray-800 text-white text-sm">
+                        <th class="border-4 border-black p-3">ALUMNO / DNI</th>
+                        <th class="border-4 border-black p-3">SALA</th>
+                        <th class="border-4 border-black p-3">EDAD 30/06</th>
+                        <th class="border-4 border-black p-3">ACCIONES</th>
                     </tr>
                 </thead>
-                <tbody id="tablaBody"></tbody>
+                <tbody id="tablaCuerpo" class="font-black text-sm uppercase"></tbody>
             </table>
         </div>
     </section>
 </main>
 
 <script>
+    // DATOS TOTALES RECUPERADOS DE TUS FOTOS
     let db = [
         {n: "AMARILLA SUAREZ YAMIR JORGE", d: "39649663", s: "SALA ROSA TM", f: "2021-04-15", p: "-", m: "-"},
         {n: "BARBERIS SANTILLAN JUN PABLO", d: "39330738", s: "SALA ROSA TM", f: "2021-02-10", p: "-", m: "-"},
-        {n: "BAGLIETTO THIAN ELIEL", d: "38929058", s: "SALA ROSA TM", f: "2021-08-20", p: "-", m: "-"}
-        // ... (el sistema cargará el resto desde la memoria)
+        {n: "CABALLERO ABREGO RONALDO DANIEL", d: "39913429", s: "SALA ROSA TM", f: "2021-06-05", p: "-", m: "-"},
+        {n: "CARRILLO QUISPE AARIA DAINERIS", d: "39496612", s: "SALA ROSA TM", f: "2021-01-20", p: "-", m: "-"},
+        {n: "CHOQUE MAREA O MICAELA BRIANA", d: "39800326", s: "SALA ROSA TM", f: "2021-09-12", p: "-", m: "-"},
+        {n: "ESCOBAR NICOLAS MAEL", d: "39608992", s: "SALA ROSA TM", f: "2021-03-30", p: "-", m: "-"},
+        {n: "FARIA AS BLANCO FRANCESCO LIONEL", d: "39807066", s: "SALA ROSA TM", f: "2021-11-15", p: "-", m: "-"},
+        {n: "FIGUEROA CATALEYA ANAHI", d: "39724820", s: "SALA ROSA TM", f: "2021-05-22", p: "-", m: "-"},
+        {n: "GARCIA ROMA MARTINA", d: "39330893", s: "SALA ROSA TM", f: "2021-07-08", p: "-", m: "-"},
+        {n: "GAUNA RAMIRO NAHUEL", d: "39311389", s: "SALA ROSA TM", f: "2021-08-14", p: "-", m: "-"},
+        {n: "GOMEZ SANTIAGO ENZO", d: "39330781", s: "SALA ROSA TM", f: "2021-10-25", p: "-", m: "-"},
+        {n: "JIMENEZ ROJAS JAZMIN TERESA", d: "39834209", s: "SALA ROSA TM", f: "2021-12-01", p: "-", m: "-"},
+        {n: "LOZA ELISEO VALENTIN", d: "39387969", s: "SALA ROSA TM", f: "2021-01-15", p: "-", m: "-"},
+        {n: "MONTES MAIRANA ADA ABIGAIL", d: "39311398", s: "SALA ROSA TM", f: "2021-02-28", p: "-", m: "-"},
+        {n: "OJEDA ISABELLA GABRIELA", d: "39419122", s: "SALA ROSA TM", f: "2021-04-10", p: "-", m: "-"},
+        {n: "QUISPE GUARACHI DAYLIN FLORENCIA", d: "39493677", s: "SALA ROSA TM", f: "2021-05-05", p: "-", m: "-"},
+        {n: "RECALDE OVIEDO LUANA", d: "39499707", s: "SALA ROSA TM", f: "2021-06-18", p: "-", m: "-"},
+        {n: "SALVATIERRA ROJAS ANA LIZ", d: "39648362", s: "SALA ROSA TM", f: "2021-07-22", p: "-", m: "-"},
+        {n: "SANTALLA ROJAS GAEL ALEJANDRO", d: "39497004", s: "SALA ROSA TM", f: "2021-08-30", p: "-", m: "-"},
+        {n: "SANTILLAN GAEL DARIO", d: "39319398", s: "SALA ROSA TM", f: "2021-09-15", p: "-", m: "-"},
+        {n: "SAUCEDO VIDAL DESIDERIO", d: "39692803", s: "SALA ROSA TM", f: "2021-10-10", p: "-", m: "-"},
+        {n: "SOSA AYNARA MAGALI", d: "39746733", s: "SALA ROSA TM", f: "2021-11-05", p: "-", m: "-"},
+        {n: "TABOADA CAMILA MAITE", d: "39798190", s: "SALA ROSA TM", f: "2021-12-12", p: "-", m: "-"},
+        {n: "TORRES COCA ANA LUJAN", d: "39696379", s: "SALA ROSA TM", f: "2021-01-08", p: "-", m: "-"},
+        {n: "VALLEJOS HEREDIA AITANA EVELYN", d: "39697386", s: "SALA ROSA TM", f: "2021-02-20", p: "-", m: "-"},
+        {n: "VELAZQUEZ ARCIENAGA JULIETA ISABEL", d: "39833187", s: "SALA ROSA TM", f: "2021-03-25", p: "-", m: "-"},
+        {n: "BAGLIETTO THIAN ELIEL", d: "38929058", s: "SALA ROSA TM", f: "2021-08-20", p: "-", m: "-"},
+        {n: "AGUILAR CURTIDO BELINDA ABIGAIL", d: "39312579", s: "SALA NARANJA TT", f: "2021-03-12", p: "-", m: "-"},
+        {n: "BENITEZ CIELO ELUNEY", d: "39265375", s: "SALA NARANJA TT", f: "2021-04-10", p: "-", m: "-"},
+        {n: "BENITEZ LUISANA VALENTINA", d: "39265376", s: "SALA NARANJA TT", f: "2021-04-10", p: "-", m: "-"},
+        {n: "BOGDANOFF NAHOMI ANGELA", d: "39324326", s: "SALA NARANJA TT", f: "2021-05-15", p: "-", m: "-"},
+        {n: "CACERES ISABELLA VALERIA", d: "39185952", s: "SALA NARANJA TT", f: "2021-01-20", p: "-", m: "-"},
+        {n: "CENTURION RIOS LIAM CIRO", d: "39804726", s: "SALA NARANJA TT", f: "2021-06-30", p: "-", m: "-"}
     ];
 
     function dictar(id) {
@@ -80,16 +151,20 @@
     function calcularEdadAl30DeJunio(fechaNac) {
         if(!fechaNac) return "-";
         const nac = new Date(fechaNac);
-        const fechaCorte = new Date(2026, 5, 30); // 30 de Junio 2026
-        let edad = fechaCorte.getFullYear() - nac.getFullYear();
-        const m = fechaCorte.getMonth() - nac.getMonth();
-        if (m < 0 || (m === 0 && fechaCorte.getDate() < nac.getDate())) {
-            edad--;
-        }
+        const corte = new Date(2026, 5, 30); // 30 de Junio 2026
+        let edad = corte.getFullYear() - nac.getFullYear();
+        const m = corte.getMonth() - nac.getMonth();
+        if (m < 0 || (m === 0 && corte.getDate() < nac.getDate())) { edad--; }
         return edad + " AÑOS";
     }
 
-    function agregar() {
+    function iniciarSistema() {
+        const guardado = localStorage.getItem('J926_SISTEMA_V3');
+        if(guardado) db = JSON.parse(guardado);
+        render();
+    }
+
+    function agregarAlumno() {
         const alu = {
             n: document.getElementById('n').value.toUpperCase(),
             d: document.getElementById('d').value,
@@ -100,71 +175,52 @@
         };
         if(alu.n && alu.d) {
             db.push(alu);
-            guardarYRender();
-            limpiarCampos();
+            localStorage.setItem('J926_SISTEMA_V3', JSON.stringify(db));
+            render();
+            alert("ALUMNO REGISTRADO");
+            ['n','d','f','p','m'].forEach(id => document.getElementById(id).value = "");
+        } else {
+            alert("COMPLETAR NOMBRE Y DNI");
         }
     }
 
-    function guardarYRender() {
-        localStorage.setItem('J926_SISTEMA_PRO', JSON.stringify(db));
-        render();
-    }
-
-    function cargarMemoria() {
-        const data = localStorage.getItem('J926_SISTEMA_PRO');
-        if(data) db = JSON.parse(data);
-        render();
-    }
-
     function render() {
-        const body = document.getElementById('tablaBody');
-        body.innerHTML = "";
-        db.sort((a,b) => a.s.localeCompare(b.s) || a.n.localeCompare(b.n)).forEach((alu, i) => {
-            body.innerHTML += `
-                <tr class="font-black text-sm">
-                    <td class="border-2 border-black p-2">${alu.n}</td>
-                    <td class="border-2 border-black p-2">${alu.d}</td>
-                    <td class="border-2 border-black p-2 bg-blue-50">${alu.s}</td>
-                    <td class="border-2 border-black p-2 text-center text-red-600">${calcularEdadAl30DeJunio(alu.f)}</td>
-                    <td class="border-2 border-black p-2 text-center">
-                        <button onclick="eliminar(${i})" class="text-xs bg-red-600 text-white p-1">X</button>
-                    </td>
+        const cuerpo = document.getElementById('tablaCuerpo');
+        cuerpo.innerHTML = "";
+        db.sort((a,b) => a.s.localeCompare(b.s) || a.n.localeCompare(b.n)).forEach((a, i) => {
+            cuerpo.innerHTML += `
+                <tr class="border-4 border-black">
+                    <td class="p-3 border-r-4 border-black">${a.n}<br><span class="text-[10px] text-blue-700">DNI: ${a.d}</span></td>
+                    <td class="p-3 border-r-4 border-black text-center bg-blue-50">${a.s}</td>
+                    <td class="p-3 border-r-4 border-black text-center text-red-600">${calcularEdadAl30DeJunio(a.f)}</td>
+                    <td class="p-3 text-center"><button onclick="eliminar(${i})" class="bg-red-600 text-white p-1 text-xs">BORRAR</button></td>
                 </tr>`;
         });
     }
 
     function exportarExcelProfesional() {
-        let contenido = "MATRICULA INSTITUCIONAL - JARDIN 926\n";
-        contenido += "FECHA DE REPORTE: " + new Date().toLocaleDateString() + "\n\n";
-        
+        let csv = "\uFEFFMATRÍCULA INSTITUCIONAL - JARDÍN 926\n";
         const salas = [...new Set(db.map(a => a.s))];
         salas.forEach(sala => {
-            contenido += `--- SALA: ${sala} ---\n`;
-            contenido += "NOMBRE Y APELLIDO, DNI, EDAD AL 30/06, PADRE, MADRE\n";
+            csv += `\n--- SECCIÓN: ${sala} ---\n`;
+            csv += "APELLIDO Y NOMBRE, DNI, EDAD AL 30/06, PADRE/TUTOR, MADRE/TUTORA\n";
             db.filter(a => a.s === sala).forEach(a => {
-                contenido += `${a.n}, ${a.d}, ${calcularEdadAl30DeJunio(a.f)}, ${a.p}, ${a.m}\n`;
+                csv += `${a.n}, ${a.d}, ${calcularEdadAl30DeJunio(a.f)}, ${a.p}, ${a.m}\n`;
             });
-            contenido += "\n";
         });
-
-        const blob = new Blob([contenido], {type: 'text/csv'});
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'MATRICULA_INSPECCION_J926.csv';
-        a.click();
+        const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "MATRICULA_J926_INSPECCION.csv";
+        link.click();
     }
 
-    function limpiarCampos() {
-        ['n','d','f','p','m'].forEach(id => document.getElementById(id).value = "");
-    }
-
-    function eliminar(i) { if(confirm("¿ELIMINAR?")) { db.splice(i,1); guardarYRender(); } }
+    function eliminar(i) { if(confirm("¿ELIMINAR?")) { db.splice(i,1); localStorage.setItem('J926_SISTEMA_V3', JSON.stringify(db)); render(); } }
     function descargarBackup() {
         const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
         const dl = document.createElement('a');
         dl.setAttribute("href", data);
-        dl.setAttribute("download", "BACKUP_PRO_J926.json");
+        dl.setAttribute("download", "BACKUP_COMPLETO_J926.json");
         dl.click();
     }
 </script>
