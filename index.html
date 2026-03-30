@@ -1,41 +1,256 @@
-        const l = ; l.href = URL.createObjectURL(b); l.download = 'INSPECCION_926.csv'; l.click();
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA INTEGRAL JARDÍN 926</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --azul: #001f3f; --amarillo: #facc15; --rojo: #dc2626; --verde: #16a34a; --gris: #f1f5f9; }
+        body { font-family: 'Arial Black', sans-serif; text-transform: uppercase; background: var(--gris); margin: 0; font-size: 11px; font-weight: 900; }
+        nav { background: var(--azul); display: flex; border-bottom: 5px solid #000; position: sticky; top: 0; z-index: 100; }
+        nav button { flex: 1; background: var(--azul); color: white; border: none; padding: 15px; cursor: pointer; font-weight: 900; border-right: 1px solid #334155; font-size: 10px; }
+        nav button.active { background: var(--amarillo); color: #000; }
+        .container { max-width: 1400px; margin: 15px auto; padding: 0 10px; }
+        .card { background: white; border: 3px solid #000; padding: 20px; box-shadow: 7px 7px 0px #000; margin-bottom: 20px; display: none; }
+        .card.active { display: block; }
+        .header-seccion { background: var(--azul); color: white; padding: 10px; margin-bottom: 15px; border-left: 10px solid var(--amarillo); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+        .grupo-titulo { grid-column: 1 / -1; background: #000; color: #fff; padding: 8px; margin-top: 15px; border-left: 5px solid var(--rojo); }
+        .campo { display: flex; flex-direction: column; }
+        label { font-size: 9px; margin-bottom: 2px; color: #333; }
+        .input-mic { display: flex; gap: 4px; }
+        input, select { border: 2px solid #000; padding: 8px; font-weight: 900; background: #fff; font-size: 12px; text-transform: uppercase; width: 100%; box-sizing: border-box;}
+        .btn-mic { background: var(--rojo); color: white; border: 2px solid #000; padding: 0 10px; cursor: pointer; }
+        .btn-accion { background: var(--verde); color: white; border: 4px solid #000; padding: 15px; width: 100%; font-size: 16px; cursor: pointer; font-weight: 900; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; border: 3px solid #000; }
+        th { background: #000; color: #fff; padding: 8px; font-size: 9px; border: 1px solid #fff; }
+        td { border: 1px solid #000; padding: 5px; text-align: center; font-size: 9px; vertical-align: top; }
+        .alerta-faltas { background: #fee2e2 !important; color: #b91c1c; font-weight: bold; }
+        #modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; }
+        .modal-body { background: white; border: 5px solid #000; width: 95%; max-width: 1100px; margin: 10px auto; padding: 15px; }
+    </style>
+</head>
+<body onload="iniciar()">
+
+<nav>
+    <button id="b1" class="active" onclick="ver(1)">1. CARGA DE LEGAJOS 🎤</button>
+    <button id="b2" onclick="ver(2)">2. ASISTENCIA X VOZ</button>
+    <button id="b3" onclick="ver(3)">3. SUPERVISIÓN / BÚSQUEDA 📊</button>
+</nav>
+
+<div class="container">
+    <section id="s1" class="card active">
+        <div class="header-seccion">NUEVA CARGA INSTITUCIONAL 📝</div>
+        <div class="form-grid">
+            <div class="grupo-titulo">DATOS DEL ALUMNO/A</div>
+            <div class="campo"><label>APELLIDO Y NOMBRE</label><div class="input-mic"><input type="text" id="n"><button onclick="dictar('n')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>DNI (SÓLO NÚMEROS)</label><input type="number" id="d"></div>
+            <div class="campo"><label>FECHA NACIMIENTO</label><input type="date" id="f"></div>
+            <div class="campo"><label>NACIONALIDAD</label><div class="input-mic"><input type="text" id="nac" value="ARGENTINA"><button onclick="dictar('nac')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>SALA</label><select id="sala"><option>SALA ROSA TM</option><option>SALA NARANJA TT</option><option>SALA VERDE TM</option><option>SALA AZUL TT</option></select></div>
+            <div class="campo"><label>CANT. HERMANOS</label><input type="number" id="h_c"></div>
+            <div class="campo"><label>¿HERMANOS EN JARDÍN?</label><select id="h_j"><option>NO</option><option>SÍ</option></select></div>
+
+            <div class="grupo-titulo">DATOS DE LA MADRE / TUTORA</div>
+            <div class="campo"><label>APELLIDO Y NOMBRE MADRE</label><div class="input-mic"><input type="text" id="m_n"><button onclick="dictar('m_n')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>DNI MADRE</label><input type="number" id="m_d"></div>
+            <div class="campo"><label>NACIONALIDAD MADRE</label><div class="input-mic"><input type="text" id="m_nac" value="ARGENTINA"><button onclick="dictar('m_nac')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>ESTUDIOS MADRE</label><select id="m_e"><option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option><option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option><option>TERCIARIO COMPLETO</option><option>TERCIARIO INCOMPLETO</option><option>UNIVERSITARIO COMPLETO</option></select></div>
+            <div class="campo"><label>TRABAJO / OFICIO</label><div class="input-mic"><input type="text" id="m_o"><button onclick="dictar('m_o')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>DOMICILIO</label><div class="input-mic"><input type="text" id="m_dom"><button onclick="dictar('m_dom')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>TELÉFONO DE CONTACTO</label><input type="text" id="m_t"></div>
+
+            <div class="grupo-titulo">DATOS DEL PADRE / TUTOR</div>
+            <div class="campo"><label>APELLIDO Y NOMBRE PADRE</label><div class="input-mic"><input type="text" id="p_n"><button onclick="dictar('p_n')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>DNI PADRE</label><input type="number" id="p_d"></div>
+            <div class="campo"><label>NACIONALIDAD PADRE</label><div class="input-mic"><input type="text" id="p_nac" value="ARGENTINA"><button onclick="dictar('p_nac')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>ESTUDIOS PADRE</label><select id="p_e"><option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option><option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option><option>TERCIARIO COMPLETO</option><option>TERCIARIO INCOMPLETO</option><option>UNIVERSITARIO COMPLETO</option></select></div>
+            <div class="campo"><label>TRABAJO / OFICIO</label><div class="input-mic"><input type="text" id="p_o"><button onclick="dictar('p_o')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>DOMICILIO</label><div class="input-mic"><input type="text" id="p_dom"><button onclick="dictar('p_dom')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>TELÉFONO DE CONTACTO</label><input type="text" id="p_t"></div>
+
+            <div class="grupo-titulo">BENEFICIOS</div>
+            <div class="campo"><label>¿RECIBE AUH?</label><select id="auh"><option>SÍ</option><option>NO</option></select></div>
+        </div>
+        <button onclick="previa()" class="btn-accion" style="background:var(--amarillo); color:#000;">👁️ VISTA PREVIA Y GUARDAR</button>
+    </section>
+
+    <section id="s2" class="card">
+        <div class="header-seccion">CONTROL DE ASISTENCIA 🎤</div>
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <select id="f_sala" onchange="renderAsis()" style="flex:2;"><option value="">SELECCIONAR SALA...</option><option>SALA ROSA TM</option><option>SALA NARANJA TT</option><option>SALA VERDE TM</option><option>SALA AZUL TT</option></select>
+            <input type="date" id="f_fecha" value="2026-03-30" style="flex:1;">
+        </div>
+        <div id="listaAsis"></div>
+    </section>
+
+    <section id="s3" class="card">
+        <div class="header-seccion">SUPERVISIÓN E INSPECCIÓN FINAL 📊</div>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:15px; margin-bottom:15px;">
+            <div style="background:#fff; border:2px solid #000; padding:10px;"><canvas id="c_mat" height="150"></canvas></div>
+            <div>
+                <label>🔍 BÚSQUEDA POR NOMBRE, APELLIDO O DNI:</label>
+                <input type="text" id="buscador" placeholder="ESCRIBA PARA BUSCAR..." onkeyup="renderTabla()" style="background: #fffbe6; border:3px solid #000;">
+                <button onclick="descargarExcel()" class="btn-accion">📊 EXCEL ESTRATÉGICO</button>
+                <button onclick="exportar()" class="btn-accion" style="background:var(--azul);">💾 RESPALDO OTRA COMPU</button>
+            </div>
+        </div>
+        <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ALUMNO / DNI</th>
+                        <th>SALA / EDAD</th>
+                        <th>DATOS MADRE (ESTUDIOS/TRABAJO/DNI)</th>
+                        <th>DATOS PADRE (ESTUDIOS/TRABAJO/DNI)</th>
+                        <th>DOMICILIO / TEL</th>
+                        <th>FALTAS</th>
+                        <th>ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo"></tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<div id="modal">
+    <div class="modal-body">
+        <h2 style="background:#000; color:#fff; padding:10px; margin:0;">VERIFICAR DATOS ANTES DE GUARDAR</h2>
+        <div id="edicion" class="form-grid" style="margin-top:10px;"></div>
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button onclick="document.getElementById('modal').style.display='none'" class="btn-accion" style="background:gray;">VOLVER</button>
+            <button onclick="guardar()" class="btn-accion">✅ CONFIRMAR REGISTRO</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let alumnos = [];
+    let asistencia = JSON.parse(localStorage.getItem('J926_ASIS_V3')) || {};
+    const CAMPOS = ['n','d','f','nac','sala','h_c','h_j','m_n','m_d','m_nac','m_o','m_e','m_dom','m_t','p_n','p_d','p_nac','p_o','p_e','p_dom','p_t','auh'];
+
+    function ver(n) {
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById('s'+n).classList.add('active');
+        document.getElementById('b'+n).classList.add('active');
+        if(n === 3) renderTabla();
+    }
+
+    function dictar(id) {
+        const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(!Speech) return alert("Usa Google Chrome para dictar");
+        const rec = new Speech(); rec.lang = 'es-AR'; rec.start();
+        rec.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); };
+    }
+
+    function calcularEdad(f) {
+        if(!f) return "-";
+        let n = new Date(f); let c = new Date(2026, 5, 30);
+        let e = c.getFullYear() - n.getFullYear();
+        if (c.getMonth() < n.getMonth() || (c.getMonth() === n.getMonth() && c.getDate() < n.getDate())) e--;
+        return e + " AÑOS";
+    }
+
+    function previa() {
+        let h = '';
+        CAMPOS.forEach(id => {
+            let v = document.getElementById(id).value;
+            h += `<div class="campo"><label>${id.toUpperCase()}</label><input type="text" id="mod_${id}" value="${v.toUpperCase()}"></div>`;
+        });
+        document.getElementById('edicion').innerHTML = h;
+        document.getElementById('modal').style.display = 'block';
+    }
+
+    function guardar() {
+        let a = {};
+        CAMPOS.forEach(id => { a[id] = document.getElementById('mod_'+id).value.toUpperCase(); });
+        alumnos.push(a);
+        localStorage.setItem('J926_FINAL_V3', JSON.stringify(alumnos));
+        document.getElementById('modal').style.display = 'none';
+        alert("REGISTRO COMPLETADO ✅");
+        renderTabla();
+    }
+
+    function renderTabla() {
+        const t = document.getElementById('cuerpo');
+        const bus = document.getElementById('buscador').value.toUpperCase();
+        t.innerHTML = "";
+
+        alumnos.forEach((a, i) => {
+            if (a.n.includes(bus) || a.d.toString().includes(bus)) {
+                let faltas = 0;
+                Object.values(asistencia).forEach(dia => { if(dia[a.d] === 'A') faltas++; });
+                
+                t.innerHTML += `<tr class="${faltas >= 10 ? 'alerta-faltas' : ''}">
+                    <td>${a.n}<br><b>DNI: ${a.d}</b></td>
+                    <td>${a.sala}<br>${calcularEdad(a.f)}</td>
+                    <td style="text-align:left">NOM: ${a.m_n || '-'}<br>DNI: ${a.m_d || '-'}<br>EST: ${a.m_e || '-'}<br>TRAB: ${a.m_o || '-'}</td>
+                    <td style="text-align:left">NOM: ${a.p_n || '-'}<br>DNI: ${a.p_d || '-'}<br>EST: ${a.p_e || '-'}<br>TRAB: ${a.p_o || '-'}</td>
+                    <td>DOM: ${a.m_dom || '-'}<br>TEL: ${a.m_t || '-'}</td>
+                    <td style="font-size:14px">${faltas}</td>
+                    <td><button onclick="borrar(${i})" style="background:red; color:white; border:none; padding:5px;">ELIMINAR</button></td>
+                </tr>`;
+            }
+        });
+        renderChart();
+    }
+
+    function renderAsis() {
+        const s = document.getElementById('f_sala').value;
+        const c = document.getElementById('listaAsis'); c.innerHTML = "";
+        alumnos.filter(a => a.sala === s).forEach(a => {
+            c.innerHTML += `<div style="padding:10px; border-bottom:2px solid #000; display:flex; justify-content:space-between; align-items:center;">
+                <span>${a.n}</span>
+                <select onchange="marcar('${a.d}', this.value)" style="width:80px;"><option value="P">P</option><option value="A">A</option></select>
+            </div>`;
+        });
+    }
+
+    function marcar(dni, v) {
+        const f = document.getElementById('f_fecha').value;
+        if(!asistencia[f]) asistencia[f] = {};
+        asistencia[f][dni] = v;
+        localStorage.setItem('J926_ASIS_V3', JSON.stringify(asistencia));
+    }
+
+    function renderChart() {
+        const ctx = document.getElementById('c_mat').getContext('2d');
+        const d = {}; alumnos.forEach(a => d[a.sala] = (d[a.sala] || 0) + 1);
+        if(window.myCh) window.myCh.destroy();
+        window.myCh = new Chart(ctx, { type: 'bar', data: { labels: Object.keys(d), datasets: [{ label: 'MATRÍCULA X SALA', data: Object.values(d), backgroundColor: '#001f3f' }] } });
+    }
+
+    function borrar(i) { if(confirm("¿ELIMINAR ALUMNO?")) { alumnos.splice(i,1); localStorage.setItem('J926_FINAL_V3', JSON.stringify(alumnos)); renderTabla(); } }
+
+    function descargarExcel() {
+        let csv = "\uFEFFALUMNO,DNI,EDAD,SALA,MADRE,ESTUDIOS_M,TRABAJO_M,PADRE,ESTUDIOS_P,TRABAJO_P,FALTAS\n";
+        alumnos.forEach(a => {
+            let f = 0; Object.values(asistencia).forEach(d => { if(d[a.d] === 'A') f++; });
+            csv += `"${a.n}","${a.d}","${calcularEdad(a.f)}","${a.sala}","${a.m_n}","${a.m_e}","${a.m_o}","${a.p_n}","${a.p_e}","${a.p_o}","${f}"\n`;
+        });
+        const b = new Blob([csv], {type: 'text/csv;charset=utf-8'});
+        const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = 'LEGAJO_ESTRATEGICO_926.csv'; l.click();
     }
 
     function exportar() {
         const d = { alumnos, asistencia };
         const b = new Blob([JSON.stringify(d)], {type: 'application/json'});
-        const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = 'BACKUP_926.json'; l.click();
-    }
-
-    function importar(e) {
-        const fr = new FileReader();
-        fr.onload = (ev) => {
-            const data = JSON.parse(ev.target.result);
-            alumnos = data.alumnos; asistencia = data.asistencia;
-            localStorage.setItem('J926_FINAL_V3', JSON.stringify(alumnos));
-            localStorage.setItem('J926_ASIS_V3', JSON.stringify(asistencia));
-            location.reload();
-        };
-        fr.readAsText(e.target.files[0]);
+        const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = 'RESPALDO_SISTEMA_926.json'; l.click();
     }
 
     function iniciar() {
-        // RESCATE MAESTRO: BUSCA EN TODAS LAS VERSIONES ANTERIORES
-        const v_previas = [
-            'MATRICULA_V2_FINAL',
-            'MASTER_926_V1',
-            'J926_MATRICULA_UNIFICADA',
-            'legajo_alumnos'
-        ];
-        
-        if(alumnos.length === 0) {
-            for(let key of v_previas) {
-                let data = localStorage.getItem(key);
-                if(data) {
-                    alumnos = JSON.parse(data);
-                    localStorage.setItem('J926_FINAL_V3', JSON.stringify(alumnos));
-                    break; 
-                }
+        // RESCATE MAESTRO DE DATOS ANTERIORES
+        const v_previas = ['J926_FINAL_V3', 'MATRICULA_V2_FINAL', 'MASTER_926_V1', 'J926_MATRICULA_UNIFICADA'];
+        for(let key of v_previas) {
+            let data = localStorage.getItem(key);
+            if(data) {
+                alumnos = JSON.parse(data);
+                // Asegurar que guardamos en la nueva llave
+                localStorage.setItem('J926_FINAL_V3', JSON.stringify(alumnos));
+                break;
             }
         }
         renderTabla();
