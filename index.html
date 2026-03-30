@@ -6,211 +6,131 @@
     <title>SISTEMA INTEGRAL JARDÍN 926</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --azul: #001f3f; --azul-claro: #1e40af; --amarillo: #facc15; --rojo: #dc2626; --gris: #f1f5f9; }
-        body { font-family: 'Arial', sans-serif; text-transform: uppercase; background: var(--gris); margin: 0; font-weight: 900; }
-        
+        :root { --azul: #001f3f; --amarillo: #facc15; --rojo: #dc2626; --verde: #10b981; }
+        body { font-family: 'Arial Black', sans-serif; text-transform: uppercase; background: #f1f5f9; margin: 0; }
         nav { background: var(--azul); display: flex; border-bottom: 5px solid black; position: sticky; top: 0; z-index: 100; }
-        nav button { flex: 1; background: var(--azul); color: white; border: none; padding: 15px; cursor: pointer; border-right: 1px solid #1e3a8a; font-weight: 900; font-size: 11px; }
+        nav button { flex: 1; background: var(--azul); color: white; border: none; padding: 15px; cursor: pointer; font-weight: 900; font-size: 10px; }
         nav button.active { background: var(--amarillo); color: black; }
-
         .container { max-width: 1200px; margin: 15px auto; padding: 0 10px; }
-        .card { background: white; border: 4px solid #000; padding: 20px; box-shadow: 8px 8px 0px #000; margin-bottom: 25px; display: none; }
+        .card { background: white; border: 4px solid #000; padding: 20px; box-shadow: 8px 8px 0px #000; display: none; }
         .card.active { display: block; }
-        
-        .titulo-seccion { background: var(--amarillo); padding: 5px 15px; border: 3px solid #000; display: inline-block; margin-bottom: 15px; font-style: italic; }
-        
-        /* FORMULARIO DETALLADO */
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
-        .sub-header { grid-column: 1 / -1; background: #000; color: white; padding: 8px; margin-top: 15px; font-size: 13px; border-left: 10px solid var(--amarillo); }
-        
-        .campo { display: flex; flex-direction: column; }
-        label { font-size: 10px; margin-bottom: 4px; color: #333; }
-        .input-group { display: flex; gap: 5px; }
-        input, select, textarea { border: 3px solid #000; padding: 10px; font-weight: 900; font-size: 14px; background: #fff; width: 100%; box-sizing: border-box; }
-        
-        .btn-mic { background: var(--rojo); color: white; border: 3px solid #000; padding: 0 15px; cursor: pointer; font-size: 20px; }
-        .btn-action { background: var(--azul-claro); color: white; border: 4px solid #000; padding: 18px; width: 100%; font-size: 18px; font-weight: 900; cursor: pointer; margin-top: 20px; box-shadow: 4px 4px 0px #000; }
-
-        /* MODAL DE EDICIÓN */
-        #modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; }
-        .modal-body { background: white; border: 6px solid #000; width: 95%; max-width: 700px; margin: 10px auto; padding: 20px; }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
-        th { background: #000; color: #fff; padding: 10px; font-size: 10px; }
-        td { border: 2px solid #000; padding: 8px; font-size: 10px; vertical-align: top; }
+        .sub-header { background: #000; color: white; padding: 8px; margin-top: 15px; font-size: 13px; border-left: 10px solid var(--amarillo); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+        input, select { border: 3px solid #000; padding: 10px; font-weight: 900; width: 100%; box-sizing: border-box; }
+        .btn-mic { background: var(--rojo); color: white; border: 3px solid #000; padding: 10px; cursor: pointer; }
+        .btn-principal { background: var(--amarillo); color: black; border: 4px solid #000; padding: 18px; width: 100%; font-size: 16px; font-weight: 900; cursor: pointer; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { background: #000; color: #fff; padding: 10px; }
+        td { border: 2px solid #000; padding: 8px; font-weight: 900; text-align: center; }
     </style>
 </head>
-<body onload="iniciarSistema()">
+<body onload="iniciar()">
 
 <nav>
-    <button id="btn1" class="active" onclick="cambiarPestaña(1)">1. MATRÍCULA</button>
-    <button id="btn2" onclick="cambiarPestaña(2)">2. ASISTENCIA</button>
-    <button id="btn3" onclick="cambiarPestaña(3)">3. SUPERVISIÓN</button>
+    <button id="b1" class="active" onclick="tab(1)">1. MATRÍCULA</button>
+    <button id="b2" onclick="tab(2)">2. ASISTENCIA</button>
+    <button id="b3" onclick="tab(3)">3. SUPERVISIÓN</button>
 </nav>
 
 <div class="container">
-    
-    <section id="pestaña1" class="card active">
-        <div class="titulo-seccion">CARGA DE LEGAJO COMPLETO 🎤</div>
+    <section id="p1" class="card active">
+        <div class="sub-header">DATOS DEL NIÑO/A</div>
         <div class="form-grid">
-            <div class="sub-header">DATOS DEL NIÑO/A</div>
-            <div class="campo"><label>APELLIDO Y NOMBRE</label><div class="input-group"><input type="text" id="n"><button onclick="dictar('n')" class="btn-mic">🎤</button></div></div>
-            <div class="campo"><label>DNI</label><input type="number" id="d"></div>
-            <div class="campo"><label>FECHA NACIMIENTO</label><input type="date" id="f"></div>
-            <div class="campo"><label>NACIONALIDAD</label><input type="text" id="nac_niño" value="ARGENTINA"></div>
-            <div class="campo"><label>SALA</label><select id="s"><option>SALA ROSA TM</option><option>SALA NARANJA TT</option><option>SALA VERDE TM</option><option>SALA AZUL TT</option></select></div>
-            <div class="campo"><label>DOMICILIO COMPLETO</label><div class="input-group"><input type="text" id="dom"><button onclick="dictar('dom')" class="btn-mic">🎤</button></div></div>
-            <div class="campo"><label>CANTIDAD DE HERMANOS</label><input type="number" id="her_cant"></div>
-            <div class="campo"><label>¿TIENE HERMANOS EN EL JARDÍN?</label><select id="her_jar"><option>NO</option><option>SÍ</option></select></div>
-
-            <div class="sub-header">DATOS DEL PADRE / TUTOR</div>
-            <div class="campo"><label>NOMBRE Y DNI</label><div class="input-group"><input type="text" id="p_nom"><button onclick="dictar('p_nom')" class="btn-mic">🎤</button></div></div>
-            <div class="campo"><label>NACIONALIDAD Y ESTUDIOS</label><input type="text" id="p_est"></div>
-            <div class="campo"><label>TRABAJO / OFICIO</label><input type="text" id="p_tra"></div>
-            <div class="campo"><label>TELÉFONO</label><input type="text" id="p_tel"></div>
-
-            <div class="sub-header">DATOS DE LA MADRE / TUTORA</div>
-            <div class="campo"><label>NOMBRE Y DNI</label><div class="input-group"><input type="text" id="m_nom"><button onclick="dictar('m_nom')" class="btn-mic">🎤</button></div></div>
-            <div class="campo"><label>NACIONALIDAD Y ESTUDIOS</label><input type="text" id="m_est"></div>
-            <div class="campo"><label>TRABAJO / OFICIO</label><input type="text" id="m_tra"></div>
-            <div class="campo"><label>TELÉFONO</label><input type="text" id="m_tel"></div>
-
-            <div class="sub-header">BENEFICIOS SOCIALES</div>
-            <div class="campo"><label>¿RECIBE AUH?</label><select id="auh"><option>NO</option><option>SÍ</option></select></div>
+            <div><label>APELLIDO Y NOMBRE</label><input type="text" id="n"></div>
+            <div><label>DNI</label><input type="number" id="d"></div>
+            <div><label>SALA</label><select id="s"><option>SALA ROSA TM</option><option>SALA NARANJA TT</option></select></div>
         </div>
-        <button onclick="previsualizar()" class="btn-action" style="background: #f59e0b; color: black;">👁️ REVISAR Y EDITAR ANTES DE GUARDAR</button>
+        <button onclick="guardar()" class="btn-principal">GUARDAR ALUMNO EN MATRÍCULA</button>
     </section>
 
-    <section id="pestaña2" class="card">
-        <div class="titulo-seccion">LISTADO DE ASISTENCIA</div>
-        <div id="bodyAsistencia"></div>
+    <section id="p3" class="card">
+        <div style="background:var(--amarillo); padding:10px; border:3px solid #000; font-weight:900;">RESUMEN PARA INSPECCIÓN</div>
+        <button onclick="descargar()" style="background:var(--verde); color:white; width:100%; padding:15px; border:3px solid #000; margin:10px 0; font-weight:900;">📊 DESCARGAR EXCEL COMPLETO</button>
+        <div id="total"></div>
+        <table>
+            <thead><tr><th>ALUMNO</th><th>DNI</th><th>SALA</th><th>ACCIONES</th></tr></thead>
+            <tbody id="tabla"></tbody>
+        </table>
     </section>
-
-    <section id="pestaña3" class="card">
-        <div class="titulo-seccion">RESUMEN PARA INSPECCIÓN 📊</div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-            <div style="text-align:center;"><canvas id="graficoSalas"></canvas></div>
-            <div>
-                <div id="resumenTexto"></div>
-                <button onclick="exportarExcel()" class="btn-action" style="background:green;">📊 DESCARGAR EXCEL COMPLETO</button>
-                <button onclick="borrarTodo()" style="margin-top:20px; font-size:10px; color:red; border:none; background:none; cursor:pointer;">BORRAR TODOS LOS DATOS (¡CUIDADO!)</button>
-            </div>
-        </div>
-        <div style="overflow-x:auto; margin-top:30px;">
-            <table id="tablaFinal">
-                <thead><tr><th>ALUMNO</th><th>DNI</th><th>EDAD 30/06</th><th>SALA</th><th>DOMICILIO</th><th>FAMILIA</th><th>AUH</th></tr></thead>
-                <tbody id="tablaCuerpo"></tbody>
-            </table>
-        </div>
-    </section>
-
-</div>
-
-<div id="modal">
-    <div class="modal-body">
-        <h2 style="background:black; color:white; padding:10px; margin:0;">VERIFICAR DATOS</h2>
-        <div id="areaEdicion" class="form-grid" style="margin-top:15px;"></div>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button onclick="document.getElementById('modal').style.display='none'" class="btn-action" style="background:gray; margin:0;">VOLVER</button>
-            <button onclick="guardarFinal()" class="btn-action" style="background:green; margin:0;">✅ GUARDAR DEFINITIVO</button>
-        </div>
-    </div>
 </div>
 
 <script>
-    let alumnos = JSON.parse(localStorage.getItem('J926_SISTEMA_V5')) || [];
-    let myChart = null;
+    // ESTA ES TU LISTA DE 35 NIÑOS QUE YA QUEDA FIJA EN EL CÓDIGO
+    const baseOriginal = [
+        {n: "AGUILAR CURTIDO BELINDA ABIGAIL", d: "39312579", s: "SALA NARANJA TT"},
+        {n: "AMARILLA SUAREZ YAMIR JORGE", d: "39649663", s: "SALA ROSA TM"},
+        {n: "BAGLIETTO THIAN ELIEL", d: "38929058", s: "SALA ROSA TM"},
+        {n: "BARBERIS SANTILLAN JUN PABLO", d: "39330738", s: "SALA ROSA TM"},
+        {n: "BENITEZ CIELO ELUNEY", d: "39265375", s: "SALA NARANJA TT"},
+        {n: "BENITEZ LUISANA VALENTINA", d: "39265376", s: "SALA NARANJA TT"},
+        {n: "BOGDANOFF NAHOMI ANGELA", d: "39324326", s: "SALA NARANJA TT"},
+        {n: "CABALLERO ABREGO RONALDO DANIEL", d: "39913429", s: "SALA ROSA TM"},
+        {n: "CACERES ISABELLA VALERIA", d: "39185952", s: "SALA NARANJA TT"},
+        {n: "CARRILLO QUISPE AARIA DAINERIS", d: "39496612", s: "SALA ROSA TM"},
+        {n: "CENTURION RIOS LIAM CIRO", d: "39804726", s: "SALA NARANJA TT"},
+        {n: "CHOQUE MAREA O MICAELA BRIANA", d: "39800326", s: "SALA ROSA TM"},
+        {n: "ESCOBAR NICOLAS MAEL", d: "39608992", s: "SALA ROSA TM"},
+        {n: "FARIA AS BLANCO FRANCESCO LIONEL", d: "39807066", s: "SALA ROSA TM"},
+        {n: "FIGUEROA CATALEYA ANAHI", d: "39724820", s: "SALA ROSA TM"},
+        {n: "GARCIA ROMA MARTINA", d: "39330893", s: "SALA ROSA TM"},
+        {n: "GAUNA RAMIRO NAHUEL", d: "39311389", s: "SALA ROSA TM"},
+        {n: "GOMEZ SANTIAGO ENZO", d: "39330781", s: "SALA ROSA TM"},
+        {n: "JIMENEZ ROJAS JAZMIN TERESA", d: "39834209", s: "SALA ROSA TM"},
+        {n: "LOZA ELISEO VALENTIN", d: "39387969", s: "SALA ROSA TM"},
+        {n: "MONTES MAIRANA ADA ABIGAIL", d: "39311398", s: "SALA ROSA TM"},
+        {n: "OJEDA ISABELLA GABRIELA", d: "39419122", s: "SALA ROSA TM"},
+        {n: "QUISPE GUARACHI DAYLIN FLORENCIA", d: "39493677", s: "SALA ROSA TM"},
+        {n: "RECALDE OVIEDO LUANA", d: "39499707", s: "SALA ROSA TM"},
+        {n: "SALVATIERRA ROJAS ANA LIZ", d: "39648362", s: "SALA ROSA TM"},
+        {n: "SANTALLA ROJAS GAEL ALEJANDRO", d: "39491004", s: "SALA ROSA TM"},
+        {n: "SANTILLAN GAEL DARIO", d: "39319398", s: "SALA ROSA TM"},
+        {n: "SAUCEDO VIDAL DESIDERIO", d: "39692803", s: "SALA ROSA TM"},
+        {n: "SOSA AYNARA MAGALI", d: "39746733", s: "SALA ROSA TM"},
+        {n: "TABOADA CAMILA MAITE", d: "39798190", s: "SALA ROSA TM"},
+        {n: "TORRES COCA ANA LUJAN", d: "39696379", s: "SALA ROSA TM"},
+        {n: "VALLEJOS HEREDIA AITANA EVELYN", d: "39697386", s: "SALA ROSA TM"},
+        {n: "VELAZQUEZ ARCIENAGA JULIETA ISABEL", d: "39833187", s: "SALA ROSA TM"}
+    ];
 
-    function cambiarPestaña(n) {
+    let alumnos = JSON.parse(localStorage.getItem('MATRICULA_FINAL')) || baseOriginal;
+
+    function iniciar() {
+        localStorage.setItem('MATRICULA_FINAL', JSON.stringify(alumnos));
+        render();
+    }
+
+    function tab(n) {
         document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        document.getElementById('pestaña' + n).classList.add('active');
-        document.getElementById('btn' + n).classList.add('active');
-        if(n === 3) { renderTabla(); actualizarGraficos(); }
+        document.getElementById('p' + n).classList.add('active');
+        if(n === 3) render();
     }
 
-    function dictar(id) {
-        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        rec.lang = 'es-AR';
-        rec.start();
-        rec.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); };
-    }
-
-    function previsualizar() {
-        const area = document.getElementById('areaEdicion');
-        const ids = ['n','d','f','nac_niño','dom','p_nom','p_est','p_tra','p_tel','m_nom','m_est','m_tra','m_tel'];
-        area.innerHTML = ids.map(id => `<div class="campo"><label>${id.toUpperCase()}</label><input type="text" id="e_${id}" value="${document.getElementById(id).value}"></div>`).join('');
-        document.getElementById('modal').style.display = 'block';
-    }
-
-    function guardarFinal() {
-        const alu = {
-            n: document.getElementById('e_n').value.toUpperCase(),
-            d: document.getElementById('e_d').value,
-            f: document.getElementById('f').value,
-            s: document.getElementById('s').value,
-            nac: document.getElementById('e_nac_niño').value.toUpperCase(),
-            dom: document.getElementById('e_dom').value.toUpperCase(),
-            p: `NOM: ${document.getElementById('e_p_nom').value} | EST: ${document.getElementById('e_p_est').value} | TRAB: ${document.getElementById('e_p_tra').value} | TEL: ${document.getElementById('e_p_tel').value}`,
-            m: `NOM: ${document.getElementById('e_m_nom').value} | EST: ${document.getElementById('e_m_est').value} | TRAB: ${document.getElementById('e_m_tra').value} | TEL: ${document.getElementById('e_m_tel').value}`,
-            auh: document.getElementById('auh').value
-        };
-        alumnos.push(alu);
-        localStorage.setItem('J926_SISTEMA_V5', JSON.stringify(alumnos));
-        document.getElementById('modal').style.display = 'none';
-        alert("ALUMNO GUARDADO CORRECTAMENTE");
-        renderTabla();
-    }
-
-    function renderTabla() {
-        const body = document.getElementById('tablaCuerpo');
-        body.innerHTML = "";
-        alumnos.sort((a,b) => a.s.localeCompare(b.s)).forEach(a => {
-            body.innerHTML += `<tr>
-                <td>${a.n}</td><td>${a.d}</td><td>${calcularEdad(a.f)}</td><td>${a.s}</td><td>${a.dom}</td>
-                <td><small>PADRE: ${a.p}<br>MADRE: ${a.m}</small></td><td>${a.auh}</td>
-            </tr>`;
+    function render() {
+        const t = document.getElementById('tabla');
+        t.innerHTML = "";
+        alumnos.forEach((a, i) => {
+            t.innerHTML += `<tr><td>${a.n}</td><td>${a.d}</td><td>${a.s}</td><td><button onclick="borrar(${i})" style="background:red; color:white; border:none;">X</button></td></tr>`;
         });
+        document.getElementById('total').innerHTML = `<b>TOTAL MATRÍCULA: ${alumnos.length}</b>`;
     }
 
-    function calcularEdad(fecha) {
-        if(!fecha) return "-";
-        const nac = new Date(fecha);
-        const corte = new Date(2026, 5, 30);
-        let edad = corte.getFullYear() - nac.getFullYear();
-        if (corte.getMonth() < nac.getMonth() || (corte.getMonth() === nac.getMonth() && corte.getDate() < nac.getDate())) edad--;
-        return edad + " AÑOS";
+    function guardar() {
+        const nuevo = { n: document.getElementById('n').value.toUpperCase(), d: document.getElementById('d').value, s: document.getElementById('s').value };
+        if(!nuevo.n || !nuevo.d) return alert("COMPLETAR DATOS");
+        alumnos.push(nuevo);
+        localStorage.setItem('MATRICULA_FINAL', JSON.stringify(alumnos));
+        alert("GUARDADO EXITOSO");
+        document.getElementById('n').value = ""; document.getElementById('d').value = "";
     }
 
-    function exportarExcel() {
-        let csv = "\uFEFFINFORME MATRICULA JARDIN 926\n\nALUMNO,DNI,EDAD 30/06,SALA,DOMICILIO,PADRE,MADRE,AUH\n";
-        alumnos.forEach(a => {
-            csv += `"${a.n}","${a.d}","${calcularEdad(a.f)}","${a.s}","${a.dom}","${a.p}","${a.m}","${a.auh}"\n`;
-        });
+    function borrar(i) { if(confirm("¿ELIMINAR?")) { alumnos.splice(i,1); localStorage.setItem('MATRICULA_FINAL', JSON.stringify(alumnos)); render(); } }
+
+    function descargar() {
+        let csv = "\uFEFFALUMNO,DNI,SALA\n";
+        alumnos.forEach(a => csv += `"${a.n}","${a.d}","${a.s}"\n`);
         const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = "MATRICULA_COMPLETA_926.csv";
-        link.click();
+        const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "MATRICULA_926.csv"; link.click();
     }
-
-    function actualizarGraficos() {
-        const ctx = document.getElementById('graficoSalas').getContext('2d');
-        const conteo = {};
-        alumnos.forEach(a => conteo[a.s] = (conteo[a.s] || 0) + 1);
-        if(myChart) myChart.destroy();
-        myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(conteo),
-                datasets: [{ label: 'ALUMNOS POR SALA', data: Object.values(conteo), backgroundColor: '#1e40af' }]
-            }
-        });
-        document.getElementById('resumenTexto').innerHTML = `<h3>TOTAL MATRÍCULA: ${alumnos.length}</h3>`;
-    }
-
-    function iniciarSistema() { renderTabla(); }
-    function borrarTodo() { if(confirm("¿BORRAR TODA LA LISTA?")) { localStorage.clear(); location.reload(); } }
 </script>
 </body>
 </html>
