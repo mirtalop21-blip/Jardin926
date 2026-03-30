@@ -3,114 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA INTEGRAL JARDÍN 926 - PROFESIONAL</title>
+    <title>SISTEMA INSTITUCIONAL JARDÍN 926</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --azul: #001f3f; --azul-claro: #1e40af; --amarillo: #facc15; --rojo: #dc2626; --gris: #f1f5f9; --verde: #10b981; }
-        body { font-family: 'Arial', sans-serif; text-transform: uppercase; background: var(--gris); margin: 0; font-weight: 900; }
+        body { font-family: 'Arial Black', sans-serif; text-transform: uppercase; background: var(--gris); margin: 0; }
         
-        /* NAVEGACIÓN PRINCIPAL */
         nav { background: var(--azul); display: flex; border-bottom: 5px solid black; position: sticky; top: 0; z-index: 100; }
-        nav button { flex: 1; background: var(--azul); color: white; border: none; padding: 15px; cursor: pointer; border-right: 2px solid #1e3a8a; font-weight: 900; font-size: 10px; }
+        nav button { flex: 1; background: var(--azul); color: white; border: none; padding: 15px; cursor: pointer; font-weight: 900; font-size: 10px; border-right: 1px solid #1e3a8a; }
         nav button.active { background: var(--amarillo); color: black; }
 
         .container { max-width: 1200px; margin: 15px auto; padding: 0 10px; }
         .card { background: white; border: 4px solid #000; padding: 20px; box-shadow: 8px 8px 0px #000; margin-bottom: 25px; display: none; }
         .card.active { display: block; }
         
-        .titulo-seccion { background: var(--amarillo); padding: 5px 15px; border: 3px solid #000; display: inline-block; margin-bottom: 15px; font-style: italic; }
-        
-        /* FORMULARIO Y GRILLAS */
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
         .sub-header { grid-column: 1 / -1; background: #000; color: white; padding: 8px; margin-top: 15px; font-size: 13px; border-left: 10px solid var(--amarillo); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
         
-        .campo { display: flex; flex-direction: column; }
-        label { font-size: 10px; margin-bottom: 4px; color: #333; }
+        .campo { display: flex; flex-direction: column; margin-bottom: 5px; }
+        label { font-size: 10px; margin-bottom: 4px; color: #333; font-weight: 900; }
         .input-group { display: flex; gap: 5px; }
-        input, select, textarea { border: 3px solid #000; padding: 10px; font-weight: 900; font-size: 14px; background: #fff; width: 100%; box-sizing: border-box; }
+        input, select { border: 3px solid #000; padding: 10px; font-weight: 900; font-size: 14px; width: 100%; box-sizing: border-box; }
         
-        .btn-mic { background: var(--rojo); color: white; border: 3px solid #000; padding: 0 15px; cursor: pointer; font-size: 20px; }
-        .btn-action { background: var(--azul-claro); color: white; border: 4px solid #000; padding: 18px; width: 100%; font-size: 16px; font-weight: 900; cursor: pointer; margin-top: 15px; box-shadow: 4px 4px 0px #000; }
+        .btn-mic { background: var(--rojo); color: white; border: 3px solid #000; padding: 0 12px; cursor: pointer; font-size: 18px; }
+        .btn-principal { background: var(--azul-claro); color: white; border: 4px solid #000; padding: 18px; width: 100%; font-size: 16px; font-weight: 900; cursor: pointer; margin-top: 15px; }
 
-        /* MODAL DE EDICIÓN */
         #modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; }
         .modal-body { background: white; border: 6px solid #000; width: 95%; max-width: 750px; margin: 10px auto; padding: 20px; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
-        th { background: #000; color: #fff; padding: 10px; font-size: 10px; }
-        td { border: 2px solid #000; padding: 8px; font-size: 10px; vertical-align: top; }
-        
-        .btn-util { padding: 10px; font-weight: 900; border: 2px solid #000; cursor: pointer; margin: 5px; font-size: 11px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; font-size: 10px; }
+        th { background: #000; color: #fff; padding: 10px; }
+        td { border: 2px solid #000; padding: 8px; font-weight: 900; }
     </style>
 </head>
 <body onload="iniciarSistema()">
 
 <nav>
-    <button id="btn1" class="active" onclick="cambiarPestaña(1)">1. MATRÍCULA Y LEGAJOS</button>
+    <button id="btn1" class="active" onclick="cambiarPestaña(1)">1. MATRÍCULA</button>
     <button id="btn2" onclick="cambiarPestaña(2)">2. ASISTENCIA</button>
-    <button id="btn3" onclick="cambiarPestaña(3)">3. SUPERVISIÓN Y EXCEL</button>
+    <button id="btn3" onclick="cambiarPestaña(3)">3. SUPERVISIÓN / EXCEL</button>
 </nav>
 
 <div class="container">
     
     <section id="pestaña1" class="card active">
-        <div class="titulo-seccion">CARGA DE DATOS COMPLETA 🎤</div>
+        <div style="background:var(--amarillo); border:3px solid #000; padding:5px; margin-bottom:15px; font-style:italic;">CARGA DE LEGAJO (DATOS SEPARADOS)</div>
         <div class="form-grid">
             <div class="sub-header">DATOS DEL ALUMNO/A</div>
-            <div class="campo"><label>NOMBRE Y APELLIDO</label><div class="input-group"><input type="text" id="n"><button onclick="dictar('n')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>APELLIDO Y NOMBRE</label><div class="input-group"><input type="text" id="n"><button onclick="dictar('n')" class="btn-mic">🎤</button></div></div>
             <div class="campo"><label>DNI</label><input type="number" id="d"></div>
             <div class="campo"><label>FECHA NACIMIENTO</label><input type="date" id="f"></div>
-            <div class="campo"><label>NACIONALIDAD</label><input type="text" id="nac_n" value="ARGENTINA"></div>
+            <div class="campo"><label>NACIONALIDAD</label><div class="input-group"><input type="text" id="nac_n" value="ARGENTINA"><button onclick="dictar('nac_n')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>DOMICILIO ALUMNO</label><div class="input-group"><input type="text" id="dom_n"><button onclick="dictar('dom_n')" class="btn-mic">🎤</button></div></div>
             <div class="campo"><label>SALA</label><select id="s"><option>SALA ROSA TM</option><option>SALA NARANJA TT</option><option>SALA VERDE TM</option><option>SALA AZUL TT</option></select></div>
-            <div class="campo"><label>DOMICILIO ALUMNO</label><input type="text" id="dom_n"></div>
-            <div class="campo"><label>HERMANOS EN JARDÍN?</label><select id="hj"><option>NO</option><option>SÍ</option></select></div>
 
-            <div class="sub-header">DATOS DEL PADRE / TUTOR</div>
-            <div class="campo"><label>NOMBRE Y DNI</label><input type="text" id="p_nom"></div>
+            <div class="sub-header">DATOS DEL PADRE</div>
+            <div class="campo"><label>NOMBRE Y APELLIDO</label><div class="input-group"><input type="text" id="p_nom"><button onclick="dictar('p_nom')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>DNI</label><input type="number" id="p_dni"></div>
             <div class="campo"><label>NACIONALIDAD</label><input type="text" id="p_nac" value="ARGENTINA"></div>
             <div class="campo"><label>ESTUDIOS</label><select id="p_est"><option>PRIM. INC</option><option>PRIM. COM</option><option>SEC. INC</option><option>SEC. COM</option><option>TERCIARIO</option><option>UNIVERSITARIO</option></select></div>
-            <div class="campo"><label>TRABAJO</label><input type="text" id="p_tra"></div>
-            <div class="campo"><label>TELÉFONO Y DOMICILIO</label><input type="text" id="p_tel"></div>
+            <div class="campo"><label>TRABAJO</label><div class="input-group"><input type="text" id="p_tra"><button onclick="dictar('p_tra')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>TELÉFONO</label><input type="text" id="p_tel"></div>
+            <div class="campo"><label>DOMICILIO</label><div class="input-group"><input type="text" id="p_dom"><button onclick="dictar('p_dom')" class="btn-mic">🎤</button></div></div>
 
-            <div class="sub-header">DATOS DE LA MADRE / TUTORA</div>
-            <div class="campo"><label>NOMBRE Y DNI</label><input type="text" id="m_nom"></div>
+            <div class="sub-header">DATOS DE LA MADRE</div>
+            <div class="campo"><label>NOMBRE Y APELLIDO</label><div class="input-group"><input type="text" id="m_nom"><button onclick="dictar('m_nom')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>DNI</label><input type="number" id="m_dni"></div>
             <div class="campo"><label>NACIONALIDAD</label><input type="text" id="m_nac" value="ARGENTINA"></div>
             <div class="campo"><label>ESTUDIOS</label><select id="m_est"><option>PRIM. INC</option><option>PRIM. COM</option><option>SEC. INC</option><option>SEC. COM</option><option>TERCIARIO</option><option>UNIVERSITARIO</option></select></div>
-            <div class="campo"><label>TRABAJO</label><input type="text" id="m_tra"></div>
-            <div class="campo"><label>TELÉFONO Y DOMICILIO</label><input type="text" id="m_tel"></div>
+            <div class="campo"><label>TRABAJO</label><div class="input-group"><input type="text" id="m_tra"><button onclick="dictar('m_tra')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>TELÉFONO</label><input type="text" id="m_tel"></div>
+            <div class="campo"><label>DOMICILIO</label><div class="input-group"><input type="text" id="m_dom"><button onclick="dictar('m_dom')" class="btn-mic">🎤</button></div></div>
 
-            <div class="sub-header">AYUDA SOCIAL</div>
+            <div class="sub-header">OTROS</div>
             <div class="campo"><label>¿RECIBE AUH?</label><select id="auh"><option>NO</option><option>SÍ</option></select></div>
         </div>
-        <button onclick="previsualizar()" class="btn-action" style="background: var(--amarillo); color: black;">👁️ VISTA PREVIA Y EDITAR ANTES DE GUARDAR</button>
+        <button onclick="abrirVistaPrevia()" class="btn-principal" style="background:var(--amarillo); color:black;">👁️ REVISAR Y CORREGIR ANTES DE GUARDAR</button>
     </section>
 
     <section id="pestaña2" class="card">
-        <div class="titulo-seccion">PLANILLA DE ASISTENCIA DIARIA</div>
-        <select id="filtroSala" onchange="renderAsistencia()" style="width:100%; padding:15px; border:3px solid #000; font-weight:900;">
-            <option value="">SELECCIONE UNA SALA...</option>
+        <div style="background:var(--amarillo); border:3px solid #000; padding:5px; margin-bottom:15px;">MARCAR ASISTENCIA</div>
+        <select id="selSala" onchange="mostrarListaAsistencia()" style="width:100%; padding:15px; border:3px solid #000; font-weight:900; margin-bottom:20px;">
+            <option value="">ELIJA SALA...</option>
             <option>SALA ROSA TM</option><option>SALA NARANJA TT</option><option>SALA VERDE TM</option><option>SALA AZUL TT</option>
         </select>
-        <div id="listaAsistencia"></div>
+        <div id="listaAsis"></div>
     </section>
 
     <section id="pestaña3" class="card">
-        <div class="titulo-seccion">PANEL DE SUPERVISIÓN E INSPECCIÓN 📊</div>
-        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
-            <button onclick="exportarExcel()" class="btn-util" style="background: var(--verde); color:white;">📊 DESCARGAR EXCEL COMPLETO</button>
-            <button onclick="descargarBackup()" class="btn-util" style="background: var(--azul-claro); color:white;">💾 COPIA SEGURIDAD (BACKUP)</button>
-            <button onclick="borrarTodo()" class="btn-util" style="background: var(--rojo); color:white;">⚠️ BORRAR TODO</button>
-        </div>
+        <div style="background:var(--amarillo); border:3px solid #000; padding:5px; margin-bottom:15px;">REPORTE INSTITUCIONAL</div>
+        <button onclick="exportarExcel()" style="background:var(--verde); color:white; padding:15px; border:3px solid #000; font-weight:900; cursor:pointer; width:100%;">📊 DESCARGAR EXCEL PARA INSPECCIÓN</button>
         
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-            <div style="text-align:center;"><canvas id="graficoSalas"></canvas></div>
-            <div id="resumenEstadistico"></div>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px; margin-top:20px;">
+            <div style="text-align:center;"><canvas id="chartSalas"></canvas></div>
+            <div id="resumen"></div>
         </div>
 
-        <div style="overflow-x:auto; margin-top:20px;">
-            <table id="tablaInspec">
-                <thead><tr><th>ALUMNO</th><th>DNI</th><th>EDAD 30/06</th><th>SALA</th><th>MADRE/PADRE</th><th>AUH</th><th>ACCIÓN</th></tr></thead>
-                <tbody id="cuerpoInspec"></tbody>
+        <div style="overflow-x:auto;">
+            <table>
+                <thead><tr><th>ALUMNO</th><th>DNI</th><th>EDAD</th><th>MADRE</th><th>PADRE</th><th>AUH</th><th>ACCIÓN</th></tr></thead>
+                <tbody id="cuerpoTabla"></tbody>
             </table>
         </div>
     </section>
@@ -118,26 +110,30 @@
 
 <div id="modal">
     <div class="modal-body">
-        <h2 style="background:black; color:white; padding:10px; margin:0;">REVISAR Y EDITAR DATOS</h2>
+        <h2 style="background:black; color:white; padding:10px; margin:0;">VERIFICAR DATOS DICTADOS</h2>
         <div id="areaEdicion" class="form-grid" style="margin-top:15px;"></div>
         <div style="display:flex; gap:10px; margin-top:20px;">
-            <button onclick="document.getElementById('modal').style.display='none'" class="btn-action" style="background:gray; margin:0;">CORREGIR</button>
-            <button onclick="guardarFinal()" class="btn-action" style="background:green; margin:0;">✅ CONFIRMAR Y GUARDAR</button>
+            <button onclick="document.getElementById('modal').style.display='none'" class="btn-principal" style="background:gray; margin:0;">CORREGIR</button>
+            <button onclick="guardarAlumno()" class="btn-principal" style="background:green; margin:0;">✅ CONFIRMAR Y GUARDAR</button>
         </div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('SISTEMA_V7_FINAL')) || [];
-    let chart = null;
+    // CARGAMOS DATOS PREVIOS SI EXISTEN, SI NO, INICIAMOS CON LOS QUE YA CARGASTE
+    let alumnos = JSON.parse(localStorage.getItem('J926_SISTEMA_V8')) || [
+        {n: "AMARILLA SUAREZ YAMIR JORGE", d: "39649663", s: "SALA ROSA TM", f: "2021-04-15", auh: "SÍ"},
+        {n: "BARBERIS SANTILLAN JUN PABLO", d: "39330738", s: "SALA ROSA TM", f: "2021-02-10", auh: "NO"}
+    ];
+    let chartObj = null;
 
     function cambiarPestaña(n) {
         document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         document.getElementById('pestaña' + n).classList.add('active');
         document.getElementById('btn' + n).classList.add('active');
-        if(n === 3) { renderInspeccion(); actualizarGrafico(); }
-        if(n === 2) renderAsistencia();
+        if(n === 3) { renderTabla(); actualizarGrafico(); }
+        if(n === 2) mostrarListaAsistencia();
     }
 
     function dictar(id) {
@@ -146,90 +142,82 @@
         rec.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); };
     }
 
-    function previsualizar() {
+    function abrirVistaPrevia() {
         const area = document.getElementById('areaEdicion');
-        // Lista de campos a editar en la vista previa
-        const ids = ['n','d','dom_n','p_nom','p_tra','p_tel','m_nom','m_tra','m_tel'];
-        area.innerHTML = ids.map(id => `<div class="campo"><label>${id.toUpperCase()}</label><input type="text" id="e_${id}" value="${document.getElementById(id).value}"></div>`).join('');
+        // Lista de campos para editar
+        const campos = [
+            {id: 'n', l: 'Nombre Alumno'}, {id: 'd', l: 'DNI Alumno'}, {id: 'dom_n', l: 'Dom. Alumno'},
+            {id: 'p_nom', l: 'Nombre Padre'}, {id: 'p_dni', l: 'DNI Padre'}, {id: 'p_tra', l: 'Trabajo Padre'},
+            {id: 'm_nom', l: 'Nombre Madre'}, {id: 'm_dni', l: 'DNI Madre'}, {id: 'm_tra', l: 'Trabajo Madre'}
+        ];
+        area.innerHTML = campos.map(c => `<div class="campo"><label>${c.l}</label><input type="text" id="e_${c.id}" value="${document.getElementById(c.id).value}"></div>`).join('');
         document.getElementById('modal').style.display = 'block';
     }
 
-    function guardarFinal() {
+    function guardarAlumno() {
         const alu = {
             n: document.getElementById('e_n').value.toUpperCase(),
             d: document.getElementById('e_d').value,
             f: document.getElementById('f').value,
             s: document.getElementById('s').value,
             dom: document.getElementById('e_dom_n').value.toUpperCase(),
-            p: `${document.getElementById('e_p_nom').value} | EST: ${document.getElementById('p_est').value} | TRAB: ${document.getElementById('e_p_tra').value} | TEL: ${document.getElementById('e_p_tel').value}`,
-            m: `${document.getElementById('e_m_nom').value} | EST: ${document.getElementById('m_est').value} | TRAB: ${document.getElementById('e_m_tra').value} | TEL: ${document.getElementById('e_m_tel').value}`,
-            auh: document.getElementById('auh').value,
-            hj: document.getElementById('hj').value
+            p_n: document.getElementById('e_p_nom').value.toUpperCase(),
+            p_d: document.getElementById('e_p_dni').value,
+            p_t: document.getElementById('e_p_tra').value.toUpperCase(),
+            p_e: document.getElementById('p_est').value,
+            m_n: document.getElementById('e_m_nom').value.toUpperCase(),
+            m_d: document.getElementById('e_m_dni').value,
+            m_t: document.getElementById('e_m_tra').value.toUpperCase(),
+            m_e: document.getElementById('m_est').value,
+            auh: document.getElementById('auh').value
         };
-        db.push(alu);
-        localStorage.setItem('SISTEMA_V7_FINAL', JSON.stringify(db));
+        alumnos.push(alu);
+        localStorage.setItem('J926_SISTEMA_V8', JSON.stringify(alumnos));
         document.getElementById('modal').style.display = 'none';
         alert("GUARDADO EXITOSO");
-        ['n','d','dom_n','p_nom','p_tra','m_nom','m_tra'].forEach(id => document.getElementById(id).value = "");
     }
 
-    function renderInspeccion() {
-        const body = document.getElementById('cuerpoInspec');
-        body.innerHTML = "";
-        db.sort((a,b) => a.s.localeCompare(b.s)).forEach((a, i) => {
-            body.innerHTML += `<tr>
-                <td>${a.n}</td><td>${a.d}</td><td>${calcularEdad(a.f)}</td><td>${a.s}</td>
-                <td><small>M: ${a.m}<br>P: ${a.p}</small></td><td>${a.auh}</td>
-                <td><button onclick="eliminar(${i})" style="background:red; color:white; border:none; padding:5px;">❌</button></td>
-            </tr>`;
-        });
-    }
-
-    function renderAsistencia() {
-        const sala = document.getElementById('filtroSala').value;
-        const lista = document.getElementById('listaAsistencia');
-        lista.innerHTML = "";
-        if(!sala) return;
-        db.filter(a => a.s === sala).forEach(a => {
-            lista.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #000; background:white;">
-                <span>${a.n}</span>
-                <select style="width:100px;"><option>PRESENTE</option><option>AUSENTE</option></select>
-            </div>`;
-        });
-    }
-
-    function calcularEdad(fecha) {
-        if(!fecha) return "-";
-        const nac = new Date(fecha);
-        const corte = new Date(2026, 5, 30);
+    function calcularEdad(f) {
+        if(!f) return "-";
+        const nac = new Date(f); const corte = new Date(2026, 5, 30);
         let edad = corte.getFullYear() - nac.getFullYear();
         if (corte.getMonth() < nac.getMonth() || (corte.getMonth() === nac.getMonth() && corte.getDate() < nac.getDate())) edad--;
         return edad + " AÑOS";
     }
 
-    function actualizarGrafico() {
-        const ctx = document.getElementById('graficoSalas').getContext('2d');
-        const counts = {}; db.forEach(a => counts[a.s] = (counts[a.s] || 0) + 1);
-        if(chart) chart.destroy();
-        chart = new Chart(ctx, { type: 'pie', data: { labels: Object.keys(counts), datasets: [{ data: Object.values(counts), backgroundColor: ['#facc15','#2563eb','#dc2626','#10b981'] }] } });
-        document.getElementById('resumenEstadistico').innerHTML = `<h3>TOTAL GENERAL: ${db.length} ALUMNOS</h3>`;
+    function renderTabla() {
+        const body = document.getElementById('cuerpoTabla');
+        body.innerHTML = "";
+        alumnos.forEach((a, i) => {
+            body.innerHTML += `<tr>
+                <td>${a.n}</td><td>${a.d}</td><td>${calcularEdad(a.f)}</td>
+                <td>${a.m_n || '-'} (DNI: ${a.m_d || '-'})</td>
+                <td>${a.p_n || '-'} (DNI: ${a.p_d || '-'})</td>
+                <td>${a.auh}</td>
+                <td><button onclick="eliminar(${i})" style="background:red; color:white; border:none; padding:5px;">❌</button></td>
+            </tr>`;
+        });
     }
 
     function exportarExcel() {
-        let csv = "\uFEFFINFORME MATRICULA JARDIN 926\n\nALUMNO,DNI,EDAD AL 30/06,SALA,DOMICILIO,DATOS MADRE,DATOS PADRE,AUH,HERM. JARDIN\n";
-        db.forEach(a => csv += `"${a.n}","${a.d}","${calcularEdad(a.f)}","${a.s}","${a.dom}","${a.m}","${a.p}","${a.auh}","${a.hj}"\n`);
+        let csv = "\uFEFFPLANILLA DE MATRÍCULA JARDÍN 926\n\nALUMNO,DNI,EDAD,DOMICILIO,MADRE,DNI MADRE,ESTUDIOS M,PADRE,DNI PADRE,ESTUDIOS P,AUH\n";
+        alumnos.forEach(a => {
+            csv += `"${a.n}","${a.d}","${calcularEdad(a.f)}","${a.dom}","${a.m_n}","${a.m_d}","${a.m_e}","${a.p_n}","${a.p_d}","${a.p_e}","${a.auh}"\n`;
+        });
         const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "MATRICULA_926.csv"; a.click();
+        const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "MATRICULA_926.csv"; link.click();
     }
 
-    function descargarBackup() {
-        const blob = new Blob([JSON.stringify(db)], {type: 'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "BACKUP_926.json"; a.click();
+    function actualizarGrafico() {
+        const ctx = document.getElementById('chartSalas').getContext('2d');
+        const counts = {}; alumnos.forEach(a => counts[a.s] = (counts[a.s] || 0) + 1);
+        if(chartObj) chartObj.destroy();
+        chartObj = new Chart(ctx, { type: 'pie', data: { labels: Object.keys(counts), datasets: [{ data: Object.values(counts), backgroundColor: ['#facc15','#2563eb','#dc2626','#10b981'] }] } });
+        document.getElementById('resumen').innerHTML = `<h3>TOTAL MATRÍCULA: ${alumnos.length}</h3>`;
     }
 
-    function eliminar(i) { if(confirm("¿ELIMINAR ALUMNO?")) { db.splice(i,1); localStorage.setItem('SISTEMA_V7_FINAL', JSON.stringify(db)); renderInspeccion(); } }
-    function borrarTodo() { if(confirm("¡ATENCIÓN! SE BORRARÁN TODOS LOS DATOS DEFINITIVAMENTE. ¿CONTINUAR?")) { localStorage.clear(); location.reload(); } }
-    function iniciarSistema() { renderInspeccion(); }
+    function eliminar(i) { if(confirm("¿ELIMINAR?")) { alumnos.splice(i,1); localStorage.setItem('J926_SISTEMA_V8', JSON.stringify(alumnos)); renderTabla(); } }
+    function iniciarSistema() { renderTabla(); }
 </script>
 </body>
 </html>
