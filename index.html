@@ -44,7 +44,7 @@
         <div class="header-seccion">NUEVO INGRESO - CARGA COMPLETA 🎤</div>
         <div class="form-grid">
             <div class="grupo-titulo">DATOS DEL ALUMNO/A</div>
-            <div class="campo"><label>NOMBRE Y APELLIDO</label><div class="input-mic"><input type="text" id="n"><button onclick="dictar('n')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>APELLIDO Y NOMBRE</label><div class="input-mic"><input type="text" id="n"><button onclick="dictar('n')" class="btn-mic">🎤</button></div></div>
             <div class="campo"><label>DNI</label><input type="number" id="d"></div>
             <div class="campo"><label>FECHA NACIMIENTO</label><input type="date" id="f"></div>
             <div class="campo"><label>NACIONALIDAD</label><div class="input-mic"><input type="text" id="nac" value="ARGENTINA"><button onclick="dictar('nac')" class="btn-mic">🎤</button></div></div>
@@ -99,7 +99,7 @@
         </div>
         <div style="overflow-x:auto;">
             <table>
-                <thead><tr><th>ALUMNO</th><th>DNI</th><th>EDAD 30/06</th><th>SALA</th><th>FALTAS</th><th>MADRE (DNI/EST/TRAB)</th><th>PADRE (DNI/EST/TRAB)</th><th>AUH</th><th>ACCIÓN</th></tr></thead>
+                <thead><tr><th>ALUMNO</th><th>DNI</th><th>EDAD 30/06</th><th>SALA</th><th>FALTAS</th><th>MADRE</th><th>PADRE</th><th>AUH</th><th>ACCIÓN</th></tr></thead>
                 <tbody id="cuerpo"></tbody>
             </table>
         </div>
@@ -132,7 +132,6 @@
 
     function dictar(id) {
         const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if(!Speech) return alert("Usa Chrome");
         const rec = new Speech(); rec.lang = 'es-AR'; rec.start();
         rec.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); };
     }
@@ -168,12 +167,12 @@
     function renderTabla() {
         const t = document.getElementById('cuerpo'); t.innerHTML = "";
         const bus = document.getElementById('buscador').value.toUpperCase();
-        alumnos.filter(a => a.n.includes(bus) || a.d.includes(bus)).forEach((a, i) => {
+        alumnos.filter(a => (a.n && a.n.includes(bus)) || (a.d && a.d.includes(bus))).forEach((a, i) => {
             let f = 0; Object.values(asistencia).forEach(d => { if(d[a.d] === 'A') f++; });
             t.innerHTML += `<tr class="${f >= 10 ? 'alerta-faltas' : ''}">
                 <td>${a.n}</td><td>${a.d}</td><td>${calcularEdad(a.f)}</td><td>${a.sala}</td><td>${f}</td>
-                <td style="text-align:left">${a.m_n}<br>DNI: ${a.m_d}<br>${a.m_e}<br>${a.m_o}</td>
-                <td style="text-align:left">${a.p_n}<br>DNI: ${a.p_d}<br>${a.p_e}<br>${a.p_o}</td>
+                <td style="text-align:left">${a.m_n || '-'}<br>${a.m_e || '-'}</td>
+                <td style="text-align:left">${a.p_n || '-'}<br>${a.p_e || '-'}</td>
                 <td>${a.auh}</td>
                 <td><button onclick="borrar(${i})" style="background:red; color:white; border:none;">❌</button></td>
             </tr>`;
@@ -202,7 +201,8 @@
     function renderChart() {
         const ctx = document.getElementById('c_mat').getContext('2d');
         const d = {}; alumnos.forEach(a => d[a.sala] = (d[a.sala] || 0) + 1);
-        new Chart(ctx, { type: 'bar', data: { labels: Object.keys(d), datasets: [{ label: 'MATRÍCULA', data: Object.values(d), backgroundColor: '#001f3f' }] } });
+        if(window.myCh) window.myCh.destroy();
+        window.myCh = new Chart(ctx, { type: 'bar', data: { labels: Object.keys(d), datasets: [{ label: 'MATRÍCULA', data: Object.values(d), backgroundColor: '#001f3f' }] } });
     }
 
     function borrar(i) { if(confirm("¿ELIMINAR?")) { alumnos.splice(i,1); localStorage.setItem('J926_FINAL_V3', JSON.stringify(alumnos)); renderTabla(); } }
@@ -236,12 +236,23 @@
     }
 
     function iniciar() {
-        // RESCATE AUTOMÁTICO DE DATOS DE VERSIONES ANTERIORES
-        const v2 = localStorage.getItem('MATRICULA_V2_FINAL');
-        const v1 = localStorage.getItem('MASTER_926_V1');
+        // RESCATE MAESTRO: BUSCA EN TODAS LAS VERSIONES ANTERIORES
+        const v_previas = [
+            'MATRICULA_V2_FINAL',
+            'MASTER_926_V1',
+            'J926_MATRICULA_UNIFICADA',
+            'legajo_alumnos'
+        ];
+        
         if(alumnos.length === 0) {
-            if(v2) alumnos = JSON.parse(v2); else if(v1) alumnos = JSON.parse(v1);
-            localStorage.setItem('J926_FINAL_V3', JSON.stringify(alumnos));
+            for(let key of v_previas) {
+                let data = localStorage.getItem(key);
+                if(data) {
+                    alumnos = JSON.parse(data);
+                    localStorage.setItem('J926_FINAL_V3', JSON.stringify(alumnos));
+                    break; 
+                }
+            }
         }
         renderTabla();
     }
