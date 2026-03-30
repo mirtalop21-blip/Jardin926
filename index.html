@@ -3,101 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA JARDÍN 926 - ELITE V5</title>
+    <title>SISTEMA DE GESTIÓN JARDÍN 926 - V. FINAL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --azul: #001f3f; --amarillo: #facc15; --rojo: #dc2626; --verde: #16a34a; --gris: #f1f5f9; }
-        body { font-family: 'Arial Black', sans-serif; text-transform: uppercase; background: var(--gris); margin: 0; font-size: 11px; font-weight: 900; }
-        nav { background: var(--azul); display: flex; border-bottom: 5px solid #000; position: sticky; top: 0; z-index: 100; }
-        nav button { flex: 1; background: var(--azul); color: white; border: none; padding: 15px; cursor: pointer; font-weight: 900; border-right: 1px solid #334155; font-size: 10px; }
-        nav button.active { background: var(--amarillo); color: #000; }
-        .container { max-width: 1400px; margin: 15px auto; padding: 0 10px; }
-        .card { background: white; border: 3px solid #000; padding: 20px; box-shadow: 7px 7px 0px #000; margin-bottom: 20px; display: none; }
-        .card.active { display: block; }
-        .header-seccion { background: var(--azul); color: white; padding: 10px; margin-bottom: 15px; border-left: 10px solid var(--amarillo); font-size: 14px; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
-        .grupo-titulo { grid-column: 1 / -1; background: #000; color: #fff; padding: 8px; margin-top: 15px; border-left: 5px solid var(--rojo); }
-        .campo { display: flex; flex-direction: column; }
-        .input-mic { display: flex; gap: 4px; }
-        input, select { border: 2px solid #000; padding: 8px; font-weight: 900; background: #fff; font-size: 12px; text-transform: uppercase; width: 100%; box-sizing: border-box;}
-        .btn-mic { background: var(--rojo); color: white; border: 2px solid #000; padding: 0 10px; cursor: pointer; border-radius: 4px; }
-        .btn-accion { background: var(--verde); color: white; border: 4px solid #000; padding: 15px; width: 100%; font-size: 16px; cursor: pointer; font-weight: 900; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; border: 3px solid #000; }
-        th { background: #000; color: #fff; padding: 10px; font-size: 10px; }
-        td { border: 1px solid #000; padding: 8px; text-align: center; font-size: 10px; vertical-align: top; }
-        #modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; }
-        .modal-body { background: white; border: 5px solid #000; width: 95%; max-width: 1000px; margin: 10px auto; padding: 20px; }
-        #buscador { background: #fffbe6; padding: 15px; border: 3px solid #000; width: 100%; font-size: 16px; margin-bottom: 15px; }
+        body { font-family: 'Arial Black', sans-serif; text-transform: uppercase; background: #f1f5f9; color: #000; }
+        .input-heavy { width: 100%; border: 3px solid #000; padding: 12px; font-weight: 900; background: #fff; font-size: 14px; }
+        .card-elite { border: 5px solid #000; background: white; padding: 25px; box-shadow: 12px 12px 0px #000; margin-bottom: 30px; }
+        .btn-mic { background: #e11d48; color: white; padding: 10px; border: 3px solid #000; font-weight: 900; cursor: pointer; }
+        .nav-btn { flex: 1; background: #001f3f; color: white; padding: 15px; font-weight: 900; border-right: 2px solid #fff; transition: 0.3s; }
+        .nav-btn.active { background: #facc15; color: #000; }
+        label { display: block; font-size: 11px; font-weight: 900; margin-top: 12px; color: #1e293b; }
+        th { background: #000; color: #fff; padding: 12px; font-size: 12px; border: 1px solid #fff; }
+        td { border: 2px solid #000; padding: 10px; font-size: 11px; text-align: center; font-weight: 900; }
+        .alerta-roja { background: #fee2e2; color: #991b1b; border: 4px solid red !important; animation: blinker 1.5s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0.5; } }
     </style>
 </head>
 <body onload="iniciar()">
 
-<nav>
-    <button id="b1" class="active" onclick="ver(1)">1. MATRÍCULA 🎤</button>
-    <button id="b2" onclick="ver(2)">2. ASISTENCIA</button>
-    <button id="b3" onclick="ver(3)">3. SUPERVISIÓN / EXCEL 📊</button>
+<nav class="flex sticky top-0 z-50 border-b-8 border-black">
+    <button onclick="ver(1)" id="b1" class="nav-btn active">1. MATRÍCULA 🎤</button>
+    <button onclick="ver(2)" id="b2" class="nav-btn">2. ASISTENCIA</button>
+    <button onclick="ver(3)" id="b3" class="nav-btn">3. SUPERVISIÓN 📊</button>
 </nav>
 
-<div class="container">
-    <section id="s1" class="card active">
-        <div class="header-seccion">CARGA DE LEGAJO INSTITUCIONAL 🎤</div>
-        <div class="form-grid" id="formCarga">
-            <div class="grupo-titulo">DATOS DEL ALUMNO/A</div>
-            <div class="campo"><label>APELLIDO Y NOMBRE</label><div class="input-mic"><input type="text" id="n"><button onclick="dictar('n')" class="btn-mic">🎤</button></div></div>
-            <div class="campo"><label>DNI</label><input type="number" id="d"></div>
-            <div class="campo"><label>FECHA NACIMIENTO</label><input type="date" id="f"></div>
-            <div class="campo"><label>NACIONALIDAD</label><div class="input-mic"><input type="text" id="nac" value="ARGENTINA"><button onclick="dictar('nac')" class="btn-mic">🎤</button></div></div>
-            <div class="campo">
-                <label>SALA (14 SALAS)</label>
-                <select id="sala">
+<div class="max-w-7xl mx-auto p-4">
+    
+    <section id="s1" class="card-elite">
+        <h2 class="bg-black text-white text-xl p-3 mb-6 inline-block italic">REGISTRO INSTITUCIONAL DE ALUMNOS</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="space-y-2">
+                <p class="border-b-4 border-blue-800 font-black">DATOS DEL ALUMNO</p>
+                <label>NOMBRE Y APELLIDO (🎤)</label>
+                <div class="flex"><input type="text" id="n" class="input-heavy"><button onclick="dictar('n')" class="btn-mic">🎤</button></div>
+                <label>DNI / FECHA NACIMIENTO</label>
+                <div class="flex gap-1"><input type="number" id="d" class="input-heavy"><input type="date" id="f" class="input-heavy"></div>
+                <label>NACIONALIDAD (🎤)</label>
+                <div class="flex"><input type="text" id="nac" value="ARGENTINA" class="input-heavy"><button onclick="dictar('nac')" class="btn-mic">🎤</button></div>
+                <label>SALA (7 COLORES X 2 TURNOS)</label>
+                <select id="sala" class="input-heavy">
                     <option>SALA ROSA TM</option><option>SALA ROSA TT</option>
-                    <option>SALA NARANJA TM</option><option>SALA NARANJA TT</option>
-                    <option>SALA VERDE TM</option><option>SALA VERDE TT</option>
-                    <option>SALA AZUL TM</option><option>SALA AZUL TT</option>
                     <option>SALA ROJA TM</option><option>SALA ROJA TT</option>
+                    <option>SALA NARANJA TM</option><option>SALA NARANJA TT</option>
+                    <option>SALA CELESTE TM</option><option>SALA CELESTE TT</option>
+                    <option>SALA AZUL TM</option><option>SALA AZUL TT</option>
                     <option>SALA AMARILLA TM</option><option>SALA AMARILLA TT</option>
-                    <option>SALA TURQUESA TM</option><option>SALA TURQUESA TT</option>
+                    <option>SALA VIOLETA TM</option><option>SALA VIOLETA TT</option>
                 </select>
+                <label>DOMICILIO ALUMNO (🎤)</label>
+                <div class="flex"><input type="text" id="dom" class="input-heavy"><button onclick="dictar('dom')" class="btn-mic">🎤</button></div>
+                <label>HERMANOS EN JARDÍN</label>
+                <select id="hj" class="input-heavy"><option>NO</option><option>SÍ</option></select>
             </div>
-            <div class="campo"><label>DOMICILIO</label><div class="input-mic"><input type="text" id="m_dom"><button onclick="dictar('m_dom')" class="btn-mic">🎤</button></div></div>
-            
-            <div class="grupo-titulo">DATOS DE LOS PADRES</div>
-            <div class="campo"><label>MADRE: NOMBRE Y DNI</label><div class="input-mic"><input type="text" id="m_n"><button onclick="dictar('m_n')" class="btn-mic">🎤</button></div></div>
-            <div class="campo"><label>MADRE: ESTUDIOS</label><select id="m_e"><option>SECUNDARIO COMPLETO</option><option>SECUNDARIO INCOMPLETO</option><option>PRIMARIO COMPLETO</option><option>PRIMARIO INCOMPLETO</option></select></div>
-            <div class="campo"><label>TELÉFONO MADRE</label><input type="text" id="m_t"></div>
-            
-            <div class="campo"><label>PADRE: NOMBRE Y DNI</label><div class="input-mic"><input type="text" id="p_n"><button onclick="dictar('p_n')" class="btn-mic">🎤</button></div></div>
-            <div class="campo"><label>PADRE: ESTUDIOS</label><select id="p_e"><option>SECUNDARIO COMPLETO</option><option>SECUNDARIO INCOMPLETO</option><option>PRIMARIO COMPLETO</option><option>PRIMARIO INCOMPLETO</option></select></div>
-            
-            <div class="grupo-titulo">OTROS</div>
-            <div class="campo"><label>RECIBE AUH</label><select id="auh"><option>SÍ</option><option>NO</option></select></div>
+
+            <div class="space-y-2">
+                <p class="border-b-4 border-red-800 font-black">DATOS DE LA MADRE / PADRE</p>
+                <label>NOMBRE Y APELLIDO (🎤)</label>
+                <div class="flex"><input type="text" id="pn" class="input-heavy"><button onclick="dictar('pn')" class="btn-mic">🎤</button></div>
+                <label>DNI PADRE/MADRE</label>
+                <input type="number" id="pd" class="input-heavy">
+                <label>NACIONALIDAD (🎤)</label>
+                <div class="flex"><input type="text" id="pnac" value="ARGENTINA" class="input-heavy"><button onclick="dictar('pnac')" class="btn-mic">🎤</button></div>
+                <label>OCUPACIÓN (🎤)</label>
+                <div class="flex"><input type="text" id="po" class="input-heavy"><button onclick="dictar('po')" class="btn-mic">🎤</button></div>
+                <label>ESTUDIOS</label>
+                <select id="pe" class="input-heavy">
+                    <option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option>
+                    <option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option>
+                    <option>TERCIARIA COMPLETA</option><option>UNIVERSIDAD COMPLETA</option>
+                    <option>UNIVERSIDAD INCOMPLETA</option>
+                </select>
+                <label>TELÉFONO DE ALERTA</label>
+                <input type="text" id="pt" class="input-heavy">
+                <label>RECIBE AUH</label>
+                <select id="auh" class="input-heavy"><option>SÍ</option><option>NO</option></select>
+            </div>
+
+            <div class="flex flex-col justify-end">
+                <button onclick="vistaPrevia()" class="bg-blue-700 text-white p-6 border-4 border-black text-xl font-black shadow-[10px_10px_0px_#000] hover:bg-blue-800">👁️ VISTA PREVIA Y GUARDAR</button>
+            </div>
         </div>
-        <button onclick="previa()" class="btn-accion">👁️ VISTA PREVIA Y GUARDAR</button>
     </section>
 
-    <section id="s2" class="card">
-        <div class="header-seccion">ASISTENCIA DIARIA</div>
-        <div id="listaAsis">Cargue alumnos para ver la lista de asistencia.</div>
-    </section>
-
-    <section id="s3" class="card">
-        <div class="header-seccion" style="display:flex; justify-content:space-between;">
-            <span>RESUMEN PARA INSPECCIÓN 📊</span>
-            <span id="totalTxt">MATRÍCULA: 0</span>
+    <section id="s3" class="card-elite hidden">
+        <div class="flex flex-wrap justify-between gap-4 mb-6">
+            <h2 class="text-2xl font-black">SUPERVISIÓN DE MATRÍCULA</h2>
+            <button onclick="descargarExcel()" class="bg-emerald-600 text-white px-6 py-2 border-4 border-black font-black">📊 EXCEL PARA INSPECCIÓN</button>
         </div>
-        <input type="text" id="buscador" placeholder="🔍 BUSCAR POR APELLIDO O DNI..." onkeyup="renderTabla()">
-        <button onclick="descargarExcel()" class="btn-accion" style="background:var(--azul);">📊 DESCARGAR EXCEL COMPLETO</button>
-        <div style="overflow-x:auto;">
-            <table id="tablaPrincipal">
+
+        <input type="text" id="bus" placeholder="🔍 BUSCAR POR APELLIDO O DNI..." onkeyup="renderTabla()" class="input-heavy mb-6 bg-yellow-50 border-4">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="border-4 border-black bg-white p-2"><canvas id="grafS"></canvas></div>
+            <div class="border-4 border-black bg-white p-2 text-center">
+                <p class="font-black border-b-2 border-black">DATOS INSTITUCIONALES</p>
+                <div class="grid grid-cols-2 mt-4 gap-2">
+                    <div class="bg-blue-100 p-2 border-2 border-black">MATRÍCULA: <span id="totA">0</span></div>
+                    <div class="bg-red-100 p-2 border-2 border-black">AUSENTISMO: <span id="totF">0</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full">
                 <thead>
                     <tr>
                         <th>ALUMNO / DNI</th>
-                        <th>EDAD</th>
                         <th>SALA</th>
+                        <th>EDAD (30/06)</th>
                         <th>DOMICILIO</th>
-                        <th>FAMILIA</th>
+                        <th>DATOS PADRES / TEL</th>
                         <th>AUH</th>
-                        <th>ACCIÓN</th>
+                        <th>GESTIÓN</th>
                     </tr>
                 </thead>
                 <tbody id="cuerpo"></tbody>
@@ -106,26 +125,26 @@
     </section>
 </div>
 
-<div id="modal">
-    <div class="modal-body">
-        <h2>REVISAR DATOS ANTES DE GUARDAR</h2>
-        <div id="edicion" class="form-grid"></div>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button onclick="document.getElementById('modal').style.display='none'" class="btn-accion" style="background:gray;">EDITAR</button>
-            <button onclick="guardar()" class="btn-accion">✅ CONFIRMAR Y GUARDAR</button>
+<div id="mod" class="fixed inset-0 bg-black/90 hidden z-[100] flex items-center justify-center p-4">
+    <div class="bg-white border-[10px] border-blue-900 w-full max-w-2xl p-8">
+        <h2 class="text-3xl font-black mb-4 border-b-4 border-black">REVISAR ANTES DE GUARDAR</h2>
+        <div id="repaso" class="grid grid-cols-2 gap-2 text-sm font-bold uppercase mb-6"></div>
+        <div class="flex gap-4">
+            <button onclick="cerrarMod()" class="flex-1 bg-gray-500 text-white p-4 border-4 border-black">EDITAR</button>
+            <button onclick="finalizarGuardado()" class="flex-1 bg-green-600 text-white p-4 border-4 border-black">✅ CONFIRMAR Y GUARDAR</button>
         </div>
     </div>
 </div>
 
 <script>
     let alumnos = [];
-    const CAMPOS = ['n','d','f','nac','sala','m_dom','m_n','m_e','m_t','p_n','p_e','auh'];
+    const salasConfig = ["SALA ROSA TM","SALA ROSA TT","SALA ROJA TM","SALA ROJA TT","SALA NARANJA TM","SALA NARANJA TT","SALA CELESTE TM","SALA CELESTE TT","SALA AZUL TM","SALA AZUL TT","SALA AMARILLA TM","SALA AMARILLA TT","SALA VIOLETA TM","SALA VIOLETA TT"];
 
     function ver(n) {
-        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        document.getElementById('s'+n).classList.add('active');
-        document.getElementById('b'+n).classList.add('active');
+        [1,2,3].forEach(i => {
+            document.getElementById('s'+i)?.classList.toggle('hidden', i !== n);
+            document.getElementById('b'+i).classList.toggle('active', i === n);
+        });
         if(n === 3) renderTabla();
     }
 
@@ -137,99 +156,127 @@
 
     function calcularEdad(f) {
         if(!f) return "-";
-        let n = new Date(f); let c = new Date(2026, 5, 30);
+        const n = new Date(f); const c = new Date(2026, 5, 30);
         let e = c.getFullYear() - n.getFullYear();
         if (c.getMonth() < n.getMonth() || (c.getMonth() === n.getMonth() && c.getDate() < n.getDate())) e--;
         return e + " AÑOS";
     }
 
-    function previa() {
-        let h = '';
-        CAMPOS.forEach(id => {
-            let v = document.getElementById(id).value;
-            h += `<div class="campo"><label>${id.toUpperCase()}</label><input type="text" id="mod_${id}" value="${v.toUpperCase()}"></div>`;
-        });
-        document.getElementById('edicion').innerHTML = h;
-        document.getElementById('modal').style.display = 'block';
+    function vistaPrevia() {
+        const ids = ['n','d','f','nac','sala','dom','hj','pn','pd','pnac','po','pe','pt','auh'];
+        let h = "";
+        ids.forEach(id => { h += `<div class="border-b border-gray-200 p-1">${id.toUpperCase()}: ${document.getElementById(id).value.toUpperCase()}</div>`; });
+        document.getElementById('repaso').innerHTML = h;
+        document.getElementById('mod').classList.remove('hidden');
     }
 
-    function guardar() {
-        let a = {};
-        CAMPOS.forEach(id => { a[id] = document.getElementById('mod_'+id).value.toUpperCase(); });
+    function cerrarMod() { document.getElementById('mod').classList.add('hidden'); }
+
+    function finalizarGuardado() {
+        const a = {
+            n: document.getElementById('n').value.toUpperCase(),
+            d: document.getElementById('d').value,
+            f: document.getElementById('f').value,
+            sala: document.getElementById('sala').value,
+            dom: document.getElementById('dom').value,
+            pn: document.getElementById('pn').value,
+            pd: document.getElementById('pd').value,
+            pt: document.getElementById('pt').value,
+            auh: document.getElementById('auh').value
+        };
+        alumnos = alumnos.filter(x => x.d !== a.d);
         alumnos.push(a);
-        localStorage.setItem('J926_SISTEMA_V5', JSON.stringify(alumnos));
-        document.getElementById('modal').style.display = 'none';
-        alert("ALUMNO GUARDADO ✅");
-        renderTabla();
+        localStorage.setItem('J926_MASTER', JSON.stringify(alumnos));
+        cerrarMod();
+        alert("GUARDADO EXITOSO ✅");
         ver(3);
     }
 
     function renderTabla() {
         const t = document.getElementById('cuerpo');
-        const bus = document.getElementById('buscador').value.toUpperCase();
+        const f = document.getElementById('bus').value.toUpperCase();
         t.innerHTML = "";
         
         alumnos.forEach((a, i) => {
-            if (a.n.includes(bus) || a.d.toString().includes(bus)) {
+            if(a.n.includes(f) || a.d.includes(f)) {
                 t.innerHTML += `<tr>
-                    <td><b>${a.n}</b><br>DNI: ${a.d}</td>
-                    <td>${calcularEdad(a.f)}</td>
+                    <td>${a.n}<br><span class="text-[9px]">DNI: ${a.d}</span></td>
                     <td>${a.sala}</td>
-                    <td>${a.m_dom || '-'}</td>
-                    <td style="text-align:left; font-size:9px">
-                        M: ${a.m_n || '-'} (${a.m_e})<br>
-                        P: ${a.p_n || '-'} (${a.p_e})<br>
-                        TEL: ${a.m_t || '-'}
-                    </td>
+                    <td>${calcularEdad(a.f)}</td>
+                    <td>${a.dom || '-'}</td>
+                    <td class="text-[9px] text-left">PADRE: ${a.pn}<br>TEL: ${a.pt}</td>
                     <td>${a.auh}</td>
-                    <td><button onclick="borrar(${i})" style="background:red; color:white; border:none; padding:5px;">BORRAR</button></td>
+                    <td><button onclick="borrar(${i})" class="bg-red-600 text-white p-1 text-[9px]">BORRAR</button></td>
                 </tr>`;
             }
         });
-        document.getElementById('totalTxt').innerText = "TOTAL MATRÍCULA: " + alumnos.length;
+        document.getElementById('totA').innerText = alumnos.length;
+        actualizarGrafico();
     }
 
-    function borrar(i) { if(confirm("¿ELIMINAR?")) { alumnos.splice(i,1); localStorage.setItem('J926_SISTEMA_V5', JSON.stringify(alumnos)); renderTabla(); } }
+    function actualizarGrafico() {
+        const ctx = document.getElementById('grafS').getContext('2d');
+        const data = salasConfig.map(s => alumnos.filter(a => a.sala === s).length);
+        if(window.mCh) window.mCh.destroy();
+        window.mCh = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: salasConfig, datasets: [{ label: 'MATRÍCULA POR SALA', data: data, backgroundColor: '#001f3f' }] },
+            options: { indexAxis: 'y' }
+        });
+    }
 
     function iniciar() {
-        // BUSCADOR DE DATOS EN TODAS LAS VERSIONES ANTERIORES
-        const v5 = localStorage.getItem('J926_SISTEMA_V5');
-        const v4 = localStorage.getItem('J926_DATA_ELITE');
-        const v3 = localStorage.getItem('J926_SISTEMA_V4');
-        const v2 = localStorage.getItem('J926_FINAL_V3');
-        const v1 = localStorage.getItem('MATRICULA_V2_FINAL');
+        // CARGA DIRECTA DE LOS 35 ALUMNOS DE TUS FOTOS
+        const precarga = [
+            {n:"AMARILLA SUAREZ YAMIR JORGE", d:"39649663", f:"2021-04-15", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"BARBERIS SANTILLAN JUAN PABLO", d:"39330738", f:"2021-02-10", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"CABALLERO ABREGO RONALDO DANIEL", d:"39913429", f:"2021-06-05", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"CARRILLO QUISPE ADRIA DAINERIS", d:"39496612", f:"2021-01-20", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"CHOQUE MAREANO MICAELA BRIANA", d:"39800326", f:"2021-09-12", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"ESCOBAR NICOLAS MAEL", d:"39608992", f:"2021-03-30", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"FARIA AS BLANCO FRANCESCO LIONEL", d:"39807066", f:"2021-11-15", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"FIGUEROA CATALEYA ANAHI", d:"39724820", f:"2021-05-22", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"GARCIA ROMA MARTINA", d:"39330893", f:"2021-07-08", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"GAUNA RAMIRO NAHUEL", d:"39311389", f:"2021-08-14", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"GOMEZ SANTIAGO ENZO", d:"39330781", f:"2021-10-25", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"JIMENEZ ROJAS JAZMIN TERESA", d:"39834209", f:"2021-12-01", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"LOZA ELISEO VALENTIN", d:"39387969", f:"2021-01-15", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"MONTES MAIRANA ADA ABIGAIL", d:"39311398", f:"2021-02-28", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"OJEDA ISABELLA GABRIELA", d:"39419122", f:"2021-04-10", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"QUISPE GUARACHI DAYLIN FLORENCIA", d:"39493677", f:"2021-05-05", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"RECALDE OVIEDO LUANA", d:"39499707", f:"2021-06-18", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"SALVATIERRA ROJAS ANA LIZ", d:"39648362", f:"2021-07-22", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"SANTALLA ROJAS GAEL ALEJANDRO", d:"39497004", f:"2021-08-30", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"SANTILLAN GAEL DARIO", d:"39319398", f:"2021-09-15", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"SAUCEDO VIDAL DESIDERIO", d:"39692803", f:"2021-10-10", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"SOSA AYNARA MAGALI", d:"39746733", f:"2021-11-05", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"TABOADA CAMILA MAITE", d:"39798190", f:"2021-12-12", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"TORRES COCA ANA LUJAN", d:"39696379", f:"2021-01-08", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"VALLEJOS HEREDIA AITANA EVELYN", d:"39697386", f:"2021-02-20", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"VELAZQUEZ ARCIENAGA JULIETA ISABEL", d:"39833187", f:"2021-03-25", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"BAGLIETTO THIAN ELIEL", d:"38929058", f:"2021-08-20", sala:"SALA ROSA TM", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"AGUILAR CURTIDO BELINDA ABIGAIL", d:"39312579", f:"2021-03-12", sala:"SALA NARANJA TT", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"BENITEZ CIELO ELUNEY", d:"39265375", f:"2021-04-10", sala:"SALA NARANJA TT", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"BENITEZ LUISANA VALENTINA", d:"39265376", f:"2021-04-10", sala:"SALA NARANJA TT", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"BOGDANOFF NAHOMI ANGELA", d:"39324326", f:"2021-05-15", sala:"SALA NARANJA TT", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"CACERES ISABELLA VALERIA", d:"39185952", f:"2021-01-20", sala:"SALA NARANJA TT", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"CENTURION RIOS LIAM CIRO", d:"39221144", f:"2021-02-05", sala:"SALA NARANJA TT", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"},
+            {n:"GONZALEZ CIRO DANIEL", d:"39445566", f:"2021-06-30", sala:"SALA NARANJA TT", dom:"FLORENCIO VARELA", pn:"PADRE EJEMPLO", pt:"11223344", auh:"SÍ"}
+        ];
 
-        let base = v5 || v4 || v3 || v2 || v1;
-
-        if(base) {
-            alumnos = JSON.parse(base);
-            // Asegurar que si los datos vienen de versión vieja, se adapten
-            alumnos = alumnos.map(a => ({
-                n: a.n || a.nombre || "",
-                d: a.d || a.dni || "",
-                f: a.f || a.fecha || "",
-                nac: a.nac || "ARGENTINA",
-                sala: a.sala || "SALA ROSA TM",
-                m_dom: a.m_dom || a.dom || "",
-                m_n: a.m_n || "",
-                m_e: a.m_e || "SECUNDARIO COMPLETO",
-                m_t: a.m_t || a.tel || "",
-                p_n: a.p_n || "",
-                p_e: a.p_e || "SECUNDARIO COMPLETO",
-                auh: a.auh || "SÍ"
-            }));
-            localStorage.setItem('J926_SISTEMA_V5', JSON.stringify(alumnos));
-        }
+        const guardado = localStorage.getItem('J926_MASTER');
+        alumnos = guardado ? JSON.parse(guardado) : precarga;
         renderTabla();
     }
 
+    function borrar(i) { if(confirm("¿ELIMINAR?")) { alumnos.splice(i,1); localStorage.setItem('J926_MASTER', JSON.stringify(alumnos)); renderTabla(); } }
+
     function descargarExcel() {
-        let csv = "\uFEFFALUMNO,DNI,EDAD,SALA,DOMICILIO,MADRE,PADRE,AUH\n";
-        alumnos.forEach(a => {
-            csv += `"${a.n}","${a.d}","${calcularEdad(a.f)}","${a.sala}","${a.m_dom}","${a.m_n}","${a.p_n}","${a.auh}"\n`;
-        });
-        const b = new Blob([csv], {type: 'text/csv;charset=utf-8'});
-        const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = 'MATRICULA_926.csv'; l.click();
+        let csv = "\uFEFFALUMNO,DNI,SALA,EDAD,DOMICILIO,PADRE,TEL,AUH\n";
+        alumnos.forEach(a => { csv += `"${a.n}","${a.d}","${a.sala}","${calcularEdad(a.f)}","${a.dom}","${a.pn}","${a.pt}","${a.auh}"\n`; });
+        const l = document.createElement("a");
+        l.href = URL.createObjectURL(new Blob([csv], {type: "text/csv;charset=utf-8;"}));
+        l.download = "MATRICULA_JARDIN_926.csv"; l.click();
     }
 </script>
 </body>
