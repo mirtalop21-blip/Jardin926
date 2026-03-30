@@ -1,20 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA DE GESTIÓN DIRECTIVA J926</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --azul: #001f3f; --amarillo: #facc15; --rojo: #dc2626; --verde: #16a34a; --gris: #f1f5f9; }
+        body { font-family: 'Arial Black', sans-serif; text-transform: uppercase; background: var(--gris); margin: 0; font-size: 11px; font-weight: 900; }
+        
+        nav { background: var(--azul); display: flex; border-bottom: 5px solid #000; position: sticky; top: 0; z-index: 100; }
+        nav button { flex: 1; background: var(--azul); color: white; border: none; padding: 15px; cursor: pointer; font-weight: 900; border-right: 1px solid #334155; font-size: 10px; }
+        nav button.active { background: var(--amarillo); color: #000; }
+
+        .container { max-width: 1400px; margin: 15px auto; padding: 0 10px; }
+        .card { background: white; border: 3px solid #000; padding: 20px; box-shadow: 7px 7px 0px #000; margin-bottom: 20px; display: none; }
+        .card.active { display: block; }
+        
+        .header-seccion { background: var(--azul); color: white; padding: 10px; margin-bottom: 15px; border-left: 10px solid var(--amarillo); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+        .grupo-titulo { grid-column: 1 / -1; background: #000; color: #fff; padding: 8px; margin-top: 10px; }
+        
+        .campo { display: flex; flex-direction: column; }
+        label { font-size: 9px; margin-bottom: 3px; color: #333; }
+        .input-mic { display: flex; gap: 4px; }
+        input, select { border: 2px solid #000; padding: 10px; font-weight: 900; background: #fff; font-size: 13px; text-transform: uppercase; width: 100%; box-sizing: border-box;}
+        
+        .btn-mic { background: var(--rojo); color: white; border: 2px solid #000; padding: 0 12px; cursor: pointer; font-size: 18px; }
+        .btn-accion { background: var(--verde); color: white; border: 4px solid #000; padding: 15px; width: 100%; font-size: 16px; cursor: pointer; font-weight: 900; margin-top: 10px; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+        th { background: #000; color: #fff; padding: 8px; font-size: 10px; }
+        td { border: 1px solid #000; padding: 6px; text-align: center; font-size: 10px; }
+        
+        .alerta-faltas { background: #fee2e2; color: #b91c1c; font-weight: 900; border: 2px solid red !important; }
+        #modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; }
+        .modal-body { background: white; border: 5px solid #000; width: 95%; max-width: 900px; margin: 10px auto; padding: 15px; }
+    </style>
+</head>
+<body onload="iniciarSistema()">
+
+<nav>
+    <button id="b1" class="active" onclick="ver(1)">1. CARGA MATRÍCULA</button>
+    <button id="b2" onclick="ver(2)">2. ASISTENCIA DIARIA</button>
+    <button id="b3" onclick="ver(3)">3. SUPERVISIÓN / EXCEL</button>
+</nav>
+
+<div class="container">
+    
+    <section id="s1" class="card active">
+        <div class="header-seccion">LEGAJO INSTITUCIONAL UNIFICADO 🎤</div>
+        <div class="form-grid">
+            <div class="grupo-titulo">DATOS DEL ALUMNO/A</div>
+            <div class="campo"><label>APELLIDO Y NOMBRE</label><div class="input-mic"><input type="text" id="n"><button onclick="dictar('n')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>DNI</label><input type="number" id="d"></div>
+            <div class="campo"><label>FECHA NACIMIENTO</label><input type="date" id="f"></div>
+            <div class="campo"><label>NACIONALIDAD</label><div class="input-mic"><input type="text" id="nac" value="ARGENTINA"><button onclick="dictar('nac')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>SALA</label><select id="sala"><option>SALA ROSA TM</option><option>SALA NARANJA TT</option><option>SALA VERDE TM</option><option>SALA AZUL TT</option></select></div>
+            <div class="campo"><label>DOMICILIO COMPLETO</label><div class="input-mic"><input type="text" id="dom"><button onclick="dictar('dom')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>CANT. HERMANOS</label><input type="number" id="h_c"></div>
+            <div class="campo"><label>¿HERMANOS EN JARDÍN?</label><select id="h_j"><option>NO</option><option>SÍ</option></select></div>
+
+            <div class="grupo-titulo">DATOS DE LOS PADRES / TUTORES</div>
+            <div class="campo"><label>NOMBRE, APELLIDO Y DNI (PADRE)</label><div class="input-mic"><input type="text" id="p_n"><button onclick="dictar('p_n')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>NACIONALIDAD Y OCUPACIÓN (PADRE)</label><div class="input-mic"><input type="text" id="p_o"><button onclick="dictar('p_o')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>ESTUDIOS PADRE</label><select id="p_e"><option>SECUNDARIO COMPLETO</option><option>SECUNDARIO INCOMPLETO</option><option>PRIMARIO COMPLETO</option><option>PRIMARIO INCOMPLETO</option><option>TERCIARIO COMPLETO</option><option>TERCIARIO INCOMPLETO</option><option>UNIVERSITARIO</option></select></div>
+            
+            <div class="campo"><label>NOMBRE, APELLIDO Y DNI (MADRE)</label><div class="input-mic"><input type="text" id="m_n"><button onclick="dictar('m_n')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>NACIONALIDAD Y OCUPACIÓN (MADRE)</label><div class="input-mic"><input type="text" id="m_o"><button onclick="dictar('m_o')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>ESTUDIOS MADRE</label><select id="m_e"><option>SECUNDARIO COMPLETO</option><option>SECUNDARIO INCOMPLETO</option><option>PRIMARIO COMPLETO</option><option>PRIMARIO INCOMPLETO</option><option>TERCIARIO COMPLETO</option><option>TERCIARIO INCOMPLETO</option><option>UNIVERSITARIO</option></select></div>
+
+            <div class="grupo-titulo">CONTACTO Y SOCIAL</div>
+            <div class="campo"><label>TELÉFONO DE CONTACTO</label><div class="input-mic"><input type="text" id="tel"><button onclick="dictar('tel')" class="btn-mic">🎤</button></div></div>
+            <div class="campo"><label>¿RECIBE ASIGNACIÓN (AUH)?</label><select id="auh"><option>SÍ</option><option>NO</option></select></div>
+        </div>
+        <button onclick="previa()" class="btn-accion" style="background:var(--amarillo); color:#000;">👁️ VISTA PREVIA Y GUARDAR</button>
+    </section>
+
+    <section id="s2" class="card">
+        <div class="header-seccion">CARGA POR VOZ Y SALA 🎤</div>
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <select id="filtroSalaAsis" onchange="renderAsis()" style="flex:2;"><option value="">ELEGIR SALA...</option><option>SALA ROSA TM</option><option>SALA NARANJA TT</option><option>SALA VERDE TM</option><option>SALA AZUL TT</option></select>
+            <input type="date" id="fechaAsis" value="2026-03-30" style="flex:1;">
+        </div>
+        <div id="contenedorAsis"></div>
+    </section>
+
+    <section id="s3" class="card">
+        <div class="header-seccion">CONTROL TOTAL Y ALERTAS DIRECTIVAS 📊</div>
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
-            <div style="background:#fff; border:3px solid #000; padding:10px;">
-                <canvas id="chartSalas"></canvas>
-            </div>
+            <div style="background:#fff; border:3px solid #000; padding:10px;"><canvas id="chartMatricula"></canvas></div>
+            <div style="background:#fff; border:3px solid #000; padding:10px;"><canvas id="chartAsis"></canvas></div>
             <div>
-                <button onclick="exportarExcel()" class="btn-principal" style="margin-top:0;">📊 DESCARGAR EXCEL COMPLETO</button>
-                <button onclick="copiaSeguridad()" class="btn-principal" style="background:var(--azul);">💾 EXPORTAR PARA OTRA PC</button>
-                <input type="file" id="importFile" onchange="importarDatos(event)" style="display:none">
-                <button onclick="document.getElementById('importFile').click()" class="btn-principal" style="background:gray;">📂 IMPORTAR DE OTRA PC</button>
+                <button onclick="descargarExcel()" class="btn-accion">📊 EXCEL FORMATO SUPERVISIÓN</button>
+                <button onclick="exportarPC()" class="btn-accion" style="background:var(--azul);">💾 EXPORTAR PARA OTRA PC</button>
+                <input type="file" id="subirPC" onchange="importarPC(event)" style="display:none">
+                <button onclick="document.getElementById('subirPC').click()" class="btn-accion" style="background:gray;">📂 IMPORTAR DATOS</button>
             </div>
         </div>
         <div style="overflow-x:auto;">
-            <table id="tablaTotal">
-                <thead>
-                    <tr><th>ALUMNO</th><th>DNI</th><th>EDAD 30/6</th><th>SALA</th><th>DOMICILIO</th><th>FAMILIA</th><th>AUH</th><th>ACCIÓN</th></tr>
-                </thead>
-                <tbody id="cuerpoTabla"></tbody>
+            <table>
+                <thead><tr><th>ALUMNO</th><th>DNI</th><th>EDAD 30/6</th><th>SALA</th><th>FALTAS</th><th>FAMILIA/ESTUDIOS</th><th>AUH</th><th>ACCIÓN</th></tr></thead>
+                <tbody id="cuerpoSuper"></tbody>
             </table>
         </div>
     </section>
@@ -22,127 +109,153 @@
 
 <div id="modal">
     <div class="modal-body">
-        <h2 style="background:#000; color:#fff; padding:10px; margin:0;">VERIFICAR Y CORREGIR</h2>
-        <div id="formEdicion" class="form-grid" style="margin-top:15px;"></div>
+        <h2 style="background:#000; color:#fff; padding:10px; margin:0;">REVISAR DATOS</h2>
+        <div id="areaEdicion" class="form-grid" style="margin-top:15px; margin-bottom:15px;"></div>
         <div style="display:flex; gap:10px;">
-            <button onclick="document.getElementById('modal').style.display='none'" class="btn-principal" style="background:gray;">VOLVER</button>
-            <button onclick="confirmar()" class="btn-principal">✅ GRABAR ALUMNO</button>
+            <button onclick="document.getElementById('modal').style.display='none'" class="btn-accion" style="background:gray;">CANCELAR</button>
+            <button onclick="guardarAlumno()" class="btn-accion">✅ CONFIRMAR Y GUARDAR</button>
         </div>
     </div>
 </div>
 
 <script>
-    let db = [];
-    const LLAVE = 'J926_MATRICULA_UNIFICADA';
+    let alumnos = JSON.parse(localStorage.getItem('MASTER_926_V1')) || [];
+    let asisGlobal = JSON.parse(localStorage.getItem('ASIS_926_V1')) || {};
 
     function ver(n) {
         document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         document.getElementById('s'+n).classList.add('active');
         document.getElementById('b'+n).classList.add('active');
-        if(n === 3) { renderTabla(); renderGrafico(); }
+        if(n === 3) renderSuper();
     }
 
     function dictar(id) {
-        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        rec.lang = 'es-AR';
-        rec.start();
+        const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(!Speech) return alert("Usa Chrome");
+        const rec = new Speech(); rec.lang = 'es-AR'; rec.start();
         rec.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); };
     }
 
-    function calcularEdad(fec) {
-        if(!fec) return "-";
-        let nac = new Date(fec);
-        let corte = new Date(2026, 5, 30);
-        let edad = corte.getFullYear() - nac.getFullYear();
-        if (corte.getMonth() < nac.getMonth() || (corte.getMonth() === nac.getMonth() && corte.getDate() < nac.getDate())) edad--;
-        return edad + " AÑOS";
-    }
-
-    function revisarYEditar() {
+    function previa() {
         const campos = ['n','d','f','nac','sala','dom','h_c','h_j','p_n','p_o','p_e','m_n','m_o','m_e','tel','auh'];
-        let html = '';
+        let h = '';
         campos.forEach(id => {
-            let val = document.getElementById(id).value;
-            html += `<div class="campo"><label>${id.toUpperCase()}</label><input type="text" id="ed_${id}" value="${val.toUpperCase()}"></div>`;
+            let v = document.getElementById(id).value;
+            h += `<div class="campo"><label>${id.toUpperCase()}</label><input type="text" id="ed_${id}" value="${v.toUpperCase()}"></div>`;
         });
-        document.getElementById('formEdicion').innerHTML = html;
+        document.getElementById('areaEdicion').innerHTML = h;
         document.getElementById('modal').style.display = 'block';
     }
 
-    function confirmar() {
-        const alu = {};
+    function guardarAlumno() {
+        let a = {};
         ['n','d','f','nac','sala','dom','h_c','h_j','p_n','p_o','p_e','m_n','m_o','m_e','tel','auh'].forEach(id => {
-            alu[id] = document.getElementById('ed_'+id).value.toUpperCase();
+            a[id] = document.getElementById('ed_'+id).value.toUpperCase();
         });
-        db.push(alu);
-        localStorage.setItem(LLAVE, JSON.stringify(db));
+        alumnos.push(a);
+        localStorage.setItem('MASTER_926_V1', JSON.stringify(alumnos));
         document.getElementById('modal').style.display = 'none';
-        alert("ALUMNO AGREGADO ✅");
+        alert("ALUMNO REGISTRADO ✅");
         location.reload();
     }
 
-    function renderTabla() {
-        const t = document.getElementById('cuerpoTabla');
-        t.innerHTML = "";
-        db.forEach((a, i) => {
-            t.innerHTML += `<tr>
-                <td>${a.n}</td><td>${a.d}</td><td>${calcularEdad(a.f)}</td><td>${a.sala}</td><td>${a.dom}</td>
-                <td><small>P: ${a.p_n} (${a.p_e})<br>M: ${a.m_n} (${a.m_e})</small></td><td>${a.auh}</td>
-                <td><button onclick="borrar(${i})" style="background:red; color:white; border:none; padding:5px;">❌</button></td>
+    function calcularEdad(f) {
+        if(!f) return "-";
+        let nac = new Date(f); let corte = new Date(2026, 5, 30);
+        let e = corte.getFullYear() - nac.getFullYear();
+        if (corte.getMonth() < nac.getMonth() || (corte.getMonth() === nac.getMonth() && corte.getDate() < nac.getDate())) e--;
+        return e + " AÑOS";
+    }
+
+    function renderAsis() {
+        const sala = document.getElementById('filtroSalaAsis').value;
+        const cont = document.getElementById('contenedorAsis');
+        cont.innerHTML = "";
+        alumnos.filter(a => a.sala === sala).forEach(a => {
+            cont.innerHTML += `<div style="padding:10px; border-bottom:1px solid #000; display:flex; justify-content:space-between; align-items:center;">
+                <span>${a.n}</span>
+                <select onchange="marcar('${a.d}', this.value)" style="width:100px;">
+                    <option value="P">PRESENTE</option><option value="A">AUSENTE</option>
+                </select>
+            </div>`;
+        });
+    }
+
+    function marcar(dni, val) {
+        const fecha = document.getElementById('fechaAsis').value;
+        if(!asisGlobal[fecha]) asisGlobal[fecha] = {};
+        asisGlobal[fecha][dni] = val;
+        localStorage.setItem('ASIS_926_V1', JSON.stringify(asisGlobal));
+    }
+
+    function contarFaltas(dni) {
+        let f = 0;
+        Object.values(asisGlobal).forEach(dia => { if(dia[dni] === 'A') f++; });
+        return f;
+    }
+
+    function renderSuper() {
+        const tbody = document.getElementById('cuerpoSuper');
+        tbody.innerHTML = "";
+        alumnos.forEach((a, i) => {
+            let faltas = contarFaltas(a.d);
+            tbody.innerHTML += `<tr class="${faltas >= 10 ? 'alerta-faltas' : ''}">
+                <td>${a.n}</td><td>${a.d}</td><td>${calcularEdad(a.f)}</td><td>${a.sala}</td>
+                <td>${faltas}</td>
+                <td><small>P: ${a.p_n} (${a.p_e})<br>M: ${a.m_n} (${a.m_e})</small></td>
+                <td>${a.auh}</td>
+                <td><button onclick="eliminar(${i})" style="background:red; color:white; border:none;">❌</button></td>
             </tr>`;
         });
+        renderCharts();
     }
 
-    function renderGrafico() {
-        const ctx = document.getElementById('chartSalas').getContext('2d');
-        const c = {};
-        db.forEach(a => c[a.sala] = (c[a.sala] || 0) + 1);
-        if(window.mCh) window.mCh.destroy();
-        window.mCh = new Chart(ctx, {
-            type: 'bar',
-            data: { labels: Object.keys(c), datasets: [{ label: 'ALUMNOS', data: Object.values(c), backgroundColor: '#001f3f' }] }
+    function renderCharts() {
+        const ctxM = document.getElementById('chartMatricula').getContext('2d');
+        const c = {}; alumnos.forEach(a => c[a.sala] = (c[a.sala] || 0) + 1);
+        new Chart(ctxM, { type: 'bar', data: { labels: Object.keys(c), datasets: [{ label: 'MATRÍCULA', data: Object.values(c), backgroundColor: '#001f3f' }] } });
+    }
+
+    function eliminar(i) { if(confirm("¿ELIMINAR?")) { alumnos.splice(i,1); localStorage.setItem('MASTER_926_V1', JSON.stringify(alumnos)); renderSuper(); } }
+
+    function descargarExcel() {
+        let csv = "\uFEFFALUMNO,DNI,EDAD_30_6,SALA,DOMICILIO,PADRE,ESTUDIOS_P,MADRE,ESTUDIOS_M,TEL,AUH,FALTAS\n";
+        alumnos.forEach(a => {
+            csv += `"${a.n}","${a.d}","${calcularEdad(a.f)}","${a.sala}","${a.dom}","${a.p_n}","${a.p_e}","${a.m_n}","${a.m_e}","${a.tel}","${a.auh}","${contarFaltas(a.d)}"\n`;
         });
+        const b = new Blob([csv], {type: 'text/csv;charset=utf-8'});
+        const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = 'SUPERVISION_926.csv'; l.click();
     }
 
-    function exportarExcel() {
-        let csv = "\uFEFFALUMNO,DNI,EDAD_30_6,SALA,DOMICILIO,PADRE,ESTUDIOS_P,MADRE,ESTUDIOS_M,TEL,AUH\n";
-        db.forEach(a => {
-            csv += `"${a.n}","${a.d}","${calcularEdad(a.f)}","${a.sala}","${a.dom}","${a.p_n}","${a.p_e}","${a.m_n}","${a.m_e}","${a.tel}","${a.auh}"\n`;
-        });
-        const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'MATRICULA_JARDIN_926.csv';
-        link.click();
+    function exportarPC() {
+        const data = { alumnos, asisGlobal };
+        const b = new Blob([JSON.stringify(data)], {type: 'application/json'});
+        const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = 'BACKUP_JARDIN_926.json'; l.click();
     }
 
-    function copiaSeguridad() {
-        const b = new Blob([JSON.stringify(db)], {type: 'application/json'});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(b);
-        a.download = 'RESPALDO_926.json';
-        a.click();
-    }
-
-    function importarDatos(e) {
+    function importarPC(e) {
         const fr = new FileReader();
         fr.onload = (ev) => {
-            db = JSON.parse(ev.target.result);
-            localStorage.setItem(LLAVE, JSON.stringify(db));
-            alert("DATOS IMPORTADOS EXITOSAMENTE");
-            location.reload();
+            const d = JSON.parse(ev.target.result);
+            alumnos = d.alumnos; asisGlobal = d.asisGlobal;
+            localStorage.setItem('MASTER_926_V1', JSON.stringify(alumnos));
+            localStorage.setItem('ASIS_926_V1', JSON.stringify(asisGlobal));
+            alert("DATOS CARGADOS ✅"); location.reload();
         };
         fr.readAsText(e.target.files[0]);
     }
 
-    function borrar(i) { if(confirm("¿ELIMINAR?")) { db.splice(i,1); localStorage.setItem(LLAVE, JSON.stringify(db)); renderTabla(); } }
-
-    function iniciarApp() {
-        const local = localStorage.getItem(LLAVE);
-        if(local) db = JSON.parse(local);
-        renderTabla();
+    function iniciarSistema() {
+        // Rescate de versiones previas
+        const old = localStorage.getItem('J926_MATRICULA_UNIFICADA');
+        if(old && alumnos.length === 0) {
+            alumnos = JSON.parse(old);
+            localStorage.setItem('MASTER_926_V1', JSON.stringify(alumnos));
+        }
+        renderSuper();
     }
 </script>
 </body>
 </html>
+    
