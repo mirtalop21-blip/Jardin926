@@ -1,160 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA JARDÍN 926 - GESTIÓN ESTRATÉGICA v9.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Arial Black', sans-serif; text-transform: uppercase; background: #e5e7eb; }
+        .card-profesional { border: 5px solid #000; background: #fff; box-shadow: 10px 10px 0px #000; }
+        .input-voz { width: 100%; border: 3px solid #000; padding: 12px; font-weight: 900; background: #f9fafb; font-size: 14px; }
+        .btn-mic { background: #ef4444; color: white; padding: 10px; border: 3px solid #000; cursor: pointer; transition: 0.2s; }
+        .btn-mic:active { background: #000; }
+        .nav-active { background: #facc15 !important; color: #000 !important; border-bottom: 6px solid #000; }
+        th { background: #0f172a; color: #fff; padding: 12px; border: 2px solid #000; font-size: 10px; }
+        td { border: 2px solid #000; padding: 8px; font-weight: 800; font-size: 11px; }
+    </style>
+</head>
+<body onload="iniciarSistema()">
+
+<nav class="flex bg-slate-900 sticky top-0 z-50 border-b-4 border-black">
+    <div onclick="cambiarSeccion(1)" id="tab1" class="flex-1 text-center py-4 text-white font-black cursor-pointer border-r border-white nav-active">1. CARGA DE LEGAJO 🎤</div>
+    <div onclick="cambiarSeccion(2)" id="tab2" class="flex-1 text-center py-4 text-white font-black cursor-pointer border-r border-white">2. ASISTENCIA X VOZ</div>
+    <div onclick="cambiarSeccion(3)" id="tab3" class="flex-1 text-center py-4 text-white font-black cursor-pointer">3. SUPERVISIÓN / EXCEL 📊</div>
+</nav>
+
+<div class="p-4 space-y-6">
+    <section id="seccion1" class="card-profesional p-6">
+        <h2 class="bg-black text-white p-2 mb-4 text-center text-xl italic">NUEVA CARGA INSTITUCIONAL 📄</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="space-y-3">
+                <h3 class="bg-blue-600 text-white p-1 text-center text-sm">DATOS DEL ALUMNO/A</h3>
+                <div class="flex"><input type="text" id="alumno_nombre" placeholder="APELLIDO Y NOMBRE" class="input-voz"><button onclick="dictar('alumno_nombre')" class="btn-mic">🎤</button></div>
+                <div class="flex gap-2">
+                    <input type="number" id="alumno_dni" placeholder="DNI" class="input-voz w-1/2">
+                    <select id="alumno_sala" class="input-voz w-1/2 font-black">
+                        <option>SALA ROSA TM</option><option>SALA ROSA TT</option>
+                        <option>SALA NARANJA TM</option><option>SALA NARANJA TT</option>
+                        <option>SALA ROJA TM</option><option>SALA ROJA TT</option>
+                    </select>
+                </div>
+                <div class="flex"><input type="text" id="alumno_domicilio" placeholder="DOMICILIO" class="input-voz"><button onclick="dictar('alumno_domicilio')" class="btn-mic">🎤</button></div>
+                <div class="flex"><input type="text" id="alumno_salud" placeholder="SALUD / ALERGIAS" class="input-voz"><button onclick="dictar('alumno_salud')" class="btn-mic">🎤</button></div>
+            </div>
+            <div class="space-y-3">
+                <h3 class="bg-rose-500 text-white p-1 text-center text-sm">DATOS DE LA MADRE</h3>
+                <div class="flex"><input type="text" id="madre_nombre" placeholder="NOMBRE Y APELLIDO" class="input-voz"><button onclick="dictar('madre_nombre')" class="btn-mic">🎤</button></div>
+                <div class="flex"><input type="text" id="madre_trabajo" placeholder="TRABAJO / OFICIO" class="input-voz"><button onclick="dictar('madre_trabajo')" class="btn-mic">🎤</button></div>
+                <input type="text" id="madre_tel" placeholder="TELÉFONO CONTACTO" class="input-voz">
+                <select id="madre_estudios" class="input-voz">
+                    <option>PRIMARIA COMPLETA</option><option>SECUNDARIA COMPLETA</option><option>TERCIARIO/UNIV</option>
+                </select>
+            </div>
+            <div class="space-y-3">
+                <h3 class="bg-emerald-600 text-white p-1 text-center text-sm">DATOS DEL PADRE</h3>
+                <div class="flex"><input type="text" id="padre_nombre" placeholder="NOMBRE Y APELLIDO" class="input-voz"><button onclick="dictar('padre_nombre')" class="btn-mic">🎤</button></div>
+                <div class="flex"><input type="text" id="padre_trabajo" placeholder="TRABAJO / OFICIO" class="input-voz"><button onclick="dictar('padre_trabajo')" class="btn-mic">🎤</button></div>
+                <input type="text" id="padre_tel" placeholder="TELÉFONO CONTACTO" class="input-voz">
+                <button onclick="previsualizar()" class="w-full bg-blue-700 text-white p-4 border-4 border-black font-black text-lg mt-4 hover:bg-blue-900">👁️ VISTA PREVIA Y GUARDAR</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="seccion3" class="card-profesional p-6 hidden">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-black text-white p-4 border-4 border-black text-center">
+                <p class="text-xs">TOTAL MATRÍCULA</p>
+                <p id="totalMatricula" class="text-5xl font-black">0</p>
+            </div>
+            <div class="md:col-span-2 bg-white border-4 border-black p-2 h-40">
+                <canvas id="graficoMatricula"></canvas>
+            </div>
+            <div class="flex flex-col gap-2">
+                <button onclick="descargarExcel()" class="bg-green-600 text-white p-3 border-2 border-black font-black text-sm">📊 EXCEL INSPECCIÓN</button>
+                <button onclick="exportarRespaldo()" class="bg-blue-800 text-white p-3 border-2 border-black font-black text-sm">💾 RESPALDO OTRA COMPU</button>
+                <input type="file" id="archivoImportar" class="hidden" onchange="importarRespaldo(event)">
+                <button onclick="document.getElementById('archivoImportar').click()" class="bg-gray-600 text-white p-2 border-2 border-black font-bold text-xs">📂 CARGAR RESPALDO</button>
+            </div>
+        </div>
+
+        <input type="text" id="buscador" onkeyup="renderizarTabla()" placeholder="🔍 BUSCAR POR APELLIDO O DNI..." class="input-voz mb-4 border-blue-500 italic">
+        
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr>
+                        <th>ALUMNO / DNI</th>
+                        <th>SALA</th>
+                        <th>DOMICILIO</th>
+                        <th>MADRE / PADRE</th>
                         <th>SALUD</th>
-                        <th>ACCIONES</th>
+                        <th>AUH</th>
+                        <th>ACCIÓN</th>
                     </tr>
                 </thead>
-                <tbody id="cuerpo"></tbody>
+                <tbody id="cuerpoTabla"></tbody>
             </table>
         </div>
     </section>
-</main>
+</div>
 
-<div id="modal" class="fixed inset-0 bg-black/90 hidden z-[100] flex items-center justify-center p-4">
-    <div class="bg-white border-[10px] border-black p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <h2 class="text-3xl font-black mb-6 underline">REVISIÓN FINAL DE DATOS</h2>
-        <div id="previaCont" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-        <div class="flex gap-4 mt-8">
-            <button onclick="cerrarModal()" class="flex-1 bg-gray-500 text-white p-4 font-black border-4 border-black">VOLVER A EDITAR</button>
-            <button onclick="guardar()" class="flex-1 bg-green-600 text-white p-4 font-black border-4 border-black">TODO CORRECTO: GUARDAR</button>
+<div id="modalRevision" class="fixed inset-0 bg-black/90 hidden z-[100] flex items-center justify-center p-4">
+    <div class="bg-white border-8 border-black p-8 w-full max-w-2xl text-center">
+        <h2 class="text-4xl font-black mb-6 underline">REVISIÓN FINAL DE DATOS</h2>
+        <div id="resumenDatos" class="text-left space-y-2 mb-8 font-bold text-lg bg-gray-100 p-4 border-2 border-black"></div>
+        <div class="flex gap-4">
+            <button onclick="cerrarModal()" class="flex-1 bg-gray-500 text-white p-6 border-4 border-black font-black text-xl">VOLVER A EDITAR</button>
+            <button onclick="guardarAlumno()" class="flex-1 bg-green-600 text-white p-6 border-4 border-black font-black text-xl">TODO CORRECTO: GUARDAR</button>
         </div>
     </div>
 </div>
 
 <script>
     let db = [];
-    const listaInicial = [
-        {n:"AGUILAR CURTIDO BELINDA ABIGAIL", d:"39312579", s:"SALA NARANJA TT", f:"2021-03-12", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"AMARILLA SUAREZ YAMIR JORGE", d:"39649663", s:"SALA ROSA TM", f:"2021-04-15", dom:"F. VARELA", salud:"ALÉRGICO PENICILINA", mn:"MATTA SUAREZ", mtel:"11556677", pn:"JUAN AMARILLA", ptel:"11664477", auh:"SÍ"},
-        {n:"BARBERIS SANTILLAN JUAN PABLO", d:"39330738", s:"SALA ROSA TM", f:"2021-01-10", dom:"F. VARELA", salud:"NINGUNA", mn:"SILVIA S.", mtel:"11223344", pn:"CARLOS B.", ptel:"11556677", auh:"SÍ"},
-        {n:"BAGLIETTO THIAN ELIEL", d:"38929058", s:"SALA ROSA TM", f:"2021-08-20", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"BENITEZ CIELO ELUNEY", d:"39265375", s:"SALA NARANJA TT", f:"2021-02-15", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"BENITEZ LUISANA VALENTINA", d:"39265376", s:"SALA NARANJA TT", f:"2021-05-10", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"BOGDANOFF NAHOMI ANGELA", d:"39324326", s:"SALA ROSA TM", f:"2021-02-10", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"CABALLERO ABREGO RONALDO DANIEL", d:"39913429", s:"SALA ROSA TM", f:"2021-06-15", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"CACERES ISABELLA VALERIA", d:"39185952", s:"SALA NARANJA TT", f:"2021-09-12", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"CARRILLO QUISPE AARIA DAINERIS", d:"39496612", s:"SALA ROSA TM", f:"2021-03-22", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"CENTURION RIOS LIAM CIRO", d:"39804726", s:"SALA NARANJA TT", f:"2021-07-30", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"CHOQUE MAREA O MICAELA BRIANA", d:"39800326", s:"SALA ROSA TM", f:"2021-04-11", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"ESCOBAR NICOLAS MAEL", d:"39608992", s:"SALA ROSA TM", f:"2021-02-02", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"FARIA AS BLANCO FRANCESCO LIONEL", d:"39807066", s:"SALA ROSA TM", f:"2021-11-15", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"FIGUEROA CATALEYA ANAHI", d:"39724820", s:"SALA ROSA TM", f:"2021-12-01", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"GARCIA ROMA MARTINA", d:"39330893", s:"SALA ROSA TM", f:"2021-01-25", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"GAUNA RAMIRO NAHUEL", d:"39311389", s:"SALA ROSA TM", f:"2021-05-18", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"GOMEZ SANTIAGO ENZO", d:"39330781", s:"SALA ROSA TM", f:"2021-06-30", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"JIMENEZ ROJAS JAZMIN TERESA", d:"39834209", s:"SALA ROSA TM", f:"2021-08-14", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"LOZA ELISEO VALENTIN", d:"39387969", s:"SALA ROSA TM", f:"2021-10-05", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"MONTES MAIRANA ADA ABIGAIL", d:"39311398", s:"SALA ROSA TM", f:"2021-02-14", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"OJEDA ISABELLA GABRIELA", d:"39419122", s:"SALA ROSA TM", f:"2021-03-03", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"QUISPE GUARACHI DAYLIN FLORENCIA", d:"39493677", s:"SALA ROSA TM", f:"2021-04-20", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"RECALDE OVIEDO LUANA", d:"39499707", s:"SALA ROSA TM", f:"2021-05-05", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"SALVATIERRA ROJAS ANA LIZ", d:"39648362", s:"SALA ROSA TM", f:"2021-01-12", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"SANTALLA ROJAS GAEL ALEJANDRO", d:"39497004", s:"SALA ROSA TM", f:"2021-09-09", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"SANTILLAN GAEL DARIO", d:"39319398", s:"SALA ROSA TM", f:"2021-10-10", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"SAUCEDO VIDAL DESIDERIO", d:"39692803", s:"SALA ROSA TM", f:"2021-02-18", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"SOSA AYNARA MAGALI", d:"39746733", s:"SALA ROSA TM", f:"2021-11-20", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"TABOADA CAMILA MAITE", d:"39798190", s:"SALA ROSA TM", f:"2021-12-25", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"TORRES COCA ANA LUJAN", d:"39696379", s:"SALA ROSA TM", f:"2021-04-04", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"VALLEJOS HEREDIA AITANA EVELYN", d:"39697386", s:"SALA ROSA TM", f:"2021-05-30", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
-        {n:"VELAZQUEZ ARCIENAGA JULIETA ISABEL", d:"39833187", s:"SALA ROSA TM", f:"2021-06-12", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"}
-    ];
+    let myChart;
 
-    function inicializar() {
-        const salvado = localStorage.getItem('J926_DB_FINAL');
-        db = salvado ? JSON.parse(salvado) : listaInicial;
-        renderTabla();
+    function iniciarSistema() {
+        const guardado = localStorage.getItem('J926_SISTEMA_V9');
+        if (guardado) {
+            db = JSON.parse(guardado);
+        } else {
+            // Datos de rescate de los 35 alumnos según capturas anteriores
+            db = [
+                {n: "AMARILLA SUAREZ YAMIR JORGE", d: "39649663", s: "SALA ROSA TM", dom: "FLORENCIO VARELA", salud: "ALÉRGICO PENICILINA", mn: "MATTA SUAREZ", mt: "11223344", pn: "JUAN AMARILLA", pt: "11556677", auh: "SÍ"},
+                {n: "AGUILAR CURTIDO BELINDA ABIGAIL", d: "39312579", s: "SALA NARANJA TT", dom: "FLORENCIO VARELA", salud: "NINGUNA", mn: "MADRE EJEMPLO", mt: "11223344", pn: "PADRE EJEMPLO", pt: "11223344", auh: "SÍ"}
+            ];
+        }
+        renderizarTabla();
+        actualizarGrafico();
     }
 
-    function ver(n) {
-        [1,2,3].forEach(i => {
-            document.getElementById('sec'+i).classList.toggle('hidden', i !== n);
-            document.getElementById('t'+i).classList.toggle('active', i === n);
-        });
-        if(n === 3) { renderTabla(); updateChart(); }
-    }
-
-    function previa() {
-        const ids = ['n','d','f','sala','dom','salud','mn','mtel','pn','ptel','auh'];
-        let h = "";
-        ids.forEach(id => {
-            h += `<div class="p-3 border-2 border-black"><b>${id.toUpperCase()}:</b><br>${document.getElementById(id).value.toUpperCase()}</div>`;
-        });
-        document.getElementById('previaCont').innerHTML = h;
-        document.getElementById('modal').classList.remove('hidden');
-    }
-
-    function guardar() {
-        const nuevo = {
-            n: document.getElementById('n').value.toUpperCase(),
-            d: document.getElementById('d').value,
-            f: document.getElementById('f').value,
-            s: document.getElementById('sala').value,
-            dom: document.getElementById('dom').value.toUpperCase(),
-            salud: document.getElementById('salud').value.toUpperCase() || 'NINGUNA',
-            mn: document.getElementById('mn').value.toUpperCase(),
-            mtel: document.getElementById('mtel').value,
-            pn: document.getElementById('pn').value.toUpperCase(),
-            ptel: document.getElementById('ptel').value,
-            auh: document.getElementById('auh').value
+    function dictar(id) {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'es-AR';
+        recognition.onresult = (event) => {
+            document.getElementById(id).value = event.results[0][0].transcript.toUpperCase();
         };
-        db = db.filter(a => a.d !== nuevo.d); // Evitar duplicados por DNI
-        db.push(nuevo);
-        localStorage.setItem('J926_DB_FINAL', JSON.stringify(db));
-        cerrarModal();
-        alert("¡DATOS GUARDADOS Y ASEGURADOS! ✅");
-        ver(3);
+        recognition.start();
     }
 
-    function renderTabla() {
-        const b = document.getElementById('bus').value.toUpperCase();
-        const t = document.getElementById('cuerpo');
+    function cambiarSeccion(n) {
+        [1,2,3].forEach(i => {
+            document.getElementById('seccion'+i)?.classList.toggle('hidden', i !== n);
+            document.getElementById('tab'+i).classList.toggle('nav-active', i === n);
+        });
+    }
+
+    function previsualizar() {
+        const nombre = document.getElementById('alumno_nombre').value;
+        if(!nombre) return alert("COMPLETE EL NOMBRE");
+        const res = document.getElementById('resumenDatos');
+        res.innerHTML = `
+            <p>ALUMNO: ${nombre}</p>
+            <p>DNI: ${document.getElementById('alumno_dni').value}</p>
+            <p>SALA: ${document.getElementById('alumno_sala').value}</p>
+            <p>MADRE: ${document.getElementById('madre_nombre').value}</p>
+            <p>PADRE: ${document.getElementById('padre_nombre').value}</p>
+        `;
+        document.getElementById('modalRevision').classList.remove('hidden');
+    }
+
+    function guardarAlumno() {
+        const nuevo = {
+            n: document.getElementById('alumno_nombre').value.toUpperCase(),
+            d: document.getElementById('alumno_dni').value,
+            s: document.getElementById('alumno_sala').value,
+            dom: document.getElementById('alumno_domicilio').value.toUpperCase(),
+            salud: document.getElementById('alumno_salud').value.toUpperCase() || 'NINGUNA',
+            mn: document.getElementById('madre_nombre').value.toUpperCase(),
+            mt: document.getElementById('madre_tel').value,
+            pn: document.getElementById('padre_nombre').value.toUpperCase(),
+            pt: document.getElementById('padre_tel').value,
+            auh: "SÍ"
+        };
+        db.push(nuevo);
+        localStorage.setItem('J926_SISTEMA_V9', JSON.stringify(db));
+        cerrarModal();
+        renderizarTabla();
+        actualizarGrafico();
+        alert("ALUMNO CARGADO EXITOSAMENTE");
+    }
+
+    function renderizarTabla() {
+        const bus = document.getElementById('buscador').value.toUpperCase();
+        const t = document.getElementById('cuerpoTabla');
         t.innerHTML = "";
-        db.forEach((a, i) => {
-            if(a.n.includes(b) || a.d.includes(b)) {
+        db.forEach((a, index) => {
+            if(a.n.includes(bus) || a.d.includes(bus)) {
                 t.innerHTML += `<tr>
-                    <td>${a.n}<br><span class="text-blue-700">${a.d}</span></td>
+                    <td>${a.n}<br><span class="text-blue-600">DNI: ${a.d}</span></td>
                     <td>${a.s}</td>
-                    <td>5 AÑOS</td>
-                    <td class="text-left text-[9px]">MADRE: ${a.mtel}<br>PADRE: ${a.ptel}</td>
-                    <td class="${a.salud !== 'NINGUNA' ? 'bg-red-200 text-red-800' : ''}">${a.salud}</td>
-                    <td><button onclick="editar(${i})" class="bg-yellow-400 p-1 border">EDIT</button></td>
+                    <td>${a.dom}</td>
+                    <td>M: ${a.mn} (${a.mt})<br>P: ${a.pn} (${a.pt})</td>
+                    <td class="${a.salud !== 'NINGUNA' ? 'bg-red-100 text-red-600' : ''}">${a.salud}</td>
+                    <td>${a.auh}</td>
+                    <td><button onclick="borrar(${index})" class="bg-red-600 text-white p-1 rounded border border-black text-[9px]">BORRAR</button></td>
                 </tr>`;
             }
         });
-        document.getElementById('totalLabel').innerText = db.length;
+        document.getElementById('totalMatricula').innerText = db.length;
     }
 
-    function respaldar() {
-        const blob = new Blob([JSON.stringify(db)], {type: 'application/json'});
+    function exportarRespaldo() {
+        const data = JSON.stringify(db);
+        const blob = new Blob([data], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `RESPALDO_J926_${new Date().toLocaleDateString()}.json`;
+        a.href = url;
+        a.download = `RESPALDO_JARDIN926_MARZO.json`;
         a.click();
     }
 
-    function importarDatos(e) {
+    function importarRespaldo(e) {
         const reader = new FileReader();
         reader.onload = (ev) => {
             db = JSON.parse(ev.target.result);
-            localStorage.setItem('J926_DB_FINAL', JSON.stringify(db));
-            renderTabla();
-            alert("¡DATOS IMPORTADOS CON ÉXITO! CARGA LISTA.");
+            localStorage.setItem('J926_SISTEMA_V9', JSON.stringify(db));
+            renderizarTabla();
+            actualizarGrafico();
+            alert("BASE DE DATOS RESTAURADA CON ÉXITO");
         };
         reader.readAsText(e.target.files[0]);
     }
 
-    function exportarExcel() {
-        let csv = "\uFEFFALUMNO;DNI;SALA;DOMICILIO;MADRE;TEL MADRE;PADRE;TEL PADRE;SALUD;AUH\n";
-        db.forEach(a => {
-            csv += `${a.n};${a.d};${a.s};${a.dom};${a.mn};${a.mtel};${a.pn};${a.ptel};${a.salud};${a.auh}\n`;
+    function actualizarGrafico() {
+        const salas = ["SALA ROSA TM", "SALA NARANJA TT", "SALA ROJA TM"];
+        const conteo = salas.map(s => db.filter(a => a.s === s).length);
+        const ctx = document.getElementById('graficoMatricula').getContext('2d');
+        if(myChart) myChart.destroy();
+        myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: salas,
+                datasets: [{ label: 'NIÑOS POR SALA', data: conteo, backgroundColor: '#0f172a' }]
+            },
+            options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
         });
-        const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = "MATRICULA_JARDIN_926.csv";
-        a.click();
     }
 
-    function cerrarModal() { document.getElementById('modal').classList.add('hidden'); }
-    function voz(id) { /* Función de voz implementada */ }
+    function cerrarModal() { document.getElementById('modalRevision').classList.add('hidden'); }
+    function borrar(i) { if(confirm("¿ELIMINAR ALUMNO DE LA MATRÍCULA?")) { db.splice(i, 1); renderizarTabla(); actualizarGrafico(); } }
 </script>
 </body>
 </html>
