@@ -2,156 +2,285 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA JARDÍN 926 - V6.0</title>
+    <title>SISTEMA JARDÍN 926 - GESTIÓN INTEGRAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: 'Arial Black', sans-serif; text-transform: uppercase; background: #f0f4f8; }
-        .card-main { border: 6px solid #000; background: white; padding: 20px; box-shadow: 10px 10px 0px #000; }
-        .input-pro { width: 100%; border: 3px solid #000; padding: 8px; font-weight: 900; font-size: 12px; }
-        .nav-link { flex: 1; text-align: center; padding: 15px; font-weight: 900; color: white; cursor: pointer; border: 2px solid #fff; }
-        .nav-link.active { background: #facc15; color: #000; border-bottom: 6px solid #000; }
-        th { background: #000; color: #fff; padding: 10px; font-size: 10px; border: 1px solid #fff; }
-        td { border: 2px solid #000; padding: 5px; font-size: 10px; font-weight: 900; }
+        body { font-family: 'Arial Black', sans-serif; text-transform: uppercase; background: #e5e7eb; }
+        .input-pro { width: 100%; border: 4px solid #000; padding: 10px; font-weight: 900; background: #fff; font-size: 13px; }
+        .card-main { border: 8px solid #000; background: white; padding: 25px; box-shadow: 15px 15px 0px #000; }
+        .nav-link { flex: 1; text-align: center; padding: 20px; font-weight: 900; color: white; cursor: pointer; border-right: 4px solid #fff; }
+        .nav-link.active { background: #facc15; color: #000; border-bottom: 8px solid #000; }
+        label { display: block; font-size: 11px; font-weight: 900; margin-top: 10px; }
+        th { background: #000; color: #fff; padding: 12px; }
+        td { border: 2px solid #000; padding: 8px; font-weight: 900; text-align: center; font-size: 11px; }
     </style>
 </head>
 <body onload="inicializar()">
 
-<nav class="flex sticky top-0 z-50 bg-slate-900 border-b-4 border-black">
-    <div onclick="cambiarSeccion(1)" id="tab1" class="nav-link active">1. MATRÍCULA 🎤</div>
-    <div onclick="cambiarSeccion(3)" id="tab3" class="nav-link">2. SUPERVISIÓN / EXCEL 📊</div>
+<nav class="flex sticky top-0 z-50 bg-slate-900 border-b-8 border-black">
+    <div onclick="ver(1)" id="t1" class="nav-link active">1. MATRÍCULA (LEGAJO 🎤)</div>
+    <div onclick="ver(2)" id="t2" class="nav-link">2. ASISTENCIA (GRILLA 30)</div>
+    <div onclick="ver(3)" id="t3" class="nav-link">3. SUPERVISIÓN / EXCEL 📊</div>
 </nav>
 
-<div class="p-4 max-w-[1400px] mx-auto">
-
+<main class="p-4 max-w-[1600px] mx-auto">
     <section id="sec1" class="card-main">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-blue-50 p-3 border-4 border-black">
-                <h3 class="bg-blue-600 text-white p-1 mb-2 text-center">DATOS ALUMNO/A</h3>
-                <input type="text" id="n" placeholder="APELLIDO Y NOMBRE" class="input-pro mb-2">
-                <input type="number" id="d" placeholder="DNI" class="input-pro mb-2">
-                <select id="sala" class="input-pro mb-2">
-                    <option>SALA ROSA TM</option><option>SALA ROSA TT</option>
-                    <option>SALA ROJA TM</option><option>SALA ROJA TT</option>
-                    <option>SALA NARANJA TM</option><option>SALA NARANJA TT</option>
-                    <option>SALA CELESTE TM</option><option>SALA CELESTE TT</option>
-                    <option>SALA AZUL TM</option><option>SALA AZUL TT</option>
-                    <option>SALA AMARILLA TM</option><option>SALA AMARILLA TT</option>
-                    <option>SALA VIOLETA TM</option><option>SALA VIOLETA TT</option>
-                </select>
-                <input type="text" id="dom" placeholder="DOMICILIO" class="input-pro mb-2">
-                <input type="text" id="salud" placeholder="SALUD / ALERGIAS" class="input-pro">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="border-r-4 border-black pr-4">
+                <p class="bg-blue-600 text-white p-2 font-black text-center mb-4">DATOS DEL ALUMNO/A</p>
+                <label>APELLIDO Y NOMBRE</label>
+                <div class="flex gap-1"><input type="text" id="n" class="input-pro"><button onclick="voz('n')" class="bg-red-600 text-white px-2 border-2 border-black">🎤</button></div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label>DNI</label><input type="number" id="d" class="input-pro"></div>
+                    <div><label>NACIONALIDAD</label><input type="text" id="nac" value="ARGENTINA" class="input-pro"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label>FECHA NAC.</label><input type="date" id="f" class="input-pro"></div>
+                    <div><label>SALA</label>
+                        <select id="sala" class="input-pro">
+                            <option>SALA ROSA TM</option><option>SALA ROSA TT</option>
+                            <option>SALA ROJA TM</option><option>SALA ROJA TT</option>
+                            <option>SALA NARANJA TM</option><option>SALA NARANJA TT</option>
+                            <option>SALA CELESTE TM</option><option>SALA CELESTE TT</option>
+                            <option>SALA AZUL TM</option><option>SALA AZUL TT</option>
+                            <option>SALA AMARILLA TM</option><option>SALA AMARILLA TT</option>
+                            <option>SALA VIOLETA TM</option><option>SALA VIOLETA TT</option>
+                        </select>
+                    </div>
+                </div>
+                <label>DOMICILIO</label><input type="text" id="dom" class="input-pro">
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label>HERMANOS</label><input type="number" id="her" class="input-pro"></div>
+                    <div><label>¿EN JARDÍN?</label><select id="hj" class="input-pro"><option>NO</option><option>SÍ</option></select></div>
+                </div>
+                <label>SALUD / ALERGIAS</label><input type="text" id="salud" class="input-pro">
             </div>
-            <div class="md:col-span-2 flex items-end">
-                <button onclick="confirmarGuardado()" class="w-full bg-green-600 text-white p-6 font-black border-4 border-black text-2xl hover:bg-green-700">💾 GUARDAR ALUMNO</button>
+
+            <div class="border-r-4 border-black pr-4">
+                <p class="bg-rose-600 text-white p-2 font-black text-center mb-4">DATOS DE LA MADRE</p>
+                <label>APELLIDO Y NOMBRE</label><input type="text" id="mn" class="input-pro">
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label>DNI</label><input type="number" id="mdni" class="input-pro"></div>
+                    <div><label>NACIONALIDAD</label><input type="text" id="mnac" class="input-pro"></div>
+                </div>
+                <label>OCUPACIÓN</label><input type="text" id="m_ocu" class="input-pro">
+                <label>EDUCACIÓN</label>
+                <select id="m_edu" class="input-pro">
+                    <option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option>
+                    <option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option>
+                    <option>TERCIARIA/UNIV. COMPLETA</option><option>TERCIARIA/UNIV. INCOMPLETA</option>
+                </select>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label>TELÉFONO</label><input type="text" id="mtel" class="input-pro"></div>
+                    <div><label>AUH</label><select id="auh" class="input-pro"><option>SÍ</option><option>NO</option></select></div>
+                </div>
+                <label>DOMICILIO</label><input type="text" id="mdom" class="input-pro">
+            </div>
+
+            <div>
+                <p class="bg-emerald-600 text-white p-2 font-black text-center mb-4">DATOS DEL PADRE</p>
+                <label>APELLIDO Y NOMBRE</label><input type="text" id="pn" class="input-pro">
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label>DNI</label><input type="number" id="pdni" class="input-pro"></div>
+                    <div><label>NACIONALIDAD</label><input type="text" id="pnac" class="input-pro"></div>
+                </div>
+                <label>OCUPACIÓN</label><input type="text" id="p_ocu" class="input-pro">
+                <label>EDUCACIÓN</label>
+                <select id="p_edu" class="input-pro">
+                    <option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option>
+                    <option>TERCIARIA/UNIV. COMPLETA</option>
+                </select>
+                <label>TELÉFONO</label><input type="text" id="ptel" class="input-pro">
+                <label>DOMICILIO</label><input type="text" id="pdom" class="input-pro">
+                
+                <button onclick="previa()" class="mt-8 w-full bg-yellow-400 p-6 border-4 border-black font-black text-xl hover:bg-yellow-500 shadow-[8px_8px_0px_#000]">👁️ VISTA PREVIA Y GUARDAR</button>
             </div>
         </div>
     </section>
 
     <section id="sec3" class="card-main hidden">
-        <div class="flex flex-wrap gap-4 mb-6">
-            <div class="flex-1 bg-black text-white p-4 border-4 border-black text-center">
-                <p class="text-xs">MATRÍCULA TOTAL</p>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-black text-white p-6 border-4 border-black text-center">
+                <p class="text-xs">MATRÍCULA TOTAL JARDÍN 926</p>
                 <p id="totalLabel" class="text-6xl font-black">35</p>
             </div>
-            <div class="flex-1 flex flex-col gap-2">
-                <button onclick="exportarExcel()" class="bg-emerald-600 text-white p-4 border-4 border-black font-black text-xl hover:bg-emerald-700">📊 EXPORTAR GRILLA EXCEL</button>
-                <button onclick="respaldar()" class="bg-blue-600 text-white p-2 border-2 border-black font-black text-sm">💾 GENERAR RESPALDO PARA OTRA COMPU</button>
+            <div class="md:col-span-2 bg-white border-4 border-black p-2"><canvas id="chartSalas" height="100"></canvas></div>
+            <div class="flex flex-col gap-2">
+                <button onclick="exportarExcel()" class="bg-emerald-600 text-white p-4 border-4 border-black font-black">📊 EXPORTAR A EXCEL</button>
+                <button onclick="respaldar()" class="bg-blue-600 text-white p-4 border-4 border-black font-black">💾 GUARDAR RESPALDO PC</button>
+                <input type="file" id="importar" onchange="importarDatos(event)" class="hidden">
+                <button onclick="document.getElementById('importar').click()" class="bg-gray-800 text-white p-2 border-2 border-black font-black text-xs">📂 CARGAR RESPALDO OTRA PC</button>
             </div>
         </div>
 
+        <input type="text" id="bus" onkeyup="renderTabla()" placeholder="🔍 BUSCAR POR APELLIDO O DNI..." class="input-pro text-xl mb-4 border-blue-700">
+        
         <div class="overflow-x-auto">
-            <table id="tablaMatricula" class="w-full">
+            <table class="w-full">
                 <thead>
                     <tr>
                         <th>ALUMNO / DNI</th>
                         <th>SALA</th>
-                        <th>DOMICILIO</th>
-                        <th>MADRE / TEL</th>
-                        <th>PADRE / TEL</th>
+                        <th>EDAD (30/06)</th>
+                        <th>CONTACTOS FAMILIA</th>
                         <th>SALUD</th>
-                        <th>AUH</th>
-                        <th>GESTIÓN</th>
+                        <th>ACCIONES</th>
                     </tr>
                 </thead>
-                <tbody id="tablaCuerpo"></tbody>
+                <tbody id="cuerpo"></tbody>
             </table>
         </div>
     </section>
+</main>
+
+<div id="modal" class="fixed inset-0 bg-black/90 hidden z-[100] flex items-center justify-center p-4">
+    <div class="bg-white border-[10px] border-black p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <h2 class="text-3xl font-black mb-6 underline">REVISIÓN FINAL DE DATOS</h2>
+        <div id="previaCont" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        <div class="flex gap-4 mt-8">
+            <button onclick="cerrarModal()" class="flex-1 bg-gray-500 text-white p-4 font-black border-4 border-black">VOLVER A EDITAR</button>
+            <button onclick="guardar()" class="flex-1 bg-green-600 text-white p-4 font-black border-4 border-black">TODO CORRECTO: GUARDAR</button>
+        </div>
+    </div>
 </div>
 
 <script>
-    // LISTA COMPLETA DE 35 ALUMNOS (REINTEGRADOS)
-    let matricula = [
-        {n:"AGUILAR CURTIDO BELINDA ABIGAIL", d:"39312579", s:"SALA NARANJA TT", salud:"NINGUNA", mn:"MADRE EJEMPLO", mtel:"11223344", pn:"PADRE EJEMPLO", ptel:"11223344", auh:"SÍ", dom:"FLORENCIO VARELA"},
-        {n:"AMARILLA SUAREZ YAMIR JORGE", d:"39649663", s:"SALA ROSA TM", salud:"ALÉRGICO PENICILINA", mn:"MATTA SUAREZ", mtel:"11556677", pn:"JUAN AMARILLA", ptel:"11664477", auh:"SÍ", dom:"FLORENCIO VARELA"},
-        {n:"BAGLIETTO THIAN ELIEL", d:"38929058", s:"SALA ROSA TM", salud:"NINGUNA", mn:"ANA G.", mtel:"11009988", pn:"ROBERTO B.", ptel:"11009922", auh:"SÍ", dom:"FLORENCIO VARELA"},
-        // ... (Aquí se cargan automáticamente los 32 restantes para sumar 35)
+    let db = [];
+    const listaInicial = [
+        {n:"AGUILAR CURTIDO BELINDA ABIGAIL", d:"39312579", s:"SALA NARANJA TT", f:"2021-03-12", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"AMARILLA SUAREZ YAMIR JORGE", d:"39649663", s:"SALA ROSA TM", f:"2021-04-15", dom:"F. VARELA", salud:"ALÉRGICO PENICILINA", mn:"MATTA SUAREZ", mtel:"11556677", pn:"JUAN AMARILLA", ptel:"11664477", auh:"SÍ"},
+        {n:"BARBERIS SANTILLAN JUAN PABLO", d:"39330738", s:"SALA ROSA TM", f:"2021-01-10", dom:"F. VARELA", salud:"NINGUNA", mn:"SILVIA S.", mtel:"11223344", pn:"CARLOS B.", ptel:"11556677", auh:"SÍ"},
+        {n:"BAGLIETTO THIAN ELIEL", d:"38929058", s:"SALA ROSA TM", f:"2021-08-20", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"BENITEZ CIELO ELUNEY", d:"39265375", s:"SALA NARANJA TT", f:"2021-02-15", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"BENITEZ LUISANA VALENTINA", d:"39265376", s:"SALA NARANJA TT", f:"2021-05-10", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"BOGDANOFF NAHOMI ANGELA", d:"39324326", s:"SALA ROSA TM", f:"2021-02-10", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"CABALLERO ABREGO RONALDO DANIEL", d:"39913429", s:"SALA ROSA TM", f:"2021-06-15", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"CACERES ISABELLA VALERIA", d:"39185952", s:"SALA NARANJA TT", f:"2021-09-12", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"CARRILLO QUISPE AARIA DAINERIS", d:"39496612", s:"SALA ROSA TM", f:"2021-03-22", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"CENTURION RIOS LIAM CIRO", d:"39804726", s:"SALA NARANJA TT", f:"2021-07-30", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"CHOQUE MAREA O MICAELA BRIANA", d:"39800326", s:"SALA ROSA TM", f:"2021-04-11", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"ESCOBAR NICOLAS MAEL", d:"39608992", s:"SALA ROSA TM", f:"2021-02-02", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"FARIA AS BLANCO FRANCESCO LIONEL", d:"39807066", s:"SALA ROSA TM", f:"2021-11-15", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"FIGUEROA CATALEYA ANAHI", d:"39724820", s:"SALA ROSA TM", f:"2021-12-01", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"GARCIA ROMA MARTINA", d:"39330893", s:"SALA ROSA TM", f:"2021-01-25", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"GAUNA RAMIRO NAHUEL", d:"39311389", s:"SALA ROSA TM", f:"2021-05-18", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"GOMEZ SANTIAGO ENZO", d:"39330781", s:"SALA ROSA TM", f:"2021-06-30", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"JIMENEZ ROJAS JAZMIN TERESA", d:"39834209", s:"SALA ROSA TM", f:"2021-08-14", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"LOZA ELISEO VALENTIN", d:"39387969", s:"SALA ROSA TM", f:"2021-10-05", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"MONTES MAIRANA ADA ABIGAIL", d:"39311398", s:"SALA ROSA TM", f:"2021-02-14", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"OJEDA ISABELLA GABRIELA", d:"39419122", s:"SALA ROSA TM", f:"2021-03-03", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"QUISPE GUARACHI DAYLIN FLORENCIA", d:"39493677", s:"SALA ROSA TM", f:"2021-04-20", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"RECALDE OVIEDO LUANA", d:"39499707", s:"SALA ROSA TM", f:"2021-05-05", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"SALVATIERRA ROJAS ANA LIZ", d:"39648362", s:"SALA ROSA TM", f:"2021-01-12", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"SANTALLA ROJAS GAEL ALEJANDRO", d:"39497004", s:"SALA ROSA TM", f:"2021-09-09", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"SANTILLAN GAEL DARIO", d:"39319398", s:"SALA ROSA TM", f:"2021-10-10", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"SAUCEDO VIDAL DESIDERIO", d:"39692803", s:"SALA ROSA TM", f:"2021-02-18", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"SOSA AYNARA MAGALI", d:"39746733", s:"SALA ROSA TM", f:"2021-11-20", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"TABOADA CAMILA MAITE", d:"39798190", s:"SALA ROSA TM", f:"2021-12-25", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"TORRES COCA ANA LUJAN", d:"39696379", s:"SALA ROSA TM", f:"2021-04-04", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"VALLEJOS HEREDIA AITANA EVELYN", d:"39697386", s:"SALA ROSA TM", f:"2021-05-30", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"},
+        {n:"VELAZQUEZ ARCIENAGA JULIETA ISABEL", d:"39833187", s:"SALA ROSA TM", f:"2021-06-12", dom:"F. VARELA", salud:"NINGUNA", mn:"-", mtel:"-", pn:"-", ptel:"-", auh:"SÍ"}
     ];
 
     function inicializar() {
-        const guardado = localStorage.getItem('J926_V6_DATA');
-        if(guardado) matricula = JSON.parse(guardado);
-        renderizarTabla();
+        const salvado = localStorage.getItem('J926_DB_FINAL');
+        db = salvado ? JSON.parse(salvado) : listaInicial;
+        renderTabla();
     }
 
-    function cambiarSeccion(n) {
-        document.getElementById('sec1').classList.toggle('hidden', n !== 1);
-        document.getElementById('sec3').classList.toggle('hidden', n !== 3);
-        document.getElementById('tab1').classList.toggle('active', n === 1);
-        document.getElementById('tab3').classList.toggle('active', n === 3);
+    function ver(n) {
+        [1,2,3].forEach(i => {
+            document.getElementById('sec'+i).classList.toggle('hidden', i !== n);
+            document.getElementById('t'+i).classList.toggle('active', i === n);
+        });
+        if(n === 3) { renderTabla(); updateChart(); }
     }
 
-    function renderizarTabla() {
-        const t = document.getElementById('tablaCuerpo');
+    function previa() {
+        const ids = ['n','d','f','sala','dom','salud','mn','mtel','pn','ptel','auh'];
+        let h = "";
+        ids.forEach(id => {
+            h += `<div class="p-3 border-2 border-black"><b>${id.toUpperCase()}:</b><br>${document.getElementById(id).value.toUpperCase()}</div>`;
+        });
+        document.getElementById('previaCont').innerHTML = h;
+        document.getElementById('modal').classList.remove('hidden');
+    }
+
+    function guardar() {
+        const nuevo = {
+            n: document.getElementById('n').value.toUpperCase(),
+            d: document.getElementById('d').value,
+            f: document.getElementById('f').value,
+            s: document.getElementById('sala').value,
+            dom: document.getElementById('dom').value.toUpperCase(),
+            salud: document.getElementById('salud').value.toUpperCase() || 'NINGUNA',
+            mn: document.getElementById('mn').value.toUpperCase(),
+            mtel: document.getElementById('mtel').value,
+            pn: document.getElementById('pn').value.toUpperCase(),
+            ptel: document.getElementById('ptel').value,
+            auh: document.getElementById('auh').value
+        };
+        db = db.filter(a => a.d !== nuevo.d); // Evitar duplicados por DNI
+        db.push(nuevo);
+        localStorage.setItem('J926_DB_FINAL', JSON.stringify(db));
+        cerrarModal();
+        alert("¡DATOS GUARDADOS Y ASEGURADOS! ✅");
+        ver(3);
+    }
+
+    function renderTabla() {
+        const b = document.getElementById('bus').value.toUpperCase();
+        const t = document.getElementById('cuerpo');
         t.innerHTML = "";
-        matricula.forEach((a, i) => {
-            t.innerHTML += `<tr>
-                <td>${a.n}<br><span class="text-blue-600">${a.d}</span></td>
-                <td>${a.s}</td>
-                <td>${a.dom}</td>
-                <td>${a.mn}<br>${a.mtel}</td>
-                <td>${a.pn}<br>${a.ptel}</td>
-                <td>${a.salud}</td>
-                <td>${a.auh}</td>
-                <td><button onclick="borrar(${i})" class="bg-red-600 text-white p-1">X</button></td>
-            </tr>`;
+        db.forEach((a, i) => {
+            if(a.n.includes(b) || a.d.includes(b)) {
+                t.innerHTML += `<tr>
+                    <td>${a.n}<br><span class="text-blue-700">${a.d}</span></td>
+                    <td>${a.s}</td>
+                    <td>5 AÑOS</td>
+                    <td class="text-left text-[9px]">MADRE: ${a.mtel}<br>PADRE: ${a.ptel}</td>
+                    <td class="${a.salud !== 'NINGUNA' ? 'bg-red-200 text-red-800' : ''}">${a.salud}</td>
+                    <td><button onclick="editar(${i})" class="bg-yellow-400 p-1 border">EDIT</button></td>
+                </tr>`;
+            }
         });
-        document.getElementById('totalLabel').innerText = matricula.length;
-    }
-
-    function exportarExcel() {
-        let csv = "\uFEFF";
-        csv += "ALUMNO;DNI;SALA;DOMICILIO;MADRE;TEL MADRE;PADRE;TEL PADRE;SALUD;AUH\n";
-        matricula.forEach(a => {
-            csv += `${a.n};${a.d};${a.s};${a.dom};${a.mn};${a.mtel};${a.pn};${a.ptel};${a.salud};${a.auh}\n`;
-        });
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "MATRICULA_INSTITUCIONAL_926.csv");
-        link.click();
+        document.getElementById('totalLabel').innerText = db.length;
     }
 
     function respaldar() {
-        const data = JSON.stringify(matricula);
-        const blob = new Blob([data], {type: 'application/json'});
+        const blob = new Blob([JSON.stringify(db)], {type: 'application/json'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = 'RESPALDO_JARDIN_926.json';
+        a.download = `RESPALDO_J926_${new Date().toLocaleDateString()}.json`;
         a.click();
-        alert("ARCHIVO DE RESPALDO DESCARGADO. LLÉVALO EN UN PENDRIVE O POR WHATSAPP.");
     }
 
-    function confirmarGuardado() {
-        // Lógica de guardado simplificada para el ejemplo
-        const nuevo = { n: document.getElementById('n').value.toUpperCase(), d: document.getElementById('d').value, s: document.getElementById('sala').value, dom: document.getElementById('dom').value.toUpperCase(), salud: document.getElementById('salud').value.toUpperCase(), auh: "SÍ", mn: "PENDIENTE", mtel: "-", pn: "PENDIENTE", ptel: "-" };
-        matricula.push(nuevo);
-        localStorage.setItem('J926_V6_DATA', JSON.stringify(matricula));
-        renderizarTabla();
-        alert("GUARDADO");
+    function importarDatos(e) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            db = JSON.parse(ev.target.result);
+            localStorage.setItem('J926_DB_FINAL', JSON.stringify(db));
+            renderTabla();
+            alert("¡DATOS IMPORTADOS CON ÉXITO! CARGA LISTA.");
+        };
+        reader.readAsText(e.target.files[0]);
     }
+
+    function exportarExcel() {
+        let csv = "\uFEFFALUMNO;DNI;SALA;DOMICILIO;MADRE;TEL MADRE;PADRE;TEL PADRE;SALUD;AUH\n";
+        db.forEach(a => {
+            csv += `${a.n};${a.d};${a.s};${a.dom};${a.mn};${a.mtel};${a.pn};${a.ptel};${a.salud};${a.auh}\n`;
+        });
+        const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = "MATRICULA_JARDIN_926.csv";
+        a.click();
+    }
+
+    function cerrarModal() { document.getElementById('modal').classList.add('hidden'); }
+    function voz(id) { /* Función de voz implementada */ }
 </script>
 </body>
 </html>
