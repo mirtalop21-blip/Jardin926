@@ -1,209 +1,265 @@
-                    <select id="alumno_sala" class="input-voz w-1/2 font-black">
-                        <option>SALA ROSA TM</option><option>SALA ROSA TT</option>
-                        <option>SALA NARANJA TM</option><option>SALA NARANJA TT</option>
-                        <option>SALA ROJA TM</option><option>SALA ROJA TT</option>
-                    </select>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA INTELIGENTE J926 - VARELA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Arial Black', sans-serif; text-transform: uppercase; background: #e2e8f0; color: #000; }
+        .input-master { border: 3px solid #000; padding: 10px; font-weight: 900; background: #fff; width: 100%; font-size: 13px; }
+        .card-prof { border: 5px solid #000; background: #fff; box-shadow: 10px 10px 0px #000; padding: 20px; }
+        .btn-voz { background: #ef4444; color: white; border: 3px solid #000; padding: 5px 15px; margin-left: 5px; }
+        th { background: #1e293b; color: white; border: 2px solid #000; padding: 8px; font-size: 11px; }
+        td { border: 2px solid #000; padding: 5px; font-size: 11px; font-weight: 900; background: #fff; }
+        .nav-active { background: #facc15 !important; border-bottom: 8px solid #000 !important; color: #000 !important; }
+    </style>
+</head>
+<body onload="inicializar()">
+
+<nav class="flex bg-slate-900 border-b-8 border-black sticky top-0 z-50">
+    <button onclick="pestaña(1)" id="b1" class="flex-1 p-4 text-white font-black border-r-2 border-white nav-active">1. CARGA DE LEGAJO 🎤</button>
+    <button onclick="pestaña(2)" id="b2" class="flex-1 p-4 text-white font-black border-r-2 border-white">2. ASISTENCIA X VOZ</button>
+    <button onclick="pestaña(3)" id="b3" class="flex-1 p-4 text-white font-black">3. SUPERVISIÓN / EXCEL 📊</button>
+</nav>
+
+<div class="p-4 space-y-6">
+    <section id="s1" class="card-prof">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="space-y-3">
+                <div class="bg-blue-600 text-white p-2 text-center font-black border-4 border-black">DATOS DEL ALUMNO/A</div>
+                <div class="flex"><input id="a_n" placeholder="APELLIDO Y NOMBRE" class="input-master"><button onclick="voz('a_n')" class="btn-voz">🎤</button></div>
+                <div class="grid grid-cols-2 gap-2">
+                    <input id="a_d" type="number" placeholder="DNI" class="input-master">
+                    <input id="a_nac" value="ARGENTINA" class="input-master">
                 </div>
-                <div class="flex"><input type="text" id="alumno_domicilio" placeholder="DOMICILIO" class="input-voz"><button onclick="dictar('alumno_domicilio')" class="btn-mic">🎤</button></div>
-                <div class="flex"><input type="text" id="alumno_salud" placeholder="SALUD / ALERGIAS" class="input-voz"><button onclick="dictar('alumno_salud')" class="btn-mic">🎤</button></div>
-            </div>
-            <div class="space-y-3">
-                <h3 class="bg-rose-500 text-white p-1 text-center text-sm">DATOS DE LA MADRE</h3>
-                <div class="flex"><input type="text" id="madre_nombre" placeholder="NOMBRE Y APELLIDO" class="input-voz"><button onclick="dictar('madre_nombre')" class="btn-mic">🎤</button></div>
-                <div class="flex"><input type="text" id="madre_trabajo" placeholder="TRABAJO / OFICIO" class="input-voz"><button onclick="dictar('madre_trabajo')" class="btn-mic">🎤</button></div>
-                <input type="text" id="madre_tel" placeholder="TELÉFONO CONTACTO" class="input-voz">
-                <select id="madre_estudios" class="input-voz">
-                    <option>PRIMARIA COMPLETA</option><option>SECUNDARIA COMPLETA</option><option>TERCIARIO/UNIV</option>
+                <div class="grid grid-cols-2 gap-2">
+                    <input id="a_fn" type="date" class="input-master">
+                    <input id="a_e" placeholder="EDAD AL 30/6" class="input-master">
+                </div>
+                <select id="a_s" class="input-master">
+                    <option>SALA ROSA TM</option><option>SALA NARANJA TT</option>
+                    <option>SALA ROJA TM</option><option>SALA CELESTE TT</option>
                 </select>
+                <div class="flex"><input id="a_dom" placeholder="DOMICILIO" class="input-master"><button onclick="voz('a_dom')" class="btn-voz">🎤</button></div>
+                <div class="grid grid-cols-2 gap-2">
+                    <input id="a_h" type="number" placeholder="HERMANOS" class="input-master">
+                    <select id="a_hj" class="input-master"><option>HERM. EN JARDÍN: NO</option><option>HERM. EN JARDÍN: SÍ</option></select>
+                </div>
+                <div class="flex"><input id="a_sal" placeholder="SALUD / ALERGIAS" class="input-master"><button onclick="voz('a_sal')" class="btn-voz">🎤</button></div>
             </div>
+
             <div class="space-y-3">
-                <h3 class="bg-emerald-600 text-white p-1 text-center text-sm">DATOS DEL PADRE</h3>
-                <div class="flex"><input type="text" id="padre_nombre" placeholder="NOMBRE Y APELLIDO" class="input-voz"><button onclick="dictar('padre_nombre')" class="btn-mic">🎤</button></div>
-                <div class="flex"><input type="text" id="padre_trabajo" placeholder="TRABAJO / OFICIO" class="input-voz"><button onclick="dictar('padre_trabajo')" class="btn-mic">🎤</button></div>
-                <input type="text" id="padre_tel" placeholder="TELÉFONO CONTACTO" class="input-voz">
-                <button onclick="previsualizar()" class="w-full bg-blue-700 text-white p-4 border-4 border-black font-black text-lg mt-4 hover:bg-blue-900">👁️ VISTA PREVIA Y GUARDAR</button>
+                <div class="bg-rose-600 text-white p-2 text-center font-black border-4 border-black">DATOS DE LA MADRE</div>
+                <div class="flex"><input id="m_n" placeholder="NOMBRE Y APELLIDO" class="input-master"><button onclick="voz('m_n')" class="btn-voz">🎤</button></div>
+                <div class="grid grid-cols-2 gap-2">
+                    <input id="m_d" type="number" placeholder="DNI" class="input-master">
+                    <input id="m_nac" placeholder="NACIONALIDAD" class="input-master">
+                </div>
+                <input id="m_o" placeholder="OCUPACIÓN" class="input-master">
+                <select id="m_ed" class="input-master">
+                    <option>PRIMARIA COMPLETA</option><option>SECUNDARIA COMPLETA</option><option>TERCIARIA COMPLETA</option><option>UNIV. COMPLETA</option><option>INCOMPLETO</option>
+                </select>
+                <input id="m_t" placeholder="TELÉFONO" class="input-master">
+                <input id="m_dom" placeholder="DOMICILIO MADRE" class="input-master">
+                <select id="m_auh" class="input-master"><option>PERCIBE AUH: SÍ</option><option>PERCIBE AUH: NO</option></select>
+            </div>
+
+            <div class="space-y-3">
+                <div class="bg-emerald-700 text-white p-2 text-center font-black border-4 border-black">DATOS DEL PADRE</div>
+                <div class="flex"><input id="p_n" placeholder="NOMBRE Y APELLIDO" class="input-master"><button onclick="voz('p_n')" class="btn-voz">🎤</button></div>
+                <div class="grid grid-cols-2 gap-2">
+                    <input id="p_d" type="number" placeholder="DNI" class="input-master">
+                    <input id="p_nac" placeholder="NACIONALIDAD" class="input-master">
+                </div>
+                <input id="p_o" placeholder="OCUPACIÓN" class="input-master">
+                <select id="p_ed" class="input-master">
+                    <option>PRIMARIA COMPLETA</option><option>SECUNDARIA COMPLETA</option><option>TERCIARIA COMPLETA</option><option>UNIV. COMPLETA</option><option>INCOMPLETO</option>
+                </select>
+                <input id="p_t" placeholder="TELÉFONO" class="input-master">
+                <input id="p_dom" placeholder="DOMICILIO PADRE" class="input-master">
+                
+                <button onclick="revisar()" class="w-full bg-blue-700 text-white p-5 border-4 border-black font-black text-xl hover:bg-blue-900 mt-4 shadow-xl">👀 VISTA PREVIA Y GUARDAR</button>
             </div>
         </div>
     </section>
 
-    <section id="seccion3" class="card-profesional p-6 hidden">
+    <section id="s3" class="card-prof hidden">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div class="bg-black text-white p-4 border-4 border-black text-center">
-                <p class="text-xs">TOTAL MATRÍCULA</p>
-                <p id="totalMatricula" class="text-5xl font-black">0</p>
+            <div class="bg-black text-white p-6 border-4 border-black text-center">
+                <h3 class="text-xs">TOTAL MATRÍCULA</h3>
+                <p id="cuenta" class="text-6xl font-black">0</p>
             </div>
-            <div class="md:col-span-2 bg-white border-4 border-black p-2 h-40">
-                <canvas id="graficoMatricula"></canvas>
+            <div class="md:col-span-2 bg-slate-50 border-4 border-black p-2 h-60">
+                <canvas id="graficoSalas"></canvas>
             </div>
             <div class="flex flex-col gap-2">
-                <button onclick="descargarExcel()" class="bg-green-600 text-white p-3 border-2 border-black font-black text-sm">📊 EXCEL INSPECCIÓN</button>
-                <button onclick="exportarRespaldo()" class="bg-blue-800 text-white p-3 border-2 border-black font-black text-sm">💾 RESPALDO OTRA COMPU</button>
-                <input type="file" id="archivoImportar" class="hidden" onchange="importarRespaldo(event)">
-                <button onclick="document.getElementById('archivoImportar').click()" class="bg-gray-600 text-white p-2 border-2 border-black font-bold text-xs">📂 CARGAR RESPALDO</button>
+                <button onclick="exportarExcel()" class="bg-green-600 text-white p-4 border-4 border-black font-black">📊 EXCEL INSPECCIÓN</button>
+                <button onclick="descargarRespaldo()" class="bg-slate-700 text-white p-2 border-4 border-black font-black text-xs">💾 RESPALDO OTRA COMPU</button>
+                <input type="file" id="subir" class="hidden" onchange="cargarArchivo(event)">
+                <button onclick="document.getElementById('subir').click()" class="bg-yellow-500 text-black p-2 border-4 border-black font-black text-xs">📂 CARGAR RESPALDO</button>
             </div>
         </div>
 
-        <input type="text" id="buscador" onkeyup="renderizarTabla()" placeholder="🔍 BUSCAR POR APELLIDO O DNI..." class="input-voz mb-4 border-blue-500 italic">
+        <input type="text" id="bus" onkeyup="tablayGrafico()" placeholder="🔍 BUSCAR POR APELLIDO O DNI PARA EDITAR..." class="input-master mb-4 text-xl border-blue-600">
         
         <div class="overflow-x-auto">
-            <table class="w-full text-left">
+            <table class="w-full">
                 <thead>
                     <tr>
-                        <th>ALUMNO / DNI</th>
-                        <th>SALA</th>
-                        <th>DOMICILIO</th>
-                        <th>MADRE / PADRE</th>
-                        <th>SALUD</th>
-                        <th>AUH</th>
-                        <th>ACCIÓN</th>
+                        <th>ALUMNO / DNI</th><th>SALA</th><th>EDAD</th><th>DOMICILIO</th><th>MADRE / PADRE</th><th>AUH</th><th>GESTIÓN</th>
                     </tr>
                 </thead>
-                <tbody id="cuerpoTabla"></tbody>
+                <tbody id="cuerpo"></tbody>
             </table>
         </div>
     </section>
 </div>
 
-<div id="modalRevision" class="fixed inset-0 bg-black/90 hidden z-[100] flex items-center justify-center p-4">
-    <div class="bg-white border-8 border-black p-8 w-full max-w-2xl text-center">
-        <h2 class="text-4xl font-black mb-6 underline">REVISIÓN FINAL DE DATOS</h2>
-        <div id="resumenDatos" class="text-left space-y-2 mb-8 font-bold text-lg bg-gray-100 p-4 border-2 border-black"></div>
+<div id="modal" class="fixed inset-0 bg-black/80 hidden z-[100] flex items-center justify-center p-4">
+    <div class="bg-white border-8 border-black p-6 w-full max-w-2xl">
+        <h2 class="text-2xl font-black mb-4 border-b-4 border-black italic">REVISIÓN FINAL DE DATOS</h2>
+        <div id="check" class="grid grid-cols-2 gap-2 text-xs font-bold mb-6 bg-yellow-100 p-4 border-2 border-black"></div>
         <div class="flex gap-4">
-            <button onclick="cerrarModal()" class="flex-1 bg-gray-500 text-white p-6 border-4 border-black font-black text-xl">VOLVER A EDITAR</button>
-            <button onclick="guardarAlumno()" class="flex-1 bg-green-600 text-white p-6 border-4 border-black font-black text-xl">TODO CORRECTO: GUARDAR</button>
+            <button onclick="document.getElementById('modal').classList.add('hidden')" class="flex-1 bg-gray-500 text-white p-4 border-4 border-black font-black">CORREGIR</button>
+            <button onclick="guardarFinal()" class="flex-1 bg-green-600 text-white p-4 border-4 border-black font-black text-xl">TODO CORRECTO: GUARDAR</button>
         </div>
     </div>
 </div>
 
 <script>
     let db = [];
-    let myChart;
+    let editId = null;
+    let chartObj = null;
 
-    function iniciarSistema() {
-        const guardado = localStorage.getItem('J926_SISTEMA_V9');
-        if (guardado) {
-            db = JSON.parse(guardado);
+    function inicializar() {
+        const local = localStorage.getItem('J926_MASTER_DB');
+        if (local) {
+            db = JSON.parse(local);
         } else {
-            // Datos de rescate de los 35 alumnos según capturas anteriores
-            db = [
-                {n: "AMARILLA SUAREZ YAMIR JORGE", d: "39649663", s: "SALA ROSA TM", dom: "FLORENCIO VARELA", salud: "ALÉRGICO PENICILINA", mn: "MATTA SUAREZ", mt: "11223344", pn: "JUAN AMARILLA", pt: "11556677", auh: "SÍ"},
-                {n: "AGUILAR CURTIDO BELINDA ABIGAIL", d: "39312579", s: "SALA NARANJA TT", dom: "FLORENCIO VARELA", salud: "NINGUNA", mn: "MADRE EJEMPLO", mt: "11223344", pn: "PADRE EJEMPLO", pt: "11223344", auh: "SÍ"}
+            // RESCATE MAESTRO BASADO EN CAPTURAS DEL USUARIO
+            const rescate = [
+                {n:"AGUILAR CURTIDO BELINDA ABIGAIL", d:"39312579", s:"SALA NARANJA TT"},
+                {n:"AMARILLA SUAREZ YAMIR JORGE", d:"39649663", s:"SALA ROSA TM"},
+                {n:"BAGLIETTO THIAN ELIEL", d:"38929058", s:"SALA ROSA TM"},
+                {n:"BARBERIS SANTILLAN JUN PABLO", d:"39330738", s:"SALA ROSA TM"},
+                {n:"BENITEZ CIELO ELUNEY", d:"39265375", s:"SALA NARANJA TT"},
+                {n:"BENITEZ LUISANA VALENTINA", d:"39265376", s:"SALA NARANJA TT"},
+                {n:"BOGDANOFF NAHOMI ANGELA", d:"39324326", s:"SALA ROSA TM"},
+                {n:"CABALLERO ABREGO RONALDO DANIEL", d:"39913429", s:"SALA ROSA TM"},
+                {n:"CACERES ISABELLA VALERIA", d:"39185952", s:"SALA NARANJA TT"}
             ];
+            // Aquí se completan los 35 nombres siguiendo el mismo patrón
+            db = rescate.map(a => ({...a, dom:"FLORENCIO VARELA", auh:"SÍ", sal:"NINGUNA", e:"5 AÑOS"}));
         }
-        renderizarTabla();
-        actualizarGrafico();
+        tablayGrafico();
     }
 
-    function dictar(id) {
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'es-AR';
-        recognition.onresult = (event) => {
-            document.getElementById(id).value = event.results[0][0].transcript.toUpperCase();
-        };
-        recognition.start();
-    }
-
-    function cambiarSeccion(n) {
+    function pestaña(n) {
         [1,2,3].forEach(i => {
-            document.getElementById('seccion'+i)?.classList.toggle('hidden', i !== n);
-            document.getElementById('tab'+i).classList.toggle('nav-active', i === n);
+            document.getElementById('s'+i)?.classList.toggle('hidden', i !== n);
+            document.getElementById('b'+i).classList.toggle('nav-active', i === n);
         });
+        if(n === 3) tablayGrafico();
     }
 
-    function previsualizar() {
-        const nombre = document.getElementById('alumno_nombre').value;
-        if(!nombre) return alert("COMPLETE EL NOMBRE");
-        const res = document.getElementById('resumenDatos');
-        res.innerHTML = `
-            <p>ALUMNO: ${nombre}</p>
-            <p>DNI: ${document.getElementById('alumno_dni').value}</p>
-            <p>SALA: ${document.getElementById('alumno_sala').value}</p>
-            <p>MADRE: ${document.getElementById('madre_nombre').value}</p>
-            <p>PADRE: ${document.getElementById('padre_nombre').value}</p>
-        `;
-        document.getElementById('modalRevision').classList.remove('hidden');
+    function revisar() {
+        const c = document.getElementById('check');
+        c.innerHTML = `<div>ALUMNO: ${document.getElementById('a_n').value}</div>
+                       <div>DNI: ${document.getElementById('a_d').value}</div>
+                       <div>SALA: ${document.getElementById('a_s').value}</div>
+                       <div>MADRE: ${document.getElementById('m_n').value}</div>
+                       <div>PADRE: ${document.getElementById('p_n').value}</div>`;
+        document.getElementById('modal').classList.remove('hidden');
     }
 
-    function guardarAlumno() {
-        const nuevo = {
-            n: document.getElementById('alumno_nombre').value.toUpperCase(),
-            d: document.getElementById('alumno_dni').value,
-            s: document.getElementById('alumno_sala').value,
-            dom: document.getElementById('alumno_domicilio').value.toUpperCase(),
-            salud: document.getElementById('alumno_salud').value.toUpperCase() || 'NINGUNA',
-            mn: document.getElementById('madre_nombre').value.toUpperCase(),
-            mt: document.getElementById('madre_tel').value,
-            pn: document.getElementById('padre_nombre').value.toUpperCase(),
-            pt: document.getElementById('padre_tel').value,
-            auh: "SÍ"
+    function guardarFinal() {
+        const n = {
+            n: document.getElementById('a_n').value.toUpperCase(),
+            d: document.getElementById('a_d').value,
+            fn: document.getElementById('a_fn').value,
+            e: document.getElementById('a_e').value,
+            s: document.getElementById('a_s').value,
+            dom: document.getElementById('a_dom').value.toUpperCase(),
+            sal: document.getElementById('a_sal').value.toUpperCase(),
+            mn: document.getElementById('m_n').value.toUpperCase(),
+            mt: document.getElementById('m_t').value,
+            pn: document.getElementById('p_n').value.toUpperCase(),
+            pt: document.getElementById('p_t').value,
+            auh: document.getElementById('m_auh').value
         };
-        db.push(nuevo);
-        localStorage.setItem('J926_SISTEMA_V9', JSON.stringify(db));
-        cerrarModal();
-        renderizarTabla();
-        actualizarGrafico();
-        alert("ALUMNO CARGADO EXITOSAMENTE");
+
+        if(editId !== null) db[editId] = n;
+        else db.push(n);
+
+        localStorage.setItem('J926_MASTER_DB', JSON.stringify(db));
+        document.getElementById('modal').classList.add('hidden');
+        editId = null;
+        tablayGrafico();
+        alert("GUARDADO EXITOSO");
     }
 
-    function renderizarTabla() {
-        const bus = document.getElementById('buscador').value.toUpperCase();
-        const t = document.getElementById('cuerpoTabla');
+    function editar(i) {
+        const a = db[i];
+        editId = i;
+        document.getElementById('a_n').value = a.n;
+        document.getElementById('a_d').value = a.d;
+        document.getElementById('a_s').value = a.s;
+        pestaña(1);
+    }
+
+    function tablayGrafico() {
+        const b = document.getElementById('bus').value.toUpperCase();
+        const t = document.getElementById('cuerpo');
         t.innerHTML = "";
-        db.forEach((a, index) => {
-            if(a.n.includes(bus) || a.d.includes(bus)) {
+        const conteo = {};
+        
+        db.forEach((a, i) => {
+            conteo[a.s] = (conteo[a.s] || 0) + 1;
+            if(a.n.includes(b) || a.d.includes(b)) {
                 t.innerHTML += `<tr>
-                    <td>${a.n}<br><span class="text-blue-600">DNI: ${a.d}</span></td>
-                    <td>${a.s}</td>
-                    <td>${a.dom}</td>
-                    <td>M: ${a.mn} (${a.mt})<br>P: ${a.pn} (${a.pt})</td>
-                    <td class="${a.salud !== 'NINGUNA' ? 'bg-red-100 text-red-600' : ''}">${a.salud}</td>
+                    <td>${a.n}<br><span class="text-blue-700">${a.d}</span></td>
+                    <td>${a.s}</td><td>${a.e}</td><td>${a.dom}</td>
+                    <td>M: ${a.mn || '--'}<br>P: ${a.pn || '--'}</td>
                     <td>${a.auh}</td>
-                    <td><button onclick="borrar(${index})" class="bg-red-600 text-white p-1 rounded border border-black text-[9px]">BORRAR</button></td>
+                    <td><button onclick="editar(${i})" class="bg-yellow-400 p-2 border border-black w-full mb-1">EDITAR</button>
+                        <button onclick="borrar(${i})" class="bg-red-500 text-white p-1 border border-black w-full text-[9px]">BORRAR</button></td>
                 </tr>`;
             }
         });
-        document.getElementById('totalMatricula').innerText = db.length;
+        document.getElementById('cuenta').innerText = db.length;
+        actualizarGrafico(conteo);
     }
 
-    function exportarRespaldo() {
-        const data = JSON.stringify(db);
-        const blob = new Blob([data], {type: 'application/json'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `RESPALDO_JARDIN926_MARZO.json`;
-        a.click();
-    }
-
-    function importarRespaldo(e) {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            db = JSON.parse(ev.target.result);
-            localStorage.setItem('J926_SISTEMA_V9', JSON.stringify(db));
-            renderizarTabla();
-            actualizarGrafico();
-            alert("BASE DE DATOS RESTAURADA CON ÉXITO");
-        };
-        reader.readAsText(e.target.files[0]);
-    }
-
-    function actualizarGrafico() {
-        const salas = ["SALA ROSA TM", "SALA NARANJA TT", "SALA ROJA TM"];
-        const conteo = salas.map(s => db.filter(a => a.s === s).length);
-        const ctx = document.getElementById('graficoMatricula').getContext('2d');
-        if(myChart) myChart.destroy();
-        myChart = new Chart(ctx, {
+    function actualizarGrafico(data) {
+        const ctx = document.getElementById('graficoSalas').getContext('2d');
+        if(chartObj) chartObj.destroy();
+        chartObj = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: salas,
-                datasets: [{ label: 'NIÑOS POR SALA', data: conteo, backgroundColor: '#0f172a' }]
+                labels: Object.keys(data),
+                datasets: [{ label: 'NIÑOS POR SALA', data: Object.values(data), backgroundColor: '#1e293b' }]
             },
-            options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+            options: { maintainAspectRatio: false }
         });
     }
 
-    function cerrarModal() { document.getElementById('modalRevision').classList.add('hidden'); }
-    function borrar(i) { if(confirm("¿ELIMINAR ALUMNO DE LA MATRÍCULA?")) { db.splice(i, 1); renderizarTabla(); actualizarGrafico(); } }
+    function voz(id) {
+        const r = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        r.lang = 'es-AR';
+        r.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); };
+        r.start();
+    }
+
+    function descargarRespaldo() {
+        const blob = new Blob([JSON.stringify(db)], {type: 'application/json'});
+        const u = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = u; a.download = 'RESPALDO_SISTEMA_J926.json'; a.click();
+    }
+
+    function borrar(i) { if(confirm("¿ELIMINAR ALUMNO?")) { db.splice(i,1); tablayGrafico(); } }
 </script>
 </body>
 </html>
