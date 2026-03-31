@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA J926 - GESTIÓN NIVEL SUPERIOR</title>
+    <title>SISTEMA J926 - GESTIÓN ESTRATÉGICA NIVEL SUPERIOR</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Arial Black', sans-serif; text-transform: uppercase; background: #0f172a; color: #fff; }
@@ -11,10 +11,10 @@
         .nav-link { flex: 1; text-align: center; padding: 15px; font-weight: 900; cursor: pointer; border: 2px solid #fff; }
         .nav-link.active { background: #facc15; color: #000; border-bottom: 8px solid #000; }
         .btn-mic { background: #ef4444; color: white; border: 2px solid #000; padding: 1px 6px; font-size: 12px; }
-        th { background: #1e293b; color: #facc15; padding: 8px; font-size: 10px; border: 1px solid #000; }
-        td { border: 1px solid #000; padding: 4px; font-size: 10px; font-weight: 900; background: #fff; color: #000; }
-        .presente { background: #22c55e !important; border: 4px solid #14532d !important; }
-        .ausente { background: #ef4444 !important; border: 4px solid #7f1d1d !important; }
+        th { background: #1e293b; color: #facc15; padding: 8px; font-size: 10px; border: 1px solid #000; text-align: center; }
+        td { border: 1px solid #000; padding: 4px; font-size: 10px; font-weight: 900; background: #fff; color: #000; text-align: center; }
+        .presente { background: #22c55e !important; border: 4px solid #14532d !important; color: white !important; }
+        .ausente { background: #ef4444 !important; border: 4px solid #7f1d1d !important; color: white !important; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -22,7 +22,7 @@
 <nav class="flex sticky top-0 z-50 bg-slate-900 border-b-4 border-yellow-400">
     <div onclick="ver(1)" id="t1" class="nav-link active">1. MATRÍCULA DETALLADA 🎤</div>
     <div onclick="ver(2)" id="t2" class="nav-link bg-emerald-700">2. ASISTENCIA MÁXIMA 📋</div>
-    <div onclick="ver(3)" id="t3" class="nav-link bg-blue-700">3. SUPERVISIÓN SUPERIOR 📊</div>
+    <div onclick="ver(3)" id="t3" class="nav-link bg-blue-700">3. SUPERVISIÓN NIVEL MÁXIMO 📊</div>
 </nav>
 
 <main class="p-4">
@@ -30,7 +30,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="border-r-4 border-black pr-4">
                 <p class="bg-blue-800 text-white p-1 text-center font-black mb-2 italic">DATOS DEL ALUMNO/A</p>
-                <label class="text-[9px]">NOMBRE Y APELLIDO</label>
+                <label class="text-[9px]">APELLIDO Y NOMBRE</label>
                 <div class="flex gap-1"><input id="n" class="input-pro"><button onclick="voz('n')" class="btn-mic">🎤</button></div>
                 <div class="grid grid-cols-2 gap-1">
                     <div><label class="text-[9px]">DNI</label><input id="d" class="input-pro"></div>
@@ -38,10 +38,10 @@
                 </div>
                 <div class="grid grid-cols-2 gap-1">
                     <div><label class="text-[9px]">FECHA NAC.</label><input id="f" type="date" class="input-pro"></div>
-                    <div><label class="text-[9px]">EDAD AL 30/6</label><input id="e" class="input-pro"></div>
+                    <div><label class="text-[9px]">EDAD AL 30/06</label><input id="e" class="input-pro"></div>
                 </div>
-                <label class="text-[9px]">SALA (14 OPCIONES)</label>
-                <select id="sala" class="input-pro bg-yellow-50">
+                <label class="text-[9px]">SALA (SELECCIONE UNA DE LAS 14)</label>
+                <select id="sala" class="input-pro bg-yellow-50 font-black">
                     <option>SALA ROSA TM</option><option>SALA ROSA TT</option><option>SALA ROJA TM</option><option>SALA ROJA TT</option>
                     <option>SALA NARANJA TM</option><option>SALA NARANJA TT</option><option>SALA CELESTE TM</option><option>SALA CELESTE TT</option>
                     <option>SALA VERDE TM</option><option>SALA VERDE TT</option><option>SALA AMARILLA TM</option><option>SALA AMARILLA TT</option>
@@ -49,114 +49,134 @@
                 </select>
                 <div class="grid grid-cols-2 gap-1">
                     <div><label class="text-[9px]">HERMANOS (CANT.)</label><input id="her" class="input-pro"></div>
-                    <div><label class="text-[9px]">HERMANOS JARDÍN</label><input id="her_j" class="input-pro"></div>
+                    <div><label class="text-[9px]">¿EN EL JARDÍN?</label>
+                        <select id="her_j" class="input-pro"><option>NO</option><option>SÍ</option></select>
+                    </div>
                 </div>
-                <label class="text-[9px]">OBSERVACIONES MÉDICAS</label><input id="salud" class="input-pro">
+                <label class="text-[9px]">DOMICILIO</label><input id="adom" class="input-pro">
+                <label class="text-[9px]">SALUD / OBSERVACIONES</label><input id="salud" class="input-pro">
             </div>
 
             <div class="border-r-4 border-black pr-4">
                 <p class="bg-rose-700 text-white p-1 text-center font-black mb-2 italic">DATOS DE LA MADRE</p>
-                <input id="mn" placeholder="NOMBRE Y APELLIDO" class="input-pro">
+                <label class="text-[9px]">NOMBRE COMPLETO</label><input id="mn" class="input-pro">
                 <div class="grid grid-cols-2 gap-1">
-                    <input id="mdni" placeholder="DNI" class="input-pro">
-                    <input id="mnac" placeholder="NACIONALIDAD" class="input-pro" value="ARGENTINA">
+                    <div><label class="text-[9px]">DNI</label><input id="mdni" class="input-pro"></div>
+                    <div><label class="text-[9px]">NACIONALIDAD</label><input id="mnac" value="ARGENTINA" class="input-pro"></div>
                 </div>
-                <input id="m_ocu" placeholder="OCUPACIÓN" class="input-pro">
-                <label class="text-[8px]">ESTUDIOS ALCANZADOS</label>
+                <label class="text-[9px]">OCUPACIÓN / TRABAJO</label><input id="m_ocu" class="input-pro">
+                <label class="text-[9px]">ESTUDIOS ALCANZADOS</label>
                 <select id="m_est" class="input-pro">
                     <option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option>
                     <option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option>
                     <option>TERCIARIA COMPLETA</option><option>TERCIARIA INCOMPLETA</option>
-                    <option>UNIV. COMPLETA</option><option>UNIV. INCOMPLETA</option>
+                    <option>UNIVERSIDAD COMPLETA</option><option>UNIVERSIDAD INCOMPLETA</option>
                 </select>
                 <div class="grid grid-cols-2 gap-1">
-                    <input id="mtel" placeholder="TELÉFONO" class="input-pro">
-                    <select id="auh" class="input-pro bg-blue-100 font-bold"><option>SÍ AUH</option><option>NO AUH</option></select>
+                    <div><label class="text-[9px]">TELÉFONO</label><input id="mtel" class="input-pro"></div>
+                    <div><label class="text-[9px]">PERCIBE AUH</label>
+                        <select id="auh" class="input-pro bg-blue-100"><option>SÍ</option><option>NO</option></select>
+                    </div>
                 </div>
-                <input id="mdom" placeholder="DOMICILIO" class="input-pro">
+                <label class="text-[9px]">DOMICILIO MADRE</label><input id="mdom" class="input-pro">
             </div>
 
             <div>
                 <p class="bg-emerald-800 text-white p-1 text-center font-black mb-2 italic">DATOS DEL PADRE</p>
-                <input id="pn" placeholder="NOMBRE Y APELLIDO" class="input-pro">
+                <label class="text-[9px]">NOMBRE COMPLETO</label><input id="pn" class="input-pro">
                 <div class="grid grid-cols-2 gap-1">
-                    <input id="pdni" placeholder="DNI" class="input-pro">
-                    <input id="pnac" placeholder="NACIONALIDAD" class="input-pro" value="ARGENTINA">
+                    <div><label class="text-[9px]">DNI</label><input id="pdni" class="input-pro"></div>
+                    <div><label class="text-[9px]">NACIONALIDAD</label><input id="pnac" value="ARGENTINA" class="input-pro"></div>
                 </div>
-                <input id="p_ocu" placeholder="OCUPACIÓN" class="input-pro">
-                <label class="text-[8px]">ESTUDIOS ALCANZADOS</label>
+                <label class="text-[9px]">OCUPACIÓN / TRABAJO</label><input id="p_ocu" class="input-pro">
+                <label class="text-[9px]">ESTUDIOS ALCANZADOS</label>
                 <select id="p_est" class="input-pro">
                     <option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option>
                     <option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option>
                     <option>TERCIARIA COMPLETA</option><option>TERCIARIA INCOMPLETA</option>
-                    <option>UNIV. COMPLETA</option><option>UNIV. INCOMPLETA</option>
+                    <option>UNIVERSIDAD COMPLETA</option><option>UNIVERSIDAD INCOMPLETA</option>
                 </select>
-                <input id="ptel" placeholder="TELÉFONO" class="input-pro">
-                <input id="pdom" placeholder="DOMICILIO" class="input-pro">
+                <label class="text-[9px]">TELÉFONO PADRE</label><input id="ptel" class="input-pro">
+                <label class="text-[9px]">DOMICILIO PADRE</label><input id="pdom" class="input-pro">
                 
-                <button onclick="vistaPrevia()" class="w-full mt-4 bg-yellow-400 p-6 border-4 border-black font-black text-xl shadow-[8px_8px_0px_#000] hover:translate-y-1 transition-all">💾 VISTA PREVIA Y GUARDAR</button>
+                <button onclick="lanzarPrevia()" class="w-full mt-4 bg-yellow-400 p-6 border-4 border-black font-black text-xl shadow-[8px_8px_0px_#000] hover:scale-95 transition-transform">💾 VISTA PREVIA Y GUARDAR</button>
             </div>
         </div>
     </section>
 
     <section id="sec2" class="card-pro hidden">
-        <div id="statsAsis" class="bg-black text-yellow-400 p-2 text-center font-black mb-4 border-2 border-white italic"></div>
-        <div id="grillaAsis" class="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-7 gap-2"></div>
+        <div id="asisBar" class="bg-black text-yellow-400 p-3 text-center font-black mb-4 border-2 border-white italic text-lg shadow-lg"></div>
+        <div id="asisGrid" class="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-7 gap-3"></div>
     </section>
 
     <section id="sec3" class="card-pro hidden">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 text-center">
-            <div class="bg-black text-white p-4 border-4 border-yellow-400">
-                <p class="text-xs">MATRÍCULA TOTAL</p>
-                <p id="totalMat" class="text-6xl font-black text-yellow-400">0</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-black text-white p-4 border-4 border-yellow-400 text-center">
+                <p class="text-[10px] tracking-widest">MATRÍCULA TOTAL J926</p>
+                <p id="countMat" class="text-7xl font-black text-yellow-400">0</p>
             </div>
             <div class="flex flex-col gap-2">
-                <button onclick="exportarExcel()" class="bg-green-700 text-white p-4 border-2 border-black font-black">📥 EXCEL ESTRATÉGICO</button>
-                <button onclick="respaldo()" class="bg-blue-700 text-white p-2 border-2 border-black font-black text-xs">💾 RESPALDO OTRA PC</button>
+                <button onclick="exportarExcelOficial()" class="bg-green-700 text-white p-4 border-2 border-black font-black text-sm shadow-md">📊 DESCARGAR EXCEL OFICIAL</button>
+                <button onclick="hacerRespaldo()" class="bg-blue-700 text-white p-3 border-2 border-black font-black text-xs">💾 RESPALDO PARA OTRA PC</button>
             </div>
-            <div class="bg-gray-100 p-2 border-2 border-black">
-                <p class="font-bold text-[10px] text-black">IMPORTAR ARCHIVO:</p>
-                <input type="file" onchange="importar(event)" class="text-[9px] text-black">
+            <div class="bg-slate-100 p-3 border-2 border-dashed border-black text-center">
+                <p class="font-bold text-[10px] mb-2">IMPORTAR RESPALDO:</p>
+                <input type="file" onchange="cargarRespaldo(event)" class="text-[9px] w-full">
             </div>
         </div>
-        <input type="text" id="bus" onkeyup="renderTabla()" placeholder="🔍 BUSCAR POR APELLIDO O DNI..." class="w-full p-4 border-4 border-black mb-4 text-xl font-black italic bg-white text-black">
-        <div class="overflow-x-auto max-h-[500px] border-2 border-black">
+        
+        <input type="text" id="mainBus" onkeyup="renderSupervisión()" placeholder="🔍 BUSCAR POR DNI O APELLIDO DEL ALUMNO..." class="w-full p-5 border-4 border-black mb-4 text-2xl font-black italic bg-yellow-50 text-black">
+        
+        <div class="overflow-x-auto border-2 border-black shadow-xl">
             <table class="w-full border-collapse">
-                <thead class="sticky top-0 shadow-lg">
-                    <tr><th>ALUMNO / DNI</th><th>SALA</th><th>TELEFONOS</th><th>AUH</th><th>ACCIONES</th></tr>
+                <thead class="sticky top-0 z-10">
+                    <tr>
+                        <th>ALUMNO / DNI</th>
+                        <th>SALA (14)</th>
+                        <th>TELÉFONOS</th>
+                        <th>AUH</th>
+                        <th>ACCIÓN</th>
+                    </tr>
                 </thead>
-                <tbody id="cuerpo"></tbody>
+                <tbody id="tablaCuerpo"></tbody>
             </table>
         </div>
     </section>
 </main>
 
-<div id="modalPrevia" class="fixed inset-0 bg-black/95 hidden z-[100] flex items-center justify-center p-4">
-    <div class="bg-white border-[10px] border-black p-6 w-full max-w-5xl text-black">
-        <h2 class="text-3xl font-black mb-4 italic underline text-red-600">REVISIÓN DE CARGA PROFESIONAL</h2>
-        <div id="contPrevia" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-[11px] font-bold bg-slate-100 p-4 border-2 border-black"></div>
-        <div class="flex gap-4 mt-6">
-            <button onclick="document.getElementById('modalPrevia').classList.add('hidden')" class="flex-1 bg-gray-500 text-white p-5 font-black border-4 border-black">CORREGIR</button>
-            <button onclick="confirmarGuardado()" class="flex-1 bg-green-600 text-white p-5 font-black border-4 border-black text-xl">CONFIRMAR Y GUARDAR</button>
+<div id="modalCheck" class="fixed inset-0 bg-black/95 hidden z-[100] flex items-center justify-center p-4">
+    <div class="bg-white border-[10px] border-black p-8 w-full max-w-6xl text-black overflow-y-auto max-h-[90vh]">
+        <h2 class="text-4xl font-black mb-6 italic underline text-red-700">REVISIÓN FINAL DE DATOS</h2>
+        <div id="checkContent" class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-black uppercase"></div>
+        <div class="flex gap-6 mt-8">
+            <button onclick="cerrarModal()" class="flex-1 bg-gray-600 text-white p-6 font-black border-4 border-black text-xl">VOLVER A EDITAR</button>
+            <button onclick="confirmarYGuardar()" class="flex-1 bg-green-600 text-white p-6 font-black border-4 border-black text-2xl shadow-[6px_6px_0px_#000]">TODO CORRECTO: GUARDAR</button>
         </div>
     </div>
 </div>
 
 <script>
     let db = [];
-    let editIdx = null;
+    let currentEdit = null;
 
-    const iniciales = [
-        "AGUILAR CURTIDO BELINDA","AMARILLA SUAREZ YAMIR","BAGLIETTO THIAN ELIEL","BARBERIS SANTILLAN JUAN","BENITEZ CIELO ELUNEY","BENITEZ LUISANA VALENTINA","BOGDANOFF NAHOMI ANGELA","CABALLERO ABREGO RONALDO","CACERES ISABELLA VALERIA","CARRILLO QUISPE AARIA","CENTURION RIOS LIAM CIRO","CHOQUE MARIÑO MICAELA","ESCOBAR NICOLAS MAEL","FARIAS BLANCO FRANCESCO","FIGUEROA CATALEYA ANAHI","GARCIA ROMA MARTINA","GAUNA RAMIRO NAHUEL","GOMEZ SANTIAGO ENZO","JIMENEZ ROJAS JAZMIN","LOZA ELISEO VALENTIN","MONTES MAIRANA ADA ABIGAIL","OJEDA ISABELLA GABRIELA","QUISPE GUARACHI DAYLIN","RECALDE OVIEDO LUANA","SALVATIERRA ROJAS ANA LIZ","SANTALLA ROJAS GAEL","SANTILLAN GAEL DARIO","SAUCEDO VIDAL DESIDERIO","SOSA AYNARA MAGALI","TABOADA CAMILA MAITE","TORRES COCA ANA LUJAN","VALLEJOS HEREDIA AITANA","VELAZQUEZ ARCIENAGA JULIETA","ZARATE MATEO","LOPEZ BENJAMIN"
-    ];
+    // Listado precargado de los 35 alumnos detectados en las capturas
+    const alumnosBase = ["AGUILAR CURTIDO BELINDA ABIGAIL", "AMARILLA SUAREZ YAMIR JORGE", "BAGLIETTO THIAN ELIEL", "BARBERIS SANTILLAN JUAN PABLO", "BENITEZ CIELO ELUNEY", "BENITEZ LUISANA VALENTINA", "BOGDANOFF NAHOMI ANGELA", "CABALLERO ABREGO RONALDO DANIEL", "CACERES ISABELLA VALERIA", "CARRILLO QUISPE AARIA DAINERIS", "CENTURION RIOS LIAM CIRO", "CHOQUE MAREA O MICAELA BRIANA", "ESCOBAR NICOLAS MAEL", "FARIAS BLANCO FRANCESCO", "FIGUEROA CATALEYA ANAHI", "GARCIA ROMA MARTINA", "GAUNA RAMIRO NAHUEL", "GOMEZ SANTIAGO ENZO", "JIMENEZ ROJAS JAZMIN", "LOZA ELISEO VALENTIN", "MONTES MAIRANA ADA ABIGAIL", "OJEDA ISABELLA GABRIELA", "QUISPE GUARACHI DAYLIN", "RECALDE OVIEDO LUANA", "SALVATIERRA ROJAS ANA LIZ", "SANTALLA ROJAS GAEL", "SANTILLAN GAEL DARIO", "SAUCEDO VIDAL DESIDERIO", "SOSA AYNARA MAGALI", "TABOADA CAMILA MAITE", "TORRES COCA ANA LUJAN", "VALLEJOS HEREDIA AITANA", "VELAZQUEZ ARCIENAGA JULIETA", "ZARATE MATEO", "LOPEZ BENJAMIN"];
 
     function inicializar() {
-        const guardado = localStorage.getItem('J926_SISTEMA_V25_TOTAL');
-        if (guardado) db = JSON.parse(guardado);
-        else {
-            db = iniciales.map(n => ({ n, d: "", nac:"ARGENTINA", f:"", e:"", sala:"SALA ROSA TM", her:"", her_j:"", salud:"", mn:"", mdni:"", mnac:"ARGENTINA", m_est:"SECUNDARIA COMPLETA", m_ocu:"", mtel:"", auh:"SÍ AUH", mdom:"", pn:"", pdni:"", pnac:"ARGENTINA", p_est:"SECUNDARIA COMPLETA", p_ocu:"", ptel:"", pdom:"", presente: true }));
+        const data = localStorage.getItem('J926_SISTEMA_SUPERIOR_MAX');
+        if (data) {
+            db = JSON.parse(data);
+        } else {
+            db = alumnosBase.map(nombre => ({
+                n: nombre, d: "", nac: "ARGENTINA", f: "", e: "", sala: "SALA ROSA TM",
+                her: "0", her_j: "NO", adom: "", salud: "NINGUNA",
+                mn: "", mdni: "", mnac: "ARGENTINA", m_ocu: "", m_est: "SECUNDARIA COMPLETA", mtel: "", auh: "SÍ", mdom: "",
+                pn: "", pdni: "", pnac: "ARGENTINA", p_ocu: "", p_est: "SECUNDARIA COMPLETA", ptel: "", pdom: "",
+                presente: true
+            }));
         }
-        renderTabla(); renderAsistencia();
+        renderSupervisión();
+        renderAsistencia();
     }
 
     function ver(n) {
@@ -167,76 +187,116 @@
     }
 
     function voz(id) {
-        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        rec.lang = 'es-AR';
-        rec.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); };
-        rec.start();
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'es-AR';
+        recognition.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); };
+        recognition.start();
     }
 
-    function vistaPrevia() {
-        const ids = ['n','d','nac','f','e','sala','her','her_j','salud','mn','mdni','mnac','m_est','m_ocu','mtel','auh','mdom','pn','pdni','pnac','p_est','p_ocu','ptel','pdom'];
-        let h = "<div><p class='text-blue-600 underline'>ALUMNO/A</p>";
-        ids.slice(0,9).forEach(id => h += `${id.toUpperCase()}: ${document.getElementById(id).value}<br>`);
-        h += "</div><div><p class='text-rose-600 underline'>MADRE</p>";
-        ids.slice(9,17).forEach(id => h += `${id.toUpperCase()}: ${document.getElementById(id).value}<br>`);
-        h += "</div><div><p class='text-emerald-600 underline'>PADRE</p>";
-        ids.slice(17).forEach(id => h += `${id.toUpperCase()}: ${document.getElementById(id).value}<br>`);
-        h += "</div>";
-        document.getElementById('contPrevia').innerHTML = h;
-        document.getElementById('modalPrevia').classList.remove('hidden');
+    function lanzarPrevia() {
+        const ids = ['n','d','nac','f','e','sala','her','her_j','adom','salud','mn','mdni','mnac','m_ocu','m_est','mtel','auh','mdom','pn','pdni','pnac','p_ocu','p_est','ptel','pdom'];
+        let html = "<div class='bg-blue-50 p-4 border-2 border-black'><p class='text-blue-900 underline mb-2'>DATOS ALUMNO/A</p>";
+        ids.slice(0,10).forEach(id => html += `<p>${id.toUpperCase()}: ${document.getElementById(id).value}</p>`);
+        html += "</div><div class='bg-rose-50 p-4 border-2 border-black'><p class='text-rose-900 underline mb-2'>DATOS MADRE</p>";
+        ids.slice(10,18).forEach(id => html += `<p>${id.toUpperCase()}: ${document.getElementById(id).value}</p>`);
+        html += "</div><div class='bg-emerald-50 p-4 border-2 border-black'><p class='text-emerald-900 underline mb-2'>DATOS PADRE</p>";
+        ids.slice(18).forEach(id => html += `<p>${id.toUpperCase()}: ${document.getElementById(id).value}</p>`);
+        html += "</div>";
+        document.getElementById('checkContent').innerHTML = html;
+        document.getElementById('modalCheck').classList.remove('hidden');
     }
 
-    function confirmarGuardado() {
-        const ids = ['n','d','nac','f','e','sala','her','her_j','salud','mn','mdni','mnac','m_est','m_ocu','mtel','auh','mdom','pn','pdni','pnac','p_est','p_ocu','ptel','pdom'];
-        const obj = { presente: true };
-        ids.forEach(id => obj[id] = document.getElementById(id).value.toUpperCase());
-        if(editIdx !== null) db[editIdx] = obj; else db.push(obj);
-        localStorage.setItem('J926_SISTEMA_V25_TOTAL', JSON.stringify(db));
-        editIdx = null; document.getElementById('modalPrevia').classList.add('hidden');
-        renderTabla(); renderAsistencia(); alert("✅ REGISTRO ACTUALIZADO");
-        document.querySelectorAll('input').forEach(i => { if(i.id !== 'nac' && i.id !== 'mnac' && i.id !== 'pnac') i.value = ""; });
+    function cerrarModal() { document.getElementById('modalCheck').classList.add('hidden'); }
+
+    function confirmarYGuardar() {
+        const ids = ['n','d','nac','f','e','sala','her','her_j','adom','salud','mn','mdni','mnac','m_ocu','m_est','mtel','auh','mdom','pn','pdni','pnac','p_ocu','p_est','ptel','pdom'];
+        const item = { presente: true };
+        ids.forEach(id => item[id] = document.getElementById(id).value.toUpperCase());
+        
+        if (currentEdit !== null) db[currentEdit] = item;
+        else db.push(item);
+
+        localStorage.setItem('J926_SISTEMA_SUPERIOR_MAX', JSON.stringify(db));
+        currentEdit = null;
+        cerrarModal();
+        renderSupervisión();
+        renderAsistencia();
+        alert("REGISTRO GUARDADO CON ÉXITO");
+        // Resetear campos (excepto nacionalidad por comodidad)
+        document.querySelectorAll('input').forEach(i => { if(!['nac','mnac','pnac'].includes(i.id)) i.value = ""; });
     }
 
-    function editar(i) {
-        const a = db[i]; editIdx = i;
-        const ids = ['n','d','nac','f','e','sala','her','her_j','salud','mn','mdni','mnac','m_est','m_ocu','mtel','auh','mdom','pn','pdni','pnac','p_est','p_ocu','ptel','pdom'];
+    function editarAlumno(i) {
+        const a = db[i];
+        currentEdit = i;
+        const ids = ['n','d','nac','f','e','sala','her','her_j','adom','salud','mn','mdni','mnac','m_ocu','m_est','mtel','auh','mdom','pn','pdni','pnac','p_ocu','p_est','ptel','pdom'];
         ids.forEach(id => document.getElementById(id).value = a[id] || "");
         ver(1);
     }
 
-    function renderTabla() {
-        const b = document.getElementById('bus').value.toUpperCase();
-        const t = document.getElementById('cuerpo'); t.innerHTML = "";
+    function renderSupervisión() {
+        const bus = document.getElementById('mainBus').value.toUpperCase();
+        const t = document.getElementById('tablaCuerpo');
+        t.innerHTML = "";
         db.forEach((a, i) => {
-            if(a.n.includes(b) || a.d.includes(b)) {
-                t.innerHTML += `<tr><td><b>${a.n}</b><br><small>${a.d}</small></td><td>${a.sala}</td><td>M:${a.mtel}<br>P:${a.ptel}</td><td>${a.auh}</td>
-                <td><button onclick="editar(${i})" class="bg-yellow-400 p-1 border-2 border-black font-black w-full">EDITAR</button></td></tr>`;
+            if (a.n.includes(bus) || a.d.includes(bus)) {
+                t.innerHTML += `<tr>
+                    <td><b>${a.n}</b><br><span class="text-blue-700 text-[9px]">DNI: ${a.d}</span></td>
+                    <td>${a.sala}</td>
+                    <td>M: ${a.mtel}<br>P: ${a.ptel}</td>
+                    <td>${a.auh}</td>
+                    <td><button onclick="editarAlumno(${i})" class="bg-yellow-400 p-2 border-2 border-black font-black w-full text-[10px]">EDITAR / CARGAR</button></td>
+                </tr>`;
             }
         });
-        document.getElementById('totalMat').innerText = db.length;
+        document.getElementById('countMat').innerText = db.length;
     }
 
     function renderAsistencia() {
-        const g = document.getElementById('grillaAsis'); g.innerHTML = "";
-        let p = 0;
+        const grid = document.getElementById('asisGrid');
+        grid.innerHTML = "";
+        let presentes = 0;
         db.forEach((a, i) => {
-            if(a.presente) p++;
-            g.innerHTML += `<div onclick="toggle(${i})" class="p-2 border-2 cursor-pointer text-[9px] font-black text-center ${a.presente ? 'presente' : 'ausente'}">
-                ${a.n.split(' ')[0]}<br>${a.presente ? 'P' : 'A'}
+            if(a.presente) presentes++;
+            grid.innerHTML += `<div onclick="toggleAsis(${i})" class="p-3 border-4 cursor-pointer text-[10px] font-black text-center shadow-md transition-all ${a.presente ? 'presente' : 'ausente'}">
+                ${a.n.split(' ')[0]} ${a.n.split(' ')[1] || ''}<br>${a.presente ? 'PRESENTE' : 'AUSENTE'}
             </div>`;
         });
-        document.getElementById('statsAsis').innerText = `PARTE DIARIO: PRESENTES ${p} / TOTAL ${db.length}`;
+        document.getElementById('asisBar').innerText = `ESTADÍSTICA DIARIA: ${presentes} PRESENTES DE ${db.length} ALUMNOS`;
     }
 
-    function toggle(i) { db[i].presente = !db[i].presente; renderAsistencia(); }
+    function toggleAsis(i) { db[i].presente = !db[i].presente; renderAsistencia(); }
 
-    function exportarExcel() {
-        let c = "ALUMNO;DNI;SALA;EDAD_30_6;AUH;TEL_M;TEL_P;ESTUDIOS_M;ESTUDIOS_P\n";
-        db.forEach(a => c += `${a.n};${a.d};${a.sala};${a.e};${a.auh};${a.mtel};${a.ptel};${a.m_est};${a.p_est}\n`);
-        const b = new Blob(["\ufeff"+c], {type:'text/csv'});
-        const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = 'SUPERVISION_OFICIAL.csv'; l.click();
+    function exportarExcelOficial() {
+        let csv = "ALUMNO;DNI;SALA;EDAD_30_06;NACIONALIDAD;DOMICILIO;MADRE;TEL_M;ESTUDIOS_M;AUH;PADRE;TEL_P;ESTUDIOS_P\n";
+        db.forEach(a => {
+            csv += `${a.n};${a.d};${a.sala};${a.e};${a.nac};${a.adom};${a.mn};${a.mtel};${a.m_est};${a.auh};${a.pn};${a.ptel};${a.p_est}\n`;
+        });
+        const blob = new Blob(["\ufeff"+csv], {type: 'text/csv;charset=utf-8;'});
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `SUPERVISION_J926_NIVEL_SUPERIOR.csv`;
+        link.click();
     }
 
-    function respaldo() {
-        const b = new Blob([JSON.stringify(db)], {type:'application/json'});
-        const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = 'J
+    function hacerRespaldo() {
+        const blob = new Blob([JSON.stringify(db)], {type: 'application/json'});
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `RESPALDO_J926_SISTEMA.json`;
+        link.click();
+    }
+
+    function cargarRespaldo(e) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            db = JSON.parse(event.target.result);
+            localStorage.setItem('J926_SISTEMA_SUPERIOR_MAX', JSON.stringify(db));
+            renderSupervisión(); renderAsistencia();
+            alert("RESPALDO CARGADO CORRECTAMENTE");
+        };
+        reader.readAsText(e.target.files[0]);
+    }
+</script>
+</body>
+</html>
