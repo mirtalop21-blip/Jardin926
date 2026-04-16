@@ -2,152 +2,186 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA ESTRATÉGICO J926 - GESTIÓN TOTAL</title>
+    <title>SISTEMA J926 - DASHBOARD ESTRATÉGICO PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Arial Black', sans-serif; text-transform: uppercase; background: #0f172a; color: #fff; }
-        .card-pro { background: #fff; color: #000; border: 6px solid #000; box-shadow: 12px 12px 0px #facc15; padding: 20px; }
-        .input-pro { width: 100%; border: 2px solid #000; padding: 5px; font-weight: 900; background: #fff; font-size: 11px; margin-bottom: 2px; }
-        .nav-link { flex: 1; text-align: center; padding: 15px; font-weight: 900; cursor: pointer; border: 2px solid #fff; }
-        .nav-link.active { background: #facc15; color: #000; border-bottom: 8px solid #000; }
-        th { background: #000; color: #facc15; padding: 8px; font-size: 10px; border: 1px solid #444; }
-        td { border: 1px solid #000; padding: 4px; font-size: 10px; font-weight: 900; background: #fff; color: #000; text-align: center; }
-        .presente { background: #22c55e !important; color: white !important; }
-        .ausente { background: #ef4444 !important; color: white !important; }
-        .stat-card { background: #000; color: #facc15; border: 2px solid #facc15; padding: 5px; text-align: center; font-size: 10px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-transform: uppercase; background: #0f172a; color: #fff; }
+        .card-pro { background: #ffffff; color: #1e293b; border: 4px solid #334155; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); padding: 25px; }
+        .input-pro { width: 100%; border: 2px solid #cbd5e1; padding: 8px; font-weight: 700; background: #f8fafc; border-radius: 6px; font-size: 12px; transition: all 0.3s; }
+        .input-pro:focus { border-color: #3b82f6; outline: none; background: #eff6ff; }
+        .nav-link { flex: 1; text-align: center; padding: 18px; font-weight: 900; cursor: pointer; border-bottom: 4px solid transparent; transition: 0.3s; }
+        .nav-link.active { background: #1e293b; color: #fbbf24; border-bottom: 6px solid #fbbf24; }
+        .btn-voice { background: #3b82f6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer; margin-left: 5px; }
+        .btn-voice:hover { background: #2563eb; }
+        .stat-box { background: #1e293b; color: #fbbf24; border: 2px solid #fbbf24; border-radius: 8px; padding: 10px; text-align: center; }
+        th { background: #334155; color: #f8fafc; padding: 12px; font-size: 11px; text-align: left; }
+        td { border-bottom: 1px solid #e2e8f0; padding: 10px; font-size: 11px; color: #1e293b; background: white; }
     </style>
 </head>
 <body onload="inicializar()">
 
-<nav class="flex sticky top-0 z-50 bg-slate-900 border-b-4 border-yellow-400">
-    <div onclick="ver(1)" id="t1" class="nav-link active">1. MATRÍCULA ESTRATÉGICA 🎤</div>
-    <div onclick="ver(2)" id="t2" class="nav-link bg-emerald-700">2. ASISTENCIA / VISTA PREVIA 📋</div>
-    <div onclick="ver(3)" id="t3" class="nav-link bg-blue-700">3. SUPERVISIÓN Y ESTADÍSTICA 📊</div>
+<nav class="flex sticky top-0 z-50 bg-slate-900 border-b-2 border-slate-700 shadow-2xl">
+    <div onclick="ver(1)" id="t1" class="nav-link active">💎 MATRÍCULA ESTRATÉGICA</div>
+    <div onclick="ver(2)" id="t2" class="nav-link">📋 ASISTENCIA Y VISTA RÁPIDA</div>
+    <div onclick="ver(3)" id="t3" class="nav-link">📊 MAPA DE SUPERVISIÓN PRO</div>
 </nav>
 
-<main class="p-4">
-    <section id="sec1" class="card-pro">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="border-r-2 border-black pr-2">
-                <p class="bg-blue-800 text-white p-1 text-center font-black mb-2 italic">DATOS ALUMNO/A</p>
-                <input id="n" placeholder="NOMBRE COMPLETO" class="input-pro">
-                <div class="grid grid-cols-2 gap-1">
-                    <input id="d" placeholder="DNI" class="input-pro">
-                    <input id="nac" value="ARGENTINA" class="input-pro">
+<main class="p-6">
+    <section id="sec1" class="card-pro animate-fade-in">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="space-y-3">
+                <p class="bg-blue-600 text-white p-2 rounded text-center font-black italic shadow-md">DATOS DEL ESTUDIANTE</p>
+                <div><label class="text-[10px] font-bold">NOMBRE COMPLETO <span class="btn-voice" onclick="escuchar('n')">🎤 DICTAR</span></label><input id="n" class="input-pro"></div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label class="text-[10px] font-bold">DNI</label><input id="d" class="input-pro"></div>
+                    <div><label class="text-[10px] font-bold">NACIONALIDAD</label><input id="nac" value="ARGENTINA" class="input-pro"></div>
                 </div>
-                <div class="grid grid-cols-2 gap-1">
-                    <input id="f" type="date" class="input-pro" onchange="calcularSalaAutomática(this.value)">
-                    <input id="e" placeholder="EDAD AL 30/6" class="input-pro" readonly>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label class="text-[10px] font-bold">NACIMIENTO</label><input id="f" type="date" class="input-pro" onchange="autoGestionSala(this.value)"></div>
+                    <div><label class="text-[10px] font-bold">EDAD AL 30/6</label><input id="e" class="input-pro" readonly></div>
                 </div>
-                <select id="sala" class="input-pro bg-yellow-50 font-black">
+                <label class="text-[10px] font-bold">SALA ASIGNADA</label>
+                <select id="sala" class="input-pro border-blue-400 border-2">
                     <option>SALA ROSA TM</option><option>SALA ROSA TT</option><option>SALA ROJA TM</option><option>SALA ROJA TT</option>
                     <option>SALA NARANJA TM</option><option>SALA NARANJA TT</option><option>SALA CELESTE TM</option><option>SALA CELESTE TT</option>
                     <option>SALA VERDE TM</option><option>SALA VERDE TT</option><option>SALA AMARILLA TM</option><option>SALA AMARILLA TT</option>
                     <option>SALA AZUL TM</option><option>SALA AZUL TT</option><option>SALA VIOLETA TM</option><option>SALA VIOLETA TT</option>
                 </select>
-                <input id="adom" placeholder="DOMICILIO" class="input-pro">
-                <input id="salud" placeholder="OBSERVACIONES SALUD" class="input-pro">
-            </div>
-
-            <div class="border-r-2 border-black pr-2">
-                <p class="bg-rose-700 text-white p-1 text-center font-black mb-2 italic">DATOS MADRE</p>
-                <input id="mn" placeholder="NOMBRE MADRE" class="input-pro">
-                <input id="mdni" placeholder="DNI MADRE" class="input-pro">
-                <select id="m_est" class="input-pro">
-                    <option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option>
-                    <option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option>
-                    <option>TERCIARIO COMPLETO</option><option>TERCIARIO INCOMPLETO</option>
-                    <option>UNIVERSITARIO COMPLETO</option><option>UNIVERSITARIO INCOMPLETO</option>
-                </select>
-                <div class="grid grid-cols-2 gap-1">
-                    <input id="mtel" placeholder="TELÉFONO" class="input-pro">
-                    <select id="auh" class="input-pro bg-blue-100 font-bold"><option>SÍ AUH</option><option>NO AUH</option></select>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label class="text-[10px] font-bold">HERMANOS</label><input id="her" class="input-pro" placeholder="CANTIDAD"></div>
+                    <div><label class="text-[10px] font-bold">EN JARDÍN</label><select id="her_j" class="input-pro"><option>NO</option><option>SÍ</option></select></div>
                 </div>
-                <input id="m_ocu" placeholder="OCUPACIÓN" class="input-pro">
+                <div><label class="text-[10px] font-bold">DOMICILIO <span class="btn-voice" onclick="escuchar('adom')">🎤</span></label><input id="adom" class="input-pro"></div>
+                <div><label class="text-[10px] font-bold">SALUD / OBSERV. <span class="btn-voice" onclick="escuchar('salud')">🎤</span></label><input id="salud" class="input-pro"></div>
             </div>
 
-            <div>
-                <p class="bg-emerald-800 text-white p-1 text-center font-black mb-2 italic">DATOS PADRE</p>
-                <input id="pn" placeholder="NOMBRE PADRE" class="input-pro">
-                <input id="pdni" placeholder="DNI PADRE" class="input-pro">
-                <select id="p_est" class="input-pro">
-                    <option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option>
-                    <option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option>
-                    <option>TERCIARIO COMPLETO</option><option>TERCIARIO INCOMPLETO</option>
-                    <option>UNIVERSITARIO COMPLETO</option><option>UNIVERSITARIO INCOMPLETO</option>
-                </select>
-                <input id="ptel" placeholder="TELÉFONO" class="input-pro">
-                <input id="p_ocu" placeholder="OCUPACIÓN" class="input-pro">
-                <button onclick="guardar()" class="w-full mt-4 bg-yellow-400 p-4 border-4 border-black font-black text-lg shadow-[4px_4px_0px_#000]">💾 GUARDAR Y LIMPIAR</button>
+            <div class="space-y-3 border-x border-slate-200 px-4">
+                <p class="bg-rose-600 text-white p-2 rounded text-center font-black italic shadow-md">INFORMACIÓN MADRE</p>
+                <div><label class="text-[10px] font-bold">NOMBRE <span class="btn-voice" onclick="escuchar('mn')">🎤</span></label><input id="mn" class="input-pro"></div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label class="text-[10px] font-bold">DNI</label><input id="mdni" class="input-pro"></div>
+                    <div><label class="text-[10px] font-bold">NACIONALIDAD</label><input id="mnac" value="ARGENTINA" class="input-pro"></div>
+                </div>
+                <div><label class="text-[10px] font-bold">ESTUDIOS ALCANZADOS</label>
+                    <select id="m_est" class="input-pro">
+                        <option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option>
+                        <option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option>
+                        <option>TERCIARIO COMPLETO</option><option>TERCIARIO INCOMPLETO</option>
+                        <option>UNIVERSITARIO COMPLETO</option><option>UNIVERSITARIO INCOMPLETO</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label class="text-[10px] font-bold">TELÉFONO</label><input id="mtel" class="input-pro"></div>
+                    <div><label class="text-[10px] font-bold">RECIBE AUH</label><select id="auh" class="input-pro"><option>SÍ</option><option>NO</option></select></div>
+                </div>
+                <div><label class="text-[10px] font-bold">OCUPACIÓN <span class="btn-voice" onclick="escuchar('m_ocu')">🎤</span></label><input id="m_ocu" class="input-pro"></div>
+            </div>
+
+            <div class="space-y-3">
+                <p class="bg-emerald-600 text-white p-2 rounded text-center font-black italic shadow-md">INFORMACIÓN PADRE</p>
+                <div><label class="text-[10px] font-bold">NOMBRE <span class="btn-voice" onclick="escuchar('pn')">🎤</span></label><input id="pn" class="input-pro"></div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label class="text-[10px] font-bold">DNI</label><input id="pdni" class="input-pro"></div>
+                    <div><label class="text-[10px] font-bold">NACIONALIDAD</label><input id="pnac" value="ARGENTINA" class="input-pro"></div>
+                </div>
+                <div><label class="text-[10px] font-bold">ESTUDIOS ALCANZADOS</label>
+                    <select id="p_est" class="input-pro">
+                        <option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option>
+                        <option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option>
+                        <option>TERCIARIO COMPLETO</option><option>TERCIARIO INCOMPLETO</option>
+                        <option>UNIVERSITARIO COMPLETO</option><option>UNIVERSITARIO INCOMPLETO</option>
+                    </select>
+                </div>
+                <div><label class="text-[10px] font-bold">TELÉFONO</label><input id="ptel" class="input-pro"></div>
+                <div><label class="text-[10px] font-bold">OCUPACIÓN <span class="btn-voice" onclick="escuchar('p_ocu')">🎤</span></label><input id="p_ocu" class="input-pro"></div>
+                
+                <button onclick="guardarRegistro()" class="w-full mt-6 bg-slate-900 text-yellow-400 p-4 rounded-xl border-4 border-yellow-400 font-black text-lg hover:bg-black transition-all">💾 GUARDAR FICHA COMPLETA</button>
             </div>
         </div>
     </section>
 
     <section id="sec2" class="card-pro hidden">
-        <div id="asisBar" class="bg-black text-yellow-400 p-2 text-center font-black mb-4 border-2 border-white italic"></div>
-        <div class="mb-4">
-            <select id="filtroSalaAsis" onchange="renderAsistencia()" class="w-full p-2 border-2 border-black bg-yellow-50 font-bold">
-                <option value="TODAS">VER TODAS LAS SALAS</option>
-                <option>SALA ROSA TM</option><option>SALA ROSA TT</option><option>SALA ROJA TM</option><option>SALA ROJA TT</option>
-                <option>SALA NARANJA TM</option><option>SALA NARANJA TT</option><option>SALA CELESTE TM</option><option>SALA CELESTE TT</option>
-                <option>SALA VERDE TM</option><option>SALA VERDE TT</option><option>SALA AMARILLA TM</option><option>SALA AMARILLA TT</option>
-                <option>SALA AZUL TM</option><option>SALA AZUL TT</option><option>SALA VIOLETA TM</option><option>SALA VIOLETA TT</option>
-            </select>
-        </div>
-        <div id="asisGrid" class="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-7 gap-2"></div>
+        <div id="statusReport" class="bg-slate-800 text-white p-4 rounded-lg text-center font-bold mb-6 border-l-8 border-yellow-400"></div>
+        <div id="asisGrid" class="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-7 gap-4"></div>
     </section>
 
-    <section id="sec3" class="card-pro hidden">
-        <p class="text-[10px] font-black mb-1">CANTIDAD CARGADA POR SALA:</p>
-        <div id="statsGrid" class="grid grid-cols-3 md:grid-cols-7 gap-1 mb-6"></div>
+    <section id="sec3" class="hidden space-y-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3" id="mapaSala"></div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 border-t-4 border-black pt-4">
-            <div class="bg-slate-900 text-white p-3 border-2 border-black">
-                <p class="text-red-500 font-black text-xs mb-1 italic">CARGA MASIVA EXCEL (COPIAR/PEGAR)</p>
-                <textarea id="masivoInput" placeholder="NOMBRE [TAB] DNI [TAB] SALA" class="w-full h-20 text-black p-1 text-[9px] font-mono"></textarea>
-                <button onclick="procesarMasivo()" class="w-full bg-red-600 text-white p-1 font-black text-[10px]">📥 IMPACTAR EXCEL</button>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="card-pro bg-slate-900 !text-white col-span-1">
+                <p class="text-yellow-400 font-black mb-2 italic">📥 IMPORTACIÓN MASIVA EXCEL</p>
+                <textarea id="masivoInput" placeholder="PEGUE AQUÍ: NOMBRE [TAB] DNI [TAB] SALA" class="w-full h-32 text-black p-2 rounded text-[10px]"></textarea>
+                <button onclick="procesarMasivo()" class="w-full mt-2 bg-yellow-400 text-black font-black p-2 rounded hover:bg-yellow-300">IMPACTAR EN BASE DE DATOS</button>
             </div>
-            <div class="flex flex-col gap-2">
-                <button onclick="descargarExcelEstrategico()" class="bg-green-700 text-white p-3 border-2 border-black font-black text-xs hover:bg-green-600">📊 DESCARGAR EXCEL SUPERVISIÓN</button>
-                <div class="grid grid-cols-2 gap-1">
-                    <button onclick="respaldo()" class="bg-blue-700 text-white p-2 border-2 border-black font-black text-[9px]">💾 EXPORTAR BACKUP</button>
-                    <input type="file" onchange="importar(event)" class="text-[9px] bg-white text-black p-1 border-2 border-black">
+            
+            <div class="card-pro flex flex-col justify-between">
+                <div>
+                    <p class="font-black border-b-2 border-black mb-2 italic">⚙️ HERRAMIENTAS DE BACKUP</p>
+                    <button onclick="exportarJSON()" class="w-full bg-blue-600 text-white p-3 rounded font-black mb-2 shadow-md">💾 GENERAR ARCHIVO BACKUP</button>
+                    <div class="border-2 border-dashed border-slate-400 p-2 rounded">
+                        <p class="text-[9px] font-black text-center mb-1 text-slate-500">RESTAURAR DESDE OTRA PC</p>
+                        <input type="file" onchange="importarJSON(event)" class="text-[10px] w-full">
+                    </div>
                 </div>
             </div>
+
+            <div class="card-pro flex flex-col justify-center items-center">
+                <p class="text-[10px] font-black italic">REPORTE OFICIAL PARA SUPERVISIÓN</p>
+                <button onclick="exportarExcelProfesional()" class="bg-emerald-600 text-white p-6 rounded-2xl font-black text-lg hover:bg-emerald-500 shadow-xl border-4 border-white transition-all">📥 DESCARGAR EXCEL PRO</button>
+            </div>
         </div>
-        
-        <input type="text" id="bus" onkeyup="renderTabla()" placeholder="🔍 BUSCAR POR APELLIDO O DNI..." class="w-full p-3 border-4 border-black mb-4 text-xl font-black italic bg-yellow-50 text-black">
-        
-        <div class="overflow-x-auto border-2 border-black max-h-[400px]">
-            <table class="w-full">
-                <thead class="sticky top-0"><tr><th>ALUMNO / DNI</th><th>SALA</th><th>CONTACTOS</th><th>ACCIÓN</th></tr></thead>
-                <tbody id="tablaCuerpo"></tbody>
-            </table>
+
+        <div class="card-pro">
+            <input type="text" id="buscador" onkeyup="renderizarTodo()" placeholder="🔍 ESCRIBA APELLIDO O DNI PARA BUSCAR Y EDITAR..." class="w-full p-4 border-4 border-blue-100 rounded-xl mb-6 text-xl font-bold bg-slate-50">
+            <div class="overflow-x-auto rounded-lg shadow-inner">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr><th>ESTUDIANTE / DNI</th><th>SALA</th><th>DATOS FAMILIA</th><th>STATUS</th><th>ACCIONES</th></tr>
+                    </thead>
+                    <tbody id="cuerpoTabla"></tbody>
+                </table>
+            </div>
         </div>
     </section>
 </main>
 
 <script>
-    let db = [];
-    let editIdx = null;
-    const listaSalas = ["SALA ROSA TM", "SALA ROSA TT", "SALA ROJA TM", "SALA ROJA TT", "SALA NARANJA TM", "SALA NARANJA TT", "SALA CELESTE TM", "SALA CELESTE TT", "SALA VERDE TM", "SALA VERDE TT", "SALA AMARILLA TM", "SALA AMARILLA TT", "SALA AZUL TM", "SALA AZUL TT", "SALA VIOLETA TM", "SALA VIOLETA TT"];
+    let baseDatos = [];
+    let editandoId = null;
+    const SALAS_TOTALES = ["SALA ROSA TM", "SALA ROSA TT", "SALA ROJA TM", "SALA ROJA TT", "SALA NARANJA TM", "SALA NARANJA TT", "SALA CELESTE TM", "SALA CELESTE TT", "SALA VERDE TM", "SALA VERDE TT", "SALA AMARILLA TM", "SALA AMARILLA TT", "SALA AZUL TM", "SALA AZUL TT", "SALA VIOLETA TM", "SALA VIOLETA TT"];
 
     function inicializar() {
-        const data = localStorage.getItem('J926_MASTER_ESTRATEGICO');
-        if (data) db = JSON.parse(data);
-        actualizarTodo();
+        const persistencia = localStorage.getItem('J926_SISTEMA_TOTAL_V4');
+        if (persistencia) baseDatos = JSON.parse(persistencia);
+        renderizarTodo();
     }
 
-    function calcularSalaAutomática(fecha) {
-        if(!fecha) return;
-        const hoy = new Date("2026-06-30");
-        const cumple = new Date(fecha);
-        let edad = hoy.getFullYear() - cumple.getFullYear();
-        const m = hoy.getMonth() - cumple.getMonth();
-        if (m < 0 || (m === 0 && hoy.getDate() < cumple.getDate())) edad--;
+    // --- MOTOR DE VOZ ---
+    function escuchar(idCampo) {
+        const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!Recognition) return alert("Su navegador no soporta reconocimiento de voz.");
+        
+        const reco = new Recognition();
+        reco.lang = 'es-AR';
+        reco.start();
+        
+        document.getElementById(idCampo).placeholder = "Escuchando...";
+        reco.onresult = (e) => {
+            document.getElementById(idCampo).value = e.results[0][0].transcript.toUpperCase();
+        };
+    }
+
+    // --- LÓGICA DE SALAS ---
+    function autoGestionSala(fechaNac) {
+        if(!fechaNac) return;
+        const fechaCorte = new Date("2026-06-30");
+        const cumple = new Date(fechaNac);
+        let edad = fechaCorte.getFullYear() - cumple.getFullYear();
+        const m = fechaCorte.getMonth() - cumple.getMonth();
+        if (m < 0 || (m === 0 && fechaCorte.getDate() < cumple.getDate())) edad--;
         
         document.getElementById('e').value = edad + " AÑOS";
-        
         const s = document.getElementById('sala');
         if(edad === 2) s.value = "SALA ROSA TM";
         else if(edad === 3) s.value = "SALA VERDE TM";
@@ -155,109 +189,136 @@
         else if(edad === 5) s.value = "SALA AZUL TM";
     }
 
+    // --- NAVEGACIÓN ---
     function ver(n) {
         [1,2,3].forEach(i => {
             document.getElementById('sec'+i).classList.toggle('hidden', i !== n);
             document.getElementById('t'+i).classList.toggle('active', i === n);
         });
-        if(n === 3) renderStats();
     }
 
-    function guardar() {
-        const ids = ['n','d','nac','f','e','sala','adom','salud','mn','mdni','m_est','mtel','auh','m_ocu','pn','pdni','p_est','ptel','p_ocu'];
-        const obj = { presente: true };
-        ids.forEach(id => obj[id] = document.getElementById(id).value.toUpperCase());
-        
-        if(editIdx !== null) db[editIdx] = obj; else db.push(obj);
-        
-        localStorage.setItem('J926_MASTER_ESTRATEGICO', JSON.stringify(db));
-        
-        // LIMPIEZA AUTOMÁTICA
+    // --- CRUD (CREAR, LEER, ACTUALIZAR) ---
+    function guardarRegistro() {
+        const ids = ['n','d','nac','f','e','sala','her','her_j','adom','salud','mn','mdni','mnac','m_est','mtel','auh','m_ocu','pn','pdni','pnac','p_est','ptel','p_ocu'];
+        const registro = { id: Date.now(), presente: true };
+        ids.forEach(id => registro[id] = document.getElementById(id).value.toUpperCase());
+
+        if (editandoId !== null) {
+            const index = baseDatos.findIndex(a => a.id === editandoId);
+            baseDatos[index] = registro;
+            editandoId = null;
+        } else {
+            baseDatos.push(registro);
+        }
+
+        sincronizar();
+        alert("✅ OPERACIÓN EXITOSA");
         ids.forEach(id => {
-            if(id !== 'nac' && id !== 'm_est' && id !== 'p_est' && id !== 'auh') document.getElementById(id).value = "";
+            if(!['nac','mnac','pnac','m_est','p_est','auh','her_j','sala'].includes(id)) document.getElementById(id).value = "";
         });
-        
-        editIdx = null; actualizarTodo(); alert("✅ GUARDADO EXITOSO");
     }
 
-    function editar(i) {
-        const a = db[i]; editIdx = i;
-        const ids = ['n','d','nac','f','e','sala','adom','salud','mn','mdni','m_est','mtel','auh','m_ocu','pn','pdni','p_est','ptel','p_ocu'];
-        ids.forEach(id => document.getElementById(id).value = a[id] || "");
+    function editarRegistro(id) {
+        const a = baseDatos.find(item => item.id === id);
+        editandoId = id;
+        const ids = ['n','d','nac','f','e','sala','her','her_j','adom','salud','mn','mdni','mnac','m_est','mtel','auh','m_ocu','pn','pdni','pnac','p_est','ptel','p_ocu'];
+        ids.forEach(campo => document.getElementById(campo).value = a[campo] || "");
         ver(1);
     }
 
-    function renderTabla() {
-        const bus = document.getElementById('bus').value.toUpperCase();
-        const t = document.getElementById('tablaCuerpo'); t.innerHTML = "";
-        db.forEach((a, i) => {
-            if(a.n.includes(bus) || a.d.includes(bus)) {
-                t.innerHTML += `<tr><td><b>${a.n}</b><br><small>DNI: ${a.d}</small></td><td>${a.sala}</td><td>M:${a.mtel}<br>P:${a.ptel}</td>
-                <td><button onclick="editar(${i})" class="bg-yellow-400 p-1 border-2 border-black font-black w-full text-[9px]">EDITAR</button></td></tr>`;
-            }
-        });
-    }
-
-    function renderStats() {
-        const g = document.getElementById('statsGrid'); g.innerHTML = "";
-        listaSalas.forEach(s => {
-            const cant = db.filter(a => a.sala === s).length;
-            g.innerHTML += `<div class="stat-card"><b>${s.replace("SALA ","")}</b><br><span class="text-white text-lg">${cant}</span></div>`;
-        });
-    }
-
-    function renderAsistencia() {
-        const filtro = document.getElementById('filtroSalaAsis').value;
+    function renderizarTodo() {
+        const query = document.getElementById('buscador').value.toUpperCase();
+        const t = document.getElementById('cuerpoTabla'); t.innerHTML = "";
+        const m = document.getElementById('mapaSala'); m.innerHTML = "";
         const g = document.getElementById('asisGrid'); g.innerHTML = "";
-        let p = 0;
-        db.forEach((a, i) => {
-            if (filtro === "TODAS" || a.sala === filtro) {
-                if(a.presente) p++;
-                g.innerHTML += `<div onclick="toggleAsis(${i})" class="p-2 border-2 cursor-pointer text-[9px] font-black text-center ${a.presente ? 'presente' : 'ausente'}">
-                    ${a.n.split(' ')[0]}<br>${a.sala.replace("SALA ","")}
-                </div>`;
+
+        // Render Tabla Supervisión
+        baseDatos.forEach(a => {
+            if(a.n.includes(query) || a.d.includes(query)) {
+                t.innerHTML += `<tr>
+                    <td><b class="text-blue-700">${a.n}</b><br><span class="text-[9px]">DNI: ${a.d}</span></td>
+                    <td><span class="bg-slate-100 p-1 rounded font-bold">${a.sala}</span></td>
+                    <td><span class="text-[9px]">M: ${a.mn} (${a.mtel})<br>P: ${a.pn}</span></td>
+                    <td>${a.presente ? '🟢' : '🔴'}</td>
+                    <td><button onclick="editarRegistro(${a.id})" class="bg-blue-600 text-white p-2 rounded text-[9px] font-black">EDITAR / VER</button></td>
+                </tr>`;
             }
         });
-        document.getElementById('asisBar').innerText = `VISTA FILTRADA: ${p} PRESENTES`;
+
+        // Render Mapa de Salas (Estadística)
+        SALAS_TOTALES.forEach(s => {
+            const count = baseDatos.filter(a => a.sala === s).length;
+            m.innerHTML += `<div class="stat-box"><b>${s.replace("SALA ","")}</b><br><span class="text-2xl">${count}</span></div>`;
+        });
+
+        // Render Asistencia
+        let p = 0;
+        baseDatos.forEach(a => {
+            if(a.presente) p++;
+            g.innerHTML += `<div onclick="toggleAsis(${a.id})" class="p-3 border-2 rounded-lg cursor-pointer text-[10px] font-black text-center shadow-sm ${a.presente ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}">
+                ${a.n.split(' ')[0]}<br><small>${a.sala.replace("SALA ","")}</small>
+            </div>`;
+        });
+        document.getElementById('statusReport').innerText = `MATRÍCULA TOTAL: ${baseDatos.length} ALUMNOS | PRESENTES HOY: ${p}`;
     }
 
-    function toggleAsis(i) { db[i].presente = !db[i].presente; renderAsistencia(); actualizarTodo(); }
-
-    function actualizarTodo() {
-        localStorage.setItem('J926_MASTER_ESTRATEGICO', JSON.stringify(db));
-        renderTabla(); renderAsistencia(); renderStats();
+    function toggleAsis(id) {
+        const idx = baseDatos.findIndex(a => a.id === id);
+        baseDatos[idx].presente = !baseDatos[idx].presente;
+        sincronizar();
     }
 
-    function descargarExcelEstrategico() {
-        let csv = "\ufeffAPELLIDO Y NOMBRE;DNI;SALA;EDAD;FECHA NAC;SALUD;AUH;DOMICILIO;MADRE;TEL MADRE;ESTUDIOS M;PADRE;TEL PADRE;ESTUDIOS P\n";
-        db.forEach(a => { csv += `${a.n};${a.d};${a.sala};${a.e};${a.f};${a.salud};${a.auh};${a.adom};${a.mn};${a.mtel};${a.m_est};${a.pn};${a.ptel};${a.p_est}\n`; });
-        const b = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const l = document.createElement("a"); l.href = URL.createObjectURL(b); l.download = "SUPERVISION_J926_COMPLETO.csv"; l.click();
+    function sincronizar() {
+        localStorage.setItem('J926_SISTEMA_TOTAL_V4', JSON.stringify(baseDatos));
+        renderizarTodo();
     }
 
-    function respaldo() {
-        const b = new Blob([JSON.stringify(db)], {type:'application/json'});
-        const l = document.createElement("a"); l.href = URL.createObjectURL(b); l.download = "BACKUP_J926.json"; l.click();
+    // --- INTERFACES DE ARCHIVOS ---
+    function exportarExcelProfesional() {
+        let csv = "\ufeffREPORTE DE MATRÍCULA J926\nAPELLIDO Y NOMBRE;DNI;SALA;EDAD;FECHA NAC;DOMICILIO;SALUD;HERMANOS;AUH;MADRE;TEL MADRE;ESTUDIOS M;PADRE;TEL PADRE;ESTUDIOS P\n";
+        baseDatos.forEach(a => {
+            csv += `${a.n};${a.d};${a.sala};${a.e};${a.f};${a.adom};${a.salud};${a.her};${a.auh};${a.mn};${a.mtel};${a.m_est};${a.pn};${a.ptel};${a.p_est}\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "AUDITORIA_MATRÍCULA_J926.csv";
+        link.click();
     }
 
-    function importar(e) {
-        const r = new FileReader();
-        r.onload = (ev) => {
-            db = JSON.parse(ev.target.result); actualizarTodo(); alert("✅ DATOS IMPORTADOS CORRECTAMENTE");
+    function exportarJSON() {
+        const blob = new Blob([JSON.stringify(baseDatos)], {type:'application/json'});
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "BACKUP_SISTEMA_J926.json";
+        link.click();
+    }
+
+    function importarJSON(e) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            baseDatos = JSON.parse(ev.target.result);
+            sincronizar();
+            alert("✅ BASE DE DATOS RESTAURADA");
         };
-        r.readAsText(e.target.files[0]);
+        reader.readAsText(e.target.files[0]);
     }
 
     function procesarMasivo() {
-        const texto = document.getElementById('masivoInput').value;
-        const filas = texto.split('\n');
-        filas.forEach(fila => {
-            const cols = fila.split('\t');
-            if(cols.length >= 2) {
-                db.push({ n: cols[0].toUpperCase(), d: cols[1], sala: cols[2] || "SALA ROSA TM", presente: true });
+        const txt = document.getElementById('masivoInput').value;
+        const filas = txt.split('\n');
+        filas.forEach(f => {
+            const c = f.split('\t');
+            if(c.length >= 2) {
+                baseDatos.push({
+                    id: Date.now() + Math.random(), n: c[0].toUpperCase(), d: c[1], sala: c[2] || "SALA ROSA TM", 
+                    nac: "ARGENTINA", mnac: "ARGENTINA", pnac: "ARGENTINA", m_est: "SECUNDARIA COMPLETA", p_est: "SECUNDARIA COMPLETA",
+                    auh: "SÍ", presente: true
+                });
             }
         });
-        actualizarTodo(); alert("✅ CARGA MASIVA EXITOSA");
+        sincronizar();
+        alert("✅ CARGA MASIVA EXITOSA");
     }
 </script>
 </body>
