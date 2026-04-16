@@ -3,266 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA J926 - GESTIÓN INSTITUCIONAL FINAL</title>
+    <title>J926 - GESTIÓN DE ORO INSTITUCIONAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        :root { --gold: #facc15; --bg: #0f172a; }
+        :root { --gold: #facc15; --bg: #020617; }
         body { background: var(--bg); color: #f8fafc; font-family: 'Inter', sans-serif; text-transform: uppercase; font-size: 10px; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
-        .input-pro { background: #000; border: 1px solid #334155; padding: 10px; border-radius: 6px; color: #fff; width: 100%; border-left: 3px solid transparent; }
-        .input-pro:focus { border-left-color: var(--gold); outline: none; background: #1e293b; }
-        .nav-link { flex: 1; text-align: center; padding: 12px; font-weight: 800; cursor: pointer; opacity: 0.5; border-bottom: 3px solid transparent; transition: 0.3s; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
+        .input-pro { background: #000; border: 1px solid #334155; padding: 12px; border-radius: 8px; color: #fff; width: 100%; border-left: 3px solid transparent; }
+        .input-pro:focus { border-left-color: var(--gold); outline: none; background: #0f172a; }
+        .nav-link { flex: 1; text-align: center; padding: 15px; font-weight: 900; cursor: pointer; opacity: 0.5; border-bottom: 3px solid transparent; }
         .nav-link.active { opacity: 1; color: var(--gold); border-bottom-color: var(--gold); background: rgba(250, 204, 21, 0.05); }
-        .btn-gold { background: var(--gold); color: #000; font-weight: 900; padding: 12px; border-radius: 8px; transition: 0.3s; }
-        .btn-gold:hover { background: #eab308; transform: scale(1.02); }
+        .dictate-btn { position: absolute; right: 10px; top: 10px; color: #64748b; cursor: pointer; transition: 0.3s; }
+        .dictate-btn.active { color: #ef4444; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
-<body onload="bootSystem()">
+<body onload="initSystem()">
 
 <nav class="flex sticky top-0 z-50 glass border-b border-white/10">
-    <div onclick="tab(1)" id="t1" class="nav-link active">⚡ INGRESO MATRÍCULA</div>
-    <div onclick="tab(2)" id="t2" class="nav-link">📋 CONTROL ASISTENCIA</div>
-    <div onclick="tab(3)" id="t3" class="nav-link">📊 FOTO INSTITUCIONAL PRO</div>
+    <div onclick="tab(1)" id="t1" class="nav-link active">🎙️ CARGA ESTRATÉGICA</div>
+    <div onclick="tab(2)" id="t2" class="nav-link">🏛️ SUPERVISIÓN PRO</div>
+    <div onclick="tab(3)" id="t3" class="nav-link">⚙️ BACKUP Y EXCEL</div>
 </nav>
 
 <main class="p-4 space-y-6">
     
     <section id="sec1" class="space-y-4">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div class="glass p-4 rounded-xl border-t-4 border-blue-500">
-                <h3 class="text-blue-400 font-black mb-3">DATOS DEL ALUMNO/A</h3>
-                <div class="space-y-2">
-                    <input id="a_n" class="input-pro" placeholder="NOMBRE COMPLETO">
+            <div class="glass p-5 rounded-2xl border-t-4 border-blue-600">
+                <h3 class="text-blue-400 font-black mb-4">DATOS ALUMNO/A</h3>
+                <div class="space-y-3">
+                    <div class="relative">
+                        <input id="a_n" class="input-pro" placeholder="NOMBRE COMPLETO">
+                        <i class="bi bi-mic-fill dictate-btn" onclick="startVoice('a_n')"></i>
+                    </div>
                     <div class="flex gap-2">
                         <input id="a_d" class="input-pro" placeholder="DNI" type="number">
-                        <input id="a_nac" class="input-pro" placeholder="NACIONALIDAD" value="ARGENTINA">
-                    </div>
-                    <div class="flex gap-2">
                         <input id="a_fn" type="date" class="input-pro" onchange="calcAge(this.value)">
-                        <input id="a_e" class="input-pro" placeholder="EDAD AL 30/6" readonly>
                     </div>
+                    <input id="a_e" class="input-pro" placeholder="EDAD AL 30/6" readonly>
                     <select id="a_s" class="input-pro text-gold font-bold">
                         <option>SALA ROSA TM</option><option>SALA ROSA TT</option><option>SALA VERDE TM</option><option>SALA VERDE TT</option>
                         <option>SALA CELESTE TM</option><option>SALA CELESTE TT</option><option>SALA ROJA TM</option><option>SALA ROJA TT</option>
                     </select>
-                    <input id="a_dom" class="input-pro" placeholder="DOMICILIO ALUMNO">
-                    <div class="flex gap-2">
-                        <input id="a_h" class="input-pro" placeholder="CANT. HERMANOS" type="number">
-                        <select id="a_hj" class="input-pro"><option value="NO">¿HERM. JARDÍN? NO</option><option value="SI">SI</option></select>
+                    <div class="relative">
+                        <input id="a_dom" class="input-pro" placeholder="DOMICILIO ALUMNO">
+                        <i class="bi bi-mic-fill dictate-btn" onclick="startVoice('a_dom')"></i>
                     </div>
-                    <input id="a_obs" class="input-pro" placeholder="OBSERVACIONES SALUD">
+                    <textarea id="a_obs" class="input-pro h-12" placeholder="OBSERVACIONES SALUD"></textarea>
                 </div>
             </div>
 
-            <div class="glass p-4 rounded-xl border-t-4 border-rose-500">
-                <h3 class="text-rose-400 font-black mb-3">DATOS DE LA MADRE</h3>
-                <div class="space-y-2">
-                    <input id="m_n" class="input-pro" placeholder="APELLIDO Y NOMBRE">
+            <div class="glass p-5 rounded-2xl border-t-4 border-rose-600">
+                <h3 class="text-rose-400 font-black mb-4">DATOS MADRE</h3>
+                <div class="space-y-3">
+                    <div class="relative">
+                        <input id="m_n" class="input-pro" placeholder="APELLIDO Y NOMBRE">
+                        <i class="bi bi-mic-fill dictate-btn" onclick="startVoice('m_n')"></i>
+                    </div>
                     <div class="flex gap-2">
-                        <input id="m_d" class="input-pro" placeholder="DNI MADRE">
+                        <input id="m_d" class="input-pro" placeholder="DNI">
                         <select id="m_auh" class="input-pro"><option value="NO">AUH NO</option><option value="SI">AUH SI</option></select>
                     </div>
-                    <select id="m_edu" class="input-pro">
-                        <option>PRIMARIA COMPLETA</option><option>SECUNDARIA COMPLETA</option><option>SUPERIOR/UNIV</option>
-                    </select>
-                    <input id="m_t" class="input-pro" placeholder="TELÉFONO">
-                    <input id="m_dom" class="input-pro" placeholder="DOMICILIO MADRE">
+                    <select id="m_edu" class="input-pro"><option>PRIMARIA COMPLETA</option><option>SECUNDARIA COMPLETA</option><option>SUPERIOR</option></select>
+                    <input id="m_t" class="input-pro" placeholder="TELÉFONO CONTACTO">
                     <input id="m_ocu" class="input-pro" placeholder="OCUPACIÓN">
                 </div>
             </div>
 
-            <div class="glass p-4 rounded-xl border-t-4 border-emerald-500">
-                <h3 class="text-emerald-400 font-black mb-3">DATOS DEL PADRE</h3>
-                <div class="space-y-2">
-                    <input id="p_n" class="input-pro" placeholder="APELLIDO Y NOMBRE">
-                    <input id="p_d" class="input-pro" placeholder="DNI PADRE">
-                    <select id="p_edu" class="input-pro">
-                        <option>PRIMARIA COMPLETA</option><option>SECUNDARIA COMPLETA</option><option>SUPERIOR/UNIV</option>
-                    </select>
-                    <input id="p_t" class="input-pro" placeholder="TELÉFONO">
-                    <input id="p_dom" class="input-pro" placeholder="DOMICILIO PADRE">
+            <div class="glass p-5 rounded-2xl border-t-4 border-emerald-600">
+                <h3 class="text-emerald-400 font-black mb-4">DATOS PADRE</h3>
+                <div class="space-y-3">
+                    <div class="relative">
+                        <input id="p_n" class="input-pro" placeholder="APELLIDO Y NOMBRE">
+                        <i class="bi bi-mic-fill dictate-btn" onclick="startVoice('p_n')"></i>
+                    </div>
+                    <input id="p_d" class="input-pro" placeholder="DNI">
+                    <select id="p_edu" class="input-pro"><option>PRIMARIA COMPLETA</option><option>SECUNDARIA COMPLETA</option><option>SUPERIOR</option></select>
+                    <input id="p_t" class="input-pro" placeholder="TELÉFONO CONTACTO">
                     <input id="p_ocu" class="input-pro" placeholder="OCUPACIÓN">
-                    <button onclick="saveRecord()" class="btn-gold w-full mt-2">💾 GUARDAR Y LIMPIAR</button>
+                    <button onclick="save()" class="w-full bg-gold text-black font-black py-4 rounded-xl shadow-lg mt-2">💾 IMPACTAR EN BASE DE DATOS</button>
                 </div>
             </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4 mt-4 glass p-4 rounded-xl">
-            <button onclick="exportJSON()" class="bg-blue-600 p-2 rounded font-bold text-[9px]">GENERAR RESPALDO (.JSON)</button>
-            <input type="file" onchange="importJSON(event)" class="text-[8px]">
         </div>
     </section>
 
     <section id="sec2" class="hidden space-y-4">
-        <div class="grid grid-cols-2 gap-4">
-            <div class="glass p-4 rounded-xl border-l-4 border-emerald-500">
-                <p class="text-[8px] opacity-50">ÍNDICE PRESENTISMO</p>
-                <h2 id="txtPres" class="text-2xl font-black text-emerald-400">0%</h2>
-            </div>
-            <div class="glass p-4 rounded-xl border-l-4 border-rose-500">
-                <p class="text-[8px] opacity-50">ALERTA AUSENTISMO</p>
-                <h2 id="txtAus" class="text-2xl font-black text-rose-400">0%</h2>
-            </div>
-        </div>
-        <div id="gridAsis" class="grid grid-cols-2 md:grid-cols-6 gap-3"></div>
-    </section>
-
-    <section id="sec3" class="hidden space-y-6">
-        <div id="mapaCapacidad" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3"></div>
-
-        <div class="glass p-4 rounded-xl">
-            <h4 class="text-[8px] text-rose-400 font-black mb-2">MOVIMIENTOS DE MATRÍCULA (ALTAS/BAJAS MES A MES)</h4>
-            <div id="logBajas" class="text-[9px] space-y-1 opacity-70 italic">SIN MOVIMIENTOS HISTÓRICOS</div>
-        </div>
-
-        <div class="glass p-4 rounded-xl space-y-4">
-            <div class="flex gap-4">
-                <input id="busc" onkeyup="renderTabla()" class="input-pro flex-1" placeholder="🔍 BUSCAR POR ALUMNO O DNI PARA AUDITORÍA...">
-                <button onclick="exportExcel()" class="bg-emerald-600 px-4 rounded font-black text-[9px]">DESCARGAR EXCEL OFICIAL</button>
-            </div>
+        <div id="gridSalas" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3"></div>
+        
+        <div class="glass p-6 rounded-2xl">
+            <h4 id="titleSala" class="text-gold font-black mb-4">VISTA GLOBAL DE MATRÍCULA</h4>
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
-                    <thead class="text-gold border-b border-white/10 text-[8px]">
-                        <tr><th class="p-2">ALUMNO / DNI</th><th class="p-2">SALA</th><th class="p-2">ESTADO</th><th class="p-2">GESTIÓN</th></tr>
+                    <thead class="text-[8px] opacity-50 border-b border-white/10">
+                        <tr><th class="p-2">ESTUDIANTE / DNI</th><th class="p-2">SALA</th><th class="p-2">CONTACTOS</th><th class="p-2">ACCIONES</th></tr>
                     </thead>
-                    <tbody id="tableMain" class="text-[9px] divide-y divide-white/5"></tbody>
+                    <tbody id="tableMain" class="divide-y divide-white/5"></tbody>
                 </table>
             </div>
+        </div>
+    </section>
+
+    <section id="sec3" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="glass p-6 rounded-2xl space-y-4">
+            <h3 class="text-blue-400 font-black">PORTABILIDAD (RECUERPO / BACKUP)</h3>
+            <button onclick="exportJSON()" class="w-full bg-blue-600 p-4 rounded-xl font-black">GENERAR ARCHIVO BACKUP .JSON</button>
+            <div class="bg-white/5 p-4 rounded-xl border border-dashed border-white/20">
+                <p class="mb-2 text-center opacity-50">IMPORTAR RESPALDO EXISTENTE</p>
+                <input type="file" onchange="importJSON(event)" class="w-full text-[8px]">
+            </div>
+        </div>
+
+        <div class="glass p-6 rounded-2xl space-y-4">
+            <h3 class="text-emerald-400 font-black">EXCEL Y CARGA RÁPIDA</h3>
+            <button onclick="exportExcel()" class="w-full bg-emerald-600 p-4 rounded-xl font-black">DESCARGAR EXCEL PROFESIONAL</button>
+            <textarea id="bulkData" class="input-pro h-24" placeholder="CARGA RÁPIDA: NOMBRE [TAB] DNI [TAB] SALA..."></textarea>
+            <button onclick="processBulk()" class="w-full bg-white/10 p-2 rounded-lg font-bold">IMPACTAR CARGA RÁPIDA</button>
         </div>
     </section>
 </main>
 
 <script>
-    let masterDB = JSON.parse(localStorage.getItem('J926_SISTEMA_V8')) || [];
+    let db = JSON.parse(localStorage.getItem('J926_GOLD_DB')) || [];
     const SALAS = ["SALA ROSA TM","SALA ROSA TT","SALA VERDE TM","SALA VERDE TT","SALA CELESTE TM","SALA CELESTE TT","SALA ROJA TM","SALA ROJA TT","SALA NARANJA TM","SALA NARANJA TT","SALA AMARILLA TM","SALA AMARILLA TT","SALA AZUL TM","SALA AZUL TT","SALA VIOLETA TM","SALA VIOLETA TT"];
-    const LIMIT = 30;
 
-    function bootSystem() { sync(); }
+    function initSystem() { render(); }
+
+    // CARGA POR VOZ
+    function startVoice(targetId) {
+        if (!('webkitSpeechRecognition' in window)) return alert("VOZ NO SOPORTADA");
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = "es-AR";
+        recognition.onstart = () => document.querySelector(`[onclick="startVoice('${targetId}')"]`).classList.add('active');
+        recognition.onresult = (e) => {
+            document.getElementById(targetId).value = e.results[0][0].transcript.toUpperCase();
+            recognition.stop();
+        };
+        recognition.onend = () => document.querySelector(`[onclick="startVoice('${targetId}')"]`).classList.remove('active');
+        recognition.start();
+    }
 
     function calcAge(f) {
         if(!f) return;
-        const limitDate = new Date("2026-06-30");
-        const birthDate = new Date(f);
-        let age = limitDate.getFullYear() - birthDate.getFullYear();
-        const m = limitDate.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && limitDate.getDate() < birthDate.getDate())) age--;
-        document.getElementById('a_e').value = age + " AÑOS";
+        const limit = new Date("2026-06-30");
+        const nac = new Date(f);
+        let e = limit.getFullYear() - nac.getFullYear();
+        if (limit.getMonth() < nac.getMonth() || (limit.getMonth() === nac.getMonth() && limit.getDate() < nac.getDate())) e--;
+        document.getElementById('a_e').value = e + " AÑOS";
     }
 
-    function saveRecord() {
+    function save() {
         const record = {
             id: Date.now(),
-            active: true, present: true, monthIn: new Date().getMonth(),
-            a: { n: v('a_n'), d: v('a_d'), nac: v('a_nac'), fn: v('a_fn'), e: v('a_e'), s: v('a_s'), dom: v('a_dom'), h: v('a_h'), hj: v('a_hj'), obs: v('a_obs') },
-            m: { n: v('m_n'), d: v('m_d'), t: v('m_t'), dom: v('m_dom'), ocu: v('m_ocu'), edu: v('m_edu'), auh: v('m_auh') },
-            p: { n: v('p_n'), d: v('p_d'), t: v('p_t'), dom: v('p_dom'), ocu: v('p_ocu'), edu: v('p_edu') }
+            a: { n: v('a_n'), d: v('a_d'), fn: v('a_fn'), e: v('a_e'), s: v('a_s'), dom: v('a_dom'), obs: v('a_obs') },
+            m: { n: v('m_n'), d: v('m_d'), t: v('m_t'), ocu: v('m_ocu'), edu: v('m_edu'), auh: v('m_auh') },
+            p: { n: v('p_n'), d: v('p_d'), t: v('p_t'), ocu: v('p_ocu'), edu: v('p_edu') }
         };
-        if(!record.a.n || !record.a.d) return alert("❌ ERROR: DATOS OBLIGATORIOS FALTANTES");
-        masterDB.push(record);
+        if(!record.a.n || !record.a.d) return alert("DNI Y NOMBRE REQUERIDOS");
+        db.push(record);
         sync();
-        clearInputs();
+        clear();
     }
 
     function sync() {
-        localStorage.setItem('J926_SISTEMA_V8', JSON.stringify(masterDB));
-        renderAsis(); renderMapa(); renderTabla(); renderMovimientos();
+        localStorage.setItem('J926_GOLD_DB', JSON.stringify(db));
+        render();
     }
 
-    function renderMapa() {
-        const container = document.getElementById('mapaCapacidad');
-        container.innerHTML = SALAS.map(s => {
-            const activos = masterDB.filter(a => a.a.s === s && a.active).length;
-            const inasist = masterDB.filter(a => a.a.s === s && a.active && !a.present).length;
-            const pctAusen = activos > 0 ? (inasist / activos * 100).toFixed(0) : 0;
+    function render(salaFilter = null) {
+        // Mapa de Salas
+        document.getElementById('gridSalas').innerHTML = SALAS.map(s => {
+            const count = db.filter(x => x.a.s === s).length;
             return `
-                <div class="glass p-2 rounded-lg text-center ${pctAusen > 25 ? 'border-r-4 border-rose-500' : ''}">
-                    <p class="text-[7px] opacity-40">${s.replace('SALA ','')}</p>
-                    <h4 class="text-sm font-black">${activos}/${LIMIT}</h4>
-                    <p class="text-[7px] text-gold">VAC: ${LIMIT - activos}</p>
-                    <p class="text-[6px] opacity-50">INASIST: ${pctAusen}%</p>
+                <div onclick="render('${s}')" class="glass p-2 rounded-lg text-center cursor-pointer hover:border-gold transition ${salaFilter === s ? 'border-gold bg-gold/10' : ''}">
+                    <p class="text-[7px] opacity-40">${s}</p>
+                    <h4 class="text-sm font-black">${count}/30</h4>
+                    <p class="text-[6px] text-gold">VAC: ${30-count}</p>
                 </div>`;
         }).join('');
-    }
 
-    function renderTabla() {
-        const query = document.getElementById('busc').value.toUpperCase();
-        const body = document.getElementById('tableMain');
-        const filtered = masterDB.filter(x => x.a.n.includes(query) || x.a.d.includes(query));
-        body.innerHTML = filtered.map(a => `
+        // Tabla Principal (con posibilidad de editar)
+        if(salaFilter) document.getElementById('titleSala').innerText = `VISTA DETALLADA: ${salaFilter}`;
+        const data = salaFilter ? db.filter(x => x.a.s === salaFilter) : db;
+        
+        document.getElementById('tableMain').innerHTML = data.map(x => `
             <tr class="hover:bg-white/5">
-                <td class="p-2 font-black">${a.a.n}<br><span class="opacity-40 text-[7px]">DNI: ${a.a.d}</span></td>
-                <td class="p-2">${a.a.s}</td>
-                <td class="p-2"><span class="${a.active?'text-emerald-400':'text-rose-500'} font-bold">${a.active?'ALTA':'BAJA'}</span></td>
+                <td class="p-2 font-black">${x.a.n}<br><span class="text-[7px] opacity-40">DNI: ${x.a.d} | ${x.a.e}</span></td>
+                <td class="p-2 text-[8px]">${x.a.s}</td>
+                <td class="p-2 text-[7px] opacity-60">M: ${x.m.t}<br>P: ${x.p.t}</td>
                 <td class="p-2">
-                    <button onclick="toggleStatus(${a.id})" class="text-[8px] bg-slate-700 p-1 rounded">${a.active?'BAJA':'ALTA'}</button>
+                    <div class="flex gap-2">
+                        <button onclick="edit(${x.id})" class="text-blue-400"><i class="bi bi-pencil-square"></i></button>
+                        <button onclick="remove(${x.id})" class="text-rose-500"><i class="bi bi-trash"></i></button>
+                    </div>
                 </td>
             </tr>
         `).join('');
     }
 
-    function renderAsis() {
-        const grid = document.getElementById('gridAsis');
-        const activos = masterDB.filter(a => a.active);
-        grid.innerHTML = activos.map(a => `
-            <div onclick="toggleAsis(${a.id})" class="p-2 rounded border-2 cursor-pointer transition ${a.present?'border-emerald-500 bg-emerald-500/10':'border-rose-500 bg-rose-500/10'}">
-                <p class="font-black truncate">${a.a.n.split(' ')[0]}</p>
-                <p class="text-[7px] opacity-40">${a.a.s}</p>
-            </div>
-        `).join('');
-        
-        const total = activos.length;
-        const presentes = activos.filter(a => a.present).length;
-        if(total > 0) {
-            document.getElementById('txtPres').innerText = ((presentes/total)*100).toFixed(0) + "%";
-            document.getElementById('txtAus').innerText = (100 - (presentes/total)*100).toFixed(0) + "%";
-        }
+    function edit(id) {
+        const x = db.find(i => i.id === id);
+        // Cargar datos en formulario
+        document.getElementById('a_n').value = x.a.n;
+        document.getElementById('a_d').value = x.a.d;
+        document.getElementById('a_s').value = x.a.s;
+        document.getElementById('m_n').value = x.m.n;
+        // Eliminar el viejo para que al guardar sea un "Update"
+        remove(id, false);
+        tab(1);
     }
 
-    function renderMovimientos() {
-        const meses = ["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
-        let html = "";
-        meses.forEach((m, i) => {
-            const inCount = masterDB.filter(a => a.monthIn === i).length;
-            const outCount = masterDB.filter(a => a.monthOut === i).length;
-            if(inCount > 0 || outCount > 0) html += `<div>${m}: <span class="text-emerald-400">${inCount} ALTAS</span> - <span class="text-rose-400">${outCount} BAJAS</span></div>`;
-        });
-        document.getElementById('logBajas').innerHTML = html || "SIN MOVIMIENTOS HISTÓRICOS";
-    }
-
-    function toggleStatus(id) {
-        const idx = masterDB.findIndex(a => a.id === id);
-        masterDB[idx].active = !masterDB[idx].active;
-        masterDB[idx].monthOut = masterDB[idx].active ? null : new Date().getMonth();
-        sync();
-    }
-
-    function toggleAsis(id) {
-        const idx = masterDB.findIndex(a => a.id === id);
-        masterDB[idx].present = !masterDB[idx].present;
+    function remove(id, confirmFirst = true) {
+        if(confirmFirst && !confirm("¿ELIMINAR LEGAJO?")) return;
+        db = db.filter(x => x.id !== id);
         sync();
     }
 
     function v(id) { return document.getElementById(id).value.toUpperCase().trim(); }
     function tab(n) { [1,2,3].forEach(i => { document.getElementById('sec'+i).classList.toggle('hidden', i !== n); document.getElementById('t'+i).classList.toggle('active', i === n); }); }
-    function clearInputs() { document.querySelectorAll('input').forEach(i => { if(!i.id.includes('nac')) i.value = ""; }); }
-    
+    function clear() { document.querySelectorAll('input').forEach(i => { if(!i.id.includes('a_s')) i.value = ""; }); }
+
     function exportJSON() {
-        const blob = new Blob([JSON.stringify(masterDB)], {type:'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download=`BACKUP_J926_${Date.now()}.json`; a.click();
+        const blob = new Blob([JSON.stringify(db)], {type:'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download=`BACKUP_J926_GOLD.json`; a.click();
     }
 
     function importJSON(e) {
         const reader = new FileReader();
-        reader.onload = (ev) => { masterDB = JSON.parse(ev.target.result); sync(); alert("SINCRO EXITOSA"); };
+        reader.onload = (ev) => { db = JSON.parse(ev.target.result); sync(); alert("SISTEMA RECUPERADO"); };
         reader.readAsText(e.target.files[0]);
     }
 
     function exportExcel() {
-        let csv = "\ufeffALUMNO;DNI;SALA;ESTADO;PRESENTE;MADRE;TEL_M;PADRE;TEL_P;OBS_SALUD\n";
-        masterDB.forEach(a => {
-            csv += `${a.a.n};${a.a.d};${a.a.s};${a.active?'ALTA':'BAJA'};${a.present?'SI':'NO'};${a.m.n};${a.m.t};${a.p.n};${a.p.t};${a.a.obs}\n`;
-        });
-        const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv); a.download="INFORME_MATRICULA_J926.csv"; a.click();
+        let csv = "\ufeffALUMNO;DNI;EDAD;SALA;MADRE;TEL_M;PADRE;TEL_P;SALUD\n";
+        db.forEach(x => { csv += `${x.a.n};${x.a.d};${x.a.e};${x.a.s};${x.m.n};${x.m.t};${x.p.n};${x.p.t};${x.a.obs}\n`; });
+        const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv); a.download="MATRICULA_ORO_J926.csv"; a.click();
     }
 </script>
 </body>
