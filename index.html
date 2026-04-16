@@ -3,82 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA J926 - GESTIÓN PLATINUM</title>
+    <title>SISTEMA J926 PLATINUM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         :root { --gold: #facc15; --bg: #020617; }
         body { background: var(--bg); color: #f8fafc; font-family: 'Inter', sans-serif; text-transform: uppercase; font-size: 10px; }
         .glass { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
-        .input-pro { background: #000; border: 1px solid #1e293b; padding: 10px; border-radius: 6px; color: #fff; width: 100%; font-size: 10px; }
+        .input-pro { background: #000; border: 1px solid #1e293b; padding: 10px; border-radius: 6px; color: #fff; width: 100%; font-size: 10px; transition: 0.3s; }
+        .input-pro:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 10px rgba(250, 204, 21, 0.1); }
         .nav-tab { flex: 1; text-align: center; padding: 15px; cursor: pointer; font-weight: 900; border-bottom: 3px solid transparent; opacity: 0.5; }
-        .nav-tab.active { opacity: 1; color: var(--gold); border-bottom-color: var(--gold); }
-        .section-title { font-weight: 900; margin-bottom: 10px; display: block; font-size: 11px; }
+        .nav-tab.active { opacity: 1; color: var(--gold); border-bottom-color: var(--gold); background: linear-gradient(to top, rgba(250,204,21,0.05), transparent); }
+        .mic-active { color: #ef4444 !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        label { color: var(--gold); font-size: 8px; font-weight: 800; margin-top: 4px; display: block; }
     </style>
 </head>
 <body onload="render()">
 
 <nav class="flex sticky top-0 z-50 glass border-b border-white/10">
-    <div onclick="tab(1)" id="t1" class="nav-tab active">💎 CARGA PLATINUM</div>
-    <div onclick="tab(2)" id="t2" class="nav-tab">📊 SUPERVISIÓN</div>
-    <div onclick="tab(3)" id="t3" class="nav-tab">⚙️ SISTEMA & EXCEL</div>
+    <div onclick="tab(1)" id="t1" class="nav-tab active"><i class="bi bi-person-plus-fill"></i> CARGA COMPLETA</div>
+    <div onclick="tab(2)" id="t2" class="nav-tab"><i class="bi bi-grid-3x3-gap-fill"></i> SUPERVISIÓN</div>
+    <div onclick="tab(3)" id="t3" class="nav-tab"><i class="bi bi-hdd-network-fill"></i> SISTEMA</div>
 </nav>
 
 <main class="p-4 space-y-4">
-    <section id="sec1" class="max-w-4xl mx-auto space-y-4">
-        <div class="glass p-5 rounded-2xl border-l-4 border-blue-500 shadow-xl">
-            <span class="section-title text-blue-400">DATOS ALUMNO/A</span>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input id="a_n" class="input-pro" placeholder="NOMBRE COMPLETO">
-                <div class="flex gap-2">
-                    <input id="a_d" class="input-pro" placeholder="DNI">
-                    <input id="a_e" class="input-pro" placeholder="EDAD AL 30/6">
-                </div>
-                <select id="a_s" class="input-pro text-gold font-bold">
-                    <option>SALA ROSA TM</option><option>SALA ROSA TT</option><option>SALA VERDE TM</option><option>SALA VERDE TT</option>
-                    <option>SALA CELESTE TM</option><option>SALA CELESTE TT</option><option>SALA ROJA TM</option><option>SALA ROJA TT</option>
-                    <option>SALA NARANJA TM</option><option>SALA NARANJA TT</option><option>SALA AMARILLA TM</option><option>SALA AMARILLA TT</option>
-                </select>
-                <input id="a_dom" class="input-pro" placeholder="DOMICILIO">
-                <div class="flex gap-2">
-                    <select id="a_her" class="input-pro"><option>HERMANOS: 0</option><option>HERMANOS: 1</option><option>HERMANOS: 2+</option></select>
-                    <select id="a_jar" class="input-pro"><option>¿EN EL JARDÍN? NO</option><option>¿EN EL JARDÍN? SÍ</option></select>
-                </div>
-                <input id="a_med" class="input-pro col-span-full" placeholder="OBSERVACIONES MÉDICAS / SALUD">
+    <section id="sec1" class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="glass p-5 rounded-2xl border-t-4 border-blue-500 space-y-2">
+            <h3 class="text-blue-400 font-black mb-2 italic">DATOS DEL ALUMNO/A</h3>
+            <div class="relative"><input id="a_n" class="input-pro" placeholder="APELLIDO Y NOMBRE"><i class="bi bi-mic-fill absolute right-3 top-3 cursor-pointer" onclick="voice('a_n')"></i></div>
+            <div class="flex gap-2"><input id="a_d" class="input-pro" placeholder="DNI"><input id="a_nac" class="input-pro" placeholder="NACIONALIDAD" value="ARGENTINA"></div>
+            <div class="flex gap-2">
+                <div class="w-full"><label>FECHA NAC.</label><input id="a_f" type="date" class="input-pro" onchange="calcAge(this.value)"></div>
+                <div class="w-full"><label>EDAD AL 30/6</label><input id="a_e" class="input-pro" readonly></div>
             </div>
+            <label>SALA ASIGNADA</label>
+            <select id="a_s" class="input-pro text-gold font-bold">
+                <option>SALA ROSA TM</option><option>SALA ROSA TT</option><option>SALA VERDE TM</option><option>SALA VERDE TT</option>
+                <option>SALA CELESTE TM</option><option>SALA CELESTE TT</option><option>SALA ROJA TM</option><option>SALA ROJA TT</option>
+                <option>SALA NARANJA TM</option><option>SALA NARANJA TT</option><option>SALA AMARILLA TM</option><option>SALA AMARILLA TT</option>
+                <option>SALA AZUL TM</option><option>SALA AZUL TT</option>
+            </select>
+            <div class="relative"><input id="a_dom" class="input-pro" placeholder="DOMICILIO"><i class="bi bi-mic-fill absolute right-3 top-3 cursor-pointer" onclick="voice('a_dom')"></i></div>
+            <div class="flex gap-2"><input id="a_h" class="input-pro" placeholder="CANT. HERMANOS"><select id="a_hj" class="input-pro"><option value="NO">¿HERM. EN JARDÍN? NO</option><option value="SI">SI</option></select></div>
+            <textarea id="a_sal" class="input-pro h-14" placeholder="OBSERVACIONES DE SALUD / DISCAPACIDAD"></textarea>
         </div>
 
-        <div class="glass p-5 rounded-2xl border-l-4 border-rose-500 shadow-xl">
-            <span class="section-title text-rose-400">DATOS DE LA MADRE</span>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input id="m_n" class="input-pro" placeholder="APELLIDO Y NOMBRE">
-                <input id="m_d" class="input-pro" placeholder="DNI">
-                <select id="m_e" class="input-pro"><option>PRIMARIA COMPLETA</option><option>SECUNDARIA COMPLETA</option><option>SUPERIOR</option></select>
-                <input id="m_t" class="input-pro" placeholder="TELÉFONO CONTACTO">
-                <input id="m_o" class="input-pro col-span-full" placeholder="OCUPACIÓN">
-            </div>
+        <div class="glass p-5 rounded-2xl border-t-4 border-rose-500 space-y-2">
+            <h3 class="text-rose-400 font-black mb-2 italic">DATOS DE LA MADRE</h3>
+            <div class="relative"><input id="m_n" class="input-pro" placeholder="APELLIDO Y NOMBRE"><i class="bi bi-mic-fill absolute right-3 top-3 cursor-pointer" onclick="voice('m_n')"></i></div>
+            <div class="flex gap-2"><input id="m_d" class="input-pro" placeholder="DNI"><input id="m_nac" class="input-pro" placeholder="NACIONALIDAD" value="ARGENTINA"></div>
+            <label>ESTUDIOS ALCANZADOS</label>
+            <select id="m_edu" class="input-pro">
+                <option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option><option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option>
+                <option>TERCIARIO COMPLETO</option><option>TERCIARIO INCOMPLETO</option><option>UNIVERSITARIO COMPLETO</option><option>UNIVERSITARIO INCOMPLETO</option>
+            </select>
+            <div class="flex gap-2"><input id="m_t" class="input-pro" placeholder="TELÉFONO"><select id="m_auh" class="input-pro"><option value="NO">AUH: NO</option><option value="SI">AUH: SI</option></select></div>
+            <div class="relative"><input id="m_ocu" class="input-pro" placeholder="OCUPACIÓN"><i class="bi bi-mic-fill absolute right-3 top-3 cursor-pointer" onclick="voice('m_ocu')"></i></div>
+            <input id="m_dom" class="input-pro" placeholder="DOMICILIO MADRE">
         </div>
 
-        <div class="glass p-5 rounded-2xl border-l-4 border-emerald-500 shadow-xl">
-            <span class="section-title text-emerald-400">DATOS DEL PADRE</span>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input id="p_n" class="input-pro" placeholder="APELLIDO Y NOMBRE">
-                <input id="p_d" class="input-pro" placeholder="DNI">
-                <select id="p_e" class="input-pro"><option>PRIMARIA COMPLETA</option><option>SECUNDARIA COMPLETA</option><option>SUPERIOR</option></select>
-                <input id="p_t" class="input-pro" placeholder="TELÉFONO CONTACTO">
-                <input id="p_o" class="input-pro col-span-full" placeholder="OCUPACIÓN">
-            </div>
-            <button onclick="save()" class="w-full bg-gold text-black font-black py-4 rounded-xl mt-6 shadow-lg active:scale-95 transition-all">⚡ IMPACTAR EN BASE DE DATOS</button>
+        <div class="glass p-5 rounded-2xl border-t-4 border-emerald-500 space-y-2">
+            <h3 class="text-emerald-400 font-black mb-2 italic">DATOS DEL PADRE</h3>
+            <div class="relative"><input id="p_n" class="input-pro" placeholder="APELLIDO Y NOMBRE"><i class="bi bi-mic-fill absolute right-3 top-3 cursor-pointer" onclick="voice('p_n')"></i></div>
+            <div class="flex gap-2"><input id="p_d" class="input-pro" placeholder="DNI"><input id="p_nac" class="input-pro" placeholder="NACIONALIDAD" value="ARGENTINA"></div>
+            <label>ESTUDIOS ALCANZADOS</label>
+            <select id="p_edu" class="input-pro">
+                <option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option><option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option>
+                <option>TERCIARIO COMPLETO</option><option>TERCIARIO INCOMPLETO</option><option>UNIVERSITARIO COMPLETO</option><option>UNIVERSITARIO INCOMPLETO</option>
+            </select>
+            <input id="p_t" class="input-pro" placeholder="TELÉFONO">
+            <div class="relative"><input id="p_ocu" class="input-pro" placeholder="OCUPACIÓN"><i class="bi bi-mic-fill absolute right-3 top-3 cursor-pointer" onclick="voice('p_ocu')"></i></div>
+            <input id="p_dom" class="input-pro" placeholder="DOMICILIO PADRE">
+            <input type="hidden" id="edit_id">
+            <button onclick="save()" id="btnSave" class="w-full bg-gold text-black font-black py-4 rounded-xl mt-4 shadow-lg active:scale-95 transition-all">💾 GUARDAR LEGAJO PLATINUM</button>
         </div>
     </section>
 
     <section id="sec2" class="hidden space-y-4">
-        <div id="gridSalas" class="grid grid-cols-2 md:grid-cols-4 gap-2"></div>
+        <div id="gridSalas" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2"></div>
         <div class="glass p-5 rounded-2xl">
-            <input type="text" id="search" onkeyup="render()" class="input-pro mb-4" placeholder="🔎 BUSCAR POR NOMBRE O DNI...">
+            <input type="text" id="search" onkeyup="render()" class="input-pro mb-4" placeholder="🔎 BUSCAR POR NOMBRE, DNI O FAMILIAR...">
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-[9px] border-collapse">
-                    <thead><tr class="text-gray-500 border-b border-white/10"><th class="p-2">ESTUDIANTE / DNI</th><th class="p-2">SALA</th><th class="p-2">CONTACTOS</th><th class="p-2">ACCIONES</th></tr></thead>
+                <table class="w-full text-left">
+                    <thead class="opacity-40 text-[7px] border-b border-white/10 uppercase">
+                        <tr><th class="p-2">ALUMNO</th><th class="p-2">SALA</th><th class="p-2">INFORMACIÓN</th><th class="p-2">PADRES</th><th class="p-2">EDITAR</th></tr>
+                    </thead>
                     <tbody id="tableMain"></tbody>
                 </table>
             </div>
@@ -87,95 +97,132 @@
 
     <section id="sec3" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="glass p-6 rounded-2xl border-l-4 border-blue-500">
-            <h3 class="text-blue-400 font-black mb-4">📂 GESTIÓN DE ARCHIVOS</h3>
-            <input type="file" id="fileInput" onchange="importJSON(event)" class="text-[8px] w-full border border-white/10 p-2 rounded mb-4">
-            <button onclick="exportJSON()" class="w-full bg-blue-600 p-3 rounded-lg font-bold">DESCARGAR RESPALDO ACTUAL</button>
+            <h3 class="text-blue-400 font-black mb-4">RECUPERACIÓN DE DATOS</h3>
+            <p class="text-[8px] mb-2 opacity-50 text-white">SUBE TU ARCHIVO "RESPALDO_J926 (17).JSON"</p>
+            <input type="file" onchange="importJSON(event)" class="text-[8px] mb-4 w-full">
+            <button onclick="exportJSON()" class="w-full bg-blue-600 p-3 rounded-lg font-bold">DESCARGAR BACKUP FINAL</button>
         </div>
-        <div class="glass p-6 rounded-2xl border-l-4 border-orange-500">
-            <h3 class="text-orange-400 font-black mb-4">⚡ CARGA RÁPIDA (BULK)</h3>
-            <textarea id="bulkData" class="input-pro h-24 text-[8px]" placeholder="PEGA AQUÍ LISTA DE EXCEL..."></textarea>
-            <button onclick="processBulk()" class="w-full bg-orange-600/20 border border-orange-500 p-2 rounded mt-2 font-bold">CARGAR LISTA</button>
+        <div class="glass p-6 rounded-2xl border-l-4 border-emerald-500 text-center">
+            <h3 class="text-emerald-400 font-black mb-4">ESTADO DEL SISTEMA</h3>
+            <p id="totalCount" class="text-4xl font-black">0</p>
+            <p class="text-[8px] opacity-50">LEGAJOS TOTALES EN MEMORIA</p>
         </div>
     </section>
 </main>
 
 <script>
     let db = JSON.parse(localStorage.getItem('J926_PLATINUM_DB')) || [];
-    const SALAS = ["SALA ROSA TM","SALA ROSA TT","SALA VERDE TM","SALA VERDE TT","SALA CELESTE TM","SALA CELESTE TT","SALA ROJA TM","SALA ROJA TT","SALA NARANJA TM","SALA NARANJA TT","SALA AMARILLA TM","SALA AMARILLA TT","SALA AZUL TM","SALA AZUL TT","SALA VIOLETA TM","SALA VIOLETA TT"];
+    const SALAS = ["SALA ROSA TM","SALA ROSA TT","SALA VERDE TM","SALA VERDE TT","SALA CELESTE TM","SALA CELESTE TT","SALA ROJA TM","SALA ROJA TT","SALA NARANJA TM","SALA NARANJA TT","SALA AMARILLA TM","SALA AMARILLA TT","SALA AZUL TM","SALA AZUL TT"];
 
-    function tab(n) {
-        [1,2,3].forEach(i => {
-            document.getElementById('sec'+i).classList.toggle('hidden', i !== n);
-            document.getElementById('t'+i).classList.toggle('active', i === n);
-        });
+    function tab(n) { [1,2,3].forEach(i => { document.getElementById('sec'+i).classList.toggle('hidden', i !== n); document.getElementById('t'+i).classList.toggle('active', i === n); }); }
+
+    function voice(id) {
+        if (!('webkitSpeechRecognition' in window)) return alert("Tu navegador no soporta voz.");
+        const rec = new webkitSpeechRecognition(); rec.lang = "es-AR";
+        rec.onstart = () => document.querySelector(`[onclick="voice('${id}')"]`).classList.add('mic-active');
+        rec.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); rec.stop(); };
+        rec.onend = () => document.querySelector(`[onclick="voice('${id}')"]`).classList.remove('mic-active');
+        rec.start();
+    }
+
+    function calcAge(f) {
+        if(!f) return;
+        const limit = new Date("2026-06-30"), nac = new Date(f);
+        let e = limit.getFullYear() - nac.getFullYear();
+        if (limit.getMonth() < nac.getMonth() || (limit.getMonth() === nac.getMonth() && limit.getDate() < nac.getDate())) e--;
+        document.getElementById('a_e').value = e + " AÑOS";
     }
 
     function save() {
+        const id = document.getElementById('edit_id').value || Date.now();
         const record = {
-            id: Date.now(),
-            a: { n: document.getElementById('a_n').value.toUpperCase(), d: document.getElementById('a_d').value, s: document.getElementById('a_s').value, e: document.getElementById('a_e').value, dom: document.getElementById('a_dom').value, h: document.getElementById('a_her').value, j: document.getElementById('a_jar').value, m: document.getElementById('a_med').value },
-            m: { n: document.getElementById('m_n').value.toUpperCase(), d: document.getElementById('m_d').value, e: document.getElementById('m_e').value, t: document.getElementById('m_t').value, o: document.getElementById('m_o').value },
-            p: { n: document.getElementById('p_n').value.toUpperCase(), d: document.getElementById('p_d').value, e: document.getElementById('p_e').value, t: document.getElementById('p_t').value, o: document.getElementById('p_o').value }
+            id: Number(id),
+            a: { n: v('a_n'), d: v('a_d'), nac: v('a_nac'), f: v('a_f'), e: v('a_e'), s: v('a_s'), dom: v('a_dom'), h: v('a_h'), hj: v('a_hj'), sal: v('a_sal') },
+            m: { n: v('m_n'), d: v('m_d'), nac: v('m_nac'), edu: v('m_edu'), t: v('m_t'), auh: v('m_auh'), ocu: v('m_ocu'), dom: v('m_dom') },
+            p: { n: v('p_n'), d: v('p_d'), nac: v('p_nac'), edu: v('p_edu'), t: v('p_t'), ocu: v('p_ocu'), dom: v('p_dom') }
         };
-        if(!record.a.n || !record.a.d) return alert("FALTAN DATOS CRÍTICOS");
-        db.push(record); sync(); alert("CARGA COMPLETA EXITOSA");
-        clearInputs();
+        if(!record.a.n || !record.a.d) return alert("ERROR: NOMBRE Y DNI SON REQUISITOS.");
+        db = db.filter(x => x.id !== record.id);
+        db.push(record);
+        sync(); clear(); alert("LEGAJO GUARDADO EXITOSAMENTE");
+        document.getElementById('btnSave').innerText = "💾 GUARDAR LEGAJO PLATINUM";
+        document.getElementById('edit_id').value = "";
     }
 
-    function sync() { localStorage.setItem('J926_PLATINUM_DB', JSON.stringify(db)); render(); }
+    function sync() { 
+        localStorage.setItem('J926_PLATINUM_DB', JSON.stringify(db)); 
+        document.getElementById('totalCount').innerText = db.length;
+        render(); 
+    }
 
-    function clearInputs() {
-        document.querySelectorAll('input').forEach(i => i.value = "");
+    function render(salaFilter = null) {
+        document.getElementById('gridSalas').innerHTML = SALAS.map(s => {
+            const num = db.filter(x => x.a.s === s).length;
+            return `<div onclick="render('${s}')" class="glass p-2 rounded-lg border-l-2 ${salaFilter===s?'border-gold bg-gold/10':'border-slate-700'}"><p class="text-[6px] opacity-40">${s}</p><h4 class="text-xs font-black">${num}/30</h4></div>`;
+        }).join('');
+
+        const q = document.getElementById('search').value.toLowerCase();
+        let f = db.filter(x => x.a.n.toLowerCase().includes(q) || x.a.d.includes(q) || x.m.n.toLowerCase().includes(q));
+        if(salaFilter) f = f.filter(x => x.a.s === salaFilter);
+
+        document.getElementById('tableMain').innerHTML = f.map(x => `
+            <tr class="border-b border-white/5 hover:bg-white/5 transition">
+                <td class="p-2"><span class="font-bold text-[9px] text-blue-400">${x.a.n}</span><br><span class="opacity-40">${x.a.d}</span></td>
+                <td class="p-2 text-gold font-bold">${x.a.s}</td>
+                <td class="p-2 text-[7px] opacity-70">${x.a.dom}<br><span class="text-rose-400">${x.a.sal || 'SIN OBS.'}</span></td>
+                <td class="p-2 text-[7px]">M: ${x.m.n} (${x.m.t})<br>P: ${x.p.n} (${x.p.t})</td>
+                <td class="p-2"><button onclick="edit(${x.id})" class="text-blue-400 text-lg"><i class="bi bi-pencil-square"></i></button></td>
+            </tr>
+        `).join('');
+    }
+
+    function edit(id) {
+        const x = db.find(i => i.id === id);
+        if(!x) return;
+        document.getElementById('edit_id').value = x.id;
+        // Mapeo total de campos
+        const fields = ['a_n','a_d','a_nac','a_f','a_e','a_s','a_dom','a_h','a_hj','a_sal','m_n','m_d','m_nac','m_edu','m_t','m_auh','m_ocu','m_dom','p_n','p_d','p_nac','p_edu','p_t','p_ocu','p_dom'];
+        fields.forEach(f => {
+            const [cat, key] = f.split('_');
+            document.getElementById(f).value = x[cat][key] || "";
+        });
+        document.getElementById('btnSave').innerText = "💾 ACTUALIZAR LEGAJO";
+        tab(1); window.scrollTo(0,0);
     }
 
     function importJSON(e) {
         const reader = new FileReader();
         reader.onload = (ev) => {
             try {
-                let data = JSON.parse(ev.target.result);
-                if (Array.isArray(data)) {
+                const data = JSON.parse(ev.target.result);
+                if(Array.isArray(data)) {
                     db = data.map(item => {
-                        // Si el dato es del sistema viejo (solo nombre/dni), lo adaptamos al esquema Platinum
-                        if (item.n && !item.a) {
-                            return { id: item.id || Date.now(), a: { n: item.n, d: item.d, s: item.sala || "SALA ROSA TM", e: "", dom: "", h: "HERMANOS: 0", j: "NO", m: "" }, m: { n: "", d: "", e: "PRIMARIA COMPLETA", t: "", o: "" }, p: { n: "", d: "", e: "PRIMARIA COMPLETA", t: "", o: "" } };
+                        // REPARACIÓN: Si el archivo es viejo, reconstruye la estructura Platinum
+                        if (item.n && !item.a) { 
+                            return { 
+                                id: item.id || Date.now(), 
+                                a: { n: item.n, d: item.d, nac: 'ARGENTINA', f: '', e: '', s: item.sala || 'SALA ROSA TM', dom: '', h: '0', hj: 'NO', sal: '' },
+                                m: { n: '', d: '', nac: 'ARGENTINA', edu: 'SECUNDARIA COMPLETA', t: '', auh: 'NO', ocu: '', dom: '' },
+                                p: { n: '', d: '', nac: 'ARGENTINA', edu: 'SECUNDARIA COMPLETA', t: '', ocu: '', dom: '' }
+                            };
                         }
                         return item;
                     });
-                    sync(); alert("✅ SISTEMA PLATINUM RESTAURADO"); tab(2);
+                    sync(); alert("✅ RECONEXIÓN EXITOSA: SE RECUPERARON " + db.length + " LEGAJOS.");
+                    tab(2);
                 }
-            } catch (err) { alert("❌ ARCHIVO INCOMPATIBLE"); }
+            } catch(e) { alert("ERROR AL LEER EL ARCHIVO."); }
         };
         reader.readAsText(e.target.files[0]);
     }
 
-    function render() {
-        const grid = document.getElementById('gridSalas');
-        grid.innerHTML = SALAS.map(s => {
-            const cant = db.filter(x => x.a.s === s).length;
-            return `<div class="glass p-3 rounded-xl border-l-2 ${cant>=30?'border-red-500':'border-slate-700'}"><p class="text-[6px] opacity-40">${s}</p><h4 class="text-xs font-black">${cant}/30</h4></div>`;
-        }).join('');
-
-        const table = document.getElementById('tableMain');
-        const q = document.getElementById('search').value.toLowerCase();
-        const filtered = db.filter(x => x.a.n.toLowerCase().includes(q) || x.a.d.includes(q));
-        
-        table.innerHTML = filtered.map(x => `
-            <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
-                <td class="p-2 font-bold">${x.a.n}<br><span class="opacity-50 text-[7px]">${x.a.d}</span></td>
-                <td class="p-2 text-gold font-bold text-[7px]">${x.a.s}</td>
-                <td class="p-2 text-[7px]">👩 ${x.m.t || '-'}<br>👨 ${x.p.t || '-'}</td>
-                <td class="p-2"><button onclick="remove(${x.id})" class="text-rose-500 font-bold">X</button></td>
-            </tr>
-        `).join('');
-    }
-
     function exportJSON() {
-        const blob = new Blob([JSON.stringify(db)], {type:'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-        a.download = `BACKUP_PLATINUM_J926.json`; a.click();
+        const b = new Blob([JSON.stringify(db)], {type:'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = "PLATINUM_J926_FINAL.json"; a.click();
     }
 
-    function remove(id) { if(confirm("¿ELIMINAR ESTE LEGAJO?")) { db = db.filter(x => x.id !== id); sync(); } }
+    function v(id) { return document.getElementById(id).value.toUpperCase().trim(); }
+    function clear() { document.querySelectorAll('input, textarea').forEach(i => { if(!['a_s','a_nac','m_nac','p_nac'].includes(i.id)) i.value=""; }); }
 </script>
 </body>
 </html>
