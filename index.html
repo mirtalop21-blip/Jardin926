@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA J926 - INGENIERÍA INSTITUCIONAL</title>
+    <title>SISTEMA J926 PLATINUM - ANALISTA INSTITUCIONAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -11,19 +11,19 @@
         body { background: var(--bg); color: #f8fafc; font-family: 'Inter', sans-serif; text-transform: uppercase; font-size: 10px; }
         .glass { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
         .input-pro { background: #000; border: 1px solid #1e293b; padding: 10px; border-radius: 6px; color: #fff; width: 100%; font-size: 10px; }
-        .nav-tab { flex: 1; text-align: center; padding: 15px; cursor: pointer; font-weight: 900; border-bottom: 3px solid transparent; opacity: 0.5; }
-        .nav-tab.active { opacity: 1; color: var(--gold); border-bottom-color: var(--gold); }
+        .nav-tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; font-weight: 900; opacity: 0.5; border-bottom: 3px solid transparent; }
+        .nav-tab.active { opacity: 1; color: var(--gold); border-bottom-color: var(--gold); background: linear-gradient(to top, rgba(250,204,21,0.05), transparent); }
+        .sala-card { transition: 0.3s; cursor: pointer; border-left: 4px solid #334155; }
+        .sala-card:hover { transform: translateY(-3px); border-left-color: var(--gold); background: rgba(255,255,255,0.05); }
         .mic-active { color: #ef4444 !important; animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .sala-card { transition: 0.3s; cursor: pointer; border-left: 5px solid transparent; }
-        .sala-card:hover { transform: scale(1.02); background: rgba(255,255,255,0.05); }
-        .badge-v { background: #1e293b; padding: 2px 6px; border-radius: 4px; font-size: 9px; color: var(--gold); }
+        .stat-box { border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body onload="render()">
 
 <nav class="flex sticky top-0 z-50 glass border-b border-white/10">
-    <div onclick="tab(1)" id="t1" class="nav-tab active">💎 MATRÍCULA</div>
+    <div onclick="tab(1)" id="t1" class="nav-tab active">💾 CARGA</div>
     <div onclick="tab(2)" id="t2" class="nav-tab">📋 ASISTENCIA</div>
     <div onclick="tab(3)" id="t3" class="nav-tab">📊 SUPERVISIÓN</div>
     <div onclick="tab(4)" id="t4" class="nav-tab">⚙️ SISTEMA</div>
@@ -32,7 +32,7 @@
 <main class="p-4 space-y-4">
     <section id="sec1" class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div class="glass p-5 rounded-2xl border-t-4 border-blue-500 space-y-2">
-            <h3 class="text-blue-400 font-black italic">DATOS ALUMNO/A</h3>
+            <h3 class="text-blue-400 font-black italic">LEGAJO ALUMNO/A</h3>
             <div class="relative"><input id="a_n" class="input-pro" placeholder="APELLIDO Y NOMBRE"><i class="bi bi-mic-fill absolute right-3 top-3 cursor-pointer" onclick="voice('a_n')"></i></div>
             <div class="flex gap-2"><input id="a_d" class="input-pro" placeholder="DNI"><input id="a_nac" class="input-pro" placeholder="NACIONALIDAD" value="ARGENTINA"></div>
             <div class="flex gap-2">
@@ -46,70 +46,66 @@
                 <option>SALA AZUL TM</option><option>SALA AZUL TT</option>
             </select>
             <div class="relative"><input id="a_dom" class="input-pro" placeholder="DOMICILIO"><i class="bi bi-mic-fill absolute right-3 top-3 cursor-pointer" onclick="voice('a_dom')"></i></div>
-            <div class="flex gap-2"><input id="a_h" class="input-pro" placeholder="HERMANOS"><select id="a_hj" class="input-pro"><option value="NO">¿EN JARDÍN? NO</option><option value="SI">SI</option></select></div>
-            <textarea id="a_sal" class="input-pro h-14" placeholder="OBSERVACIONES DE SALUD"></textarea>
+            <textarea id="a_sal" class="input-pro h-14" placeholder="ANTECEDENTES DE SALUD"></textarea>
         </div>
 
         <div class="glass p-5 rounded-2xl border-t-4 border-rose-500 space-y-2">
             <h3 class="text-rose-400 font-black italic">DATOS MADRE</h3>
-            <div class="relative"><input id="m_n" class="input-pro" placeholder="APELLIDO Y NOMBRE"><i class="bi bi-mic-fill absolute right-3 top-3 cursor-pointer" onclick="voice('m_n')"></i></div>
-            <div class="flex gap-2"><input id="m_d" class="input-pro" placeholder="DNI"><input id="m_t" class="input-pro" placeholder="TELÉFONO"></div>
+            <input id="m_n" class="input-pro" placeholder="APELLIDO Y NOMBRE">
+            <div class="flex gap-2"><input id="m_d" class="input-pro" placeholder="DNI"><input id="m_nac" class="input-pro" placeholder="NACIONALIDAD" value="ARGENTINA"></div>
             <select id="m_edu" class="input-pro">
-                <option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option><option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option>
-                <option>TERCIARIO COMPLETO</option><option>TERCIARIO INCOMPLETO</option><option>UNIVERSITARIO COMPLETO</option><option>UNIVERSITARIO INCOMPLETO</option>
+                <option>SIN ESTUDIOS</option><option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option>
+                <option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option><option>TERCIARIA COMPLETA</option>
+                <option>TERCIARIA INCOMPLETA</option><option>UNIVERSITARIA COMPLETA</option><option>UNIVERSITARIA INCOMPLETA</option>
             </select>
-            <div class="flex gap-2"><input id="m_ocu" class="input-pro" placeholder="OCUPACIÓN"><select id="m_auh" class="input-pro"><option value="NO">AUH: NO</option><option value="SI">AUH: SI</option></select></div>
-            <input id="m_dom" class="input-pro" placeholder="DOMICILIO MADRE">
+            <div class="flex gap-2"><input id="m_ocu" class="input-pro" placeholder="TRABAJO/OCUPACIÓN"><select id="m_auh" class="input-pro"><option value="NO">AUH: NO</option><option value="SI">AUH: SI</option></select></div>
+            <input id="m_t" class="input-pro" placeholder="TELÉFONO CONTACTO">
         </div>
 
         <div class="glass p-5 rounded-2xl border-t-4 border-emerald-500 space-y-2">
             <h3 class="text-emerald-400 font-black italic">DATOS PADRE</h3>
-            <div class="relative"><input id="p_n" class="input-pro" placeholder="APELLIDO Y NOMBRE"><i class="bi bi-mic-fill absolute right-3 top-3 cursor-pointer" onclick="voice('p_n')"></i></div>
-            <div class="flex gap-2"><input id="p_d" class="input-pro" placeholder="DNI"><input id="p_t" class="input-pro" placeholder="TELÉFONO"></div>
+            <input id="p_n" class="input-pro" placeholder="APELLIDO Y NOMBRE">
+            <div class="flex gap-2"><input id="p_d" class="input-pro" placeholder="DNI"><input id="p_nac" class="input-pro" placeholder="NACIONALIDAD" value="ARGENTINA"></div>
             <select id="p_edu" class="input-pro">
-                <option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option><option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option>
-                <option>TERCIARIO COMPLETO</option><option>TERCIARIO INCOMPLETO</option><option>UNIVERSITARIO COMPLETO</option><option>UNIVERSITARIO INCOMPLETO</option>
+                <option>SIN ESTUDIOS</option><option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option>
+                <option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option><option>TERCIARIA COMPLETA</option>
+                <option>TERCIARIA INCOMPLETA</option><option>UNIVERSITARIA COMPLETA</option><option>UNIVERSITARIA INCOMPLETA</option>
             </select>
-            <input id="p_ocu" class="input-pro" placeholder="OCUPACIÓN">
-            <input id="p_dom" class="input-pro" placeholder="DOMICILIO PADRE">
+            <input id="p_ocu" class="input-pro" placeholder="TRABAJO/OCUPACIÓN">
+            <input id="p_t" class="input-pro" placeholder="TELÉFONO CONTACTO">
             <input type="hidden" id="edit_id">
-            <button onclick="save()" id="btnSave" class="w-full bg-gold text-black font-black py-4 rounded-xl mt-2 shadow-lg">💾 IMPACTAR LEGAJO</button>
-        </div>
-    </section>
-
-    <section id="sec2" class="hidden space-y-4">
-        <div id="asisCards" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2"></div>
-        <div class="glass p-5 rounded-2xl">
-            <h2 id="asisTitle" class="text-gold font-black mb-4 italic">SELECCIONE UNA SALA</h2>
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead><tr class="opacity-40 text-[8px] border-b border-white/10"><th class="p-2">ALUMNO</th><th class="p-2">ESTADO</th></tr></thead>
-                    <tbody id="asisTable"></tbody>
-                </table>
-            </div>
+            <button onclick="save()" id="btnSave" class="w-full bg-gold text-black font-black py-4 rounded-xl mt-2">💾 GUARDAR Y REGISTRAR MOVIMIENTO</button>
         </div>
     </section>
 
     <section id="sec3" class="hidden space-y-4">
+        <div id="gridSalas" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2"></div>
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="glass p-5 rounded-2xl border-l-4 border-gold">
-                <p class="opacity-50">MATRÍCULA TOTAL</p>
-                <h2 id="statTotal" class="text-3xl font-black italic">0</h2>
+            <div class="stat-box glass">
+                <h4 class="text-blue-400 font-black text-[9px] mb-2">📊 POBLACIÓN POR NACIONALIDAD</h4>
+                <div id="chartNac" class="space-y-1"></div>
             </div>
-            <div class="glass p-5 rounded-2xl border-l-4 border-emerald-500">
-                <p class="opacity-50">ALTAS DEL MES</p>
-                <h2 id="statAltas" class="text-3xl font-black text-emerald-400 italic">0</h2>
+            <div class="stat-box glass">
+                <h4 class="text-rose-400 font-black text-[9px] mb-2">📉 MOVIMIENTOS MARZO - DICIEMBRE</h4>
+                <div id="chartMov" class="space-y-1"></div>
             </div>
-            <div class="glass p-5 rounded-2xl border-l-4 border-rose-500">
-                <p class="opacity-50">AUSENTISMO PROMEDIO</p>
-                <h2 id="statAus" class="text-3xl font-black text-rose-400 italic">0%</h2>
+            <div class="stat-box glass">
+                <h4 class="text-emerald-400 font-black text-[9px] mb-2">💼 INDICADORES SOCIO-LABORALES</h4>
+                <div id="chartSocial" class="space-y-1 text-[8px]"></div>
             </div>
         </div>
+
         <div class="glass p-5 rounded-2xl">
-            <h3 class="font-black italic mb-4 text-blue-400">BUSCADOR RÁPIDO DNI</h3>
-            <input type="text" id="dniSearch" onkeyup="renderTable()" class="input-pro mb-4 border-gold/30" placeholder="INGRESE DNI PARA EDITAR O VER...">
+            <div class="flex gap-2 mb-4">
+                <input type="text" id="dniSearch" onkeyup="render()" class="input-pro" placeholder="🔎 BUSCADOR DE INGENIERÍA POR DNI O APELLIDO...">
+                <button onclick="exportExcel()" class="bg-emerald-600 px-4 rounded-lg font-bold text-[8px]">EXPORTAR EXCEL</button>
+            </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-[9px]">
+                <table class="w-full text-left">
+                    <thead class="opacity-40 text-[7px] border-b border-white/10 uppercase">
+                        <tr><th class="p-2">ALUMNO/A</th><th class="p-2">SALA</th><th class="p-2">NAC.</th><th class="p-2">MADRE/PADRE</th><th class="p-2">ACCIONES</th></tr>
+                    </thead>
                     <tbody id="mainTable"></tbody>
                 </table>
             </div>
@@ -118,21 +114,22 @@
 
     <section id="sec4" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="glass p-6 rounded-2xl border-l-4 border-blue-500">
-            <h3 class="text-blue-400 font-black mb-4 italic italic">RECUPERO Y BACKUP</h3>
+            <h3 class="text-blue-400 font-black mb-4 italic">BACKUP ESTRATÉGICO</h3>
             <input type="file" onchange="importJSON(event)" class="text-[8px] mb-4">
-            <button onclick="exportJSON()" class="w-full bg-blue-600 p-3 rounded-lg font-black shadow-lg">DESCARGAR BASE PLATINUM</button>
+            <button onclick="exportJSON()" class="w-full bg-blue-600 p-3 rounded-lg font-black">DESCARGAR BASE COMPLETA</button>
         </div>
-        <div class="glass p-6 rounded-2xl border-l-4 border-orange-500">
-            <h3 class="text-orange-400 font-black mb-4 italic">CARGA RÁPIDA EXCEL</h3>
-            <textarea id="bulkData" class="input-pro h-24 text-[8px]" placeholder="PEGA AQUÍ NOMBRE Y DNI..."></textarea>
-            <button onclick="processBulk()" class="w-full bg-orange-600 p-3 rounded-lg font-black mt-2">PROCESAR LISTA</button>
+        <div class="glass p-6 rounded-2xl border-l-4 border-rose-500">
+            <h3 class="text-rose-400 font-black mb-4 italic">SISTEMA DE ALERTAS</h3>
+            <input id="dir_tel" class="input-pro mb-2" placeholder="CELULAR DIRECCIÓN (Ej: 1122334455)">
+            <input id="sec_tel" class="input-pro mb-2" placeholder="CELULAR SECRETARÍA">
+            <p class="text-[8px] opacity-50 mt-2">EL SISTEMA ENVIARÁ NOTIFICACIONES AUTOMÁTICAS DE VACANTES Y AUSENTISMO.</p>
         </div>
     </section>
 </main>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('J926_SISTEMA_TOTAL')) || [];
-    let asis = JSON.parse(localStorage.getItem('J926_ASISTENCIA')) || {};
+    let db = JSON.parse(localStorage.getItem('J926_MASTER_DB')) || [];
+    let asis = JSON.parse(localStorage.getItem('J926_ASIS')) || {};
     const SALAS = ["SALA ROSA TM","SALA ROSA TT","SALA ROJA TM","SALA ROJA TT","SALA NARANJA TM","SALA NARANJA TT","SALA CELESTE TM","SALA CELESTE TT","SALA VIOLETA TM","SALA VIOLETA TT","SALA AMARILLA TM","SALA AMARILLA TT","SALA AZUL TM","SALA AZUL TT"];
 
     function tab(n) { [1,2,3,4].forEach(i => { document.getElementById('sec'+i).classList.toggle('hidden', i !== n); document.getElementById('t'+i).classList.toggle('active', i === n); }); }
@@ -157,88 +154,63 @@
         const id = document.getElementById('edit_id').value || Date.now();
         const record = {
             id: Number(id),
-            a: { n: v('a_n'), d: v('a_d'), nac: v('a_nac'), f: v('a_f'), e: v('a_e'), s: v('a_s'), dom: v('a_dom'), h: v('a_h'), hj: v('a_hj'), sal: v('a_sal'), fechaAlta: new Date().toISOString() },
-            m: { n: v('m_n'), d: v('m_d'), t: v('m_t'), edu: v('m_edu'), ocu: v('m_ocu'), auh: v('m_auh'), dom: v('m_dom') },
-            p: { n: v('p_n'), d: v('p_d'), t: v('p_t'), edu: v('p_edu'), ocu: v('p_ocu'), dom: v('p_dom') }
+            fechaMov: new Date().toISOString(),
+            a: { n: v('a_n'), d: v('a_d'), nac: v('a_nac'), f: v('a_f'), e: v('a_e'), s: v('a_s'), dom: v('a_dom'), sal: v('a_sal') },
+            m: { n: v('m_n'), d: v('m_d'), nac: v('m_nac'), edu: v('m_edu'), ocu: v('m_ocu'), auh: v('m_auh'), t: v('m_t') },
+            p: { n: v('p_n'), d: v('p_d'), nac: v('p_nac'), edu: v('p_edu'), ocu: v('p_ocu'), t: v('p_t') }
         };
-        if(!record.a.n || !record.a.d) return alert("COMPLETE NOMBRE Y DNI");
+        if(!record.a.n || !record.a.d) return alert("DATOS INCOMPLETOS");
         db = db.filter(x => x.id !== record.id);
         db.push(record);
-        sync(); clear(); alert("LEGAJO IMPACTADO CON ÉXITO");
-        document.getElementById('btnSave').innerText = "💾 IMPACTAR LEGAJO";
+        sync(); clear(); alert("OPERACIÓN EXITOSA");
         document.getElementById('edit_id').value = "";
-        tab(3);
     }
 
-    function sync() { 
-        localStorage.setItem('J926_SISTEMA_TOTAL', JSON.stringify(db)); 
-        localStorage.setItem('J926_ASISTENCIA', JSON.stringify(asis));
-        render(); 
-    }
+    function sync() { localStorage.setItem('J926_MASTER_DB', JSON.stringify(db)); render(); }
 
     function render() {
-        // Stats
-        document.getElementById('statTotal').innerText = db.length;
-        const esteMes = new Date().getMonth();
-        document.getElementById('statAltas').innerText = db.filter(x => new Date(x.a.fechaAlta).getMonth() === esteMes).length;
-
-        // Cards de Asistencia y Vacantes
-        const cardsHTML = SALAS.map(s => {
+        // MAPA INSTITUCIONAL
+        document.getElementById('gridSalas').innerHTML = SALAS.map(s => {
             const cant = db.filter(x => x.a.s === s).length;
             const vac = 30 - cant;
-            return `<div onclick="setAsisSala('${s}')" class="sala-card glass p-3 rounded-xl border-slate-700 hover:border-gold">
-                <p class="text-[6px] opacity-50">${s}</p>
-                <div class="flex justify-between items-end">
-                    <h4 class="text-xs font-black">${cant}/30</h4>
-                    <span class="badge-v">${vac} VAC.</span>
-                </div>
+            return `<div class="sala-card glass p-2 rounded-lg" onclick="tab(3)">
+                <p class="text-[7px] opacity-50">${s}</p>
+                <div class="flex justify-between items-center"><h4 class="text-xs font-black">${cant}/30</h4><span class="text-gold text-[8px]">${vac} VAC.</span></div>
             </div>`;
         }).join('');
-        document.getElementById('asisCards').innerHTML = cardsHTML;
-        document.getElementById('gridSalas').innerHTML = cardsHTML; // Reuso para supervisión
 
-        renderTable();
-    }
-
-    function setAsisSala(sala) {
-        document.getElementById('asisTitle').innerText = "ASISTENCIA: " + sala;
-        const alumnos = db.filter(x => x.a.s === sala).sort((a,b) => a.a.n.localeCompare(b.a.n));
-        const hoy = new Date().toLocaleDateString();
-        
-        document.getElementById('asisTable').innerHTML = alumnos.map(x => {
-            const estado = (asis[hoy] && asis[hoy][x.id]) || '---';
-            return `
-                <tr class="border-b border-white/5">
-                    <td class="p-2 font-bold">${x.a.n}</td>
-                    <td class="p-2 flex gap-2">
-                        <button onclick="mark('${x.id}','P')" class="px-3 py-1 rounded ${estado==='P'?'bg-emerald-500':'bg-white/10'} text-[8px]">PRESENTE</button>
-                        <button onclick="mark('${x.id}','A')" class="px-3 py-1 rounded ${estado==='A'?'bg-rose-500':'bg-white/10'} text-[8px]">AUSENTE</button>
-                    </td>
-                </tr>
-            `;
+        // ANALÍTICA DE NACIONALIDADES
+        const nacs = ["ARGENTINA", "PARAGUAYA", "BOLIVIANA", "PERUANA"];
+        document.getElementById('chartNac').innerHTML = nacs.map(n => {
+            const count = db.filter(x => x.a.nac.includes(n)).length;
+            const pct = db.length ? (count/db.length*100).toFixed(0) : 0;
+            return `<div class="flex items-center gap-2 text-[7px]"><span class="w-16">${n}</span><div class="flex-1 bg-white/10 h-1"><div class="bg-blue-400 h-full" style="width:${pct}%"></div></div><span>${count}</span></div>`;
         }).join('');
-        tab(2);
-    }
 
-    function mark(id, estado) {
-        const hoy = new Date().toLocaleDateString();
-        if(!asis[hoy]) asis[hoy] = {};
-        asis[hoy][id] = estado;
-        sync();
-        const sala = db.find(x => x.id == id).a.s;
-        setAsisSala(sala);
-    }
+        // MOVIMIENTOS MES A MES (MARZO-DICIEMBRE)
+        const meses = ["03","04","05","06","07","08","09","10","11","12"];
+        document.getElementById('chartMov').innerHTML = meses.map(m => {
+            const altas = db.filter(x => x.fechaMov.split('-')[1] === m).length;
+            return `<div class="flex items-center gap-1 text-[7px]"><span class="w-4">${m}</span><div class="bg-emerald-500/30 h-2" style="width:${altas*10}px"></div><span class="text-[6px]">${altas}</span></div>`;
+        }).join('');
 
-    function renderTable() {
-        const q = document.getElementById('dniSearch').value;
-        const filtered = db.filter(x => x.a.d.includes(q) || x.a.n.includes(q.toUpperCase()));
+        // SOCIO-LABORAL
+        const conTrabajo = db.filter(x => x.m.ocu !== "" || x.p.ocu !== "").length;
+        const conAUH = db.filter(x => x.m.auh === "SI").length;
+        document.getElementById('chartSocial').innerHTML = `
+            <p>PADRES C/ TRABAJO: ${conTrabajo}</p><p>TOTAL AUH: ${conAUH}</p>
+        `;
+
+        // TABLA DE INGENIERÍA
+        const q = document.getElementById('dniSearch').value.toUpperCase();
+        const filtered = db.filter(x => x.a.d.includes(q) || x.a.n.includes(q));
         document.getElementById('mainTable').innerHTML = filtered.map(x => `
-            <tr class="border-b border-white/5">
-                <td class="p-2"><span class="font-black text-blue-400">${x.a.n}</span><br><span class="opacity-50">${x.a.d} | ${x.a.s}</span></td>
-                <td class="p-2 text-right">
-                    <button onclick="edit(${x.id})" class="text-gold text-lg mr-2"><i class="bi bi-pencil-square"></i></button>
-                    <button onclick="remove(${x.id})" class="text-rose-500 text-lg"><i class="bi bi-trash"></i></button>
-                </td>
+            <tr class="border-b border-white/5 hover:bg-white/10 transition">
+                <td class="p-2 font-bold text-blue-400">${x.a.n}<br><span class="opacity-40">${x.a.d}</span></td>
+                <td class="p-2 text-gold font-bold">${x.a.s}</td>
+                <td class="p-2 text-[8px]">${x.a.nac}</td>
+                <td class="p-2 text-[7px]">M: ${x.m.n}<br>P: ${x.p.n}</td>
+                <td class="p-2"><button onclick="edit(${x.id})" class="text-blue-400"><i class="bi bi-pencil-square"></i> EDITAR</button></td>
             </tr>
         `).join('');
     }
@@ -247,12 +219,11 @@
         const x = db.find(i => i.id === id);
         if(!x) return;
         document.getElementById('edit_id').value = x.id;
-        const fields = ['a_n','a_d','a_nac','a_f','a_e','a_s','a_dom','a_h','a_hj','a_sal','m_n','m_d','m_t','m_edu','m_ocu','m_auh','m_dom','p_n','p_d','p_t','p_edu','p_ocu','p_dom'];
+        const fields = ['a_n','a_d','a_nac','a_f','a_e','a_s','a_dom','a_sal','m_n','m_d','m_nac','m_edu','m_ocu','m_auh','m_t','p_n','p_d','p_nac','p_edu','p_ocu','p_t'];
         fields.forEach(f => {
             const [cat, key] = f.split('_');
             document.getElementById(f).value = x[cat][key] || "";
         });
-        document.getElementById('btnSave').innerText = "💾 ACTUALIZAR LEGAJO";
         tab(1);
     }
 
@@ -261,31 +232,27 @@
         reader.onload = (ev) => {
             const data = JSON.parse(ev.target.result);
             db = data.map(item => {
-                if(item.n && !item.a) return { id: Date.now()+Math.random(), a: { n: item.n, d: item.d, nac: 'ARGENTINA', s: item.sala || 'SALA ROSA TM', fechaAlta: new Date().toISOString() }, m: {}, p: {} };
+                if(item.n && !item.a) return { id: Date.now(), fechaMov: new Date().toISOString(), a:{n:item.n, d:item.d, nac:'ARGENTINA', s:item.sala||'SALA ROSA TM'}, m:{}, p:{} };
                 return item;
             });
-            sync(); alert("RECONEXIÓN EXITOSA"); tab(3);
+            sync(); alert("BACKUP ESTRATÉGICO CARGADO");
         };
         reader.readAsText(e.target.files[0]);
     }
 
     function exportJSON() {
         const b = new Blob([JSON.stringify(db)], {type:'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = "BASE_PLATINUM_926.json"; a.click();
+        const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = "INTELIGENCIA_J926.json"; a.click();
     }
 
-    function processBulk() {
-        const lines = document.getElementById('bulkData').value.split('\n');
-        lines.forEach(l => {
-            const p = l.split('\t');
-            if(p[0]) db.push({ id: Date.now()+Math.random(), a: { n: p[0].toUpperCase(), d: p[1]||"", nac: 'ARGENTINA', s: 'SALA ROSA TM', fechaAlta: new Date().toISOString() }, m: {}, p: {} });
-        });
-        sync(); alert("PROCESADO");
+    function exportExcel() {
+        let csv = "\ufeffALUMNO;DNI;SALA;NACIONALIDAD;MADRE;PADRE;TEL;TRABAJO;AUH\n";
+        db.forEach(x => { csv += `${x.a.n};${x.a.d};${x.a.s};${x.a.nac};${x.m.n};${x.p.n};${x.m.t};${x.m.ocu};${x.m.auh}\n`; });
+        const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv); a.download="LISTADO_PROFESIONAL_926.csv"; a.click();
     }
 
     function v(id) { return document.getElementById(id).value.toUpperCase().trim(); }
-    function clear() { document.querySelectorAll('input, textarea').forEach(i => { if(!['a_s','a_nac'].includes(i.id)) i.value=""; }); }
-    function remove(id) { if(confirm("¿ELIMINAR?")) { db = db.filter(x => x.id !== id); sync(); } }
+    function clear() { document.querySelectorAll('input, textarea').forEach(i => { if(!['a_s','a_nac','m_nac','p_nac','m_edu','p_edu'].includes(i.id)) i.value=""; }); }
 </script>
 </body>
 </html>
