@@ -3,242 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA J926 PLATINUM - FULL ESTRATÉGICO</title>
+    <title>J926 PLATINUM - GESTIÓN DE VANGUARDIA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        body { background: #010409; color: #e6edf3; font-family: 'Segoe UI', system-ui, sans-serif; text-transform: uppercase; font-size: 10px; }
-        .glass { background: rgba(13, 17, 23, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(48, 54, 61, 1); border-radius: 16px; }
-        .input-pro { background: #0d1117; border: 1px solid #30363d; padding: 10px; border-radius: 8px; color: #fff; width: 100%; font-size: 10px; transition: 0.3s; }
-        .input-pro:focus { border-color: #facc15; outline: none; box-shadow: 0 0 8px rgba(250, 204, 21, 0.2); }
-        .btn-tab { flex: 1; padding: 15px; text-align: center; font-weight: 900; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.4s; opacity: 0.5; }
+        body { background: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; text-transform: uppercase; font-size: 10px; }
+        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid #1e293b; border-radius: 12px; }
+        .input-pro { background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 6px; color: #fff; width: 100%; transition: 0.3s; }
+        .input-pro:focus { border-color: #facc15; box-shadow: 0 0 10px rgba(250, 204, 21, 0.2); outline: none; }
+        .btn-tab { flex: 1; padding: 15px; text-align: center; font-weight: 900; cursor: pointer; border-bottom: 3px solid transparent; opacity: 0.5; }
         .btn-tab.active { opacity: 1; color: #facc15; border-bottom-color: #facc15; background: rgba(250,204,21,0.05); }
-        .mic-btn { color: #8b949e; cursor: pointer; }
-        .mic-active { color: #f85149 !important; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .mic-btn { color: #64748b; cursor: pointer; }
+        .mic-active { color: #ef4444 !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
 <body onload="init()">
 
-<nav class="flex sticky top-0 z-50 glass border-b border-white/10 rounded-none">
-    <div onclick="setTab(1)" id="tab1" class="btn-tab active">📥 CARGA INTEGRAL</div>
-    <div onclick="setTab(2)" id="tab2" class="btn-tab">🏫 INTERFAZ DE SALAS</div>
-    <div onclick="setTab(3)" id="tab3" class="btn-tab">📊 SUPERVISIÓN PRO</div>
+<nav class="flex sticky top-0 z-50 glass rounded-none border-b border-white/10">
+    <div onclick="setTab(1)" id="tab1" class="btn-tab active">📥 LEGAJO VOZ-PRO</div>
+    <div onclick="setTab(2)" id="tab2" class="btn-tab">🏫 SALAS (14) Y ASISTENCIA</div>
+    <div onclick="setTab(3)" id="tab3" class="btn-tab">📊 INTELIGENCIA ESTADÍSTICA</div>
 </nav>
 
-<main class="p-4 max-w-[1600px] mx-auto space-y-6">
-    
-    <section id="sec1" class="space-y-6">
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <div class="glass p-5 border-t-4 border-blue-600 space-y-3">
-                <h3 class="text-blue-500 font-black italic">LEGAJO ALUMNO/A</h3>
-                <div class="flex gap-2">
-                    <div class="relative w-full"><input id="a_n" class="input-pro" placeholder="APELLIDO Y NOMBRE"><i onclick="startVoice('a_n')" class="bi bi-mic-fill absolute right-3 top-3 mic-btn"></i></div>
-                    <input id="a_d" class="input-pro w-32" placeholder="DNI">
-                </div>
-                <div class="flex gap-2">
-                    <input id="a_nac" class="input-pro" value="ARGENTINA">
-                    <input id="a_f" type="date" class="input-pro" onchange="calcAge(this.value)">
-                    <input id="a_e" class="input-pro w-24" placeholder="EDAD" readonly>
-                </div>
-                <div class="flex gap-2 items-center">
-                    <input id="a_herm" class="input-pro" placeholder="CANT. HERMANOS">
-                    <label class="flex items-center gap-2 text-[8px] min-w-[100px]"><input type="checkbox" id="a_hj" class="accent-blue-500"> ¿HERMANO EN JARDÍN?</label>
-                </div>
-                <select id="a_s" class="input-pro text-yellow-500 font-bold">
-                    <option value="">SELECCIONAR SALA...</option>
-                    <optgroup label="TURNO MAÑANA" id="tm_list"></optgroup>
-                    <optgroup label="TURNO TARDE" id="tt_list"></optgroup>
+<main class="p-4 max-w-[1800px] mx-auto space-y-4">
+
+    <section id="sec1" class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+        <div class="glass p-5 border-t-4 border-blue-500 space-y-3">
+            <h3 class="text-blue-500 font-black italic">IDENTIDAD DEL ALUMNO/A</h3>
+            <div class="relative"><input id="a_n" class="input-pro" placeholder="APELLIDO Y NOMBRE"><i onclick="voice('a_n')" class="bi bi-mic-fill absolute right-3 top-3 mic-btn"></i></div>
+            <div class="flex gap-2"><input id="a_d" class="input-pro" placeholder="DNI (S/PUNTOS)"><input id="a_nac" class="input-pro" value="ARGENTINA"></div>
+            <div class="flex gap-2"><input id="a_f" type="date" class="input-pro" onchange="calcAge(this.value)"><input id="a_e" class="input-pro w-24" placeholder="EDAD" readonly></div>
+            <select id="a_s" class="input-pro text-yellow-500 font-bold"><option value="">SALA/TURNO...</option><optgroup label="MAÑANA" id="tm_list"></optgroup><optgroup label="TARDE" id="tt_list"></optgroup></select>
+            <div class="relative"><input id="a_dom" class="input-pro" placeholder="DOMICILIO REAL"><i onclick="voice('a_dom')" class="bi bi-mic-fill absolute right-3 top-3 mic-btn"></i></div>
+            <div class="flex gap-2 items-center text-[8px]"><input id="a_h" class="input-pro w-16" placeholder="HERM."><label class="flex gap-1"><input type="checkbox" id="a_hj"> ¿EN JARDÍN?</label></div>
+            <textarea id="a_sld" class="input-pro h-12" placeholder="ALERTA MÉDICA / SALUD"></textarea>
+        </div>
+
+        <div class="glass p-5 border-t-4 border-pink-500 space-y-4">
+            <div class="space-y-2 pb-2 border-b border-white/5">
+                <h3 class="text-pink-500 font-black italic">MADRE / TUTOR</h3>
+                <div class="flex gap-2"><input id="m_n" class="input-pro" placeholder="NOMBRE"><input id="m_d" class="input-pro w-24" placeholder="DNI"></div>
+                <select id="m_edu" class="input-pro">
+                    <option>SIN ESTUDIOS</option><option>PRIMARIA C.</option><option>PRIMARIA I.</option>
+                    <option>SECUNDARIA C.</option><option>SECUNDARIA I.</option><option>TERCIARIA C.</option>
+                    <option>TERCIARIA I.</option><option>UNIVERSITARIA C.</option><option>UNIVERSITARIA I.</option>
                 </select>
-                <input id="a_dom" class="input-pro" placeholder="DOMICILIO ALUMNO/A">
-                <textarea id="a_salud" class="input-pro h-16" placeholder="INFO. DE SALUD / ALERTAS"></textarea>
+                <div class="flex gap-2 items-center"><input id="m_dom" class="input-pro" placeholder="DOMICILIO"><button onclick="sync('m')" class="bg-blue-600 px-2 py-2 rounded text-[7px]">SINC HIJO</button></div>
+                <div class="flex gap-2 items-center"><input id="m_t" class="input-pro" placeholder="CELULAR"><label class="text-[8px] flex gap-1 w-20"><input type="checkbox" id="m_auh"> AUH</label></div>
             </div>
-
-            <div class="glass p-5 border-t-4 border-pink-600 space-y-4">
-                <div class="space-y-2 pb-4 border-b border-white/5">
-                    <h3 class="text-pink-500 font-black italic">DATOS MADRE</h3>
-                    <div class="flex gap-2"><input id="m_n" class="input-pro" placeholder="NOMBRE COMPLETO"><input id="m_d" class="input-pro w-32" placeholder="DNI"></div>
-                    <div class="flex gap-2"><input id="m_nac" class="input-pro" placeholder="NACIONALIDAD"><input id="m_ocu" class="input-pro" placeholder="OCUPACIÓN"></div>
-                    <select id="m_edu" class="input-pro">
-                        <option>SIN ESTUDIOS</option><option>PRIMARIA COMPLETA</option><option>PRIMARIA INCOMPLETA</option>
-                        <option>SECUNDARIA COMPLETA</option><option>SECUNDARIA INCOMPLETA</option><option>TERCIARIO COMPLETO</option>
-                        <option>UNIVERSITARIO COMPLETO</option>
-                    </select>
-                    <div class="flex gap-2 items-center">
-                        <input id="m_t" class="input-pro" placeholder="TELÉFONO">
-                        <label class="flex items-center gap-2 text-[8px] w-24"><input type="checkbox" id="m_auh"> AUH</label>
-                    </div>
-                </div>
-                <div class="space-y-2">
-                    <h3 class="text-emerald-500 font-black italic">DATOS PADRE</h3>
-                    <div class="flex gap-2"><input id="p_n" class="input-pro" placeholder="NOMBRE COMPLETO"><input id="p_d" class="input-pro w-32" placeholder="DNI"></div>
-                    <select id="p_edu" class="input-pro">
-                        <option>SIN ESTUDIOS</option><option>PRIMARIA COMPLETA</option><option>SECUNDARIA COMPLETA</option><option>TERCIARIO COMPLETO</option><option>UNIVERSITARIO COMPLETO</option>
-                    </select>
-                    <input id="p_t" class="input-pro" placeholder="TELÉFONO">
-                </div>
-            </div>
-
-            <div class="glass p-5 border-t-4 border-yellow-500 space-y-4">
-                <input type="hidden" id="edit_id">
-                <button onclick="save()" class="w-full bg-yellow-500 text-black font-black p-4 rounded-xl hover:bg-yellow-400">💾 IMPACTAR REGISTRO</button>
-                <input type="text" id="search" onkeyup="renderTable()" class="input-pro border-yellow-500/50" placeholder="🔎 BUSCAR POR DNI O APELLIDO...">
-                <div class="overflow-y-auto max-h-60"><table class="w-full text-left"><tbody id="mainTable"></tbody></table></div>
+            <div class="space-y-2">
+                <h3 class="text-emerald-500 font-black italic">PADRE / TUTOR</h3>
+                <div class="flex gap-2"><input id="p_n" class="input-pro" placeholder="NOMBRE"><input id="p_d" class="input-pro w-24" placeholder="DNI"></div>
+                <select id="p_edu" class="input-pro"><option>PRIMARIA C.</option><option>SECUNDARIA C.</option><option>TERCIARIA C.</option><option>UNIVERSITARIA C.</option></select>
+                <div class="flex gap-2 items-center"><input id="p_dom" class="input-pro" placeholder="DOMICILIO"><button onclick="sync('p')" class="bg-blue-600 px-2 py-2 rounded text-[7px]">SINC HIJO</button></div>
+                <input id="p_t" class="input-pro" placeholder="CONTACTO">
             </div>
         </div>
-    </section>
 
-    <section id="sec2" class="hidden space-y-6">
-        <div id="gridSalas" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3"></div>
-        <div id="panelSala" class="glass p-8 hidden border-2 border-yellow-500/30">
-            <div class="flex justify-between items-center mb-6">
-                <h2 id="salaName" class="text-2xl font-black text-yellow-500 italic"></h2>
-                <button onclick="closeSala()" class="text-red-500 border border-red-500 px-4 py-1 rounded-full text-[9px]">CERRAR</button>
-            </div>
-            <div id="listaAlumnos" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
-        </div>
-    </section>
-
-    <section id="sec3" class="hidden space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="glass p-6 border-l-4 border-yellow-500"><p class="opacity-50">MATRÍCULA TOTAL</p><h2 id="st_total" class="text-3xl font-black">0</h2></div>
-            <div class="glass p-6 border-l-4 border-pink-500"><p class="opacity-50">BENEFICIARIOS AUH</p><h2 id="st_auh" class="text-3xl font-black">0</h2></div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-80">
-            <div class="glass p-6"><canvas id="chartEdu"></canvas></div>
-            <div class="glass p-6"><canvas id="chartPob"></canvas></div>
-        </div>
-
-        <div class="glass p-10 border-2 border-dashed border-white/20 text-center space-y-6">
+        <div class="glass p-5 border-t-4 border-yellow-500 flex flex-col justify-between">
             <div>
-                <h3 class="text-xl font-black italic">GESTOR DE RESPALDOS Y CARGA MASIVA</h3>
-                <p class="opacity-40 text-[9px]">IMPORTA TU BACKUP .JSON O EL EXCEL .CSV DE TUS COLEGAS</p>
+                <h3 class="text-yellow-500 font-black italic">CONTROL CENTRAL</h3>
+                <input type="hidden" id="edit_id">
+                <button onclick="save()" class="w-full bg-yellow-500 text-black font-black p-4 rounded-lg mt-2 hover:bg-yellow-400">💾 GUARDAR E IMPACTAR</button>
+                <button onclick="clearF()" class="w-full border border-white/10 p-2 mt-2 rounded-lg text-[8px]">NUEVO REGISTRO</button>
             </div>
-            <div class="flex flex-wrap justify-center gap-4">
-                <button onclick="exportData()" class="bg-blue-600 px-10 py-4 rounded-xl font-black">DESCARGAR MI RESPALDO (.JSON)</button>
-                <label class="bg-emerald-600 px-10 py-4 rounded-xl font-black cursor-pointer">
-                    SUBIR ARCHIVO (JSON / EXCEL CSV)
-                    <input type="file" class="hidden" onchange="processFile(event)">
-                </label>
+            <div class="mt-4">
+                <input type="text" id="search" onkeyup="renderT()" class="input-pro border-yellow-500/30" placeholder="🔎 DNI, NOMBRE O CALLE...">
+                <div class="overflow-y-auto max-h-40 mt-2"><table class="w-full text-[9px]"><tbody id="mainT"></tbody></table></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="sec2" class="hidden space-y-4">
+        <div id="gridS" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3"></div>
+        <div id="panelS" class="glass p-6 hidden border-2 border-yellow-500/20">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="sTitle" class="text-xl font-black text-yellow-500 italic"></h2>
+                <div class="flex gap-2"><input type="date" id="asDate" class="input-pro w-32" onchange="renderAsis()"><button onclick="closeS()" class="text-red-500 border border-red-500 px-3 py-1 rounded-full">X</button></div>
+            </div>
+            <div id="listAsis" class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-2"></div>
+        </div>
+    </section>
+
+    <section id="sec3" class="hidden space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="glass p-4 text-center"><p class="opacity-40">MATRÍCULA</p><h2 id="st_m" class="text-3xl font-black">0</h2></div>
+            <div class="glass p-4 text-center"><p class="opacity-40">AUH</p><h2 id="st_a" class="text-3xl font-black">0</h2></div>
+            <div class="glass p-4 text-center"><p class="opacity-40">ALERTA SALUD</p><h2 id="st_s" class="text-3xl font-black text-red-500">0</h2></div>
+            <div class="glass p-4 text-center"><p class="opacity-40">PRESENTISMO</p><h2 id="st_p" class="text-3xl font-black text-emerald-500">0%</h2></div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[350px]">
+            <div class="glass p-4"><canvas id="c1"></canvas></div>
+            <div class="glass p-4"><canvas id="c2"></canvas></div>
+            <div class="glass p-4"><canvas id="c3"></canvas></div>
+        </div>
+        <div class="glass p-8 border-2 border-dashed border-white/10 text-center space-y-4">
+            <h3 class="font-black italic">TRANSFERENCIA DE DATOS - J926 PLATINUM</h3>
+            <div class="flex flex-wrap justify-center gap-3">
+                <button onclick="exportJ()" class="bg-blue-600 px-8 py-3 rounded-xl font-black">DESCARGAR MI BACKUP</button>
+                <label class="bg-emerald-600 px-8 py-3 rounded-xl font-black cursor-pointer">SUBIR BACKUP / EXCEL CSV<input type="file" class="hidden" onchange="importF(event)"></label>
             </div>
         </div>
     </section>
 </main>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('J926_PLATINUM')) || [];
+    let db = JSON.parse(localStorage.getItem('J926_V3')) || [];
+    let as = JSON.parse(localStorage.getItem('J926_AS')) || {};
     const SALAS = ["ROSA","ROJA","NARANJA","CELESTE","VIOLETA","AMARILLA","AZUL"];
 
     function init() {
-        populateSelectors();
-        renderTable();
-        renderGrid();
-    }
-
-    function populateSelectors() {
-        const tm = document.getElementById('tm_list'); const tt = document.getElementById('tt_list');
+        const tm = document.getElementById('tm_list'), tt = document.getElementById('tt_list');
         SALAS.forEach(s => { tm.innerHTML += `<option value="${s} TM">${s} TM</option>`; tt.innerHTML += `<option value="${s} TT">${s} TT</option>`; });
+        renderT(); renderGrid(); document.getElementById('asDate').value = new Date().toISOString().split('T')[0];
     }
 
     function setTab(n) {
         [1,2,3].forEach(i => { document.getElementById('sec'+i).classList.toggle('hidden', i !== n); document.getElementById('tab'+i).classList.toggle('active', i === n); });
-        if(n === 3) updateStats();
+        if(n === 3) updateS();
     }
 
-    function startVoice(id) {
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'es-AR'; recognition.start();
-        recognition.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); };
+    function voice(id) {
+        const r = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        r.lang = 'es-AR'; r.start();
+        r.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); };
     }
 
     function save() {
         const id = document.getElementById('edit_id').value || Date.now();
-        const record = {
+        const d = {
             id: Number(id),
-            a: { n: v('a_n'), d: v('a_d'), nac: v('a_nac'), f: v('a_f'), e: v('a_e'), s: v('a_s'), dom: v('a_dom'), salud: v('a_salud'), h: v('a_herm'), hj: document.getElementById('a_hj').checked },
-            m: { n: v('m_n'), d: v('m_d'), nac: v('m_nac'), ocu: v('m_ocu'), edu: v('m_edu'), t: v('m_t'), auh: document.getElementById('m_auh').checked },
-            p: { n: v('p_n'), d: v('p_d'), edu: v('p_edu'), t: v('p_t') }
+            a: { n: v('a_n'), d: v('a_d'), nac: v('a_nac'), f: v('a_f'), e: v('a_e'), s: v('a_s'), dom: v('a_dom'), h: v('a_h'), hj: document.getElementById('a_hj').checked, sld: v('a_sld') },
+            m: { n: v('m_n'), d: v('m_d'), edu: v('m_edu'), dom: v('m_dom'), t: v('m_t'), auh: document.getElementById('m_auh').checked },
+            p: { n: v('p_n'), d: v('p_d'), edu: v('p_edu'), dom: v('p_dom'), t: v('p_t') }
         };
-        db = db.filter(x => x.id !== record.id); db.push(record);
-        localStorage.setItem('J926_PLATINUM', JSON.stringify(db));
-        alert("GUARDADO EXITOSO"); location.reload();
+        db = db.filter(x => x.id !== d.id); db.push(d);
+        localStorage.setItem('J926_V3', JSON.stringify(db)); alert("SISTEMA ACTUALIZADO"); location.reload();
     }
 
-    function renderTable() {
-        const q = document.getElementById('search').value.toUpperCase();
-        document.getElementById('mainTable').innerHTML = db.filter(x => x.a.n.includes(q) || x.a.d.includes(q)).map(x => `
-            <tr class="border-b border-white/5 hover:bg-white/5 cursor-pointer" onclick="edit(${x.id})">
-                <td class="p-2 font-black text-xs">${x.a.n}</td><td class="p-2 text-yellow-500">${x.a.s}</td>
-            </tr>`).join('');
+    function importF(e) {
+        const reader = new FileReader(); const f = e.target.files[0];
+        reader.onload = (ev) => {
+            if(f.name.endsWith('.json')) { db = JSON.parse(ev.target.result); }
+            else {
+                const lines = ev.target.result.split('\n').slice(1);
+                lines.forEach(l => {
+                    const c = l.split(';');
+                    if(c.length > 2) db.push({ id: Date.now()+Math.random(), a:{n:c[1], d:c[2], s:c[0], dom:c[3]||'', nac:'ARGENTINA'}, m:{edu:'SIN ESTUDIOS'}, p:{edu:'SIN ESTUDIOS'} });
+                });
+            }
+            localStorage.setItem('J926_V3', JSON.stringify(db)); location.reload();
+        };
+        reader.readAsText(f);
     }
 
     function renderGrid() {
-        const grid = document.getElementById('gridSalas'); grid.innerHTML = "";
-        ["TM","TT"].forEach(turno => {
-            SALAS.forEach(s => {
-                const name = `${s} ${turno}`; const count = db.filter(x => x.a.s === name).length;
-                grid.innerHTML += `<div onclick="openSala('${name}')" class="glass p-3 border-l-4 border-yellow-500 cursor-pointer">
-                    <p class="text-[7px] opacity-40">${name}</p><h4 class="text-lg font-black">${count}/30</h4></div>`;
-            });
-        });
+        const g = document.getElementById('gridS'); g.innerHTML = "";
+        ["TM","TT"].forEach(t => { SALAS.forEach(s => {
+            const n = `${s} ${t}`, c = db.filter(x => x.a.s === n).length;
+            g.innerHTML += `<div onclick="openS('${n}')" class="glass p-3 border-l-4 border-yellow-500 cursor-pointer hover:bg-yellow-500/10 transition">
+                <p class="text-[7px] opacity-40">${n}</p><h4 class="text-lg font-black">${c}/30</h4></div>`;
+        });});
     }
 
-    function openSala(s) {
-        document.getElementById('panelSala').classList.remove('hidden'); document.getElementById('salaName').innerText = s;
-        document.getElementById('listaAlumnos').innerHTML = db.filter(x => x.a.s === s).map(x => `
-            <div class="glass p-3 flex justify-between items-center"><p class="font-black">${x.a.n}</p><button onclick="edit(${x.id})" class="text-blue-400">EDITAR</button></div>
-        `).join('') || '<p>SALA VACÍA</p>';
+    function openS(s) { document.getElementById('panelS').classList.remove('hidden'); document.getElementById('sTitle').innerText = s; renderAsis(); }
+    
+    function renderAsis() {
+        const s = document.getElementById('sTitle').innerText, d = document.getElementById('asDate').value;
+        document.getElementById('listAsis').innerHTML = db.filter(x => x.a.s === s).map(x => `
+            <div class="glass p-2 flex justify-between items-center text-[8px]">
+                <p class="font-black truncate w-24">${x.a.n}</p>
+                <div class="flex gap-1">
+                    <button onclick="mk('${d}',${x.id},'P')" class="px-2 py-1 rounded ${as[d]&&as[d][x.id]==='P'?'bg-emerald-600':'bg-white/5'}">P</button>
+                    <button onclick="mk('${d}',${x.id},'A')" class="px-2 py-1 rounded ${as[d]&&as[d][x.id]==='A'?'bg-red-600':'bg-white/5'}">A</button>
+                </div>
+            </div>`).join('');
     }
 
-    // --- LÓGICA DE IMPORTACIÓN CRÍTICA ---
-    function processFile(e) {
-        const reader = new FileReader();
-        const file = e.target.files[0];
-        reader.onload = (ev) => {
-            try {
-                if(file.name.endsWith('.json')) {
-                    const imported = JSON.parse(ev.target.result);
-                    db = [...new Map([...db, ...imported].map(item => [item.a.d, item])).values()]; // Unifica sin duplicar DNI
-                } else {
-                    const lines = ev.target.result.split('\n').slice(1);
-                    lines.forEach(l => {
-                        const c = l.split(';');
-                        if(c.length > 2) {
-                            db.push({ id: Date.now()+Math.random(), a:{n:c[1], d:c[2], nac:'ARGENTINA', s:c[0], dom:c[3]||'', salud:''}, m:{n:c[4]||'', d:'', edu:'SIN ESTUDIOS', auh:false}, p:{n:c[5]||'', d:'', edu:'SIN ESTUDIOS'} });
-                        }
-                    });
-                }
-                localStorage.setItem('J926_PLATINUM', JSON.stringify(db));
-                alert("DATOS INTEGRADOS CORRECTAMENTE"); location.reload();
-            } catch(err) { alert("ERROR AL LEER ARCHIVO"); }
-        };
-        reader.readAsText(file);
+    function mk(d, id, v) { if(!as[d]) as[d]={}; as[d][id]=v; localStorage.setItem('J926_AS', JSON.stringify(as)); renderAsis(); }
+
+    function updateS() {
+        document.getElementById('st_m').innerText = db.length;
+        document.getElementById('st_a').innerText = db.filter(x => x.m.auh).length;
+        document.getElementById('st_s').innerText = db.filter(x => x.a.sld).length;
+        renderC();
     }
 
-    function exportData() {
-        const blob = new Blob([JSON.stringify(db)], {type:'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download="BACKUP_SUPERVISION_J926.json"; a.click();
-    }
-
-    function updateStats() {
-        document.getElementById('st_total').innerText = db.length;
-        document.getElementById('st_auh').innerText = db.filter(x => x.m.auh).length;
-        renderCharts();
-    }
-
-    function renderCharts() {
-        if(window.myChart) window.myChart.destroy();
+    function renderC() {
+        if(window.ch1) window.ch1.destroy();
         const edu = {}; db.forEach(x => edu[x.m.edu] = (edu[x.m.edu]||0)+1);
-        window.myChart = new Chart(document.getElementById('chartEdu'), { type:'bar', data:{ labels:Object.keys(edu), datasets:[{label:'NIVEL EDUCATIVO MADRE', data:Object.values(edu), backgroundColor:'#facc15'}]}, options:{responsive:true, maintainAspectRatio:false}});
+        window.ch1 = new Chart(document.getElementById('c1'), { type:'bar', data:{ labels:Object.keys(edu), datasets:[{label:'NIVEL EDUCATIVO MADRE', data:Object.values(edu), backgroundColor:'#facc15'}]}, options:{responsive:true, maintainAspectRatio:false}});
     }
 
     function v(id) { return document.getElementById(id).value.toUpperCase().trim(); }
-    function calcAge(f) { const birth = new Date(f); const limit = new Date("2026-06-30"); let age = limit.getFullYear() - birth.getFullYear(); if (limit.getMonth() < birth.getMonth() || (limit.getMonth() === birth.getMonth() && limit.getDate() < birth.getDate())) age--; document.getElementById('a_e').value = age + " AÑOS"; }
-    function edit(id) { const x = db.find(i => i.id === id); document.getElementById('edit_id').value = x.id; document.getElementById('a_n').value = x.a.n; document.getElementById('a_d').value = x.a.d; document.getElementById('a_s').value = x.a.s; setTab(1); }
-    function closeSala() { document.getElementById('panelSala').classList.add('hidden'); }
-    function clearForm() { document.querySelectorAll('input').forEach(i => i.value=""); }
+    function sync(p) { document.getElementById(p+'_dom').value = document.getElementById('a_dom').value; }
+    function calcAge(f) { const b = new Date(f), l = new Date("2026-06-30"); let a = l.getFullYear()-b.getFullYear(); if(l.getMonth()<b.getMonth()||(l.getMonth()===b.getMonth()&&l.getDate()<b.getDate())) a--; document.getElementById('a_e').value = a+" AÑOS"; }
+    function renderT() {
+        const q = document.getElementById('search').value.toUpperCase();
+        document.getElementById('mainT').innerHTML = db.filter(x => x.a.n.includes(q) || x.a.d.includes(q) || x.a.dom.includes(q)).map(x => `
+            <tr class="border-b border-white/5 cursor-pointer" onclick="edit(${x.id})"><td class="p-1 font-bold">${x.a.n}</td><td class="text-yellow-500">${x.a.s}</td></tr>`).join('');
+    }
+    function edit(id) { const x = db.find(i => i.id === id); document.getElementById('edit_id').value = x.id; document.getElementById('a_n').value = x.a.n; setTab(1); }
+    function exportJ() { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download="BACKUP_PLATINUM_V3.json"; a.click(); }
+    function closeS() { document.getElementById('panelS').classList.add('hidden'); }
+    function clearF() { document.querySelectorAll('input').forEach(i => i.value=""); document.getElementById('edit_id').value=""; }
 </script>
 </body>
 </html>
