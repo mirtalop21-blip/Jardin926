@@ -3,166 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J926 TITANIUM V15 | SISTEMA DE AUDITORIA INSTITUCIONAL</title>
+    <title>J926 TITANIUM V16 | SUPREME ARCHITECT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         :root { --accent: #facc15; --bg: #010409; }
-        body { background: var(--bg); color: #e6edf3; font-family: 'Segoe UI', Roboto, sans-serif; text-transform: uppercase; font-size: 8px; overflow-x: hidden; }
-        .glass { background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(15px); border: 1px solid #30363d; border-radius: 12px; }
-        .input-titan { background: #0d1117; border: 1px solid #30363d; padding: 10px; border-radius: 6px; color: #f0f6fc; width: 100%; transition: 0.3s; }
-        .input-titan:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(250, 204, 21, 0.2); outline: none; }
-        .btn-nav { flex: 1; padding: 18px; font-weight: 900; cursor: pointer; border-bottom: 4px solid transparent; opacity: 0.4; transition: 0.3s; text-align: center; }
+        body { background: var(--bg); color: #e6edf3; font-family: 'Inter', sans-serif; text-transform: uppercase; font-size: 8px; }
+        .glass { background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(20px); border: 1px solid #30363d; border-radius: 10px; }
+        .input-titan { background: #0d1117; border: 1px solid #30363d; padding: 10px; border-radius: 5px; color: #f0f6fc; width: 100%; transition: 0.2s; }
+        .input-titan:focus { border-color: var(--accent); outline: none; }
+        .btn-nav { flex: 1; padding: 15px; font-weight: 900; cursor: pointer; border-bottom: 4px solid transparent; opacity: 0.5; transition: 0.3s; text-align: center; }
         .btn-nav.active { opacity: 1; color: var(--accent); border-bottom-color: var(--accent); background: linear-gradient(to top, rgba(250,204,21,0.05), transparent); }
-        .sala-card { border-top: 5px solid; transition: 0.3s; cursor: pointer; }
-        .sala-card:hover { transform: scale(1.02); background: rgba(255,255,255,0.03); }
-        .alerta-emergente { animation: flash 1.5s infinite; border: 2px solid #ef4444 !important; }
-        @keyframes flash { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+        .sala-box { border-left: 5px solid; cursor: pointer; transition: 0.3s; }
+        .mic-on { color: #ef4444; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body onload="init()">
 
-<header class="p-3 glass rounded-none border-b border-yellow-500/30 flex justify-between items-center">
-    <div class="flex items-center gap-3">
-        <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-black font-black">15</div>
-        <h1 class="font-black tracking-tighter text-yellow-500">TITANIUM V15 <span class="text-white opacity-40">| AUDITORÍA DGCE</span></h1>
-    </div>
-    <div id="reloj" class="font-mono text-yellow-500"></div>
-</header>
-
-<nav class="flex sticky top-0 z-50 glass rounded-none border-b border-white/10">
-    <div onclick="setTab(1)" id="t1" class="btn-nav active"><i class="bi bi-person-plus-fill"></i> LEGAJO DIGITAL</div>
-    <div onclick="setTab(2)" id="t2" class="btn-nav"><i class="bi bi-calendar-check"></i> ASISTENCIA ESPEJO</div>
-    <div onclick="setTab(3)" id="t3" class="btn-nav"><i class="bi bi-diagram-3"></i> FOTOGRAFÍA INST.</div>
-    <div onclick="setTab(4)" id="t4" class="btn-nav"><i class="bi bi-shield-lock"></i> AUDITORÍA & RESGUARDO</div>
+<nav class="flex sticky top-0 z-50 glass border-b border-yellow-500/30">
+    <div onclick="setTab(1)" id="t1" class="btn-nav active"><i class="bi bi-person-badge"></i> LEGAJO INTEGRAL</div>
+    <div onclick="setTab(2)" id="t2" class="btn-nav"><i class="bi bi-check2-all"></i> ASISTENCIA ESPEJO</div>
+    <div onclick="setTab(3)" id="t3" class="btn-nav"><i class="bi bi-camera-reels"></i> FOTO INSTITUCIONAL</div>
+    <div onclick="setTab(4)" id="t4" class="btn-nav"><i class="bi bi-graph-up-arrow"></i> SUPERVISIÓN MÉTRICAS</div>
 </nav>
 
 <main class="p-4 space-y-6">
 
-    <section id="s1" class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+    <section id="s1" class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div class="glass p-4 border-t-4 border-yellow-500 space-y-2">
-            <h3 class="text-yellow-500 font-black italic flex justify-between">ALUMNO <i class="bi bi-qr-code-scan" onclick="simulateScan()"></i></h3>
+            <h3 class="text-yellow-500 font-black flex justify-between">ALUMNO <i class="bi bi-mic-fill cursor-pointer" id="mic-main" onclick="voiceInput('main')"></i></h3>
             <input id="a_nom" class="input-titan" placeholder="APELLIDO Y NOMBRE">
             <div class="flex gap-2"><input id="a_dni" class="input-titan" placeholder="DNI"><input id="a_nac" class="input-titan" placeholder="NACIONALIDAD"></div>
-            <div class="flex gap-2"><input id="a_fec" type="date" class="input-titan" onchange="calcAge(this.value)"><input id="a_edad" class="input-titan w-1/3 text-yellow-400" readonly></div>
-            <select id="a_sala" class="input-titan font-bold text-yellow-500"><optgroup label="MAÑANA" id="tm_l"></optgroup><optgroup label="TARDE" id="tt_l"></optgroup></select>
-            <input id="a_dom" class="input-titan" placeholder="DOMICILIO REAL">
-            <textarea id="a_salud" class="input-titan h-10" placeholder="FICHA MÉDICA / ALERGIAS"></textarea>
+            <div class="flex gap-2"><input id="a_fec" type="date" class="input-titan" onchange="calcAge(this.value)"><input id="a_edad" class="input-titan w-1/3 text-yellow-500" readonly></div>
+            <select id="a_sala" class="input-titan text-yellow-500 font-bold"><optgroup label="MAÑANA" id="tm_l"></optgroup><optgroup label="TARDE" id="tt_l"></optgroup></select>
+            <input id="a_dom" class="input-titan" placeholder="DOMICILIO">
+            <div class="flex gap-2"><input id="a_her" class="input-titan" placeholder="HERMANOS (CANT.)"><input id="a_herj" class="input-titan" placeholder="HERMANOS EN JARDIN"></div>
+            <textarea id="a_salud" class="input-titan h-12" placeholder="LEGAJO DE SALUD / OBSERVACIONES"></textarea>
         </div>
 
-        <div class="glass p-4 border-t-4 border-cyan-500 space-y-2">
-            <h3 class="text-cyan-500 font-black italic">MADRE / TUTORA</h3>
-            <input id="m_nom" class="input-titan" placeholder="NOMBRE COMPLETO">
-            <div class="flex gap-2"><input id="m_dni" class="input-titan" placeholder="DNI"><input id="m_nac" class="input-titan" placeholder="NACIONALIDAD"></div>
-            <div class="flex gap-2"><input id="m_tel" class="input-titan" placeholder="TELÉFONO"><select id="m_edu" class="input-titan"></select></div>
-            <select id="m_lab" class="input-titan"><option>EMPLEO FORMAL</option><option>EMPLEO INFORMAL</option><option>DESOCUPADO</option></select>
+        <div class="glass p-4 border-t-4 border-cyan-500 space-y-4">
+            <div>
+                <h3 class="text-cyan-500 font-black text-[7px] mb-2">MADRE / TUTORA</h3>
+                <input id="m_nom" class="input-titan mb-1" placeholder="NOMBRE COMPLETO">
+                <div class="flex gap-2 mb-1"><input id="m_dni" class="input-titan" placeholder="DNI"><input id="m_nac" class="input-titan" placeholder="NACIONALIDAD"></div>
+                <div class="flex gap-2 mb-1"><input id="m_tel" class="input-titan" placeholder="TELÉFONO"><input id="m_lab" class="input-titan" placeholder="OCUPACIÓN"></div>
+                <select id="m_edu" class="input-titan mb-1"></select>
+                <div class="flex gap-2 text-[6px]">
+                    <label class="flex items-center gap-1"><input type="checkbox" id="m_dom_check" onchange="syncDom('m')"> MISMO DOMICILIO</label>
+                    <label class="flex items-center gap-1"><input type="checkbox" id="m_auh"> RECIBE AUH</label>
+                </div>
+                <input id="m_dom" class="input-titan mt-1 hidden" placeholder="OTRO DOMICILIO MADRE">
+            </div>
+            <hr class="border-white/10">
+            <div>
+                <h3 class="text-emerald-500 font-black text-[7px] mb-2">PADRE / TUTOR</h3>
+                <input id="p_nom" class="input-titan mb-1" placeholder="NOMBRE COMPLETO">
+                <div class="flex gap-2 mb-1"><input id="p_dni" class="input-titan" placeholder="DNI"><input id="p_nac" class="input-titan" placeholder="NACIONALIDAD"></div>
+                <div class="flex gap-2 mb-1"><input id="p_tel" class="input-titan" placeholder="TELÉFONO"><input id="p_lab" class="input-titan" placeholder="OCUPACIÓN"></div>
+                <select id="p_edu" class="input-titan mb-1"></select>
+                <label class="flex items-center gap-1 text-[6px]"><input type="checkbox" id="p_dom_check" onchange="syncDom('p')"> MISMO DOMICILIO</label>
+                <input id="p_dom" class="input-titan mt-1 hidden" placeholder="OTRO DOMICILIO PADRE">
+            </div>
         </div>
 
-        <div class="glass p-4 border-t-4 border-emerald-500 space-y-2">
-            <h3 class="text-emerald-500 font-black italic">PADRE / TUTOR</h3>
-            <input id="p_nom" class="input-titan" placeholder="NOMBRE COMPLETO">
-            <div class="flex gap-2"><input id="p_dni" class="input-titan" placeholder="DNI"><input id="p_nac" class="input-titan" placeholder="NACIONALIDAD"></div>
-            <div class="flex gap-2"><input id="p_tel" class="input-titan" placeholder="TELÉFONO"><select id="p_edu" class="input-titan"></select></div>
-            <select id="p_lab" class="input-titan"><option>EMPLEO FORMAL</option><option>EMPLEO INFORMAL</option><option>DESOCUPADO</option></select>
-        </div>
-
-        <div class="glass p-4 border-t-4 border-pink-500 space-y-4">
-            <button onclick="save()" class="w-full bg-pink-600 py-6 rounded-xl font-black shadow-xl hover:bg-pink-500 text-xs">GUARDAR EN LEGAJO</button>
+        <div class="glass p-4 border-t-4 border-pink-500 space-y-3">
+            <button onclick="save()" class="w-full bg-pink-600 py-6 rounded-lg font-black shadow-lg">GUARDAR / ACTUALIZAR LEGAJO</button>
             <div class="relative">
-                <input type="text" id="find" onkeyup="search()" class="input-titan" placeholder="🔎 BUSCADOR INTELIGENTE">
-                <div id="prev_list" class="max-h-[160px] overflow-y-auto mt-2 space-y-1"></div>
+                <input type="text" id="find" onkeyup="search()" class="input-titan" placeholder="🔎 BUSCADOR INTELIGENTE (DNI/NOMBRE)">
+                <div id="prev_list" class="max-h-[200px] overflow-y-auto mt-2 space-y-1"></div>
             </div>
         </div>
     </section>
 
     <section id="s2" class="hidden space-y-4">
-        <div class="grid grid-cols-2 md:grid-cols-7 gap-3" id="asis_grid"></div>
-        <div id="asis_panel" class="glass p-6 hidden border-2 border-emerald-500">
-            <div class="flex justify-between items-center mb-6">
-                <h2 id="asis_titulo" class="text-xl font-black text-emerald-400 tracking-widest"></h2>
-                <input type="date" id="asis_fecha" class="input-titan w-48" onchange="renderAlumnosAsis()">
+        <div class="grid grid-cols-2 md:grid-cols-7 gap-2" id="asis_grid_salas"></div>
+        <div id="asis_panel" class="glass p-4 hidden border-2 border-emerald-500">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="asis_sala_nom" class="text-xl font-black text-emerald-400"></h2>
+                <input type="date" id="asis_fecha" class="input-titan w-40" onchange="renderAlumnosAsis()">
             </div>
-            <div id="asis_lista" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+            <div id="asis_lista_alumnos" class="grid grid-cols-1 md:grid-cols-3 gap-2"></div>
         </div>
     </section>
 
-    <section id="s3" class="hidden space-y-6">
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4" id="foto_grid"></div>
-        
-        <div id="sala_detalle" class="glass p-6 hidden border-t-8">
-            <div class="flex justify-between items-start mb-6">
-                <div>
-                    <h2 id="det_titulo" class="text-3xl font-black"></h2>
-                    <p id="det_stats" class="text-yellow-500 font-bold mt-1"></p>
-                </div>
+    <section id="s3" class="hidden space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-7 gap-3" id="foto_salas"></div>
+        <div id="sala_audit" class="glass p-6 hidden border-t-8">
+            <div class="flex justify-between items-start">
+                <div id="sala_audit_info"></div>
                 <button onclick="this.parentElement.parentElement.classList.add('hidden')" class="text-red-500 font-black">CERRAR X</button>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="text-white/40 border-b border-white/10 italic">
-                        <tr><th>ALUMNO</th><th>DNI</th><th>NACIONALIDAD (A/M/P)</th><th>PADRES ESTUDIOS</th><th>SITUACIÓN</th><th>ACCIÓN</th></tr>
+            <div class="overflow-x-auto mt-4">
+                <table class="w-full text-left text-[7px]">
+                    <thead class="text-white/40 border-b border-white/10">
+                        <tr><th>ALUMNO</th><th>DNI</th><th>NAC.</th><th>PADRES (NAC/ESTUDIOS)</th><th>TELÉFONO</th><th>ACCIONES</th></tr>
                     </thead>
-                    <tbody id="det_body" class="text-[7px]"></tbody>
+                    <tbody id="sala_audit_body"></tbody>
                 </table>
             </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div class="glass p-4"><h4 class="text-center font-black mb-2 italic">POBLACIÓN NACIONALIDADES</h4><canvas id="chartNac"></canvas></div>
-            <div class="glass p-4"><h4 class="text-center font-black mb-2 italic">ESTUDIOS PADRES %</h4><canvas id="chartEdu"></canvas></div>
-            <div class="glass p-4"><h4 class="text-center font-black mb-2 italic">ASISTENCIA POR TURNOS</h4><canvas id="chartAsis"></canvas></div>
         </div>
     </section>
 
     <section id="s4" class="hidden space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="glass p-6 text-center border-b-4 border-white"><p class="opacity-50 text-[6px]">MATRÍCULA TOTAL</p><h2 id="aud_total" class="text-4xl font-black">0</h2></div>
-            <div class="glass p-6 text-center border-b-4 border-red-500"><p class="opacity-50 text-[6px]">ALERTAS AUDITORÍA</p><h2 id="aud_alertas" class="text-4xl font-black text-red-500">0</h2></div>
-            <div class="glass p-6 text-center border-b-4 border-green-500"><p class="opacity-50 text-[6px]">ALTAS DEL MES</p><h2 id="aud_altas" class="text-4xl font-black text-green-500">0</h2></div>
-            <div class="glass p-6 text-center border-b-4 border-yellow-500"><p class="opacity-50 text-[6px]">BAJAS / VACANTES</p><h2 id="aud_bajas" class="text-4xl font-black text-yellow-500">0</h2></div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="glass p-4 text-center border-b-2 border-yellow-500"><p class="text-[6px] opacity-60">MATRÍCULA TOTAL</p><h2 id="m_total" class="text-3xl font-black">0</h2></div>
+            <div class="glass p-4 text-center border-b-2 border-red-500"><p class="text-[6px] opacity-60">BAJAS DEL MES</p><h2 id="m_bajas" class="text-3xl font-black text-red-500">0</h2></div>
+            <div class="glass p-4 text-center border-b-2 border-green-500"><p class="text-[6px] opacity-60">VACANTES DISPONIBLES</p><h2 id="m_vac" class="text-3xl font-black text-green-500">0</h2></div>
+            <div class="glass p-4 text-center border-b-2 border-cyan-500"><p class="text-[6px] opacity-60">EXTRANJEROS %</p><h2 id="m_ext" class="text-3xl font-black text-cyan-500">0</h2></div>
         </div>
-
-        <div class="glass p-6">
-            <h3 class="font-black text-red-500 mb-4 italic"><i class="bi bi-telephone-outbound"></i> ALERTAS A TELÉFONO (SECRETARÍA/DIRECTIVO)</h3>
-            <div id="emergentes_auditoria" class="space-y-2"></div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="glass p-4"><canvas id="chartNac"></canvas></div>
+            <div class="glass p-4"><canvas id="chartEdu"></canvas></div>
+            <div class="glass p-4"><canvas id="chartAsis"></canvas></div>
         </div>
-
-        <div class="glass p-10 flex flex-wrap justify-center gap-6">
-            <button onclick="exportExcel()" class="bg-emerald-600 px-14 py-6 rounded-2xl font-black shadow-2xl hover:bg-emerald-500">EXPORTAR EXCEL DGCE OFICIAL</button>
-            <button onclick="exportJSON()" class="bg-blue-600 px-14 py-6 rounded-2xl font-black hover:bg-blue-500">GENERAR RESPALDO JSON OMNI</button>
-            <label class="bg-white/10 px-14 py-6 rounded-2xl font-black cursor-pointer border border-dashed border-white/30">IMPORTAR BASE ANTERIOR <input type="file" class="hidden" onchange="importData(event)"></label>
+        <div class="glass p-8 flex flex-wrap justify-center gap-4">
+            <button onclick="exportExcel()" class="bg-emerald-600 px-10 py-4 rounded font-black hover:bg-emerald-500">INFORME EXCEL DGCE</button>
+            <button onclick="exportJSON()" class="bg-blue-600 px-10 py-4 rounded font-black">RESPALDO OMNI TITANIUM</button>
+            <label class="bg-white/10 px-10 py-4 rounded font-black cursor-pointer">IMPORTAR BASE <input type="file" class="hidden" onchange="importData(event)"></label>
         </div>
     </section>
 
 </main>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('J926_TITAN_V15_DB')) || [];
-    let asis = JSON.parse(localStorage.getItem('J926_TITAN_V15_ASIS')) || {};
-    let bajas = JSON.parse(localStorage.getItem('J926_TITAN_V15_BAJAS')) || [];
-    let acciones = JSON.parse(localStorage.getItem('J926_TITAN_V15_ACC')) || [];
+    let db = JSON.parse(localStorage.getItem('J926_V16_DB')) || [];
+    let asis = JSON.parse(localStorage.getItem('J926_V16_ASIS')) || {};
+    let editId = null;
 
     const SALAS = [
         {n: 'ROSA', c: '#f472b6'}, {n: 'ROJA', c: '#ef4444'}, {n: 'NARANJA', c: '#fb923c'},
         {n: 'CELESTE', c: '#38bdf8'}, {n: 'VIOLETA', c: '#a855f7'}, {n: 'AMARILLA', c: '#facc15'}, {n: 'AZUL', c: '#2563eb'}
     ];
 
+    const ESTUDIOS = ["SIN ESTUDIOS", "PRIMARIA INCOMPLETA", "PRIMARIA COMPLETA", "SECUNDARIA INCOMPLETA", "SECUNDARIA COMPLETA", "TERCIARIA INCOMPLETA", "TERCIARIA COMPLETA", "UNIVERSITARIA INCOMPLETA", "UNIVERSITARIA COMPLETA"];
+
     function init() {
-        setInterval(() => { document.getElementById('reloj').innerText = new Date().toLocaleString(); }, 1000);
         const tm = document.getElementById('tm_l'), tt = document.getElementById('tt_l');
         const me = document.getElementById('m_edu'), pe = document.getElementById('p_edu');
-        SALAS.forEach(s => { 
-            tm.innerHTML += `<option value="${s.n} TM">${s.n} TM</option>`; 
-            tt.innerHTML += `<option value="${s.n} TT">${s.n} TT</option>`; 
-        });
-        ["SIN ESTUDIOS", "PRIMARIA C.", "SECUNDARIA C.", "TERCIARIA C.", "UNIV. COMPLETA"].forEach(e => {
-            me.innerHTML += `<option value="${e}">${e}</option>`;
-            pe.innerHTML += `<option value="${e}">${e}</option>`;
-        });
+        SALAS.forEach(s => { tm.innerHTML += `<option value="${s.n} TM">${s.n} TM</option>`; tt.innerHTML += `<option value="${s.n} TT">${s.n} TT</option>`; });
+        ESTUDIOS.forEach(e => { me.innerHTML += `<option value="${e}">${e}</option>`; pe.innerHTML += `<option value="${e}">${e}</option>`; });
         document.getElementById('asis_fecha').value = new Date().toISOString().split('T')[0];
+        renderPreview();
     }
 
     function setTab(n) {
@@ -172,175 +155,150 @@
         });
         if(n === 2) renderAsisGrid();
         if(n === 3) renderFotoGrid();
-        if(n === 4) runAuditoria();
+        if(n === 4) runMetrics();
+    }
+
+    function syncDom(pref) {
+        const check = document.getElementById(pref+'_dom_check');
+        const input = document.getElementById(pref+'_dom');
+        input.classList.toggle('hidden', check.checked);
+        if(check.checked) input.value = document.getElementById('a_dom').value;
     }
 
     function calcAge(f) {
         const b = new Date(f), r = new Date("2026-06-30");
-        document.getElementById('a_edad').value = (r.getFullYear() - b.getFullYear()) + " AÑOS";
+        let age = r.getFullYear() - b.getFullYear();
+        if (r < new Date(r.getFullYear(), b.getMonth(), b.getDate())) age--;
+        document.getElementById('a_edad').value = age + " AÑOS";
     }
 
     function save() {
-        const al = { 
-            nom: v('a_nom'), dni: v('a_dni'), nac: v('a_nac'), fec: v('a_fec'), 
-            edad: v('a_edad'), sala: v('a_sala'), dom: v('a_dom'), salud: v('a_salud'),
-            alta_mes: new Date().getMonth() + 1
+        const data = {
+            id: editId || Date.now(),
+            al: { nom: v('a_nom'), dni: v('a_dni'), nac: v('a_nac'), fec: v('a_fec'), edad: v('a_edad'), sala: v('a_sala'), dom: v('a_dom'), her: v('a_her'), herj: v('a_herj'), salud: v('a_salud'), alta: new Date().toLocaleDateString() },
+            ma: { nom: v('m_nom'), dni: v('m_dni'), nac: v('m_nac'), tel: v('m_tel'), lab: v('m_lab'), edu: v('m_edu'), auh: document.getElementById('m_auh').checked, dom: document.getElementById('m_dom_check').checked ? v('a_dom') : v('m_dom') },
+            pa: { nom: v('p_nom'), dni: v('p_dni'), nac: v('p_nac'), tel: v('p_tel'), lab: v('p_lab'), edu: v('p_edu'), dom: document.getElementById('p_dom_check').checked ? v('a_dom') : v('p_dom') }
         };
-        const ma = { nom: v('m_nom'), dni: v('m_dni'), nac: v('m_nac'), tel: v('m_tel'), edu: v('m_edu'), lab: v('m_lab') };
-        const pa = { nom: v('p_nom'), dni: v('p_dni'), nac: v('p_nac'), tel: v('p_tel'), edu: v('p_edu'), lab: v('p_lab') };
-
-        if(!al.nom || !al.dni) return alert("INTEGRIDAD FALLIDA: DATOS REQUERIDOS");
-
-        db.push({id: Date.now(), al, ma, pa});
-        localStorage.setItem('J926_TITAN_V15_DB', JSON.stringify(db));
-        alert("ALUMNO IMPACTADO EN MATRÍCULA CORRECTAMENTE");
+        if(!data.al.nom || !data.al.dni) return alert("DATOS INCOMPLETOS");
+        
+        if(editId) db = db.map(x => x.id === editId ? data : x);
+        else db.push(data);
+        
+        localStorage.setItem('J926_V16_DB', JSON.stringify(db));
+        alert("LEGAJO ASEGURADO");
         location.reload();
     }
 
     function v(id) { return document.getElementById(id).value.toUpperCase(); }
 
+    function renderPreview() {
+        document.getElementById('prev_list').innerHTML = db.slice(-5).reverse().map(a => `
+            <div class="bg-white/5 p-2 rounded flex justify-between items-center">
+                <span>${a.al.nom}</span>
+                <button onclick="edit(${a.id})" class="text-yellow-500 font-bold">VER/EDITAR</button>
+            </div>
+        `).join('');
+    }
+
+    function edit(id) {
+        const a = db.find(x => x.id === id);
+        editId = id;
+        Object.keys(a.al).forEach(k => { if(document.getElementById('a_'+k)) document.getElementById('a_'+k).value = a.al[k] });
+        Object.keys(a.ma).forEach(k => { if(document.getElementById('m_'+k)) document.getElementById('m_'+k).value = a.ma[k] });
+        Object.keys(a.pa).forEach(k => { if(document.getElementById('p_'+k)) document.getElementById('p_'+k).value = a.pa[k] });
+        window.scrollTo(0,0);
+    }
+
     // ASISTENCIA ESPEJO
     function renderAsisGrid() {
-        const g = document.getElementById('asis_grid'); g.innerHTML = "";
+        const g = document.getElementById('asis_grid_salas'); g.innerHTML = "";
         ["TM","TT"].forEach(t => {
             SALAS.forEach(s => {
-                const name = `${s.n} ${t}`, count = db.filter(x => x.al.sala === name).length;
-                g.innerHTML += `<div onclick="abrirAsis('${name}')" class="glass p-3 sala-card" style="border-color:${s.c}">
-                    <p class="text-[6px] opacity-50">${name}</p><h4 class="text-xl font-black">${count}/30</h4></div>`;
+                const name = `${s.n} ${t}`, c = db.filter(x => x.al.sala === name).length;
+                g.innerHTML += `<div onclick="abrirAsis('${name}')" class="glass p-3 sala-box" style="border-color:${s.c}"><p class="text-[6px]">${name}</p><h4 class="text-xl font-black">${c}/30</h4></div>`;
             });
         });
     }
 
-    function abrirAsis(s) {
-        document.getElementById('asis_panel').classList.remove('hidden');
-        document.getElementById('asis_titulo').innerText = s;
-        renderAlumnosAsis();
-    }
+    function abrirAsis(s) { document.getElementById('asis_panel').classList.remove('hidden'); document.getElementById('asis_sala_nom').innerText = s; renderAlumnosAsis(); }
 
     function renderAlumnosAsis() {
-        const sala = document.getElementById('asis_titulo').innerText, fecha = document.getElementById('asis_fecha').value;
-        const list = db.filter(x => x.al.sala === sala).sort((a,b) => a.al.nom.localeCompare(b.al.nom));
-        document.getElementById('asis_lista').innerHTML = list.map(a => {
-            let faltas = 0; Object.values(asis).forEach(d => { if(d[a.id] === 'A') faltas++; });
-            return `<div class="bg-white/5 p-2 rounded flex justify-between items-center ${faltas>=3?'border border-red-500':''}">
-                <div class="w-2/3"><p class="font-black">${a.al.nom}</p><p class="text-[5px] text-red-400">${faltas} FALTAS ACUM.</p></div>
+        const s = document.getElementById('asis_sala_nom').innerText, f = document.getElementById('asis_fecha').value;
+        const list = db.filter(x => x.al.sala === s).sort((a,b) => a.al.nom.localeCompare(b.al.nom));
+        document.getElementById('asis_lista_alumnos').innerHTML = list.map(a => `
+            <div class="bg-white/5 p-2 rounded flex justify-between items-center">
+                <span class="w-2/3">${a.al.nom}</span>
                 <div class="flex gap-1">
-                    <button onclick="marcar('${fecha}','${a.id}','P')" class="w-7 h-7 rounded ${asis[fecha]?.[a.id]==='P' ? 'bg-green-600' : 'bg-white/10'} font-black">P</button>
-                    <button onclick="marcar('${fecha}','${a.id}','A')" class="w-7 h-7 rounded ${asis[fecha]?.[a.id]==='A' ? 'bg-red-600' : 'bg-white/10'} font-black">A</button>
+                    <button onclick="marcar('${f}','${a.id}','P')" class="w-7 h-7 rounded ${asis[f]?.[a.id]==='P' ? 'bg-green-600' : 'bg-white/10'}">P</button>
+                    <button onclick="marcar('${f}','${a.id}','A')" class="w-7 h-7 rounded ${asis[f]?.[a.id]==='A' ? 'bg-red-600' : 'bg-white/10'}">A</button>
                 </div>
-            </div>`;
-        }).join('');
+            </div>`).join('');
     }
 
-    function marcar(f, id, val) {
-        if(!asis[f]) asis[f] = {};
-        asis[f][id] = val;
-        localStorage.setItem('J926_TITAN_V15_ASIS', JSON.stringify(asis));
-        renderAlumnosAsis();
-    }
+    function marcar(f, id, v) { if(!asis[f]) asis[f] = {}; asis[f][id] = v; localStorage.setItem('J926_V16_ASIS', JSON.stringify(asis)); renderAlumnosAsis(); }
 
-    // FOTOGRAFÍA INSTITUCIONAL INTERACTIVA
+    // FOTOGRAFÍA INSTITUCIONAL
     function renderFotoGrid() {
-        const g = document.getElementById('foto_grid'); g.innerHTML = "";
+        const g = document.getElementById('foto_salas'); g.innerHTML = "";
         ["TM","TT"].forEach(t => {
             SALAS.forEach(s => {
-                const name = `${s.n} ${t}`, alumnos = db.filter(x => x.al.sala === name);
-                g.innerHTML += `<div onclick="verDetalle('${name}','${s.c}')" class="glass p-4 sala-card" style="border-color:${s.c}">
-                    <h4 class="font-black">${name}</h4>
-                    <p class="text-3xl font-black">${alumnos.length}</p>
-                    <p class="text-[6px] opacity-60">VACANTES: ${30 - alumnos.length}</p>
+                const name = `${s.n} ${t}`, list = db.filter(x => x.al.sala === name);
+                g.innerHTML += `<div onclick="auditSala('${name}','${s.c}')" class="glass p-4 sala-box" style="border-color:${s.c}">
+                    <h4 class="font-black text-[10px]">${name}</h4>
+                    <p class="text-2xl font-black">${list.length}/30</p>
+                    <p class="text-[6px] text-green-500">${30-list.length} VACANTES</p>
                 </div>`;
             });
         });
     }
 
-    function verDetalle(sala, color) {
-        const d = document.getElementById('sala_detalle'); d.classList.remove('hidden');
-        d.style.borderColor = color;
-        document.getElementById('det_titulo').innerText = sala;
-        const list = db.filter(x => x.al.sala === sala);
+    function auditSala(s, c) {
+        const d = document.getElementById('sala_audit'); d.classList.remove('hidden'); d.style.borderColor = c;
+        const list = db.filter(x => x.al.sala === s);
         
-        // Métricas de la sala tocada
         const nacs = {}; list.forEach(a => nacs[a.al.nac] = (nacs[a.al.nac] || 0) + 1);
-        const nacString = Object.entries(nacs).map(([k,v]) => `${v} ${k}`).join(" | ");
-        document.getElementById('det_stats').innerText = `DESGLOSE POBLACIONAL: ${nacString}`;
+        const edus = { C: 0, I: 0 }; 
+        list.forEach(a => { if(a.ma.edu.includes("COMPLETA")) edus.C++; else edus.I++; });
 
-        document.getElementById('det_body').innerHTML = list.map(a => `
+        document.getElementById('sala_audit_info').innerHTML = `<h2 class="text-3xl font-black" style="color:${c}">${s}</h2>
+            <p class="text-yellow-500 font-bold">DESGLOSE: ${JSON.stringify(nacs).replace(/[{}"]/g,'')} | ESTUDIOS PADRES: ${edus.C} COMPLETOS</p>`;
+            
+        document.getElementById('sala_audit_body').innerHTML = list.map(a => `
             <tr class="border-b border-white/5 h-10">
-                <td class="font-black">${a.al.nom}</td>
-                <td>${a.al.dni}</td>
-                <td>A:${a.al.nac} | M:${a.ma.nac} | P:${a.pa.nac}</td>
-                <td>M:${a.ma.edu} / P:${a.pa.edu}</td>
-                <td class="text-green-500">ALTA ACTIVA</td>
-                <td><button onclick="darBaja(${a.id},'${a.al.nom}')" class="text-red-500 font-black">BAJA</button></td>
-            </tr>
-        `).join('');
+                <td>${a.al.nom}</td><td>${a.al.dni}</td><td>${a.al.nac}</td>
+                <td>M: ${a.ma.nac} (${a.ma.edu.substring(0,4)})<br>P: ${a.pa.nac} (${a.pa.edu.substring(0,4)})</td>
+                <td>${a.ma.tel}</td>
+                <td><button onclick="edit(${a.id})" class="text-yellow-500">EDITAR</button></td>
+            </tr>`).join('');
     }
 
-    function darBaja(id, nom) {
-        if(!confirm(`¿CONFIRMA BAJA DEFINITIVA DE ${nom}?`)) return;
-        const al = db.find(x => x.id == id);
-        bajas.push({id, nom, sala: al.al.sala, fecha: new Date().toLocaleDateString(), mes: new Date().getMonth() + 1});
-        db = db.filter(x => x.id != id);
-        localStorage.setItem('J926_TITAN_V15_DB', JSON.stringify(db));
-        localStorage.setItem('J926_TITAN_V15_BAJAS', JSON.stringify(bajas));
-        location.reload();
+    // VOZ PROFESIONAL
+    function voiceInput(type) {
+        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        rec.lang = 'es-AR';
+        document.getElementById('mic-main').classList.add('mic-on');
+        rec.start();
+        rec.onresult = (e) => {
+            const text = e.results[0][0].transcript.toUpperCase();
+            document.getElementById('a_nom').value = text;
+            document.getElementById('mic-main').classList.remove('mic-on');
+        };
     }
 
-    // AUDITORÍA Y MÉTRICAS
-    function runAuditoria() {
-        const mesAct = new Date().getMonth() + 1;
-        document.getElementById('aud_total').innerText = db.length;
-        document.getElementById('aud_altas').innerText = db.filter(x => x.al.alta_mes === mesAct).length;
-        document.getElementById('aud_bajas').innerText = bajas.filter(x => x.mes === mesAct).length;
-        
-        const alertas = [];
-        db.forEach(a => {
-            let f = 0; Object.values(asis).forEach(d => { if(d[a.id] === 'A') f++; });
-            if(f >= 3) alertas.push({nom: a.al.nom, sala: a.al.sala, faltas: f, tel: a.ma.tel});
-        });
-        document.getElementById('aud_alertas').innerText = alertas.length;
-        
-        document.getElementById('emergentes_auditoria').innerHTML = alertas.map(a => `
-            <div class="glass p-3 flex justify-between items-center border-l-4 border-red-500 alerta-emergente">
-                <div><h4 class="font-black text-red-500">${a.nom} (${a.sala})</h4><p class="text-[6px]">RIESGO PEDAGÓGICO: ${a.faltas} AUSENCIAS</p></div>
-                <a href="https://wa.me/${a.tel}" target="_blank" class="bg-green-600 px-4 py-2 rounded font-black">NOTIFICAR TUTOR</a>
-            </div>
-        `).join('');
-
-        updateCharts();
-    }
-
-    function updateCharts() {
-        const ctxN = document.getElementById('chartNac').getContext('2d');
-        const nacs = {}; db.forEach(a => nacs[a.al.nac] = (nacs[a.al.nac] || 0) + 1);
-        new Chart(ctxN, { type: 'doughnut', data: { labels: Object.keys(nacs), datasets: [{ data: Object.values(nacs), backgroundColor: ['#facc15','#3b82f6','#ef4444','#10b981','#a855f7'] }] } });
+    function runMetrics() {
+        document.getElementById('m_total').innerText = db.length;
+        document.getElementById('m_vac').innerText = (SALAS.length * 2 * 30) - db.length;
+        const ext = db.filter(x => x.al.nac !== 'ARGENTINA').length;
+        document.getElementById('m_ext').innerText = ((ext/db.length)*100 || 0).toFixed(1) + "%";
     }
 
     function exportExcel() {
-        let csv = "LEGADO INSTITUCIONAL - AUDITORIA DGCE\nSALA;ALUMNO;DNI;EDAD;NAC_AL;NAC_MADRE;NAC_PADRE;TEL_TUTOR;ESTUDIOS_MADRE;ESTUDIOS_PADRE;ESTADO\n";
+        let csv = "SALA;ALUMNO;DNI;EDAD;NAC_AL;DOMICILIO;HERMANOS;MADRE;DNI_M;NAC_M;EDU_M;TRABAJO_M;AUH;PADRE;DNI_P;NAC_P;EDU_P;TRABAJO_P\n";
         db.forEach(a => {
-            csv += `${a.al.sala};${a.al.nom};${a.al.dni};${a.al.edad};${a.al.nac};${a.ma.nac};${a.pa.nac};${a.ma.tel};${a.ma.edu};${a.pa.edu};ACTIVO\n`;
+            csv += `${a.al.sala};${a.al.nom};${a.al.dni};${a.al.edad};${a.al.nac};${a.al.dom};${a.al.her};${a.ma.nom};${a.ma.dni};${a.ma.nac};${a.ma.edu};${a.ma.lab};${a.ma.auh?'SI':'NO'};${a.pa.nom};${a.pa.dni};${a.pa.nac};${a.pa.edu};${a.pa.lab}\n`;
         });
-        const l = document.createElement('a'); l.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'})); l.download="INFORME_TITANIUM_V15.csv"; l.click();
-    }
-
-    function exportJSON() {
-        const blob = new Blob([JSON.stringify({db, asis, bajas})], {type:'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download="OMNI_BACKUP_V15.json"; a.click();
-    }
-
-    function importData(e) {
-        const r = new FileReader();
-        r.onload = (ev) => {
-            const data = JSON.parse(ev.target.result);
-            db = data.db || []; asis = data.asis || {}; bajas = data.bajas || [];
-            localStorage.setItem('J926_TITAN_V15_DB', JSON.stringify(db));
-            localStorage.setItem('J926_TITAN_V15_ASIS', JSON.stringify(asis));
-            localStorage.setItem('J926_TITAN_V15_BAJAS', JSON.stringify(bajas));
-            location.reload();
-        };
-        r.readAsText(e.target.files[0]);
+        const blob = new Blob([csv], {type:'text/csv'});
+        const l = document.createElement('a'); l.href = URL.createObjectURL(blob); l.download="AUDITORIA_V16.csv"; l.click();
     }
 </script>
 </body>
