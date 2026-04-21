@@ -1,39 +1,3 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J926 OMNI-TITANIUM - INGENIERÍA INSTITUCIONAL</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <style>
-        :root { --gold: #facc15; --bg: #010409; --panel: #0d1117; }
-        body { background: var(--bg); color: #e6edf3; font-family: 'Inter', sans-serif; text-transform: uppercase; font-size: 10px; overflow-x: hidden; }
-        .glass { background: rgba(13, 17, 23, 0.98); backdrop-filter: blur(25px); border: 1px solid #30363d; border-radius: 12px; }
-        .input-pro { background: #010409; border: 1px solid #30363d; padding: 12px; border-radius: 8px; color: #fff; width: 100%; font-size: 11px; transition: 0.3s; }
-        .input-pro:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(250, 204, 21, 0.2); outline: none; }
-        .btn-tab { flex: 1; padding: 20px; text-align: center; font-weight: 900; cursor: pointer; border-bottom: 4px solid transparent; opacity: 0.4; transition: 0.4s; letter-spacing: 1px; }
-        .btn-tab.active { opacity: 1; color: var(--gold); border-bottom-color: var(--gold); background: rgba(250,204,21,0.05); }
-        .mic-active { color: #f85149 !important; animation: pulse 1s infinite; scale: 1.2; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        .sala-card { border-left: 6px solid; transition: 0.3s; cursor: pointer; }
-        .sala-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.05); }
-    </style>
-</head>
-<body onload="init()">
-
-<nav class="flex sticky top-0 z-50 glass border-b border-white/10 rounded-none shadow-2xl">
-    <div onclick="setTab(1)" id="tab1" class="btn-tab active">📝 CARGA OMNI-VOZ</div>
-    <div onclick="setTab(2)" id="tab2" class="btn-tab">📸 MAPA 14 SALAS (FOTOGRAFÍA)</div>
-    <div onclick="setTab(3)" id="tab3" class="btn-tab">📊 SUPERVISIÓN & ESTADÍSTICA</div>
-</nav>
-
-<main class="p-4 max-w-[2200px] mx-auto space-y-6">
-
-    <section id="sec1" class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div class="glass p-6 border-t-4 border-blue-500 space-y-4">
-            <h3 class="text-blue-500 font-black italic flex justify-between">DATOS ALUMNO <i class="bi bi-person-plus"></i></h3>
             <div class="relative"><input id="a_n" class="input-pro" placeholder="APELLIDO Y NOMBRE"><i onclick="voice('a_n')" class="bi bi-mic-fill absolute right-4 top-3 cursor-pointer text-gray-500"></i></div>
             <div class="flex gap-2">
                 <input id="a_d" class="input-pro" placeholder="DNI">
