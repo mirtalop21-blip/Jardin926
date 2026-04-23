@@ -11,8 +11,8 @@
         :root { --accent: #facc15; --bg: #010409; }
         body { background: var(--bg); color: #e6edf3; font-family: 'Inter', sans-serif; text-transform: uppercase; font-size: 8px; }
         .glass { background: rgba(13, 17, 23, 0.98); backdrop-filter: blur(20px); border: 1px solid #30363d; border-radius: 8px; }
-        .input-titan { background: #0d1117; border: 1px solid #30363d; padding: 10px; border-radius: 4px; color: #f0f6fc; width: 100%; font-size: 8px; }
-        .btn-nav { flex: 1; padding: 16px; font-weight: 900; cursor: pointer; border-bottom: 4px solid transparent; opacity: 0.5; transition: 0.3s; text-align: center; }
+        .input-titan { background: #0d1117; border: 1px solid #30363d; padding: 8px; border-radius: 4px; color: #f0f6fc; width: 100%; font-size: 8px; }
+        .btn-nav { flex: 1; padding: 14px; font-weight: 900; cursor: pointer; border-bottom: 4px solid transparent; opacity: 0.5; transition: 0.3s; text-align: center; }
         .btn-nav.active { opacity: 1; color: var(--accent); border-bottom-color: var(--accent); background: linear-gradient(to top, rgba(250,204,21,0.05), transparent); }
         .sala-card { border-left: 10px solid; transition: 0.3s; cursor: pointer; }
         .sala-card:hover { transform: scale(1.02); background: rgba(255,255,255,0.05); }
@@ -21,24 +21,25 @@
 <body onload="init()">
 
 <div id="lock-screen" class="fixed inset-0 z-[10000] bg-black flex flex-col items-center justify-center p-6 text-center">
-    <div class="glass p-10 border-2 border-yellow-500 max-w-md w-full">
+    <div class="glass p-10 border-2 border-yellow-500 max-w-md w-full shadow-[0_0_50px_rgba(250,204,21,0.2)]">
         <div class="bg-yellow-500 text-black inline-block px-3 py-1 font-black rounded mb-4">V22</div>
         <h2 class="text-yellow-500 text-2xl font-black mb-2 italic">TITANIUM TOTAL ARCHITECT</h2>
-        <input id="key-input" type="password" class="input-titan mb-4 text-center text-lg tracking-[5px]" placeholder="CÓDIGO DE ACCESO">
-        <button onclick="activarApp()" class="w-full bg-yellow-500 text-black py-4 font-black rounded hover:bg-yellow-400 transition uppercase">Activar Licencia Profesional</button>
+        <input id="key-input" type="password" class="input-titan mb-4 text-center text-lg tracking-[5px]" placeholder="••••••">
+        <button onclick="activarApp()" class="w-full bg-yellow-500 text-black py-4 font-black rounded hover:bg-yellow-400 transition">INGRESAR AL SISTEMA</button>
     </div>
 </div>
 
 <div id="main-app" style="display:none;">
     <header class="glass rounded-none border-b border-yellow-500/40 p-3 flex justify-between items-center sticky top-0 z-[1000]">
-        <h1 class="text-yellow-500 font-black tracking-widest text-xs">TITANIUM V22</h1>
+        <h1 class="text-yellow-500 font-black tracking-widest text-xs">TITANIUM <span class="text-white italic text-[10px]">PRO V22</span></h1>
         <div id="reloj" class="text-yellow-500 font-mono text-[9px]"></div>
     </header>
 
     <nav class="flex glass rounded-none border-b border-white/10 sticky top-[46px] z-[900]">
         <div onclick="setTab(1)" id="t1" class="btn-nav active">LEGAJO 360°</div>
-        <div onclick="setTab(2)" id="t2" class="btn-nav">FOTO INST.</div>
-        <div onclick="setTab(3)" id="t3" class="btn-nav">SUPERVISIÓN</div>
+        <div onclick="setTab(2)" id="t2" class="btn-nav text-[7px]">FOTO INST. / ASISTENCIA</div>
+        <div onclick="setTab(3)" id="t3" class="btn-nav text-[7px]">LISTA ESPERA</div>
+        <div onclick="setTab(4)" id="t4" class="btn-nav">SUPERVISIÓN</div>
     </nav>
 
     <main class="p-4 space-y-4">
@@ -46,47 +47,74 @@
             <div class="glass p-3 border-t-4 border-yellow-500 space-y-2">
                 <div class="flex justify-between items-center"><h3 class="text-yellow-500 font-black italic">ALUMNO</h3> <i class="bi bi-mic-fill text-yellow-500 cursor-pointer" onclick="dictar('a_nom')"></i></div>
                 <input id="a_nom" class="input-titan" placeholder="APELLIDO Y NOMBRE">
-                <input id="a_dni" class="input-titan" placeholder="DNI (ESCANEABLE)">
-                <input id="a_fec" type="date" class="input-titan" onchange="calcEdad(this.value)">
-                <input id="a_edad" class="input-titan font-bold text-yellow-500" readonly placeholder="EDAD AL 30/6">
+                <div class="flex gap-1">
+                    <input id="a_dni" class="input-titan w-2/3" placeholder="DNI (ESCANEABLE)">
+                    <input id="a_nac" class="input-titan w-1/3" placeholder="NACIONALIDAD">
+                </div>
+                <div class="flex gap-1">
+                    <input id="a_fec" type="date" class="input-titan" onchange="calcEdad(this.value)">
+                    <input id="a_edad" class="input-titan font-bold text-yellow-500" readonly placeholder="EDAD 30/6">
+                </div>
                 <select id="a_sala" class="input-titan font-black text-yellow-500"></select>
-                <textarea id="a_salud" class="input-titan h-12" placeholder="OBSERVACIONES DE SALUD"></textarea>
-                <button onclick="save()" class="w-full bg-emerald-600 py-4 rounded font-black uppercase shadow-lg shadow-emerald-900/20">Registrar en Matrícula</button>
+                <input id="a_dom" class="input-titan" placeholder="DOMICILIO REAL">
+                <div class="flex gap-1">
+                    <input id="a_her" class="input-titan" placeholder="HERMANOS (CANT.)">
+                    <input id="a_hj" class="input-titan" placeholder="HERMANOS EN JARDÍN">
+                </div>
+                <textarea id="a_salud" class="input-titan h-10" placeholder="OBSERVACIONES MÉDICAS/SALUD"></textarea>
+                <button onclick="save()" class="w-full bg-emerald-600 py-3 rounded font-black mt-1">GUARDAR / ACTUALIZAR</button>
             </div>
 
             <div class="glass p-3 border-t-4 border-cyan-500 space-y-2">
-                <h3 class="text-cyan-500 font-black italic">MADRE</h3>
-                <input id="m_nom" class="input-titan" placeholder="NOMBRE">
-                <input id="m_ocu" class="input-titan" placeholder="OCUPACIÓN">
+                <h3 class="text-cyan-500 font-black italic">MADRE / TUTORA</h3>
+                <input id="m_nom" class="input-titan" placeholder="NOMBRE COMPLETO">
+                <div class="flex gap-1"><input id="m_dni" class="input-titan w-1/2" placeholder="DNI"><input id="m_nac" class="input-titan w-1/2" placeholder="NACIONALIDAD"></div>
+                <input id="m_ocu" class="input-titan" placeholder="OCUPACIÓN / TRABAJO">
                 <select id="m_edu" class="input-titan"></select>
-                <label class="flex items-center gap-2 text-[6px] opacity-60"><input type="checkbox" id="m_auh"> TITULAR AUH</label>
+                <input id="m_tel" class="input-titan" placeholder="TELÉFONO DE CONTACTO">
+                <label class="flex items-center gap-2 text-[6px] opacity-60"><input type="checkbox" id="m_auh"> TITULAR ASIG. UNIVERSAL (AUH)</label>
             </div>
 
             <div class="glass p-3 border-t-4 border-pink-500 space-y-2">
-                <h3 class="text-pink-500 font-black italic">PADRE</h3>
-                <input id="p_nom" class="input-titan" placeholder="NOMBRE">
-                <input id="p_ocu" class="input-titan" placeholder="OCUPACIÓN">
+                <h3 class="text-pink-500 font-black italic">PADRE / TUTOR</h3>
+                <input id="p_nom" class="input-titan" placeholder="NOMBRE COMPLETO">
+                <div class="flex gap-1"><input id="p_dni" class="input-titan w-1/2" placeholder="DNI"><input id="p_nac" class="input-titan w-1/2" placeholder="NACIONALIDAD"></div>
+                <input id="p_ocu" class="input-titan" placeholder="OCUPACIÓN / TRABAJO">
                 <select id="p_edu" class="input-titan"></select>
+                <input id="p_tel" class="input-titan" placeholder="TELÉFONO DE CONTACTO">
             </div>
 
             <div class="glass p-3 border-t-4 border-white/20">
-                <input type="text" id="find" onkeyup="search()" class="input-titan mb-2 border-yellow-500/50" placeholder="🔎 BUSCAR LEGAJO...">
+                <input type="text" id="find" onkeyup="search()" class="input-titan mb-2 border-yellow-500/50" placeholder="🔎 BUSCAR POR DNI O NOMBRE...">
                 <div id="prev_list" class="space-y-1 overflow-y-auto max-h-[300px]"></div>
             </div>
         </section>
 
-        <section id="s2" class="hidden">
+        <section id="s2" class="hidden space-y-4">
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4" id="foto_grid"></div>
+            <div id="asis_panel" class="glass p-4 hidden border-l-8 border-yellow-500">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="asis_sala_nom" class="text-xl font-black italic"></h2>
+                    <input type="date" id="asis_fecha" class="input-titan w-32" onchange="renderAsis()">
+                </div>
+                <div id="asis_list" class="grid grid-cols-1 md:grid-cols-3 gap-2"></div>
+            </div>
         </section>
 
-        <section id="s3" class="hidden space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                <div class="glass p-6 border-l-4 border-yellow-500 text-center"><p class="opacity-50">MATRÍCULA EFECTIVA</p><h4 id="m_total" class="text-4xl font-black">0</h4></div>
-                <div class="glass p-6 border-l-4 border-green-500 text-center"><p class="opacity-50">VACANTES LIBRES</p><h4 id="m_vac" class="text-4xl font-black text-green-500">0</h4></div>
+        <section id="s4" class="hidden space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div class="glass p-4 text-center"><p class="opacity-50 text-[6px]">MATRÍCULA TOTAL</p><h4 id="m_total" class="text-3xl font-black">0</h4></div>
+                <div class="glass p-4 text-center"><p class="opacity-50 text-[6px]">VACANTES</p><h4 id="m_vac" class="text-3xl font-black text-green-500">0</h4></div>
+                <div class="glass p-4 text-center"><p class="opacity-50 text-[6px]">TITULARES AUH</p><h4 id="m_auh" class="text-3xl font-black text-cyan-500">0</h4></div>
+                <div class="glass p-4 text-center"><p class="opacity-50 text-[6px]">CON HERMANOS</p><h4 id="m_her" class="text-3xl font-black text-pink-500">0</h4></div>
             </div>
-            <div class="glass p-10 flex flex-wrap justify-center gap-6 border-2 border-dashed border-white/10">
-                <button onclick="exportar()" class="bg-blue-600 px-10 py-4 rounded font-black uppercase">Backup General V22</button>
-                <label class="bg-emerald-600 px-10 py-4 rounded font-black cursor-pointer uppercase">Vincular Legajos Anteriores <input type="file" class="hidden" onchange="importarInteligente(event)"></label>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div class="glass p-4 h-64"><canvas id="chartEdu"></canvas></div>
+                <div class="glass p-4 h-64"><canvas id="chartNac"></canvas></div>
+            </div>
+            <div class="glass p-10 flex flex-wrap justify-center gap-4 border-2 border-dashed border-white/20">
+                <button onclick="exportar()" class="bg-blue-600 px-10 py-4 rounded font-black uppercase">Exportar Backup Maestro V22</button>
+                <label class="bg-emerald-600 px-10 py-4 rounded font-black cursor-pointer uppercase text-center">Vincular Datos Previos (357 Alumnos) <input type="file" class="hidden" onchange="importarInteligente(event)"></label>
             </div>
         </section>
     </main>
@@ -94,8 +122,9 @@
 
 <script>
     let db = JSON.parse(localStorage.getItem('TITANIUM_V22_DB')) || [];
+    let asis = JSON.parse(localStorage.getItem('TITANIUM_V22_ASIS')) || {};
     const SALAS = ["ROSA","ROJA","NARANJA","CELESTE","VIOLETA","AMARILLA","AZUL"];
-    const NIVELES = ["PRIMARIA INC.","PRIMARIA COMP.","SECUNDARIA INC.","SECUNDARIA COMP.","TERCIARIA/UNIV."];
+    const NIVELES = ["SIN ESTUDIOS","PRIMARIA INC.","PRIMARIA COMP.","SECUNDARIA INC.","SECUNDARIA COMP.","TERCIARIA/UNIV INC.","TERCIARIA/UNIV COMP."];
 
     function init() {
         if(localStorage.getItem('TITANIUM_V22_AUTH') === 'TRUE') {
@@ -104,21 +133,21 @@
         }
         setInterval(() => { document.getElementById('reloj').innerText = new Date().toLocaleString(); }, 1000);
         
+        // Cargar selects
         const sl = document.getElementById('a_sala');
         SALAS.forEach(s => { sl.innerHTML += `<option value="${s} TM">${s} TM</option><option value="${s} TT">${s} TT</option>`; });
-        
         const me = document.getElementById('m_edu'), pe = document.getElementById('p_edu');
         NIVELES.forEach(n => { me.innerHTML += `<option value="${n}">${n}</option>`; pe.innerHTML += `<option value="${n}">${n}</option>`; });
         
         renderRecientes();
-        actualizarContadores();
+        actualizarDash();
     }
 
     function activarApp() {
         if(document.getElementById('key-input').value === "J926-PRO-2026") {
             localStorage.setItem('TITANIUM_V22_AUTH', 'TRUE');
             location.reload();
-        } else { alert("Licencia denegada."); }
+        } else { alert("ACCESO DENEGADO"); }
     }
 
     function calcEdad(f) {
@@ -129,12 +158,14 @@
     }
 
     function save() {
+        const dni = document.getElementById('a_dni').value;
+        const index = db.findIndex(x => x.al.dni === dni);
         const data = {
-            al: { id: Date.now(), nom: v('a_nom'), dni: v('a_dni'), fec: v('a_fec'), edad: v('a_edad'), sala: v('a_sala'), salud: v('a_salud') },
-            ma: { nom: v('m_nom'), ocu: v('m_ocu'), edu: v('m_edu'), auh: document.getElementById('m_auh').checked },
-            pa: { nom: v('p_nom'), ocu: v('p_ocu'), edu: v('p_edu') }
+            al: { id: Date.now(), nom: v('a_nom'), dni, nac: v('a_nac'), fec: v('a_fec'), edad: v('a_edad'), sala: v('a_sala'), dom: v('a_dom'), her: v('a_her'), hj: v('a_hj'), salud: v('a_salud') },
+            ma: { nom: v('m_nom'), dni: v('m_dni'), nac: v('m_nac'), ocu: v('m_ocu'), edu: v('m_edu'), tel: v('m_tel'), auh: document.getElementById('m_auh').checked },
+            pa: { nom: v('p_nom'), dni: v('p_dni'), nac: v('p_nac'), ocu: v('p_ocu'), edu: v('p_edu'), tel: v('p_tel') }
         };
-        db.push(data);
+        if(index > -1) db[index] = data; else db.push(data);
         localStorage.setItem('TITANIUM_V22_DB', JSON.stringify(db));
         location.reload();
     }
@@ -149,51 +180,112 @@
                 const raw = JSON.parse(e.target.result);
                 const data = raw.db || (Array.isArray(raw) ? raw : []);
                 if(data.length > 0) {
-                    db = data;
+                    // Mapeo inteligente para campos faltantes
+                    db = data.map(i => ({
+                        al: { ...i.al, nac: i.al.nac || "ARGENTINA", dom: i.al.dom || "", her: i.al.her || "0", hj: i.al.hj || "0" },
+                        ma: { ...i.ma, nac: i.ma?.nac || "ARGENTINA", tel: i.ma?.tel || "" },
+                        pa: { ...i.pa, nac: i.pa?.nac || "ARGENTINA", tel: i.pa?.tel || "" }
+                    }));
                     localStorage.setItem('TITANIUM_V22_DB', JSON.stringify(db));
-                    alert("✅ SINCRONIZACIÓN EXITOSA: " + db.length + " LEGAJOS CARGADOS.");
+                    alert("SINCRO EXITOSA: " + db.length + " LEGAJOS RESTAURADOS.");
                     location.reload();
                 }
-            } catch(err) { alert("Error de formato."); }
+            } catch(err) { alert("ERROR DE FORMATO"); }
         };
         reader.readAsText(file);
     }
 
     function setTab(n) {
-        [1,2,3].forEach(i => document.getElementById('s'+i).classList.toggle('hidden', i !== n));
-        [1,2,3].forEach(i => document.getElementById('t'+i).classList.toggle('active', i === n));
+        [1,2,3,4].forEach(i => {
+            document.getElementById('s'+i).classList.toggle('hidden', i !== n);
+            document.getElementById('t'+i).classList.toggle('active', i === n);
+        });
         if(n === 2) renderFoto();
+        if(n === 4) runCharts();
     }
 
     function renderFoto() {
         const g = document.getElementById('foto_grid'); g.innerHTML = "";
         ["TM","TT"].forEach(t => {
             SALAS.forEach(s => {
-                const name = `${s} ${t}`, cant = db.filter(x => x.al.sala === name).length;
-                g.innerHTML += `<div class="glass p-3 sala-card border-white/10">
+                const name = `${s} ${t}`, list = db.filter(x => x.al.sala === name);
+                g.innerHTML += `<div onclick="abrirAsis('${name}')" class="glass p-3 sala-card border-yellow-500/30">
                     <h4 class="text-[7px] font-black">${name}</h4>
-                    <p class="text-2xl font-black">${cant}/30</p>
+                    <p class="text-2xl font-black">${list.length}/30</p>
                 </div>`;
             });
         });
     }
 
-    function actualizarContadores() {
+    function abrirAsis(s) {
+        document.getElementById('asis_panel').classList.remove('hidden');
+        document.getElementById('asis_sala_nom').innerText = s;
+        renderAsis();
+    }
+
+    function renderAsis() {
+        const s = document.getElementById('asis_sala_nom').innerText, f = document.getElementById('asis_fecha').value;
+        const list = db.filter(x => x.al.sala === s);
+        document.getElementById('asis_list').innerHTML = list.map(a => `
+            <div class="glass p-2 flex justify-between items-center">
+                <span class="text-[6px] font-bold">${a.al.nom}</span>
+                <div class="flex gap-1">
+                    <button onclick="marcar('${f}','${a.al.id}','P')" class="px-2 py-1 rounded ${asis[f]?.[a.al.id]==='P' ? 'bg-green-600' : 'bg-white/10'}">P</button>
+                    <button onclick="marcar('${f}','${a.al.id}','A')" class="px-2 py-1 rounded ${asis[f]?.[a.al.id]==='A' ? 'bg-red-600' : 'bg-white/10'}">A</button>
+                </div>
+            </div>`).join('');
+    }
+
+    function marcar(f, id, v) { if(!asis[f]) asis[f] = {}; asis[f][id] = v; localStorage.setItem('TITANIUM_V22_ASIS', JSON.stringify(asis)); renderAsis(); }
+
+    function actualizarDash() {
         document.getElementById('m_total').innerText = db.length;
         document.getElementById('m_vac').innerText = 420 - db.length;
+        document.getElementById('m_auh').innerText = db.filter(x => x.ma?.auh).length;
+        document.getElementById('m_her').innerText = db.filter(x => parseInt(x.al.her) > 0).length;
     }
 
     function renderRecientes() {
-        document.getElementById('prev_list').innerHTML = db.slice(-15).reverse().map(a => `
+        document.getElementById('prev_list').innerHTML = db.slice(-20).reverse().map(a => `
             <div class="bg-white/5 p-2 rounded text-[7px] flex justify-between border-l-2 border-yellow-500">
-                <span>${a.al.nom}</span>
+                <div onclick="cargarLegajo('${a.al.dni}')" class="cursor-pointer">
+                    <span class="font-bold">${a.al.nom}</span><br>
+                    <span class="opacity-50">${a.al.dni}</span>
+                </div>
                 <span class="text-yellow-500 font-bold">${a.al.sala}</span>
             </div>`).join('');
     }
 
+    function cargarLegajo(dni) {
+        const a = db.find(x => x.al.dni === dni);
+        if(!a) return;
+        Object.keys(a.al).forEach(k => { if(document.getElementById('a_'+k)) document.getElementById('a_'+k).value = a.al[k]; });
+        Object.keys(a.ma).forEach(k => { if(document.getElementById('m_'+k)) document.getElementById('m_'+k).value = a.ma[k]; });
+        Object.keys(a.pa).forEach(k => { if(document.getElementById('p_'+k)) document.getElementById('p_'+k).value = a.pa[k]; });
+        document.getElementById('m_auh').checked = a.ma.auh;
+        setTab(1);
+    }
+
+    function runCharts() {
+        actualizarDash();
+        const ctxN = document.getElementById('chartNac').getContext('2d');
+        const nacs = {}; db.forEach(x => nacs[x.al.nac] = (nacs[x.al.nac] || 0) + 1);
+        new Chart(ctxN, { type: 'doughnut', data: { labels: Object.keys(nacs), datasets: [{ data: Object.values(nacs), backgroundColor: ['#facc15','#3b82f6','#ef4444','#10b981'] }] }, options: { maintainAspectRatio: false } });
+    }
+
     function exportar() {
-        const blob = new Blob([JSON.stringify({db})], {type:'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download="BACKUP_V22_J926.json"; a.click();
+        const blob = new Blob([JSON.stringify({db, asis})], {type:'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download="TITANIUM_V22_MASTER_BACKUP.json"; a.click();
+    }
+    
+    function search() {
+        const f = v('find');
+        const filtered = db.filter(x => x.al.nom.includes(f) || x.al.dni.includes(f));
+        document.getElementById('prev_list').innerHTML = filtered.map(a => `
+            <div onclick="cargarLegajo('${a.al.dni}')" class="bg-white/5 p-2 rounded text-[7px] flex justify-between border-l-2 border-yellow-500 cursor-pointer">
+                <span>${a.al.nom}</span>
+                <span class="text-yellow-500 font-bold">${a.al.sala}</span>
+            </div>`).join('');
     }
 </script>
 </body>
