@@ -1,254 +1,247 @@
-                        <h2 id="asis_sala_nom" class="text-3xl font-black italic tracking-tighter text-yellow-500"></h2>
-                        <p id="asis_stats" class="text-[8px] opacity-50 font-bold"></p>
-                    </div>
-                    <div class="flex gap-4 items-center">
-                        <label class="text-[7px] font-black">FECHA AUDITORÍA:</label>
-                        <input type="date" id="asis_fecha" class="input-titan w-40" onchange="renderAsis()">
-                    </div>
-                </div>
-                <div id="asis_list" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3"></div>
-            </div>
-        </section>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TITANIUM V22 | SUPERVISIÓN DGCE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root { --accent: #facc15; --bg: #0d1117; }
+        body { background: var(--bg); color: #e6edf3; font-family: sans-serif; font-size: 11px; text-transform: uppercase; }
+        .glass { background: rgba(22, 27, 34, 0.95); border: 1px solid #30363d; border-radius: 8px; }
+        .input-titan { background: #010409; border: 1px solid #30363d; padding: 12px; border-radius: 6px; color: #f0f6fc; width: 100%; transition: 0.2s; }
+        .input-titan:focus { border-color: var(--accent); outline: none; }
+        .tab-active { border-bottom: 3px solid var(--accent); color: var(--accent); font-weight: bold; }
+        .sala-card { transition: 0.3s; cursor: pointer; border-bottom: 6px solid; }
+        /* Paleta Institucional por Sala */
+        .color-ROSA { border-color: #ff69b4; } .color-ROJA { border-color: #ef4444; }
+        .color-NARANJA { border-color: #f97316; } .color-CELESTE { border-color: #3b82f6; }
+        .color-VIOLETA { border-color: #8b5cf6; } .color-AMARILLA { border-color: #eab308; }
+        .color-AZUL { border-color: #1e3a8a; }
+    </style>
+</head>
+<body onload="iniciarSistema()">
 
-        <section id="s4" class="hidden space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="glass p-6 border-l-4 border-yellow-500 bg-gradient-to-r from-yellow-500/5 to-transparent">
-                    <p class="opacity-50 text-[7px] font-black tracking-widest">MATRÍCULA ACTIVA</p>
-                    <h4 id="m_total" class="text-5xl font-black italic">0</h4>
-                </div>
-                <div class="glass p-6 border-l-4 border-emerald-500">
-                    <p class="opacity-50 text-[7px] font-black tracking-widest">VACANTES LIBRES</p>
-                    <h4 id="m_vac" class="text-5xl font-black text-emerald-500">0</h4>
-                </div>
-                <div class="glass p-6 border-l-4 border-cyan-500">
-                    <p class="opacity-50 text-[7px] font-black tracking-widest">COBERTURA AUH</p>
-                    <h4 id="m_auh_total" class="text-5xl font-black text-cyan-500">0</h4>
-                </div>
-                <div class="glass p-6 border-l-4 border-pink-500">
-                    <p class="opacity-50 text-[7px] font-black tracking-widest">PLAN HERMANOS</p>
-                    <h4 id="m_her_total" class="text-5xl font-black text-pink-500">0</h4>
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="glass p-6 h-[400px] border-b-4 border-yellow-500/20">
-                    <h3 class="text-center font-black mb-6 text-yellow-500 tracking-widest italic">RELEVAMIENTO NACIONALIDADES</h3>
-                    <canvas id="chartNac"></canvas>
-                </div>
-                <div class="glass p-6 h-[400px] border-b-4 border-cyan-500/20">
-                    <h3 class="text-center font-black mb-6 text-cyan-500 tracking-widest italic">ESTADÍSTICA ESCOLARIDAD ADULTOS</h3>
-                    <canvas id="chartEdu"></canvas>
-                </div>
-            </div>
+<header class="glass sticky top-0 z-[100] p-4 flex justify-between items-center border-b border-yellow-500/50">
+    <div class="flex items-center gap-3">
+        <span class="text-yellow-500 font-black text-xl italic">TITANIUM V22</span>
+        <div id="reloj" class="font-mono text-[10px] opacity-60"></div>
+    </div>
+    <div class="flex gap-2">
+        <button onclick="activarDictadoGlobal()" class="bg-red-600 px-3 py-1 rounded-full animate-pulse text-[9px] font-bold">
+            <i class="bi bi-mic-fill"></i> CARGA POR VOZ
+        </button>
+    </div>
+</header>
 
-            <div class="glass p-12 border-2 border-dashed border-white/20 flex flex-wrap justify-center gap-8">
-                <div class="text-center space-y-4">
-                    <i class="bi bi-cloud-arrow-up text-5xl text-blue-500 block"></i>
-                    <button onclick="exportar()" class="bg-blue-600 px-12 py-5 rounded font-black hover:bg-blue-500 transition shadow-lg uppercase tracking-widest">Exportar Omni V22</button>
-                </div>
-                <div class="text-center space-y-4">
-                    <i class="bi bi-database-fill-check text-5xl text-emerald-500 block"></i>
-                    <label class="bg-emerald-600 px-12 py-5 rounded font-black cursor-pointer hover:bg-emerald-500 transition shadow-lg uppercase tracking-widest">
-                        Vincular 357 Legajos <input type="file" class="hidden" onchange="importarInteligente(event)">
-                    </label>
+<nav class="flex glass sticky top-[68px] z-50">
+    <button onclick="cambiarSeccion(1)" id="btn1" class="flex-1 p-4 tab-active">LEGAJO 360°</button>
+    <button onclick="cambiarSeccion(2)" id="btn2" class="flex-1 p-4 opacity-50">FOTO INSTITUCIONAL</button>
+    <button onclick="cambiarSeccion(3)" id="btn3" class="flex-1 p-4 opacity-50">MÉTRICAS DGCE</button>
+</nav>
+
+<main class="p-4 space-y-6">
+    <section id="sec1" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="glass p-5 border-t-4 border-yellow-500 space-y-4">
+            <h2 class="font-black flex justify-between">DATOS ALUMNO <i class="bi bi-person-check-fill"></i></h2>
+            <div class="relative">
+                <input id="al_nom" class="input-titan" placeholder="APELLIDO Y NOMBRE">
+                <i class="bi bi-mic absolute right-3 top-3 text-yellow-500 cursor-pointer" onclick="dictarCampo('al_nom')"></i>
+            </div>
+            <input id="al_dni" class="input-titan" placeholder="DNI (ESCANEABLE)">
+            <div class="flex gap-2">
+                <input id="al_nac" class="input-titan" placeholder="NACIONALIDAD" value="ARGENTINA">
+                <input id="al_fec" type="date" class="input-titan" onchange="calcularEdad(this.value)">
+            </div>
+            <select id="al_sala" class="input-titan text-yellow-500 font-bold"></select>
+            <textarea id="al_obs" class="input-titan h-20" placeholder="SALUD / OBSERVACIONES"></textarea>
+            <button onclick="guardarFicha()" class="w-full bg-emerald-600 py-4 rounded-lg font-black hover:bg-emerald-500 shadow-xl">REGISTRAR MATRÍCULA</button>
+        </div>
+
+        <div class="glass p-5 border-t-4 border-cyan-500 space-y-4">
+            <h2 class="font-black flex justify-between">VÍNCULO MATERNO <i class="bi bi-gender-female"></i></h2>
+            <input id="ma_nom" class="input-titan" placeholder="NOMBRE COMPLETO">
+            <input id="ma_ocu" class="input-titan" placeholder="OCUPACIÓN / TRABAJO">
+            <select id="ma_edu" class="input-titan"></select>
+            <label class="flex items-center gap-3 p-3 bg-white/5 rounded border border-white/10 cursor-pointer">
+                <input type="checkbox" id="ma_auh" class="w-5 h-5"> TITULAR AUH / PLAN SOCIAL
+            </label>
+        </div>
+
+        <div class="glass p-5 space-y-4">
+            <h2 class="font-black border-b border-white/10 pb-2">BÚSQUEDA EFICIENTE</h2>
+            <input type="text" id="buscador" onkeyup="filtrarAlumnos()" class="input-titan border-yellow-500" placeholder="BUSCAR POR DNI O NOMBRE...">
+            <div id="lista_alumnos" class="space-y-2 overflow-y-auto max-h-[400px]"></div>
+        </div>
+    </section>
+
+    <section id="sec2" class="hidden grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4"></section>
+
+    <section id="sec3" class="hidden space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="glass p-4 border-l-4 border-yellow-500">
+                <p class="text-[10px] opacity-60">MATRÍCULA REAL</p>
+                <h2 id="m_activa" class="text-3xl font-black italic">0</h2>
+            </div>
+            <div class="glass p-4 border-l-4 border-emerald-500">
+                <p class="text-[10px] opacity-60">VACANTES DISPONIBLES</p>
+                <h2 id="m_vacantes" class="text-3xl font-black text-emerald-500">420</h2>
+            </div>
+            <div class="glass p-4 border-l-4 border-cyan-500">
+                <p class="text-[10px] opacity-60">COBERTURA AUH %</p>
+                <h2 id="m_auh" class="text-3xl font-black text-cyan-400">0%</h2>
+            </div>
+            <div class="glass p-4 border-l-4 border-red-500">
+                <p class="text-[10px] opacity-60">ALERTA BAJAS</p>
+                <h2 id="m_bajas" class="text-3xl font-black text-red-500">0</h2>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="glass p-6 min-h-[300px]">
+                <h3 class="text-center font-black mb-4">RELEVAMIENTO NACIONALIDADES</h3>
+                <canvas id="chartNac"></canvas>
+            </div>
+            <div class="glass p-8 flex flex-col justify-center items-center gap-4">
+                <h3 class="text-yellow-500 font-black italic">EXPORTACIÓN DE ARCHIVOS PARA SUPERVISIÓN</h3>
+                <button onclick="exportarBackup()" class="w-full bg-blue-600 p-4 rounded font-black">DESCARGAR BACKUP (.JSON)</button>
+                <button onclick="alert('Generando Excel DGCE...')" class="w-full bg-emerald-700 p-4 rounded font-black">EXPORTAR PLANILLA (EXCEL)</button>
+                <div class="w-full text-center p-4 border-2 border-dashed border-white/20 rounded">
+                    <p class="mb-2 text-[9px]">VINCULAR LEGAJOS EXTERNOS (VINCULAR 357)</p>
+                    <input type="file" onchange="importarLegajos(event)" class="text-[10px]">
                 </div>
             </div>
-        </section>
-    </main>
-</div>
+        </div>
+    </section>
+</main>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('TITANIUM_V22_DB')) || [];
-    let wait = JSON.parse(localStorage.getItem('TITANIUM_V22_WAIT')) || [];
-    let asis = JSON.parse(localStorage.getItem('TITANIUM_V22_ASIS')) || {};
-    
+    let matricula = JSON.parse(localStorage.getItem('TITANIUM_DB')) || [];
     const SALAS = ["ROSA","ROJA","NARANJA","CELESTE","VIOLETA","AMARILLA","AZUL"];
-    const NIVELES = [
-        "SIN ESTUDIOS", "PRIMARIA INCOMPLETA", "PRIMARIA COMPLETA", 
-        "SECUNDARIA INCOMPLETA", "SECUNDARIA COMPLETA", 
-        "TERCIARIA INCOMPLETA", "TERCIARIA COMPLETA", 
-        "UNIVERSITARIO INCOMPLETO", "UNIVERSITARIO COMPLETO"
-    ];
+    const NIVELES = ["SIN ESTUDIOS", "PRIMARIA INC.", "PRIMARIA COMP.", "SECUNDARIA INC.", "SECUNDARIA COMP.", "TERCIARIO/UNIV."];
 
-    function init() {
-        if(localStorage.getItem('TITANIUM_V22_AUTH') === 'TRUE') {
-            document.getElementById('lock-screen').style.display = 'none';
-            document.getElementById('main-app').style.display = 'block';
-        }
-        setInterval(() => { document.getElementById('reloj').innerText = new Date().toLocaleString('es-AR', { hour12: false }); }, 1000);
-        
-        // Inyectar Selects
-        const sl = document.getElementById('a_sala');
-        SALAS.forEach(s => { sl.innerHTML += `<option value="${s} TM">${s} TM</option><option value="${s} TT">${s} TT</option>`; });
-        
-        const me = document.getElementById('m_edu'), pe = document.getElementById('p_edu');
-        NIVELES.forEach(e => { me.innerHTML += `<option value="${e}">${e}</option>`; pe.innerHTML += `<option value="${e}">${e}</option>`; });
-        
-        renderRecientes();
-        actualizarContadores();
+    function iniciarSistema() {
+        actualizarReloj();
+        setInterval(actualizarReloj, 1000);
+        cargarSelectores();
+        actualizarVista();
     }
 
-    function activarApp() {
-        if(document.getElementById('key-input').value === "J926-PRO-2026") {
-            localStorage.setItem('TITANIUM_V22_AUTH', 'TRUE');
-            location.reload();
-        } else { alert("CÓDIGO DE ACCESO INCORRECTO"); }
+    function actualizarReloj() {
+        document.getElementById('reloj').innerText = new Date().toLocaleString('es-AR');
     }
 
-    function calcEdad(f) {
-        const b = new Date(f), r = new Date("2026-06-30");
-        let age = r.getFullYear() - b.getFullYear();
-        if (r < new Date(r.getFullYear(), b.getMonth(), b.getDate())) age--;
-        document.getElementById('a_edad').value = age + " AÑOS";
+    function cargarSelectores() {
+        const s = document.getElementById('al_sala');
+        SALAS.forEach(sala => {
+            s.innerHTML += `<option value="${sala} TM">${sala} TM</option>`;
+            s.innerHTML += `<option value="${sala} TT">${sala} TT</option>`;
+        });
+        const me = document.getElementById('ma_edu');
+        NIVELES.forEach(n => { me.innerHTML += `<option value="${n}">${n}</option>`; });
     }
 
-    function syncDom(tipo) {
-        if(document.getElementById(tipo+'_dom').checked) {
-            alert("SINCRO DE DOMICILIO ACTIVADA");
-        }
+    function cambiarSeccion(n) {
+        [1,2,3].forEach(i => {
+            document.getElementById('sec'+i).classList.toggle('hidden', i !== n);
+            document.getElementById('btn'+i).classList.toggle('tab-active', i === n);
+            document.getElementById('btn'+i).classList.toggle('opacity-50', i !== n);
+        });
+        if(n === 2) renderizarTarjetas();
+        if(n === 3) renderizarMetricas();
     }
 
-    function save(isWait) {
-        const data = {
-            al: { id: Date.now(), nom: v('a_nom'), dni: v('a_dni'), nac: v('a_nac'), fec: v('a_fec'), edad: v('a_edad'), sala: v('a_sala'), dom: v('a_dom'), her: v('a_her'), hj: v('a_hj'), salud: v('a_salud') },
-            ma: { nom: v('m_nom'), dni: v('m_dni'), nac: v('m_nac'), tel: v('m_tel'), ocu: v('m_ocu'), edu: v('m_edu'), auh: document.getElementById('m_auh').checked },
-            pa: { nom: v('p_nom'), dni: v('p_dni'), nac: v('p_nac'), tel: v('p_tel'), ocu: v('p_ocu'), edu: v('p_edu') }
+    function guardarFicha() {
+        const nuevo = {
+            id: Date.now(),
+            al: { nom: v('al_nom'), dni: v('al_dni'), nac: v('al_nac'), fec: v('al_fec'), sala: v('al_sala'), obs: v('al_obs') },
+            ma: { nom: v('ma_nom'), ocu: v('ma_ocu'), edu: v('ma_edu'), auh: document.getElementById('ma_auh').checked }
         };
-        if(isWait) wait.push(data); else db.push(data);
-        localStorage.setItem('TITANIUM_V22_DB', JSON.stringify(db));
-        localStorage.setItem('TITANIUM_V22_WAIT', JSON.stringify(wait));
-        location.reload();
+        if(!nuevo.al.nom || !nuevo.al.dni) return alert("COMPLETE NOMBRE Y DNI");
+        matricula.push(nuevo);
+        localStorage.setItem('TITANIUM_DB', JSON.stringify(matricula));
+        alert("REGISTRO EXITOSO");
+        actualizarVista();
     }
 
     function v(id) { return document.getElementById(id).value.toUpperCase(); }
 
-    function importarInteligente(event) {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const raw = JSON.parse(e.target.result);
-                const data = raw.db || (Array.isArray(raw) ? raw : []);
-                if(data.length > 0) {
-                    db = data.map(i => ({
-                        al: { ...i.al, nac: i.al.nac || "ARGENTINA", dom: i.al.dom || "S/D", her: i.al.her || "0", hj: i.al.hj || "0" },
-                        ma: { ...i.ma, nac: i.ma?.nac || "ARGENTINA", tel: i.ma?.tel || "" },
-                        pa: { ...i.pa, nac: i.pa?.nac || "ARGENTINA", tel: i.pa?.tel || "" }
-                    }));
-                    localStorage.setItem('TITANIUM_V22_DB', JSON.stringify(db));
-                    alert("INTEGRACIÓN OMNI V22 EXITOSA: " + db.length + " LEGAJOS SINCRONIZADOS.");
-                    location.reload();
-                }
-            } catch(err) { alert("ERROR DE FORMATO JSON"); }
-        };
-        reader.readAsText(file);
-    }
-
-    function setTab(n) {
-        [1,2,3,4].forEach(i => {
-            const s = document.getElementById('s'+i);
-            if(s) s.classList.toggle('hidden', i !== n);
-            document.getElementById('t'+i).classList.toggle('active', i === n);
-        });
-        if(n === 2) renderFotoInst();
-        if(n === 4) renderCharts();
-    }
-
-    function renderFotoInst() {
-        const g = document.getElementById('foto_grid'); g.innerHTML = "";
-        ["TM","TT"].forEach(t => {
+    function renderizarTarjetas() {
+        const cont = document.getElementById('sec2');
+        cont.innerHTML = "";
+        ["TM","TT"].forEach(turno => {
             SALAS.forEach(s => {
-                const name = `${s} ${t}`, cant = db.filter(x => x.al.sala === name).length;
-                g.innerHTML += `<div onclick="abrirAsis('${name}')" class="glass p-4 sala-card border-yellow-500/40">
-                    <h4 class="text-[8px] font-black tracking-widest mb-2">${name}</h4>
-                    <p class="text-3xl font-black italic">${cant}<span class="text-[10px] opacity-30">/30</span></p>
-                    <div class="h-1 bg-white/10 mt-3 rounded-full overflow-hidden">
-                        <div class="h-full bg-yellow-500" style="width: ${(cant/30)*100}%"></div>
-                    </div>
-                </div>`;
+                const nombreSala = `${s} ${turno}`;
+                const cantidad = matricula.filter(x => x.al.sala === nombreSala).length;
+                cont.innerHTML += `
+                    <div class="glass p-4 sala-card color-${s}" onclick="alert('Legajo: ${nombreSala}')">
+                        <p class="text-[8px] opacity-50">${turno}</p>
+                        <h4 class="font-black text-white text-[10px]">${s}</h4>
+                        <div class="text-2xl font-black mt-2">${cantidad}<span class="text-[9px] opacity-30">/30</span></div>
+                        <div class="w-full bg-white/10 h-1 mt-2">
+                            <div class="bg-yellow-500 h-full" style="width: ${(cantidad/30)*100}%"></div>
+                        </div>
+                    </div>`;
             });
         });
     }
 
-    function abrirAsis(s) {
-        document.getElementById('asis_panel').classList.remove('hidden');
-        document.getElementById('asis_sala_nom').innerText = s;
-        document.getElementById('asis_stats').innerText = `MATRÍCULA: ${db.filter(x => x.al.sala === s).length} ALUMNOS`;
-        renderAsis();
+    function renderizarMetricas() {
+        document.getElementById('m_activa').innerText = matricula.length;
+        document.getElementById('m_vacantes').innerText = 420 - matricula.length;
+        const conAuh = matricula.filter(x => x.ma.auh).length;
+        document.getElementById('m_auh').innerText = Math.round((conAuh / matricula.length || 0) * 100) + "%";
+        
+        const ctx = document.getElementById('chartNac').getContext('2d');
+        const nacs = {}; matricula.forEach(x => nacs[x.al.nac] = (nacs[x.al.nac] || 0) + 1);
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: Object.keys(nacs),
+                datasets: [{ data: Object.values(nacs), backgroundColor: ['#facc15','#3b82f6','#ef4444','#10b981','#8b5cf6'] }]
+            },
+            options: { plugins: { legend: { labels: { color: 'white', font: { size: 10 } } } } }
+        });
     }
 
-    function renderAsis() {
-        const s = document.getElementById('asis_sala_nom').innerText, f = document.getElementById('asis_fecha').value;
-        const list = db.filter(x => x.al.sala === s);
-        document.getElementById('asis_list').innerHTML = list.map(a => `
-            <div class="glass p-2 flex justify-between items-center border border-white/5">
-                <span class="text-[7px] font-black">${a.al.nom}</span>
-                <div class="flex gap-1">
-                    <button onclick="marcar('${f}','${a.al.id}','P')" class="w-6 h-6 rounded ${asis[f]?.[a.al.id]==='P' ? 'bg-green-600' : 'bg-white/10'} text-[8px] font-bold">P</button>
-                    <button onclick="marcar('${f}','${a.al.id}','A')" class="w-6 h-6 rounded ${asis[f]?.[a.al.id]==='A' ? 'bg-red-600' : 'bg-white/10'} text-[8px] font-bold">A</button>
-                </div>
-            </div>`).join('');
+    function actualizarVista() {
+        const list = document.getElementById('lista_alumnos');
+        list.innerHTML = matricula.slice(-10).reverse().map(a => `
+            <div class="p-3 bg-white/5 border-l-2 border-yellow-500 rounded flex justify-between">
+                <div><p class="font-black text-yellow-500">${a.al.nom}</p><p class="opacity-50 text-[9px]">${a.al.dni} | ${a.al.sala}</p></div>
+                <i class="bi bi-trash text-red-500 cursor-pointer" onclick="borrar('${a.id}')"></i>
+            </div>
+        `).join('');
     }
 
-    function marcar(f, id, val) { 
-        if(!f) return alert("Seleccione Fecha");
-        if(!asis[f]) asis[f] = {}; 
-        asis[f][id] = val; 
-        localStorage.setItem('TITANIUM_V22_ASIS', JSON.stringify(asis)); 
-        renderAsis(); 
-    }
-
-    function actualizarContadores() {
-        document.getElementById('m_total').innerText = db.length;
-        document.getElementById('m_vac').innerText = 420 - db.length;
-        document.getElementById('m_auh_total').innerText = db.filter(x => x.ma.auh).length;
-        document.getElementById('m_her_total').innerText = db.filter(x => parseInt(x.al.her) > 0).length;
-    }
-
-    function renderRecientes() {
-        document.getElementById('prev_list').innerHTML = db.slice(-30).reverse().map(a => `
-            <div onclick="cargarLegajo('${a.al.dni}')" class="glass p-3 border-l-4 border-yellow-500 flex justify-between items-center group cursor-pointer hover:bg-yellow-500/10 transition">
-                <div><p class="font-black text-[9px]">${a.al.nom}</p><p class="opacity-40 text-[6px]">DNI: ${a.al.dni} | ${a.al.nac}</p></div>
-                <span class="bg-yellow-500 text-black px-3 py-1 rounded-sm font-black text-[7px]">${a.al.sala}</span>
-            </div>`).join('');
-    }
-
-    function cargarLegajo(dni) {
-        const a = db.find(x => x.al.dni === dni);
-        if(!a) return;
-        Object.keys(a.al).forEach(k => { if(document.getElementById('a_'+k)) document.getElementById('a_'+k).value = a.al[k]; });
-        Object.keys(a.ma).forEach(k => { if(document.getElementById('m_'+k)) document.getElementById('m_'+k).value = a.ma[k]; });
-        Object.keys(a.pa).forEach(k => { if(document.getElementById('p_'+k)) document.getElementById('p_'+k).value = a.pa[k]; });
-        document.getElementById('m_auh').checked = a.ma.auh;
-        setTab(1);
-    }
-
-    function renderCharts() {
-        actualizarContadores();
-        const ctxN = document.getElementById('chartNac').getContext('2d');
-        const ncs = {}; db.forEach(x => ncs[x.al.nac] = (ncs[x.al.nac] || 0) + 1);
-        new Chart(ctxN, { type: 'polarArea', data: { labels: Object.keys(ncs), datasets: [{ data: Object.values(ncs), backgroundColor: ['#facc15','#3b82f6','#ef4444','#10b981','#8b5cf6'] }] }, options: { maintainAspectRatio: false, plugins: { legend: { labels: { color: 'white', font: { size: 8 } } } } } });
-    }
-
-    function exportar() {
-        const blob = new Blob([JSON.stringify({db, wait, asis})], {type:'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download="TITANIUM_V22_OMNI_MASTER.json"; a.click();
-    }
-
-    function dictar(id) {
-        const r = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        r.lang = 'es-AR'; r.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); };
+    function dictarCampo(id) {
+        const Reco = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(!Reco) return;
+        const r = new Reco();
+        r.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); };
         r.start();
     }
 
-    function search() {
-        const f = document.getElementById('find').value.toUpperCase();
-        const filtered = db.filter(x => x.al.nom.includes(f) || x.al.dni.includes(f));
-        document.getElementById('prev_list').innerHTML = filtered.map(a => `
-            <div onclick="cargarLegajo('${a.al.dni}')" class="glass p-3 border-l-4 border-yellow-500 flex justify-between items-center cursor-pointer">
-                <div><p class="font-black text-[9px]">${a.al.nom}</p></div>
-                <span class="text-yellow-500 font-bold">${a.al.sala}</span>
-            </div>`).join('');
+    function importarLegajos(e) {
+        const fr = new FileReader();
+        fr.onload = (ev) => {
+            const data = JSON.parse(ev.target.result);
+            matricula = Array.isArray(data) ? data : (data.db || []);
+            localStorage.setItem('TITANIUM_DB', JSON.stringify(matricula));
+            alert("VINCULACIÓN EXITOSA: " + matricula.length + " ALUMNOS");
+            location.reload();
+        };
+        fr.readAsText(e.target.files[0]);
+    }
+
+    function exportarBackup() {
+        const blob = new Blob([JSON.stringify(matricula)], {type: 'application/json'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `TITANIUM_BACKUP_J926.json`;
+        a.click();
     }
 </script>
 </body>
