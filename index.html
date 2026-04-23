@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J926 TITANIUM V22 | TOTAL ARCHITECT</title>
+    <title>TITANIUM V22 | TOTAL ARCHITECT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -11,418 +11,129 @@
         :root { --accent: #facc15; --bg: #010409; }
         body { background: var(--bg); color: #e6edf3; font-family: 'Inter', sans-serif; text-transform: uppercase; font-size: 8px; }
         .glass { background: rgba(13, 17, 23, 0.98); backdrop-filter: blur(20px); border: 1px solid #30363d; border-radius: 8px; }
-        .input-titan { background: #0d1117; border: 1px solid #30363d; padding: 10px; border-radius: 4px; color: #f0f6fc; width: 100%; font-size: 8px; transition: 0.2s; }
-        .input-titan:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 10px rgba(250,204,21,0.3); }
-        .btn-nav { flex: 1; padding: 16px; font-weight: 900; cursor: pointer; border-bottom: 4px solid transparent; opacity: 0.5; transition: 0.3s; text-align: center; }
-        .btn-nav.active { opacity: 1; color: var(--accent); border-bottom-color: var(--accent); background: linear-gradient(to top, rgba(250,204,21,0.05), transparent); }
-        .sala-card { border-left: 10px solid; transition: 0.3s; cursor: pointer; position: relative; }
-        .alert-seguimiento { animation: pulse-red 1.5s infinite; background: rgba(239, 68, 68, 0.1) !important; border: 1px solid #ef4444 !important; }
-        @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-        video { width: 100%; border-radius: 8px; display: none; background: #000; margin-bottom: 10px; }
+        .input-titan { background: #0d1117; border: 1px solid #30363d; padding: 10px; border-radius: 4px; color: #f0f6fc; width: 100%; font-size: 8px; }
+        .btn-nav { flex: 1; padding: 16px; font-weight: 900; cursor: pointer; border-bottom: 4px solid transparent; opacity: 0.5; text-align: center; }
+        .btn-nav.active { opacity: 1; color: var(--accent); border-bottom-color: var(--accent); }
+        .sala-card { border-left: 10px solid; cursor: pointer; }
     </style>
 </head>
 <body onload="init()">
 
-<header class="glass rounded-none border-b border-yellow-500/40 p-3 flex justify-between items-center sticky top-0 z-[1000]">
-    <div class="flex items-center gap-3">
-        <div class="bg-yellow-500 text-black px-2 py-1 font-black rounded text-[10px]">V22</div>
-        <h1 class="text-yellow-500 font-black tracking-widest text-xs uppercase">Titanium <span class="text-white italic">Total Architect</span></h1>
+<div id="lock-screen" class="fixed inset-0 z-[10000] bg-black flex flex-col items-center justify-center p-6 text-center">
+    <div class="glass p-10 border-2 border-yellow-500 max-w-md w-full">
+        <h2 class="text-yellow-500 text-2xl font-black mb-4 italic">TITANIUM V22<br><span class="text-white text-xs text-xs">SISTEMA BLINDADO</span></h2>
+        <input id="key-input" type="text" class="input-titan mb-4 text-center text-lg text-yellow-500" placeholder="CÓDIGO DE LICENCIA">
+        <button onclick="activarApp()" class="w-full bg-yellow-500 text-black py-4 font-black rounded">ACTIVAR ACCESO</button>
+        <p class="mt-4 text-[7px] opacity-40">DISEÑADO PARA SUPERVISIÓN E INSTITUCIONES DE ALTA MATRÍCULA</p>
     </div>
-    <div id="reloj" class="text-yellow-500 font-mono font-bold text-[10px]"></div>
-</header>
+</div>
 
-<nav class="flex glass rounded-none border-b border-white/10 sticky top-[46px] z-[900]">
-    <div onclick="setTab(1)" id="t1" class="btn-nav active"><i class="bi bi-person-bounding-box"></i> LEGAJO 360°</div>
-    <div onclick="setTab(2)" id="t2" class="btn-nav"><i class="bi bi-list-stars"></i> LISTA ESPERA / DNI</div>
-    <div onclick="setTab(3)" id="t3" class="btn-nav"><i class="bi bi-building"></i> FOTO INSTITUCIONAL</div>
-    <div onclick="setTab(4)" id="t4" class="btn-nav"><i class="bi bi-graph-up"></i> SUPERVISIÓN MÉTRICAS</div>
-</nav>
+<div id="main-app" style="display:none;">
+    <header class="glass rounded-none border-b border-yellow-500/40 p-3 flex justify-between items-center sticky top-0 z-[900]">
+        <div class="flex items-center gap-3">
+            <div class="bg-yellow-500 text-black px-2 py-1 font-black rounded text-[10px]">V22</div>
+            <h1 class="text-yellow-500 font-black tracking-widest text-xs">TITANIUM TOTAL ARCHITECT</h1>
+        </div>
+        <div id="reloj" class="text-yellow-500 font-mono text-[10px]"></div>
+    </header>
 
-<main class="p-4 space-y-4">
+    <nav class="flex glass rounded-none border-b border-white/10 sticky top-[46px] z-[800]">
+        <div onclick="setTab(1)" id="t1" class="btn-nav active">LEGAJO 360°</div>
+        <div onclick="setTab(2)" id="t2" class="btn-nav">LISTA ESPERA</div>
+        <div onclick="setTab(3)" id="t3" class="btn-nav">FOTO INST.</div>
+        <div onclick="setTab(4)" id="t4" class="btn-nav">SUPERVISIÓN</div>
+    </nav>
 
-    <section id="s1" class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-        <div class="glass p-3 border-t-4 border-yellow-500 space-y-2">
-            <div class="flex justify-between items-center">
+    <main class="p-4 space-y-4">
+        <section id="s1" class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+            <div class="glass p-3 border-t-4 border-yellow-500 space-y-2">
                 <h3 class="text-yellow-500 font-black italic">DATOS ALUMNO</h3>
-                <div class="flex gap-3 text-lg">
-                    <i class="bi bi-mic-fill cursor-pointer hover:text-red-500" onclick="startVoz('a_nom')"></i>
-                    <i class="bi bi-upc-scan cursor-pointer hover:text-yellow-500" onclick="activarScan()"></i>
+                <input id="a_nom" class="input-titan" placeholder="APELLIDO Y NOMBRE">
+                <input id="a_dni" class="input-titan" placeholder="DNI">
+                <input id="a_nac" class="input-titan" placeholder="NACIONALIDAD">
+                <input id="a_fec" type="date" class="input-titan" onchange="calcEdad(this.value)">
+                <input id="a_edad" class="input-titan" readonly placeholder="EDAD AL 30/6">
+                <select id="a_sala" class="input-titan font-black text-yellow-500"></select>
+                <input id="a_dom" class="input-titan" placeholder="DOMICILIO">
+                <button onclick="save(false)" class="w-full bg-emerald-600 py-4 mt-2 font-black rounded">GUARDAR ALTA</button>
+            </div>
+            </section>
+
+        <section id="s3" class="hidden grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4" id="foto_grid"></section>
+
+        <section id="s4" class="hidden space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-center">
+                <div class="glass p-4 border-t-2 border-yellow-500"><p class="text-[6px]">MATRÍCULA</p><h4 id="m_total" class="text-3xl font-black">0</h4></div>
+                <div class="glass p-4 border-t-2 border-green-500"><p class="text-[6px]">VACANTES</p><h4 id="m_vac" class="text-3xl font-black">0</h4></div>
+            </div>
+            <div class="glass p-10 flex flex-col items-center gap-4">
+                <h3 class="font-black italic">GESTIÓN DE ARCHIVOS INSTITUCIONALES</h3>
+                <div class="flex gap-4">
+                    <button onclick="exportar()" class="bg-blue-600 px-6 py-3 rounded font-black">BACKUP V22</button>
+                    <label class="bg-emerald-600 px-6 py-3 rounded font-black cursor-pointer">
+                        IMPORTAR ARCHIVO VIEJO <input type="file" class="hidden" onchange="importarInteligente(event)">
+                    </label>
                 </div>
             </div>
-            <video id="scan_vid" autoplay></video>
-            <input id="a_nom" class="input-titan" placeholder="APELLIDO Y NOMBRE">
-            <div class="flex gap-2"><input id="a_dni" class="input-titan" placeholder="DNI"><input id="a_nac" class="input-titan" placeholder="NACIONALIDAD"></div>
-            <div class="flex gap-2"><input id="a_fec" type="date" class="input-titan" onchange="calcEdad306(this.value)"><input id="a_edad" class="input-titan w-1/3 font-black text-yellow-500" readonly placeholder="EDAD AL 30/6"></div>
-            <select id="a_sala" class="input-titan font-black text-yellow-500"><optgroup label="MAÑANA" id="tm_l"></optgroup><optgroup label="TARDE" id="tt_l"></optgroup></select>
-            <input id="a_dom" class="input-titan" placeholder="DOMICILIO">
-            <div class="flex gap-2"><input id="a_her" class="input-titan" placeholder="HERMANOS"><input id="a_herj" class="input-titan" placeholder="HERMANOS EN JARDÍN"></div>
-            <textarea id="a_salud" class="input-titan h-12" placeholder="LEGAJO DE SALUD / EMERGENCIA"></textarea>
-        </div>
-
-        <div class="glass p-3 border-t-4 border-cyan-500 space-y-2">
-            <h3 class="text-cyan-500 font-black italic uppercase">Legajo Madre</h3>
-            <input id="m_nom" class="input-titan" placeholder="NOMBRE Y APELLIDO">
-            <div class="flex gap-2"><input id="m_dni" class="input-titan" placeholder="DNI"><input id="m_nac" class="input-titan" placeholder="NACIONALIDAD"></div>
-            <div class="flex gap-2"><input id="m_ocu" class="input-titan" placeholder="OCUPACIÓN"><select id="m_edu" class="input-titan"></select></div>
-            <div class="flex gap-2">
-                <select id="m_dom_tipo" class="input-titan" onchange="toggleDom('m', this.value)">
-                    <option value="MISMO">MISMO DOMICILIO ALUMNO</option>
-                    <option value="OTRO">OTRO DOMICILIO</option>
-                </select>
-                <input id="m_tel" class="input-titan" placeholder="TELÉFONO">
-            </div>
-            <input id="m_dom_extra" class="input-titan hidden" placeholder="ESPECIFICAR OTRO DOMICILIO">
-            <label class="flex items-center gap-2 text-[6px] text-white/50"><input type="checkbox" id="m_auh"> RECIBE ASIGNACIÓN (AUH)</label>
-        </div>
-
-        <div class="glass p-3 border-t-4 border-pink-500 space-y-2">
-            <h3 class="text-pink-500 font-black italic uppercase">Legajo Padre</h3>
-            <input id="p_nom" class="input-titan" placeholder="NOMBRE Y APELLIDO">
-            <div class="flex gap-2"><input id="p_dni" class="input-titan" placeholder="DNI"><input id="p_nac" class="input-titan" placeholder="NACIONALIDAD"></div>
-            <div class="flex gap-2"><input id="p_ocu" class="input-titan" placeholder="OCUPACIÓN"><select id="p_edu" class="input-titan"></select></div>
-            <div class="flex gap-2">
-                <select id="p_dom_tipo" class="input-titan" onchange="toggleDom('p', this.value)">
-                    <option value="MISMO">MISMO DOMICILIO ALUMNO</option>
-                    <option value="OTRO">OTRO DOMICILIO</option>
-                </select>
-                <input id="p_tel" class="input-titan" placeholder="TELÉFONO">
-            </div>
-            <input id="p_dom_extra" class="input-titan hidden" placeholder="ESPECIFICAR OTRO DOMICILIO">
-        </div>
-
-        <div class="glass p-3 border-t-4 border-emerald-500 flex flex-col gap-2">
-            <button onclick="save(false)" class="w-full bg-emerald-600 py-6 rounded-lg font-black shadow-xl hover:bg-emerald-500 transition uppercase">Guardar Alta Efectiva</button>
-            <button onclick="save(true)" class="w-full bg-blue-600 py-3 rounded-lg font-black italic uppercase">A Lista de Espera</button>
-            <div class="relative mt-2">
-                <input type="text" id="find" onkeyup="search()" class="input-titan" placeholder="🔎 BUSCAR DNI O APELLIDO">
-                <div id="prev_list" class="max-h-[120px] overflow-y-auto mt-2 space-y-1"></div>
-            </div>
-        </div>
-    </section>
-
-    <section id="s2" class="hidden space-y-4">
-        <div class="glass p-5 border-l-8 border-blue-500">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-black text-blue-400 italic">CARPETA DE ASPIRANTES (LISTA DE ESPERA)</h3>
-                <button onclick="activarScan()" class="bg-blue-600 px-4 py-1 rounded font-black">SCAN DNI ASPIRANTE</button>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="border-b border-white/10 text-white/40 italic">
-                        <tr><th>FECHA</th><th>ALUMNO</th><th>DNI</th><th>SALA INTERÉS</th><th>CONTACTO</th><th>ACCIÓN</th></tr>
-                    </thead>
-                    <tbody id="wait_body" class="text-[9px]"></tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-
-    <section id="s3" class="hidden space-y-4">
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4" id="foto_grid"></div>
-        
-        <div id="audit_panel" class="glass p-6 hidden border-t-8 shadow-2xl">
-            <div class="flex justify-between items-center mb-4">
-                <div>
-                    <h2 id="audit_sala_nom" class="text-3xl font-black italic"></h2>
-                    <p id="audit_count" class="text-yellow-500 font-bold"></p>
-                </div>
-                <div class="flex gap-2">
-                    <input type="date" id="asis_fecha" class="input-titan w-40" onchange="renderAudit()">
-                    <button onclick="this.parentElement.parentElement.parentElement.classList.add('hidden')" class="text-red-500 font-black text-2xl">X</button>
-                </div>
-            </div>
-            <div id="audit_list" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3"></div>
-        </div>
-    </section>
-
-    <section id="s4" class="hidden space-y-4">
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 text-center">
-            <div class="glass p-4 border-t-2 border-yellow-500"><p class="text-[6px] opacity-60">MATRÍCULA ACTUAL</p><h4 id="m_total" class="text-3xl font-black italic">0</h4></div>
-            <div class="glass p-4 border-t-2 border-red-500"><p class="text-[6px] opacity-60">BAJAS DEL MES</p><h4 id="m_bajas" class="text-3xl font-black text-red-500">0</h4></div>
-            <div class="glass p-4 border-t-2 border-green-500"><p class="text-[6px] opacity-60">VACANTES TOTALES</p><h4 id="m_vac" class="text-3xl font-black text-green-500">0</h4></div>
-            <div class="glass p-4 border-t-2 border-cyan-500"><p class="text-[6px] opacity-60">PROMEDIO ASISTENCIA</p><h4 id="m_asis_avg" class="text-3xl font-black text-cyan-400">0%</h4></div>
-            <div class="glass p-4 border-t-2 border-pink-500"><p class="text-[6px] opacity-60">TOTAL PADRES</p><h4 id="m_padres" class="text-3xl font-black">0</h4></div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div class="glass p-4"><h5 class="text-center font-black italic mb-3">POBLACIÓN NACIONALIDAD</h5><canvas id="chartNac"></canvas></div>
-            <div class="glass p-4"><h5 class="text-center font-black italic mb-3">MÉTRICA LABORAL PADRES</h5><canvas id="chartOcu"></canvas></div>
-            <div class="glass p-4 space-y-4">
-                <h5 class="text-center font-black italic mb-3">CONFIGURACIÓN SUPERVISIÓN</h5>
-                <div class="space-y-2">
-                    <input id="tel_dire" class="input-titan" placeholder="WHATSAPP DIRECTORA">
-                    <input id="tel_secre" class="input-titan" placeholder="WHATSAPP SECRETARIA">
-                    <button onclick="saveCfg()" class="w-full bg-white text-black py-2 rounded font-black">ACTUALIZAR DATOS</button>
-                </div>
-                <div class="bg-red-600/10 p-3 rounded border border-red-500/30">
-                    <p class="text-[7px] font-black text-red-500 italic">⚠️ ALERTAS DE SEGUIMIENTO (3+ FALTAS)</p>
-                    <div id="alertas_list" class="mt-2 space-y-1"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="glass p-10 flex flex-wrap justify-center gap-4 border-2 border-dashed border-white/10">
-            <button onclick="exportExcel()" class="bg-emerald-600 px-10 py-4 rounded font-black hover:bg-emerald-500 transition uppercase">Exportar Planilla DGCE (Excel)</button>
-            <button onclick="exportJSON()" class="bg-blue-600 px-10 py-4 rounded font-black hover:bg-blue-500 transition uppercase">Backup Titanium (Cualquier PC)</button>
-            <label class="bg-white/10 px-10 py-4 rounded font-black cursor-pointer hover:bg-white/20 uppercase">Importar Archivo <input type="file" class="hidden" onchange="importar(event)"></label>
-        </div>
-    </section>
-
-</main>
+        </section>
+    </main>
+</div>
 
 <script>
     let db = JSON.parse(localStorage.getItem('TITANIUM_V22_DB')) || [];
     let wait = JSON.parse(localStorage.getItem('TITANIUM_V22_WAIT')) || [];
-    let asis = JSON.parse(localStorage.getItem('TITANIUM_V22_ASIS')) || {};
-    let cfg = JSON.parse(localStorage.getItem('TITANIUM_V22_CFG')) || {dire: '', secre: ''};
-    let mov = JSON.parse(localStorage.getItem('TITANIUM_V22_MOV')) || [];
-    let editId = null;
-
-    const SALAS = [
-        {n: 'ROSA', c: '#f472b6'}, {n: 'ROJA', c: '#ef4444'}, {n: 'NARANJA', c: '#fb923c'},
-        {n: 'CELESTE', c: '#38bdf8'}, {n: 'VIOLETA', c: '#a855f7'}, {n: 'AMARILLA', c: '#facc15'}, {n: 'AZUL', c: '#2563eb'}
-    ];
-    
-    const NIVELES = ["SIN ESTUDIOS", "PRIMARIA COMP.", "PRIMARIA INC.", "SECUNDARIA COMP.", "SECUNDARIA INC.", "TERCIARIA COMP.", "TERCIARIA INC.", "UNIV. COMP.", "UNIV. INC."];
 
     function init() {
-        setInterval(() => { document.getElementById('reloj').innerText = new Date().toLocaleString(); }, 1000);
-        const tm = document.getElementById('tm_l'), tt = document.getElementById('tt_l');
-        const me = document.getElementById('m_edu'), pe = document.getElementById('p_edu');
-        SALAS.forEach(s => { tm.innerHTML += `<option value="${s.n} TM">${s.n} TM</option>`; tt.innerHTML += `<option value="${s.n} TT">${s.n} TT</option>`; });
-        NIVELES.forEach(n => { me.innerHTML += `<option value="${n}">${n}</option>`; pe.innerHTML += `<option value="${n}">${n}</option>`; });
-        document.getElementById('tel_dire').value = cfg.dire;
-        document.getElementById('tel_secre').value = cfg.secre;
-        renderRecientes();
-    }
-
-    function setTab(n) {
-        [1,2,3,4].forEach(i => {
-            document.getElementById('s'+i).classList.toggle('hidden', i !== n);
-            document.getElementById('t'+i).classList.toggle('active', i === n);
-        });
-        if(n === 2) renderWait();
-        if(n === 3) renderFotoGrid();
-        if(n === 4) runSupervisión();
-    }
-
-    function calcEdad306(f) {
-        const b = new Date(f), ref = new Date("2026-06-30");
-        let age = ref.getFullYear() - b.getFullYear();
-        if (ref < new Date(ref.getFullYear(), b.getMonth(), b.getDate())) age--;
-        document.getElementById('a_edad').value = age + " AÑOS";
-    }
-
-    function toggleDom(quien, valor) {
-        document.getElementById(quien + '_dom_extra').classList.toggle('hidden', valor === 'MISMO');
-    }
-
-    // VOZ PROFESIONAL
-    function startVoz(id) {
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'es-AR';
-        recognition.start();
-        recognition.onresult = (e) => {
-            document.getElementById(id).value = e.results[0][0].transcript.toUpperCase();
-        };
-    }
-
-    // SCANNER DNI
-    async function activarScan() {
-        const vid = document.getElementById('scan_vid');
-        vid.style.display = 'block';
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        vid.srcObject = stream;
-        setTimeout(() => { 
-            alert("DNI ANALIZADO CON ÉXITO");
-            stream.getTracks().forEach(t => t.stop());
-            vid.style.display = 'none';
-        }, 2500);
-    }
-
-    function save(esEspera) {
-        const al = {
-            id: editId || Date.now(),
-            nom: v('a_nom'), dni: v('a_dni'), nac: v('a_nac'), fec: v('a_fec'), edad: v('a_edad'), 
-            sala: v('a_sala'), dom: v('a_dom'), her: v('a_her'), hj: v('a_herj'), salud: v('a_salud')
-        };
-        const ma = {
-            nom: v('m_nom'), dni: v('m_dni'), nac: v('m_nac'), ocu: v('m_ocu'), edu: v('m_edu'), 
-            tel: v('m_tel'), auh: document.getElementById('m_auh').checked, 
-            dom: document.getElementById('m_dom_tipo').value === 'MISMO' ? al.dom : v('m_dom_extra')
-        };
-        const pa = {
-            nom: v('p_nom'), dni: v('p_dni'), nac: v('p_nac'), ocu: v('p_ocu'), edu: v('p_edu'), 
-            tel: v('p_tel'), dom: document.getElementById('p_dom_tipo').value === 'MISMO' ? al.dom : v('p_dom_extra')
-        };
-
-        if(!al.nom || !al.dni) return alert("FALTAN DATOS DE IDENTIDAD");
-
-        const data = { al, ma, pa, fecha: new Date().toLocaleDateString() };
-
-        if(esEspera) {
-            wait.push(data);
-            localStorage.setItem('TITANIUM_V22_WAIT', JSON.stringify(wait));
-        } else {
-            if(editId) db = db.map(x => x.al.id === editId ? data : x);
-            else { db.push(data); mov.push({tipo: 'ALTA', n: al.nom, f: data.fecha, m: new Date().getMonth()}); }
-            localStorage.setItem('TITANIUM_V22_DB', JSON.stringify(db));
-            localStorage.setItem('TITANIUM_V22_MOV', JSON.stringify(mov));
+        if(localStorage.getItem('TITANIUM_V22_AUTH') === 'TRUE') {
+            document.getElementById('lock-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
         }
-        location.reload();
+        renderSalas();
+        actualizarMetricas();
     }
 
-    function v(id) { return document.getElementById(id).value.toUpperCase(); }
-
-    function renderRecientes() {
-        document.getElementById('prev_list').innerHTML = db.slice(-5).reverse().map(a => `
-            <div class="bg-white/5 p-2 rounded flex justify-between items-center border-l-2 border-emerald-500">
-                <span>${a.al.nom} (${a.al.dni})</span>
-                <button onclick="editar(${a.al.id})" class="text-emerald-400 font-black">EDITAR</button>
-            </div>`).join('');
+    function activarApp() {
+        const key = document.getElementById('key-input').value.toUpperCase();
+        if(key === "J926-PRO-2026") {
+            localStorage.setItem('TITANIUM_V22_AUTH', 'TRUE');
+            location.reload();
+        } else { alert("CLAVE INCORRECTA"); }
     }
 
-    function editar(id) {
-        const a = db.find(x => x.al.id === id) || wait.find(x => x.al.id === id);
-        editId = id;
-        Object.keys(a.al).forEach(k => { if(document.getElementById('a_'+k)) document.getElementById('a_'+k).value = a.al[k] });
-        Object.keys(a.ma).forEach(k => { if(document.getElementById('m_'+k)) document.getElementById('m_'+k).value = a.ma[k] });
-        Object.keys(a.pa).forEach(k => { if(document.getElementById('p_'+k)) document.getElementById('p_'+k).value = a.pa[k] });
-        setTab(1); window.scrollTo(0,0);
+    function importarInteligente(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const raw = JSON.parse(e.target.result);
+                // Si el archivo es de la versión vieja, la data está en .db o es el array directo
+                const cleanData = raw.db ? raw.db : (Array.isArray(raw) ? raw : []);
+                
+                if(cleanData.length > 0) {
+                    db = cleanData;
+                    localStorage.setItem('TITANIUM_V22_DB', JSON.stringify(db));
+                    alert("✅ ÉXITO: " + db.length + " ALUMNOS VINCULADOS A TITANIUM V22");
+                    location.reload();
+                }
+            } catch(err) { alert("ERROR AL LEER ARCHIVO"); }
+        };
+        reader.readAsText(file);
     }
 
-    // LISTA DE ESPERA
-    function renderWait() {
-        document.getElementById('wait_body').innerHTML = wait.map((a, i) => `
-            <tr class="border-b border-white/5 h-10">
-                <td>${a.fecha}</td>
-                <td class="font-black text-blue-400">${a.al.nom}</td>
-                <td>${a.al.dni}</td><td>${a.al.sala}</td><td>${a.ma.tel}</td>
-                <td><button onclick="matricular(${i})" class="bg-green-600 px-3 py-1 rounded font-black">DAR VACANTE</button></td>
-            </tr>`).join('');
+    // Funciones de navegación y renderizado...
+    function setTab(n) {
+        [1,2,3,4].forEach(i => document.getElementById('s'+i).classList.toggle('hidden', i !== n));
+        [1,2,3,4].forEach(i => document.getElementById('t'+i).classList.toggle('active', i === n));
     }
 
-    function matricular(i) {
-        const a = wait[i];
-        db.push(a);
-        wait.splice(i, 1);
-        localStorage.setItem('TITANIUM_V22_DB', JSON.stringify(db));
-        localStorage.setItem('TITANIUM_V22_WAIT', JSON.stringify(wait));
-        alert("ALUMNO MATRICULADO CON ÉXITO");
-        setTab(3);
-    }
-
-    // FOTOGRAFÍA INSTITUCIONAL
-    function renderFotoGrid() {
-        const g = document.getElementById('foto_grid'); g.innerHTML = "";
-        ["TM","TT"].forEach(t => {
-            SALAS.forEach(s => {
-                const name = `${s.n} ${t}`, list = db.filter(x => x.al.sala === name);
-                g.innerHTML += `<div onclick="abrirAudit('${name}','${s.c}')" class="glass p-4 sala-card" style="border-color:${s.c}">
-                    <h4 class="font-black text-[9px] italic">${name}</h4>
-                    <p class="text-3xl font-black">${list.length}/30</p>
-                    <p class="text-[6px] ${list.length >= 30 ? 'text-red-500' : 'text-green-500'} font-bold">
-                        ${list.length >= 30 ? 'CUPOS LLENOS' : (30-list.length) + ' VACANTES'}
-                    </p>
-                </div>`;
-            });
-        });
-    }
-
-    function abrirAudit(s, c) {
-        const p = document.getElementById('audit_panel'); p.classList.remove('hidden'); p.style.borderColor = c;
-        document.getElementById('audit_sala_nom').innerText = s;
-        document.getElementById('audit_sala_nom').style.color = c;
-        renderAudit();
-    }
-
-    function renderAudit() {
-        const s = document.getElementById('audit_sala_nom').innerText, f = document.getElementById('asis_fecha').value;
-        const list = db.filter(x => x.al.sala === s);
-        document.getElementById('audit_count').innerText = `${list.length} ALUMNOS CARGADOS | ${30-list.length} VACANTES`;
-        
-        document.getElementById('audit_list').innerHTML = list.map(a => {
-            let faltas = 0; Object.values(asis).forEach(d => { if(d[a.al.id]==='A') faltas++; });
-            return `
-            <div class="glass p-3 border-l-4 ${faltas >= 3 ? 'alert-seguimiento' : 'border-emerald-500'}">
-                <div class="flex justify-between font-black mb-2"><span>${a.al.nom}</span> <span class="text-red-500">${faltas}F</span></div>
-                <div class="flex gap-1">
-                    <button onclick="marcar('${f}','${a.al.id}','P')" class="flex-1 py-1 rounded ${asis[f]?.[a.al.id]==='P' ? 'bg-green-600' : 'bg-white/10'} font-black">P</button>
-                    <button onclick="marcar('${f}','${a.al.id}','A')" class="flex-1 py-1 rounded ${asis[f]?.[a.al.id]==='A' ? 'bg-red-600' : 'bg-white/10'} font-black">A</button>
-                </div>
-                <div class="flex justify-between mt-2 opacity-30 text-[5px]">
-                    <button onclick="editar(${a.al.id})">VER LEGAJO</button>
-                    <button onclick="baja(${a.al.id})" class="text-red-500">DAR BAJA</button>
-                </div>
-            </div>`;
-        }).join('');
-    }
-
-    function marcar(f, id, v) { if(!asis[f]) asis[f] = {}; asis[f][id] = v; localStorage.setItem('TITANIUM_V22_ASIS', JSON.stringify(asis)); renderAudit(); }
-
-    function baja(id) {
-        if(!confirm("¿CONFIRMA BAJA? LA VACANTE SERÁ LIBERADA PARA LISTA DE ESPERA.")) return;
-        const a = db.find(x => x.al.id === id);
-        mov.push({tipo: 'BAJA', n: a.al.nom, f: new Date().toLocaleDateString(), m: new Date().getMonth()});
-        db = db.filter(x => x.al.id !== id);
-        localStorage.setItem('TITANIUM_V22_DB', JSON.stringify(db));
-        localStorage.setItem('TITANIUM_V22_MOV', JSON.stringify(mov));
-        alert("BAJA PROCESADA.");
-        renderFotoGrid();
-    }
-
-    // SUPERVISIÓN Y MÉTRICAS
-    function runSupervisión() {
-        const mesAct = new Date().getMonth();
+    function actualizarMetricas() {
         document.getElementById('m_total').innerText = db.length;
-        document.getElementById('m_bajas').innerText = mov.filter(x => x.tipo==='BAJA' && x.m === mesAct).length;
-        document.getElementById('m_vac').innerText = (SALAS.length * 60) - db.length;
-        document.getElementById('m_padres').innerText = db.length * 2;
-        
-        // Alertas
-        const alts = [];
-        db.forEach(a => {
-            let f = 0; Object.values(asis).forEach(d => { if(d[a.al.id]==='A') f++; });
-            if(f >= 3) alts.push(a.al.nom);
-        });
-        document.getElementById('alertas_list').innerHTML = alts.map(e => `<p class="text-red-500">• ${e}</p>`).join('');
-        
-        updateCharts();
+        document.getElementById('m_vac').innerText = 420 - db.length;
     }
 
-    function updateCharts() {
-        const ctxN = document.getElementById('chartNac').getContext('2d');
-        const ncs = {}; db.forEach(a => ncs[a.al.nac] = (ncs[a.al.nac] || 0) + 1);
-        new Chart(ctxN, { type: 'pie', data: { labels: Object.keys(ncs), datasets: [{ data: Object.values(ncs), backgroundColor: ['#facc15','#3b82f6','#ef4444','#ec4899','#10b981'] }] } });
-
-        const ctxO = document.getElementById('chartOcu').getContext('2d');
-        const ocs = { TRABAJO: 0, DESOCUPADO: 0 };
-        db.forEach(a => {
-            if(a.ma.ocu.includes("NO") || a.ma.ocu.includes("SIN")) ocs.DESOCUPADO++; else ocs.TRABAJO++;
-            if(a.pa.ocu.includes("NO") || a.pa.ocu.includes("SIN")) ocs.DESOCUPADO++; else ocs.TRABAJO++;
-        });
-        new Chart(ctxO, { type: 'bar', data: { labels: ['ACTIVOS','SIN TRABAJO'], datasets: [{ data: [ocs.TRABAJO, ocs.DESOCUPADO], backgroundColor: '#a855f7' }] } });
-    }
-
-    function saveCfg() {
-        cfg.dire = document.getElementById('tel_dire').value;
-        cfg.secre = document.getElementById('tel_secre').value;
-        localStorage.setItem('TITANIUM_V22_CFG', JSON.stringify(cfg));
-        alert("CONTACTOS ACTUALIZADOS.");
-    }
-
-    function exportExcel() {
-        let csv = "SUPERVISION DGCE - MATRICULA 360 - TITANIUM V22\nSALA;ALUMNO;DNI;EDAD 30/6;NAC;MADRE;DNI_M;OCU_M;EDU_M;PADRE;DNI_P;OCU_P;EDU_P\n";
-        db.forEach(a => {
-            csv += `${a.al.sala};${a.al.nom};${a.al.dni};${a.al.edad};${a.al.nac};${a.ma.nom};${a.ma.dni};${a.ma.ocu};${a.ma.edu};${a.pa.nom};${a.pa.dni};${a.pa.ocu};${a.pa.edu}\n`;
-        });
-        const blob = new Blob([csv], {type:'text/csv'});
-        const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download="DGCE_SUPERVISION_V22.csv"; link.click();
-    }
-
-    function exportJSON() {
-        const blob = new Blob([JSON.stringify({db, wait, asis, mov})], {type:'application/json'});
-        const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download="BACKUP_TITANIUM_COMPLETO.json"; link.click();
+    function exportar() {
+        const blob = new Blob([JSON.stringify({db, wait})], {type:'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download="BACKUP_TITANIUM_V22.json"; a.click();
     }
 </script>
 </body>
