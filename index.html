@@ -12,68 +12,81 @@
         body { background: var(--bg); color: #e6edf3; font-family: 'Inter', sans-serif; text-transform: uppercase; font-size: 8px; }
         .glass { background: rgba(13, 17, 23, 0.98); backdrop-filter: blur(20px); border: 1px solid #30363d; border-radius: 8px; }
         .input-titan { background: #0d1117; border: 1px solid #30363d; padding: 10px; border-radius: 4px; color: #f0f6fc; width: 100%; font-size: 8px; }
-        .btn-nav { flex: 1; padding: 16px; font-weight: 900; cursor: pointer; border-bottom: 4px solid transparent; opacity: 0.5; text-align: center; }
-        .btn-nav.active { opacity: 1; color: var(--accent); border-bottom-color: var(--accent); }
-        .sala-card { border-left: 10px solid; cursor: pointer; }
+        .btn-nav { flex: 1; padding: 16px; font-weight: 900; cursor: pointer; border-bottom: 4px solid transparent; opacity: 0.5; transition: 0.3s; text-align: center; }
+        .btn-nav.active { opacity: 1; color: var(--accent); border-bottom-color: var(--accent); background: linear-gradient(to top, rgba(250,204,21,0.05), transparent); }
+        .sala-card { border-left: 10px solid; transition: 0.3s; cursor: pointer; }
+        .sala-card:hover { transform: scale(1.02); background: rgba(255,255,255,0.05); }
     </style>
 </head>
 <body onload="init()">
 
 <div id="lock-screen" class="fixed inset-0 z-[10000] bg-black flex flex-col items-center justify-center p-6 text-center">
     <div class="glass p-10 border-2 border-yellow-500 max-w-md w-full">
-        <h2 class="text-yellow-500 text-2xl font-black mb-4 italic">TITANIUM V22<br><span class="text-white text-xs text-xs">SISTEMA BLINDADO</span></h2>
-        <input id="key-input" type="text" class="input-titan mb-4 text-center text-lg text-yellow-500" placeholder="CÓDIGO DE LICENCIA">
-        <button onclick="activarApp()" class="w-full bg-yellow-500 text-black py-4 font-black rounded">ACTIVAR ACCESO</button>
-        <p class="mt-4 text-[7px] opacity-40">DISEÑADO PARA SUPERVISIÓN E INSTITUCIONES DE ALTA MATRÍCULA</p>
+        <div class="bg-yellow-500 text-black inline-block px-3 py-1 font-black rounded mb-4">V22</div>
+        <h2 class="text-yellow-500 text-2xl font-black mb-2 italic">TITANIUM TOTAL ARCHITECT</h2>
+        <input id="key-input" type="password" class="input-titan mb-4 text-center text-lg tracking-[5px]" placeholder="CÓDIGO DE ACCESO">
+        <button onclick="activarApp()" class="w-full bg-yellow-500 text-black py-4 font-black rounded hover:bg-yellow-400 transition uppercase">Activar Licencia Profesional</button>
     </div>
 </div>
 
 <div id="main-app" style="display:none;">
-    <header class="glass rounded-none border-b border-yellow-500/40 p-3 flex justify-between items-center sticky top-0 z-[900]">
-        <div class="flex items-center gap-3">
-            <div class="bg-yellow-500 text-black px-2 py-1 font-black rounded text-[10px]">V22</div>
-            <h1 class="text-yellow-500 font-black tracking-widest text-xs">TITANIUM TOTAL ARCHITECT</h1>
-        </div>
-        <div id="reloj" class="text-yellow-500 font-mono text-[10px]"></div>
+    <header class="glass rounded-none border-b border-yellow-500/40 p-3 flex justify-between items-center sticky top-0 z-[1000]">
+        <h1 class="text-yellow-500 font-black tracking-widest text-xs">TITANIUM V22</h1>
+        <div id="reloj" class="text-yellow-500 font-mono text-[9px]"></div>
     </header>
 
-    <nav class="flex glass rounded-none border-b border-white/10 sticky top-[46px] z-[800]">
+    <nav class="flex glass rounded-none border-b border-white/10 sticky top-[46px] z-[900]">
         <div onclick="setTab(1)" id="t1" class="btn-nav active">LEGAJO 360°</div>
-        <div onclick="setTab(2)" id="t2" class="btn-nav">LISTA ESPERA</div>
-        <div onclick="setTab(3)" id="t3" class="btn-nav">FOTO INST.</div>
-        <div onclick="setTab(4)" id="t4" class="btn-nav">SUPERVISIÓN</div>
+        <div onclick="setTab(2)" id="t2" class="btn-nav">FOTO INST.</div>
+        <div onclick="setTab(3)" id="t3" class="btn-nav">SUPERVISIÓN</div>
     </nav>
 
     <main class="p-4 space-y-4">
         <section id="s1" class="grid grid-cols-1 lg:grid-cols-4 gap-4">
             <div class="glass p-3 border-t-4 border-yellow-500 space-y-2">
-                <h3 class="text-yellow-500 font-black italic">DATOS ALUMNO</h3>
+                <div class="flex justify-between items-center"><h3 class="text-yellow-500 font-black italic">ALUMNO</h3> <i class="bi bi-mic-fill text-yellow-500 cursor-pointer" onclick="dictar('a_nom')"></i></div>
                 <input id="a_nom" class="input-titan" placeholder="APELLIDO Y NOMBRE">
-                <input id="a_dni" class="input-titan" placeholder="DNI">
-                <input id="a_nac" class="input-titan" placeholder="NACIONALIDAD">
+                <input id="a_dni" class="input-titan" placeholder="DNI (ESCANEABLE)">
                 <input id="a_fec" type="date" class="input-titan" onchange="calcEdad(this.value)">
-                <input id="a_edad" class="input-titan" readonly placeholder="EDAD AL 30/6">
+                <input id="a_edad" class="input-titan font-bold text-yellow-500" readonly placeholder="EDAD AL 30/6">
                 <select id="a_sala" class="input-titan font-black text-yellow-500"></select>
-                <input id="a_dom" class="input-titan" placeholder="DOMICILIO">
-                <button onclick="save(false)" class="w-full bg-emerald-600 py-4 mt-2 font-black rounded">GUARDAR ALTA</button>
+                <textarea id="a_salud" class="input-titan h-12" placeholder="OBSERVACIONES DE SALUD"></textarea>
+                <button onclick="save()" class="w-full bg-emerald-600 py-4 rounded font-black uppercase shadow-lg shadow-emerald-900/20">Registrar en Matrícula</button>
             </div>
-            </section>
 
-        <section id="s3" class="hidden grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4" id="foto_grid"></section>
-
-        <section id="s4" class="hidden space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-center">
-                <div class="glass p-4 border-t-2 border-yellow-500"><p class="text-[6px]">MATRÍCULA</p><h4 id="m_total" class="text-3xl font-black">0</h4></div>
-                <div class="glass p-4 border-t-2 border-green-500"><p class="text-[6px]">VACANTES</p><h4 id="m_vac" class="text-3xl font-black">0</h4></div>
+            <div class="glass p-3 border-t-4 border-cyan-500 space-y-2">
+                <h3 class="text-cyan-500 font-black italic">MADRE</h3>
+                <input id="m_nom" class="input-titan" placeholder="NOMBRE">
+                <input id="m_ocu" class="input-titan" placeholder="OCUPACIÓN">
+                <select id="m_edu" class="input-titan"></select>
+                <label class="flex items-center gap-2 text-[6px] opacity-60"><input type="checkbox" id="m_auh"> TITULAR AUH</label>
             </div>
-            <div class="glass p-10 flex flex-col items-center gap-4">
-                <h3 class="font-black italic">GESTIÓN DE ARCHIVOS INSTITUCIONALES</h3>
-                <div class="flex gap-4">
-                    <button onclick="exportar()" class="bg-blue-600 px-6 py-3 rounded font-black">BACKUP V22</button>
-                    <label class="bg-emerald-600 px-6 py-3 rounded font-black cursor-pointer">
-                        IMPORTAR ARCHIVO VIEJO <input type="file" class="hidden" onchange="importarInteligente(event)">
-                    </label>
-                </div>
+
+            <div class="glass p-3 border-t-4 border-pink-500 space-y-2">
+                <h3 class="text-pink-500 font-black italic">PADRE</h3>
+                <input id="p_nom" class="input-titan" placeholder="NOMBRE">
+                <input id="p_ocu" class="input-titan" placeholder="OCUPACIÓN">
+                <select id="p_edu" class="input-titan"></select>
+            </div>
+
+            <div class="glass p-3 border-t-4 border-white/20">
+                <input type="text" id="find" onkeyup="search()" class="input-titan mb-2 border-yellow-500/50" placeholder="🔎 BUSCAR LEGAJO...">
+                <div id="prev_list" class="space-y-1 overflow-y-auto max-h-[300px]"></div>
+            </div>
+        </section>
+
+        <section id="s2" class="hidden">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4" id="foto_grid"></div>
+        </section>
+
+        <section id="s3" class="hidden space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="glass p-6 border-l-4 border-yellow-500 text-center"><p class="opacity-50">MATRÍCULA EFECTIVA</p><h4 id="m_total" class="text-4xl font-black">0</h4></div>
+                <div class="glass p-6 border-l-4 border-green-500 text-center"><p class="opacity-50">VACANTES LIBRES</p><h4 id="m_vac" class="text-4xl font-black text-green-500">0</h4></div>
+            </div>
+            <div class="glass p-10 flex flex-wrap justify-center gap-6 border-2 border-dashed border-white/10">
+                <button onclick="exportar()" class="bg-blue-600 px-10 py-4 rounded font-black uppercase">Backup General V22</button>
+                <label class="bg-emerald-600 px-10 py-4 rounded font-black cursor-pointer uppercase">Vincular Legajos Anteriores <input type="file" class="hidden" onchange="importarInteligente(event)"></label>
             </div>
         </section>
     </main>
@@ -81,24 +94,52 @@
 
 <script>
     let db = JSON.parse(localStorage.getItem('TITANIUM_V22_DB')) || [];
-    let wait = JSON.parse(localStorage.getItem('TITANIUM_V22_WAIT')) || [];
+    const SALAS = ["ROSA","ROJA","NARANJA","CELESTE","VIOLETA","AMARILLA","AZUL"];
+    const NIVELES = ["PRIMARIA INC.","PRIMARIA COMP.","SECUNDARIA INC.","SECUNDARIA COMP.","TERCIARIA/UNIV."];
 
     function init() {
         if(localStorage.getItem('TITANIUM_V22_AUTH') === 'TRUE') {
             document.getElementById('lock-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
         }
-        renderSalas();
-        actualizarMetricas();
+        setInterval(() => { document.getElementById('reloj').innerText = new Date().toLocaleString(); }, 1000);
+        
+        const sl = document.getElementById('a_sala');
+        SALAS.forEach(s => { sl.innerHTML += `<option value="${s} TM">${s} TM</option><option value="${s} TT">${s} TT</option>`; });
+        
+        const me = document.getElementById('m_edu'), pe = document.getElementById('p_edu');
+        NIVELES.forEach(n => { me.innerHTML += `<option value="${n}">${n}</option>`; pe.innerHTML += `<option value="${n}">${n}</option>`; });
+        
+        renderRecientes();
+        actualizarContadores();
     }
 
     function activarApp() {
-        const key = document.getElementById('key-input').value.toUpperCase();
-        if(key === "J926-PRO-2026") {
+        if(document.getElementById('key-input').value === "J926-PRO-2026") {
             localStorage.setItem('TITANIUM_V22_AUTH', 'TRUE');
             location.reload();
-        } else { alert("CLAVE INCORRECTA"); }
+        } else { alert("Licencia denegada."); }
     }
+
+    function calcEdad(f) {
+        const b = new Date(f), r = new Date("2026-06-30");
+        let age = r.getFullYear() - b.getFullYear();
+        if (r < new Date(r.getFullYear(), b.getMonth(), b.getDate())) age--;
+        document.getElementById('a_edad').value = age + " AÑOS";
+    }
+
+    function save() {
+        const data = {
+            al: { id: Date.now(), nom: v('a_nom'), dni: v('a_dni'), fec: v('a_fec'), edad: v('a_edad'), sala: v('a_sala'), salud: v('a_salud') },
+            ma: { nom: v('m_nom'), ocu: v('m_ocu'), edu: v('m_edu'), auh: document.getElementById('m_auh').checked },
+            pa: { nom: v('p_nom'), ocu: v('p_ocu'), edu: v('p_edu') }
+        };
+        db.push(data);
+        localStorage.setItem('TITANIUM_V22_DB', JSON.stringify(db));
+        location.reload();
+    }
+
+    function v(id) { return document.getElementById(id).value.toUpperCase(); }
 
     function importarInteligente(event) {
         const file = event.target.files[0];
@@ -106,34 +147,53 @@
         reader.onload = function(e) {
             try {
                 const raw = JSON.parse(e.target.result);
-                // Si el archivo es de la versión vieja, la data está en .db o es el array directo
-                const cleanData = raw.db ? raw.db : (Array.isArray(raw) ? raw : []);
-                
-                if(cleanData.length > 0) {
-                    db = cleanData;
+                const data = raw.db || (Array.isArray(raw) ? raw : []);
+                if(data.length > 0) {
+                    db = data;
                     localStorage.setItem('TITANIUM_V22_DB', JSON.stringify(db));
-                    alert("✅ ÉXITO: " + db.length + " ALUMNOS VINCULADOS A TITANIUM V22");
+                    alert("✅ SINCRONIZACIÓN EXITOSA: " + db.length + " LEGAJOS CARGADOS.");
                     location.reload();
                 }
-            } catch(err) { alert("ERROR AL LEER ARCHIVO"); }
+            } catch(err) { alert("Error de formato."); }
         };
         reader.readAsText(file);
     }
 
-    // Funciones de navegación y renderizado...
     function setTab(n) {
-        [1,2,3,4].forEach(i => document.getElementById('s'+i).classList.toggle('hidden', i !== n));
-        [1,2,3,4].forEach(i => document.getElementById('t'+i).classList.toggle('active', i === n));
+        [1,2,3].forEach(i => document.getElementById('s'+i).classList.toggle('hidden', i !== n));
+        [1,2,3].forEach(i => document.getElementById('t'+i).classList.toggle('active', i === n));
+        if(n === 2) renderFoto();
     }
 
-    function actualizarMetricas() {
+    function renderFoto() {
+        const g = document.getElementById('foto_grid'); g.innerHTML = "";
+        ["TM","TT"].forEach(t => {
+            SALAS.forEach(s => {
+                const name = `${s} ${t}`, cant = db.filter(x => x.al.sala === name).length;
+                g.innerHTML += `<div class="glass p-3 sala-card border-white/10">
+                    <h4 class="text-[7px] font-black">${name}</h4>
+                    <p class="text-2xl font-black">${cant}/30</p>
+                </div>`;
+            });
+        });
+    }
+
+    function actualizarContadores() {
         document.getElementById('m_total').innerText = db.length;
         document.getElementById('m_vac').innerText = 420 - db.length;
     }
 
+    function renderRecientes() {
+        document.getElementById('prev_list').innerHTML = db.slice(-15).reverse().map(a => `
+            <div class="bg-white/5 p-2 rounded text-[7px] flex justify-between border-l-2 border-yellow-500">
+                <span>${a.al.nom}</span>
+                <span class="text-yellow-500 font-bold">${a.al.sala}</span>
+            </div>`).join('');
+    }
+
     function exportar() {
-        const blob = new Blob([JSON.stringify({db, wait})], {type:'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download="BACKUP_TITANIUM_V22.json"; a.click();
+        const blob = new Blob([JSON.stringify({db})], {type:'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download="BACKUP_V22_J926.json"; a.click();
     }
 </script>
 </body>
