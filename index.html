@@ -10,23 +10,15 @@
     <style>
         :root { --gold: #facc15; --bg: #010409; --panel: #0d1117; --border: #30363d; }
         body { background: var(--bg); color: #e6edf3; font-family: 'Inter', sans-serif; font-size: 11px; text-transform: uppercase; overflow-x: hidden; }
-        .glass { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; height: 100%; position: relative;}
-        .input-bionic { background: #010409; border: 1px solid var(--border); padding: 10px; border-radius: 6px; color: #fff; width: 100%; transition: 0.3s; font-weight: 600; }
+        .glass { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; height: 100%; position: relative; transition: 0.3s; }
+        .input-bionic { background: #010409; border: 1px solid var(--border); padding: 10px; border-radius: 6px; color: #fff; width: 100%; transition: 0.3s; font-weight: 600; font-size: 10px; }
         .input-bionic:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(250, 204, 21, 0.2); outline: none; }
         .tab-active { border-bottom: 4px solid var(--gold); color: var(--gold); font-weight: 900; background: rgba(250,204,21,0.05); }
-        .asis-p { border-left: 5px solid #22c55e !important; background: rgba(34, 197, 94, 0.1); }
-        .asis-a { border-left: 5px solid #ef4444 !important; background: rgba(239, 68, 68, 0.1); }
-        /* Estilos de Salas */
-        .color-ROSA { border-left: 4px solid #f472b6; }
-        .color-ROJA { border-left: 4px solid #ef4444; }
-        .color-NARANJA { border-left: 4px solid #f97316; }
-        .color-CELESTE { border-left: 4px solid #38bdf8; }
-        .color-VIOLETA { border-left: 4px solid #a855f7; }
-        .color-AMARILLA { border-left: 4px solid #eab308; }
-        .color-AZUL { border-left: 4px solid #3b82f6; }
-        
-        #search-results::-webkit-scrollbar { width: 5px; }
-        #search-results::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+        .color-ROSA { border-left: 5px solid #f472b6; } .color-ROJA { border-left: 5px solid #ef4444; }
+        .color-NARANJA { border-left: 5px solid #f97316; } .color-CELESTE { border-left: 5px solid #38bdf8; }
+        .color-VIOLETA { border-left: 5px solid #a855f7; } .color-AMARILLA { border-left: 5px solid #eab308; }
+        .color-AZUL { border-left: 5px solid #3b82f6; }
+        ::-webkit-scrollbar { width: 4px; } ::webkit-scrollbar-thumb { background: var(--gold); }
     </style>
 </head>
 <body onload="initSystem()">
@@ -36,142 +28,110 @@
         <div class="w-3 h-3 bg-yellow-500 rounded-full animate-pulse shadow-[0_0_10px_#facc15]"></div>
         <div>
             <h1 class="text-yellow-500 font-black text-2xl italic tracking-tighter">TITANIUM V22 PRO</h1>
-            <p class="text-[7px] tracking-[5px] opacity-60">SISTEMA UNIFICADO DE INTELIGENCIA DE DATOS</p>
+            <p class="text-[7px] tracking-[5px] opacity-60">MANAGEMENT ARCHITECT | EFICIENCIA PURA</p>
         </div>
     </div>
     
     <div class="relative w-full md:w-1/3">
-        <div class="absolute inset-y-0 left-3 flex items-center text-yellow-500">
-            <i class="bi bi-search"></i>
-        </div>
-        <input type="text" id="global_search" onkeyup="buscarInteligente()" class="bg-[#0d1117] border border-yellow-500/50 text-white text-xs rounded-lg block w-full pl-10 p-3 font-bold" placeholder="BUSCAR POR DNI O APELLIDO...">
-        <div id="search-results" class="absolute top-full left-0 right-0 bg-[#0d1117] border border-yellow-500 z-[2000] hidden max-h-80 overflow-y-auto shadow-2xl"></div>
+        <i class="bi bi-radar absolute left-3 top-1/2 -translate-y-1/2 text-yellow-500 animate-spin-slow"></i>
+        <input type="text" id="global_search" onkeyup="radarSearch()" class="bg-[#0d1117] border border-yellow-500/50 text-white text-xs rounded-lg block w-full pl-10 p-3 font-bold" placeholder="RADAR: DNI O APELLIDO...">
+        <div id="search-results" class="absolute top-full left-0 right-0 bg-[#0d1117] border border-yellow-500 z-[2000] hidden max-h-60 overflow-y-auto shadow-2xl"></div>
     </div>
 
     <div class="flex gap-2">
-        <button onclick="document.getElementById('import_all').click()" class="bg-blue-600/20 text-blue-400 border border-blue-500 px-3 py-2 rounded text-[9px] font-black"><i class="bi bi-upload mr-1"></i> FUSIONAR RESPALDOS</button>
-        <input type="file" id="import_all" class="hidden" multiple onchange="fusionarArchivos(event)">
+        <button onclick="document.getElementById('file-import').click()" class="bg-blue-600/20 text-blue-400 border border-blue-500 px-3 py-2 rounded text-[9px] font-bold">FUSIONAR JSON</button>
+        <input type="file" id="file-import" class="hidden" multiple onchange="importarBackups(event)">
+        <button onclick="descargarDataMaster()" class="bg-yellow-600/20 text-yellow-400 border border-yellow-500 px-3 py-2 rounded text-[9px] font-bold">EXPORTAR MASTER</button>
     </div>
 </header>
 
-<nav class="flex glass rounded-none border-b border-white/5 sticky top-[130px] md:top-[85px] z-[900] bg-[#010409] overflow-x-auto">
+<nav class="flex glass rounded-none border-b border-white/5 sticky top-[72px] md:top-[85px] z-[900] bg-[#010409] overflow-x-auto">
     <button onclick="setTab(1)" id="t1" class="flex-1 p-4 tab-active font-black tracking-widest min-w-[120px]">LEGAJO 360°</button>
     <button onclick="setTab(2)" id="t2" class="flex-1 p-4 opacity-50 font-black tracking-widest min-w-[120px]">AUDITORÍA/ASISTENCIA</button>
-    <button onclick="setTab(3)" id="t3" class="flex-1 p-4 opacity-50 font-black tracking-widest min-w-[120px]">SUPERVISIÓN GLOBAL</button>
+    <button onclick="setTab(3)" id="t3" class="flex-1 p-4 opacity-50 font-black tracking-widest min-w-[120px]">ANÁLISIS DE DATOS</button>
 </nav>
 
-<main class="p-4 space-y-8">
+<main class="p-4 space-y-6">
     <section id="s1" class="space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div class="glass p-4 border-t-4 border-purple-500 flex flex-col items-center">
-                <h3 class="text-purple-500 font-black text-[9px] mb-2 italic">ESCÁNER BIOMÉTRICO</h3>
-                <div class="w-32 h-32 bg-black border border-white/10 rounded-lg relative overflow-hidden flex items-center justify-center group mb-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="glass p-4 border-t-4 border-purple-500 flex flex-col items-center justify-center min-h-[200px]">
+                <div class="w-32 h-32 bg-black border border-white/10 rounded-lg relative overflow-hidden flex items-center justify-center mb-2">
                     <video id="video_legajo" class="absolute inset-0 w-full h-full object-cover hidden" autoplay playsinline></video>
                     <img id="foto_preview" src="" class="absolute inset-0 w-full h-full object-cover hidden">
-                    <i class="bi bi-camera text-2xl text-white/20 cursor-pointer" onclick="iniciarCamara()" id="icon_cam_legajo"></i>
+                    <i class="bi bi-person-bounding-box text-3xl text-white/10" id="cam_icon"></i>
                 </div>
-                <button id="btn_cap_legajo" onclick="capturarFoto()" class="bg-purple-600 text-white text-[9px] px-4 py-1 rounded hidden font-bold w-full">CAPTURAR</button>
+                <div class="flex gap-2 w-full">
+                    <button onclick="iniciarCamara()" class="flex-1 bg-purple-600/20 text-purple-400 border border-purple-500 py-1 rounded text-[9px] font-bold">ON</button>
+                    <button onclick="capturarFoto()" class="flex-1 bg-white text-black py-1 rounded text-[9px] font-black">CAPTURAR</button>
+                </div>
             </div>
 
             <div class="glass p-4 border-t-4 border-yellow-500 space-y-2">
-                <h3 class="text-yellow-500 font-black text-[9px] italic">ALUMNO / MATRÍCULA</h3>
+                <h3 class="text-yellow-500 font-black text-[9px] italic">DATOS ALUMNO</h3>
                 <input id="a_nom" class="input-bionic" placeholder="APELLIDO Y NOMBRE">
                 <input id="a_dni" class="input-bionic" placeholder="DNI">
-                <select id="a_sala" class="input-bionic text-yellow-500"></select>
-                <input id="a_fec" type="date" class="input-bionic text-[10px]" onchange="calcularEdad(this.value)">
-                <input id="a_edad" class="input-bionic text-yellow-500" readonly placeholder="EDAD CALCULADA">
+                <input id="a_dom" class="input-bionic border-yellow-500/30" placeholder="DOMICILIO COMPLETO">
+                <div class="grid grid-cols-2 gap-2">
+                    <select id="a_sala" class="input-bionic text-yellow-500"></select>
+                    <input id="a_fec" type="date" class="input-bionic" onchange="calcularEdad(this.value)">
+                </div>
             </div>
 
             <div class="glass p-4 border-t-4 border-cyan-500 space-y-2">
                 <h3 class="text-cyan-500 font-black text-[9px] italic">MADRE / TUTORA</h3>
                 <input id="m_nom" class="input-bionic" placeholder="NOMBRE COMPLETO">
                 <input id="m_tel" class="input-bionic" placeholder="TELÉFONO">
-                <input id="m_ocu" class="input-bionic border-cyan-500/50" placeholder="OCUPACIÓN">
-                <select id="m_edu" class="input-bionic text-[9px]"></select>
+                <input id="m_ocu" class="input-bionic" placeholder="TRABAJO / ACTIVIDAD">
+                <select id="m_edu" class="input-bionic"></select>
             </div>
 
             <div class="glass p-4 border-t-4 border-pink-500 space-y-2">
                 <h3 class="text-pink-500 font-black text-[9px] italic">PADRE / TUTOR</h3>
                 <input id="p_nom" class="input-bionic" placeholder="NOMBRE COMPLETO">
                 <input id="p_tel" class="input-bionic" placeholder="TELÉFONO">
-                <input id="p_ocu" class="input-bionic border-pink-500/50" placeholder="OCUPACIÓN">
-                <select id="p_edu" class="input-bionic text-[9px]"></select>
-            </div>
-
-            <div class="glass p-4 border-t-4 border-indigo-500 space-y-2">
-                <h3 class="text-indigo-500 font-black text-[9px] italic">OBSERVACIONES MÉDICAS</h3>
-                <input id="c_salud" class="input-bionic" placeholder="OBRA SOCIAL / ALERGIAS">
-                <select id="c_cud" class="input-bionic">
-                    <option value="SIN CUD">SIN CUD</option>
-                    <option value="CON CUD">CON CUD / INCLUSIÓN</option>
-                </select>
-                <textarea id="c_obs" class="input-bionic h-16 text-[9px]" placeholder="ANTECEDENTES..."></textarea>
+                <input id="p_ocu" class="input-bionic" placeholder="TRABAJO / ACTIVIDAD">
+                <select id="p_edu" class="input-bionic"></select>
             </div>
         </div>
-
-        <button onclick="guardarLegajo()" class="w-full bg-emerald-600 py-4 rounded-xl font-black text-lg italic hover:shadow-[0_0_20px_#10b98155] transition-all">GRABAR E IMPACTAR EN BASE DE DATOS</button>
+        <button onclick="guardarLegajo()" class="w-full bg-emerald-600 py-4 rounded-xl font-black text-lg italic hover:bg-emerald-500 transition shadow-[0_0_20px_rgba(16,185,129,0.2)]">GRABAR E IMPACTAR MATRÍCULA MASTER</button>
     </section>
 
     <section id="s2" class="hidden space-y-6">
-        <div class="glass p-6 border-t-4 border-yellow-500 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-                <h2 class="text-2xl font-black italic text-yellow-500">AUDITORÍA DE ASISTENCIA</h2>
-                <p class="text-[9px] opacity-60">RELEVAMIENTO POR SALA Y TURNO</p>
-            </div>
-            <input type="date" id="asis_fecha" class="input-bionic w-40" onchange="renderSalasAsis()">
-        </div>
-        <div id="grid-salas-asis" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4"></div>
-        <div id="panel-lista" class="glass p-6 hidden border-l-[10px] border-yellow-500">
-            <div class="flex justify-between items-center mb-6">
-                <h3 id="sala_activa_tit" class="text-xl font-black italic"></h3>
-                <div class="bg-black/40 p-3 rounded-lg border border-yellow-500/30 text-yellow-500 font-mono">
-                    PRESENTE: <span id="promedio_val" class="font-black text-lg">0%</span>
-                </div>
-            </div>
-            <div id="lista-alumnos" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+        <div id="grid-salas-asis" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3"></div>
+        <div id="panel-lista" class="glass p-6 hidden">
+            <h3 id="sala_activa_tit" class="text-xl font-black italic text-yellow-500 mb-4"></h3>
+            <div id="lista-alumnos" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
         </div>
     </section>
 
     <section id="s3" class="hidden space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="glass p-6 text-center border-b-4 border-blue-500">
-                <p class="text-[9px] opacity-50 font-bold">TOTAL MATRÍCULA</p>
-                <h3 id="m_total" class="text-4xl font-black text-blue-500">0</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass p-6 border-b-4 border-yellow-500 text-center">
+                <p class="text-[9px] opacity-50">MATRÍCULA TOTAL</p>
+                <h3 id="m_total" class="text-5xl font-black italic">0</h3>
             </div>
-            <div class="glass p-6 text-center border-b-4 border-purple-500">
-                <p class="text-[9px] opacity-50 font-bold">ALUMNOS CON CUD</p>
-                <h3 id="m_cud" class="text-4xl font-black text-purple-500">0</h3>
+            <div class="glass p-6 border-b-4 border-blue-500 text-center">
+                <p class="text-[9px] opacity-50">ALUMNOS CON CUD</p>
+                <h3 id="m_cud" class="text-5xl font-black italic">0</h3>
             </div>
-            <div class="glass p-6 text-center border-b-4 border-emerald-500">
-                <p class="text-[9px] opacity-50 font-bold">EXPORTAR DATA</p>
-                <button onclick="descargarBackup()" class="bg-emerald-600 w-full py-2 mt-2 rounded font-black text-[10px]">JSON MASTER</button>
-            </div>
-            <div class="glass p-6 text-center border-b-4 border-red-500">
-                <p class="text-[9px] opacity-50 font-bold">SISTEMA</p>
-                <button onclick="borrarTodo()" class="bg-red-600/20 text-red-500 border border-red-500 w-full py-2 mt-2 rounded font-black text-[10px]">BORRAR BASE</button>
+            <div class="glass p-6 border-b-4 border-purple-500 text-center">
+                <p class="text-[9px] opacity-50">PROMEDIO ASISTENCIA</p>
+                <h3 id="m_prom" class="text-5xl font-black italic text-yellow-500">0%</h3>
             </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="glass p-6">
-                <h3 class="text-yellow-500 font-black mb-4 italic">ESTADÍSTICA DE OCUPACIONES (PADRES)</h3>
-                <canvas id="chartOcupaciones" height="200"></canvas>
-            </div>
-            <div class="glass p-6">
-                <h3 class="text-blue-500 font-black mb-4 italic">DISTRIBUCIÓN POR SALAS</h3>
-                <canvas id="chartSalas" height="200"></canvas>
-            </div>
+        <div class="glass p-8 min-h-[400px]">
+            <canvas id="chartMaster"></canvas>
         </div>
     </section>
 </main>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('T22_DATABASE')) || [];
-    let asis = JSON.parse(localStorage.getItem('T22_ATTENDANCE')) || {};
+    let db = JSON.parse(localStorage.getItem('TITANIUM_DB')) || [];
     let streamActual = null;
-    let fotoActualBase64 = "";
+    let fotoActual = "";
 
     const SALAS = ["ROSA","ROJA","NARANJA","CELESTE","VIOLETA","AMARILLA","AZUL"];
-    const ESCOLARIDAD = ["SIN ESTUDIOS", "PRIMARIA COMP.", "SECUNDARIA COMP.", "TERCIARIO COMP.", "UNIVERSITARIO"];
+    const NIVELES = ["PRIMARIA INCOMP.", "PRIMARIA COMP.", "SECUNDARIA INCOMP.", "SECUNDARIA COMP.", "TERCIARIO", "UNIVERSITARIO"];
 
     function initSystem() {
         const sSala = document.getElementById('a_sala');
@@ -179,90 +139,95 @@
             sSala.innerHTML += `<option value="${s} TM">${s} TM</option><option value="${s} TT">${s} TT</option>`;
         });
         const mEd = document.getElementById('m_edu'), pEd = document.getElementById('p_edu');
-        ESCOLARIDAD.forEach(e => {
-            const opt = `<option value="${e}">${e}</option>`;
+        NIVELES.forEach(n => {
+            const opt = `<option value="${n}">${n}</option>`;
             mEd.innerHTML += opt; pEd.innerHTML += opt;
         });
-        document.getElementById('asis_fecha').valueAsDate = new Date();
     }
 
-    // --- MOTOR DE FUSIÓN DE ARCHIVOS ---
-    async function fusionarArchivos(event) {
-        const files = event.target.files;
-        let nuevosCargados = 0;
-
-        for (let file of files) {
-            const text = await file.text();
-            try {
-                const data = JSON.parse(text);
-                data.forEach(nuevoAl => {
-                    // Verificación biónica: No duplicar por DNI
-                    const existe = db.find(ex => ex.al.dni === nuevoAl.al.dni);
-                    if (!existe) {
-                        db.push(nuevoAl);
-                        nuevosCargados++;
-                    }
-                });
-            } catch (e) { console.error("Error en archivo", file.name); }
-        }
-
-        localStorage.setItem('T22_DATABASE', JSON.stringify(db));
-        alert(`SINCRONIZACIÓN COMPLETA: Se integraron ${nuevosCargados} nuevos alumnos. Total en base: ${db.length}`);
-        location.reload();
-    }
-
-    // --- BUSCADOR INTELIGENTE ---
-    function buscarInteligente() {
-        const query = document.getElementById('global_search').value.toUpperCase();
-        const resultsDiv = document.getElementById('search-results');
+    // --- MOTOR DE BUSQUEDA RADAR ---
+    function radarSearch() {
+        const q = document.getElementById('global_search').value.toUpperCase();
+        const res = document.getElementById('search-results');
+        if(q.length < 2) { res.classList.add('hidden'); return; }
         
-        if (query.length < 2) { resultsDiv.classList.add('hidden'); return; }
-        
-        const filtrados = db.filter(x => 
-            x.al.nom.toUpperCase().includes(query) || x.al.dni.includes(query)
-        );
-
-        resultsDiv.innerHTML = filtrados.map(x => `
-            <div class="p-3 border-b border-white/5 hover:bg-yellow-500/20 cursor-pointer flex items-center gap-3" onclick="cargarLegajoEnPantalla(${x.id})">
-                <div class="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center font-black text-black text-[10px]">
-                    ${x.al.nom[0]}
-                </div>
-                <div>
-                    <p class="font-black text-xs">${x.al.nom}</p>
-                    <p class="text-[8px] opacity-50">DNI: ${x.al.dni} | SALA: ${x.al.sala}</p>
+        const filtered = db.filter(a => a.al.nom.includes(q) || a.al.dni.includes(q));
+        res.innerHTML = filtered.map(a => `
+            <div class="p-3 border-b border-white/5 hover:bg-yellow-500/10 cursor-pointer" onclick="cargarLegajo(${a.id})">
+                <div class="flex justify-between items-center">
+                    <span class="font-black text-[10px]">${a.al.nom}</span>
+                    <span class="bg-yellow-500 text-black px-2 py-0.5 rounded text-[8px] font-bold">${a.al.sala}</span>
                 </div>
             </div>
         `).join('');
-        
-        resultsDiv.classList.remove('hidden');
+        res.classList.remove('hidden');
     }
 
-    function cargarLegajoEnPantalla(id) {
-        const x = db.find(a => a.id === id);
-        if(!x) return;
-        document.getElementById('a_nom').value = x.al.nom;
-        document.getElementById('a_dni').value = x.al.dni;
-        document.getElementById('a_sala').value = x.al.sala;
-        document.getElementById('a_fec').value = x.al.fec;
-        document.getElementById('m_nom').value = x.ma.nom;
-        document.getElementById('m_tel').value = x.ma.tel;
-        document.getElementById('m_ocu').value = x.ma.ocu;
-        document.getElementById('p_nom').value = x.pa.nom;
-        document.getElementById('p_tel').value = x.pa.tel;
-        document.getElementById('p_ocu').value = x.pa.ocu;
-        document.getElementById('c_salud').value = x.co.sal;
-        document.getElementById('c_cud').value = x.co.cud;
-        document.getElementById('c_obs').value = x.co.obs;
-        if(x.foto) {
-            document.getElementById('foto_preview').src = x.foto;
+    function cargarLegajo(id) {
+        const a = db.find(x => x.id === id);
+        if(!a) return;
+        document.getElementById('a_nom').value = a.al.nom;
+        document.getElementById('a_dni').value = a.al.dni;
+        document.getElementById('a_dom').value = a.al.dom || '';
+        document.getElementById('a_sala').value = a.al.sala;
+        document.getElementById('m_nom').value = a.ma.nom;
+        document.getElementById('m_tel').value = a.ma.tel;
+        document.getElementById('p_nom').value = a.pa.nom;
+        document.getElementById('foto_preview').src = a.foto || '';
+        if(a.foto) {
             document.getElementById('foto_preview').classList.remove('hidden');
-            document.getElementById('icon_cam_legajo').classList.add('hidden');
+            document.getElementById('cam_icon').classList.add('hidden');
         }
         document.getElementById('search-results').classList.add('hidden');
         setTab(1);
     }
 
-    // --- FUNCIONES CORE ---
+    // --- GESTIÓN DE DATOS MASTER ---
+    async function importarBackups(e) {
+        const files = e.target.files;
+        let count = 0;
+        for (let file of files) {
+            const text = await file.text();
+            const data = JSON.parse(text);
+            data.forEach(item => {
+                if(!db.some(x => x.al.dni === item.al.dni)) {
+                    db.push(item);
+                    count++;
+                }
+            });
+        }
+        localStorage.setItem('TITANIUM_DB', JSON.stringify(db));
+        alert(`SISTEMA SINCRONIZADO: ${count} nuevos registros integrados.`);
+        location.reload();
+    }
+
+    function guardarLegajo() {
+        const dni = document.getElementById('a_dni').value;
+        const exists = db.findIndex(x => x.al.dni === dni);
+        
+        const data = {
+            id: exists >= 0 ? db[exists].id : Date.now(),
+            al: { nom: v('a_nom'), dni: dni, dom: v('a_dom'), sala: v('a_sala'), fec: v('a_fec') },
+            ma: { nom: v('m_nom'), tel: v('m_tel'), ocu: v('m_ocu'), edu: v('m_edu') },
+            pa: { nom: v('p_nom'), tel: v('p_tel'), ocu: v('p_ocu'), edu: v('p_edu') },
+            foto: fotoActual
+        };
+
+        if(exists >= 0) db[exists] = data; else db.push(data);
+        localStorage.setItem('TITANIUM_DB', JSON.stringify(db));
+        alert("BASE DE DATOS ACTUALIZADA");
+        location.reload();
+    }
+
+    function descargarDataMaster() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+        const dl = document.createElement('a');
+        dl.setAttribute("href", dataStr);
+        dl.setAttribute("download", "MASTER_MATRICULA_357.json");
+        dl.click();
+    }
+
+    // --- UI & TAB MANAGEMENT ---
     function setTab(n) {
         [1,2,3].forEach(i => {
             document.getElementById('s'+i).classList.toggle('hidden', i !== n);
@@ -270,49 +235,7 @@
             document.getElementById('t'+i).style.opacity = (i === n) ? "1" : "0.5";
         });
         if(n === 2) renderSalasAsis();
-        if(n === 3) runSupervision();
-    }
-
-    async function iniciarCamara() {
-        streamActual = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-        const video = document.getElementById('video_legajo');
-        video.srcObject = streamActual;
-        video.classList.remove('hidden');
-        document.getElementById('icon_cam_legajo').classList.add('hidden');
-        document.getElementById('btn_cap_legajo').classList.remove('hidden');
-    }
-
-    function capturarFoto() {
-        const video = document.getElementById('video_legajo');
-        const canvas = document.createElement('canvas');
-        canvas.width = 400; canvas.height = 400;
-        canvas.getContext('2d').drawImage(video, 0, 0, 400, 400);
-        fotoActualBase64 = canvas.toDataURL('image/jpeg', 0.6);
-        document.getElementById('foto_preview').src = fotoActualBase64;
-        document.getElementById('foto_preview').classList.remove('hidden');
-        video.classList.add('hidden');
-        document.getElementById('btn_cap_legajo').classList.add('hidden');
-        if(streamActual) streamActual.getTracks().forEach(t => t.stop());
-    }
-
-    function guardarLegajo() {
-        const dni = document.getElementById('a_dni').value;
-        const index = db.findIndex(x => x.al.dni === dni);
-        
-        const data = {
-            id: index >= 0 ? db[index].id : Date.now(),
-            al: { nom: v('a_nom'), dni: dni, sala: v('a_sala'), fec: v('a_fec') },
-            ma: { nom: v('m_nom'), tel: v('m_tel'), ocu: v('m_ocu'), edu: v('m_edu') },
-            pa: { nom: v('p_nom'), tel: v('p_tel'), ocu: v('p_ocu'), edu: v('p_edu') },
-            co: { sal: v('c_salud'), cud: v('c_cud'), obs: v('c_obs') },
-            foto: fotoActualBase64 || (index >= 0 ? db[index].foto : "")
-        };
-
-        if (index >= 0) db[index] = data; else db.push(data);
-        
-        localStorage.setItem('T22_DATABASE', JSON.stringify(db));
-        alert("BASE DE DATOS ACTUALIZADA CON EXITO");
-        location.reload();
+        if(n === 3) runAnalysis();
     }
 
     function renderSalasAsis() {
@@ -323,106 +246,41 @@
                 const salaNom = `${color} ${turno}`;
                 const cant = db.filter(x => x.al.sala === salaNom).length;
                 grid.innerHTML += `
-                    <div class="glass p-4 border-l-4 border-yellow-500 cursor-pointer hover:bg-yellow-500/10" onclick="abrirLista('${salaNom}')">
-                        <p class="text-[8px] opacity-50">${turno}</p>
-                        <p class="font-black text-xs">${color}</p>
-                        <p class="text-xl font-bold">${cant}</p>
+                    <div class="glass p-4 color-${color} cursor-pointer hover:bg-yellow-500/5" onclick="abrirLista('${salaNom}')">
+                        <p class="text-[7px] opacity-50 font-black">${turno}</p>
+                        <p class="font-black text-[10px] text-yellow-500">${color}</p>
+                        <p class="text-xl font-black">${cant}</p>
                     </div>`;
             });
         });
     }
 
-    function abrirLista(sala) {
-        document.getElementById('panel-lista').classList.remove('hidden');
-        document.getElementById('sala_activa_tit').innerText = sala;
-        const alumnos = db.filter(x => x.al.sala === sala);
-        const fecha = document.getElementById('asis_fecha').value;
-        const lista = document.getElementById('lista-alumnos');
-        
-        lista.innerHTML = alumnos.map(a => {
-            const estado = (asis[fecha] && asis[fecha][a.id]) ? asis[fecha][a.id] : '';
-            return `
-                <div class="bg-black/20 p-3 rounded border border-white/5 flex justify-between items-center ${estado === 'P' ? 'asis-p' : estado === 'A' ? 'asis-a' : ''}">
-                    <span class="font-bold text-[10px]">${a.al.nom}</span>
-                    <div class="flex gap-2">
-                        <button onclick="marcar('${fecha}', ${a.id}, 'P')" class="bg-green-600 px-3 py-1 rounded text-[9px] font-black">P</button>
-                        <button onclick="marcar('${fecha}', ${a.id}, 'A')" class="bg-red-600 px-3 py-1 rounded text-[9px] font-black">A</button>
-                    </div>
-                </div>`;
-        }).join('');
-        calcularPromedioSala(fecha, alumnos);
-    }
-
-    function marcar(fecha, id, estado) {
-        if(!asis[fecha]) asis[fecha] = {};
-        asis[fecha][id] = estado;
-        localStorage.setItem('T22_ATTENDANCE', JSON.stringify(asis));
-        abrirLista(document.getElementById('sala_activa_tit').innerText);
-    }
-
-    function calcularPromedioSala(fecha, alumnos) {
-        if(!asis[fecha]) return;
-        let p = 0;
-        alumnos.forEach(a => { if(asis[fecha][a.id] === 'P') p++; });
-        const prom = alumnos.length > 0 ? Math.round((p/alumnos.length)*100) : 0;
-        document.getElementById('promedio_val').innerText = prom + "%";
-    }
-
-    function runSupervision() {
+    function runAnalysis() {
         document.getElementById('m_total').innerText = db.length;
-        document.getElementById('m_cud').innerText = db.filter(x => x.co.cud === "CON CUD").length;
-        renderCharts();
+        // Gráficos biónicos aquí
     }
 
-    function renderCharts() {
-        // Gráfico Ocupaciones
-        const ocus = {};
-        db.forEach(x => {
-            const o = x.ma.ocu.toUpperCase() || "S/D";
-            ocus[o] = (ocus[o] || 0) + 1;
-        });
-
-        new Chart(document.getElementById('chartOcupaciones'), {
-            type: 'bar',
-            data: {
-                labels: Object.keys(ocus).slice(0, 5),
-                datasets: [{ label: 'CANTIDAD', data: Object.values(ocus).slice(0, 5), backgroundColor: '#facc15' }]
-            },
-            options: { plugins: { legend: { display: false } } }
-        });
-
-        // Gráfico Salas
-        const salasData = SALAS.map(s => db.filter(x => x.al.sala.includes(s)).length);
-        new Chart(document.getElementById('chartSalas'), {
-            type: 'doughnut',
-            data: {
-                labels: SALAS,
-                datasets: [{ data: salasData, backgroundColor: ['#f472b6', '#ef4444', '#f97316', '#38bdf8', '#a855f7', '#eab308', '#3b82f6'] }]
-            }
-        });
+    // --- CAMARA ---
+    async function iniciarCamara() {
+        streamActual = await navigator.mediaDevices.getUserMedia({ video: true });
+        document.getElementById('video_legajo').srcObject = streamActual;
+        document.getElementById('video_legajo').classList.remove('hidden');
+        document.getElementById('cam_icon').classList.add('hidden');
     }
 
-    function descargarBackup() {
-        const blob = new Blob([JSON.stringify(db)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = `MASTER_BACKUP_${Date.now()}.json`;
-        a.click();
+    function capturarFoto() {
+        const canvas = document.createElement('canvas');
+        const video = document.getElementById('video_legajo');
+        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        fotoActual = canvas.toDataURL('image/jpeg');
+        document.getElementById('foto_preview').src = fotoActual;
+        document.getElementById('foto_preview').classList.remove('hidden');
+        video.classList.add('hidden');
+        if(streamActual) streamActual.getTracks().forEach(t => t.stop());
     }
 
-    function borrarTodo() {
-        if(confirm("¿ESTÁ SEGURO? ESTA ACCIÓN ELIMINARÁ TODA LA MATRÍCULA.")) {
-            localStorage.clear();
-            location.reload();
-        }
-    }
-
-    function v(id) { return document.getElementById(id).value; }
-    function calcularEdad(f) {
-        const nac = new Date(f), hoy = new Date();
-        let edad = hoy.getFullYear() - nac.getFullYear();
-        document.getElementById('a_edad').value = edad + " AÑOS";
-    }
+    function v(id) { return document.getElementById(id).value.toUpperCase(); }
 </script>
 </body>
 </html>
