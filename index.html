@@ -3,213 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITANIUM V22 PRO | MANAGEMENT ARCHITECT</title>
+    <title>TITANIUM V22 PRO | OMNI-MANAGEMENT ARCHITECT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        :root { --bionic-gold: #facc15; --bionic-bg: #010409; --bionic-panel: #0d1117; }
-        body { background: var(--bionic-bg); color: #e6edf3; font-family: 'Inter', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .glass { background: var(--bionic-panel); border: 1px solid #30363d; border-radius: 12px; }
-        .input-bionic { background: #010409; border: 1px solid #30363d; padding: 10px; border-radius: 4px; color: #fff; width: 100%; transition: 0.2s; }
-        .input-bionic:focus { border-color: var(--bionic-gold); box-shadow: 0 0 10px rgba(250, 204, 21, 0.2); outline: none; }
-        .tab-active { border-bottom: 4px solid var(--bionic-gold); color: var(--bionic-gold); font-weight: 900; background: rgba(250,204,21,0.05); }
-        .sala-card { transition: 0.3s; cursor: pointer; border-bottom: 8px solid; position: relative; overflow: hidden; }
-        .sala-card:hover { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        :root { --gold: #facc15; --bg: #010409; --panel: #0d1117; --border: #30363d; }
+        body { background: var(--bg); color: #e6edf3; font-family: 'Inter', sans-serif; font-size: 11px; text-transform: uppercase; overflow-x: hidden; }
+        .glass { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; height: 100%; }
+        .input-bionic { background: #010409; border: 1px solid var(--border); padding: 12px; border-radius: 6px; color: #fff; width: 100%; transition: 0.3s; font-weight: 600; }
+        .input-bionic:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(250, 204, 21, 0.2); outline: none; }
+        .tab-active { border-bottom: 4px solid var(--gold); color: var(--gold); font-weight: 900; background: rgba(250,204,21,0.05); }
+        .sala-card { transition: 0.4s; cursor: pointer; border-bottom: 10px solid; position: relative; }
+        .sala-card:hover { transform: translateY(-5px); filter: brightness(1.2); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        /* Colores de Sala */
         .color-ROSA { border-color: #ff69b4; } .color-ROJA { border-color: #ef4444; }
         .color-NARANJA { border-color: #f97316; } .color-CELESTE { border-color: #3b82f6; }
         .color-VIOLETA { border-color: #8b5cf6; } .color-AMARILLA { border-color: #eab308; } .color-AZUL { border-color: #1e3a8a; }
-        .asis-p { background: #16a34a !important; color: white; border: 1px solid #22c55e; }
-        .asis-a { background: #dc2626 !important; color: white; border: 1px solid #ef4444; }
+        .asis-p { background: #16a34a !important; color: white; border: 2px solid #22c55e; }
+        .asis-a { background: #dc2626 !important; color: white; border: 2px solid #ef4444; }
         .radar-pulse { animation: pulse 2s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(250, 204, 21, 0); } 100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0); } }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
     </style>
 </head>
-<body onload="initBionicSystem()">
+<body onload="bootSystem()">
 
-<header class="glass rounded-none border-b border-yellow-500/30 p-4 flex justify-between items-center sticky top-0 z-[1000] bg-[#010409]">
-    <div class="flex items-center gap-4">
-        <div class="radar-pulse w-3 h-3 bg-yellow-500 rounded-full"></div>
-        <h1 class="text-yellow-500 font-black text-xl italic tracking-widest">TITANIUM V22 <span class="text-white opacity-40">BIONIC ARCHITECT</span></h1>
+<header class="glass rounded-none border-b border-yellow-500/40 p-5 flex justify-between items-center sticky top-0 z-[1000] bg-[#010409]">
+    <div class="flex items-center gap-5">
+        <div class="radar-pulse w-4 h-4 bg-yellow-500 rounded-full"></div>
+        <div>
+            <h1 class="text-yellow-500 font-black text-2xl italic tracking-tighter">TITANIUM V22 PRO</h1>
+            <p class="text-[8px] tracking-[4px] opacity-50 text-white">SISTEMA ÚNICO INSTITUCIONAL</p>
+        </div>
     </div>
     <div class="flex gap-4">
-        <div id="reloj" class="text-emerald-400 font-mono text-[10px] hidden md:block"></div>
-        <button onclick="exportarOmni()" class="bg-blue-600 px-4 py-2 rounded font-black text-[9px] shadow-lg hover:bg-blue-500 transition">OMNI-EXPORT (.JSON)</button>
-        <label class="bg-emerald-600 px-4 py-2 rounded font-black text-[9px] shadow-lg cursor-pointer hover:bg-emerald-500 transition">
-            VINCULAR 357 LEGAJOS <input type="file" class="hidden" onchange="importarOmni(event)">
+        <div id="reloj" class="text-emerald-400 font-mono text-xs text-right leading-none"></div>
+        <button onclick="exportarOmni()" class="bg-blue-600 px-5 py-2 rounded font-black text-[10px] shadow-lg hover:bg-blue-500 transition">OMNI-ARCHIVE (.JSON)</button>
+        <label class="bg-emerald-600 px-5 py-2 rounded font-black text-[10px] shadow-lg cursor-pointer hover:bg-emerald-500 transition">
+            SUBIR EXCEL/DATA <input type="file" class="hidden" onchange="importarOmni(event)">
         </label>
     </div>
 </header>
 
-<nav class="flex glass rounded-none border-b border-white/5 sticky top-[69px] z-[900] bg-[#010409]">
-    <button onclick="setTab(1)" id="t1" class="flex-1 p-4 tab-active font-black">LEGAJO 360°</button>
-    <button onclick="setTab(2)" id="t2" class="flex-1 p-4 opacity-50 font-black">FOTO INSTITUCIONAL</button>
-    <button onclick="setTab(3)" id="t3" class="flex-1 p-4 opacity-50 font-black">LISTA ESPERA (SCAN)</button>
-    <button onclick="setTab(4)" id="t4" class="flex-1 p-4 opacity-50 font-black">RADIOGRAFÍA MÉTRICA</button>
+<nav class="flex glass rounded-none border-b border-white/5 sticky top-[85px] z-[900] bg-[#010409]">
+    <button onclick="setTab(1)" id="t1" class="flex-1 p-5 tab-active font-black tracking-widest">LEGAJO 360°</button>
+    <button onclick="setTab(2)" id="t2" class="flex-1 p-5 opacity-50 font-black tracking-widest">FOTO INSTITUCIONAL</button>
+    <button onclick="setTab(3)" id="t3" class="flex-1 p-5 opacity-50 font-black tracking-widest">LISTA ESPERA (SCAN)</button>
+    <button onclick="setTab(4)" id="t4" class="flex-1 p-5 opacity-50 font-black tracking-widest">RADIOGRAFÍA MÉTRICA</button>
 </nav>
 
-<main class="p-4 space-y-6">
-    <section id="s1" class="grid grid-cols-1 lg:grid-cols-4 gap-4 animate-in fade-in">
-        <div class="glass p-5 border-t-4 border-yellow-500 space-y-4">
-            <h3 class="text-yellow-500 font-black flex justify-between items-center">DATOS ALUMNO <i class="bi bi-upc-scan text-xl cursor-pointer" onclick="vozBionica('Iniciando escaneo de DNI del alumno')"></i></h3>
-            <div class="relative"><input id="a_nom" class="input-bionic" placeholder="APELLIDO Y NOMBRE"><i class="bi bi-mic-fill absolute right-3 top-3 text-red-500 cursor-pointer" onclick="dictar('a_nom')"></i></div>
+<main class="p-6 space-y-8">
+    <section id="s1" class="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-in fade-in">
+        <div class="glass p-6 border-t-4 border-yellow-500 space-y-5">
+            <h3 class="text-yellow-500 font-black text-lg italic flex justify-between items-center">DATOS ALUMNO <i class="bi bi-upc-scan text-2xl cursor-pointer" onclick="vozBionica('Iniciando escaneo biológico de DNI')"></i></h3>
+            <div class="relative"><input id="a_nom" class="input-bionic" placeholder="APELLIDO Y NOMBRE"><i class="bi bi-mic-fill absolute right-4 top-3 text-red-500 cursor-pointer" onclick="dictar('a_nom')"></i></div>
             <div class="flex gap-2">
-                <input id="a_dni" class="input-bionic" placeholder="DNI">
+                <input id="a_dni" class="input-bionic" placeholder="DNI (CARGA MANUAL/SCAN)">
                 <input id="a_nac" class="input-bionic" placeholder="NACIONALIDAD" value="ARGENTINA">
             </div>
             <div class="flex gap-2">
                 <input id="a_fec" type="date" class="input-bionic" onchange="calcEdad(this.value)">
-                <input id="a_edad" class="input-bionic text-yellow-500 font-bold" readonly placeholder="EDAD AL 30/06">
+                <input id="a_edad" class="input-bionic text-yellow-500 font-black" readonly placeholder="EDAD 30/06">
             </div>
             <div class="flex gap-2">
                 <input id="a_her_cant" type="number" class="input-bionic" placeholder="CANT. HERMANOS">
                 <select id="a_her_jar" class="input-bionic">
-                    <option value="NO">¿HERMANOS JARDÍN? NO</option>
-                    <option value="SI">¿HERMANOS JARDÍN? SI</option>
+                    <option value="NO">¿TIENE HERMANOS EN EL JARDÍN? NO</option>
+                    <option value="SI">¿TIENE HERMANOS EN EL JARDÍN? SI</option>
                 </select>
             </div>
             <select id="a_sala" class="input-bionic font-black text-yellow-500"></select>
-            <input id="a_dom" class="input-bionic border-emerald-500/40" placeholder="DOMICILIO REAL">
-            <textarea id="a_obs" class="input-bionic h-12" placeholder="OBSERVACIONES MÉDICAS / ALERTAS"></textarea>
-            <button onclick="guardarLegajo()" class="w-full bg-emerald-600 py-4 rounded font-black shadow-xl hover:scale-[1.02] transition">GRABAR EN MATRÍCULA</button>
+            <input id="a_dom" class="input-bionic border-emerald-500/30" placeholder="DOMICILIO REAL ALUMNO">
+            <textarea id="a_obs" class="input-bionic h-16" placeholder="ALERTA MÉDICA / RADIOGRAFÍA DE SALUD"></textarea>
+            <button onclick="guardarLegajo()" class="w-full bg-emerald-600 py-5 rounded font-black shadow-2xl hover:scale-[1.02] active:scale-95 transition">GUARDAR LEGAJO COMPLETO</button>
         </div>
 
-        <div class="glass p-5 border-t-4 border-cyan-500 space-y-4">
-            <h3 class="text-cyan-500 font-black">VÍNCULOS Y ESTUDIOS</h3>
-            <div class="space-y-3">
-                <p class="text-[8px] text-cyan-400 font-bold border-b border-cyan-500/20">MADRE / TUTORA</p>
-                <input id="m_nom" class="input-bionic" placeholder="NOMBRE COMPLETO">
-                <div class="flex gap-2"><input id="m_tel" class="input-bionic" placeholder="TELÉFONO"><input id="m_ocu" class="input-bionic" placeholder="OCUPACIÓN"></div>
-                <select id="m_edu" class="input-bionic"></select>
-                <div class="flex items-center gap-2 bg-white/5 p-2 rounded">
-                    <input type="checkbox" id="m_dom_sync" onchange="syncDomicilio('m')"> <span class="text-[8px]">MISMO DOMICILIO ALUMNO</span>
-                    <input type="checkbox" id="m_auh" class="ml-auto"> <span class="text-[8px]">AUH</span>
+        <div class="lg:col-span-1 glass p-6 border-t-4 border-cyan-500 space-y-5">
+            <h3 class="text-cyan-500 font-black text-lg italic">PADRES / TUTORES</h3>
+            <div class="space-y-4">
+                <p class="text-[9px] text-cyan-400 font-black">MADRE / TUTORA</p>
+                <input id="m_nom" class="input-bionic" placeholder="APELLIDO Y NOMBRE">
+                <div class="flex gap-2">
+                    <input id="m_tel" class="input-bionic" placeholder="TELÉFONO">
+                    <input id="m_dni" class="input-bionic" placeholder="DNI">
                 </div>
-                <input id="m_dom" class="input-bionic" placeholder="DOMICILIO MADRE">
+                <select id="m_edu" class="input-bionic"></select>
+                <input id="m_dom" class="input-bionic" placeholder="DOMICILIO">
+                <label class="flex items-center gap-2 text-[8px] italic"><input type="checkbox" onchange="syncDom('m')"> SINCRONIZAR CON DOMICILIO ALUMNO</label>
             </div>
             <hr class="opacity-10">
-            <div class="space-y-3">
-                <p class="text-[8px] text-pink-400 font-bold border-b border-pink-500/20">PADRE / TUTOR</p>
-                <input id="p_nom" class="input-bionic" placeholder="NOMBRE COMPLETO">
-                <div class="flex gap-2"><input id="p_tel" class="input-bionic" placeholder="TELÉFONO"><input id="p_ocu" class="input-bionic" placeholder="OCUPACIÓN"></div>
+            <div class="space-y-4">
+                <p class="text-[9px] text-pink-400 font-black">PADRE / TUTOR</p>
+                <input id="p_nom" class="input-bionic" placeholder="APELLIDO Y NOMBRE">
+                <div class="flex gap-2">
+                    <input id="p_tel" class="input-bionic" placeholder="TELÉFONO">
+                    <input id="p_dni" class="input-bionic" placeholder="DNI">
+                </div>
                 <select id="p_edu" class="input-bionic"></select>
-                <label class="flex items-center gap-2 text-[8px] italic"><input type="checkbox" id="p_dom_sync" onchange="syncDomicilio('p')"> MISMO DOMICILIO ALUMNO</label>
-                <input id="p_dom" class="input-bionic" placeholder="DOMICILIO PADRE">
+                <input id="p_dom" class="input-bionic" placeholder="DOMICILIO">
+                <label class="flex items-center gap-2 text-[8px] italic"><input type="checkbox" onchange="syncDom('p')"> SINCRONIZAR CON DOMICILIO ALUMNO</label>
             </div>
         </div>
 
-        <div class="lg:col-span-2 flex flex-col gap-4">
-            <div class="glass p-5 flex gap-3">
-                <input type="text" id="radar_input" onkeyup="radarSearch()" class="input-bionic border-yellow-500 text-lg" placeholder="📡 RADAR: BUSCAR POR DNI, APELLIDO O SALA...">
-                <button onclick="dictar('radar_input')" class="bg-red-600 px-5 rounded shadow-lg"><i class="bi bi-mic-fill"></i></button>
+        <div class="lg:col-span-2 flex flex-col gap-5">
+            <div class="glass p-5 flex gap-4">
+                <input type="text" id="radar_input" onkeyup="radarSearch()" class="input-bionic border-yellow-500 text-lg py-4" placeholder="📡 BUSCADOR RADAR: DNI, APELLIDO O SALA...">
+                <button onclick="dictar('radar_input')" class="bg-red-600 px-6 rounded shadow-xl hover:bg-red-500"><i class="bi bi-mic-fill text-xl"></i></button>
             </div>
-            <div id="radar_results" class="space-y-2 overflow-y-auto max-h-[500px] pr-2"></div>
+            <div id="radar_results" class="space-y-3 overflow-y-auto max-h-[550px] pr-4"></div>
         </div>
     </section>
 
-    <section id="s2" class="hidden space-y-6">
-        <div id="grid-salas" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4"></div>
+    <section id="s2" class="hidden space-y-8 animate-in slide-in-from-right">
+        <div id="grid-salas" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6"></div>
         
-        <div id="panel-interactivo" class="glass p-6 hidden animate-in slide-in-from-bottom border-l-8 border-yellow-500 shadow-2xl">
-            <div class="flex justify-between items-center mb-8 border-b border-white/5 pb-4">
+        <div id="panel-interactivo" class="glass p-8 hidden border-l-[12px] border-yellow-500 shadow-2xl">
+            <div class="flex justify-between items-center mb-8 border-b border-white/5 pb-6">
                 <div>
-                    <h2 id="int_sala_nom" class="text-3xl font-black italic text-yellow-500"></h2>
-                    <p id="int_sala_stats" class="text-[9px] opacity-60"></p>
+                    <h2 id="int_sala_tit" class="text-4xl font-black italic text-yellow-500 tracking-tighter"></h2>
+                    <p id="int_sala_stats" class="text-[10px] opacity-60 font-bold mt-1"></p>
                 </div>
-                <div class="flex gap-4 items-center">
-                    <span class="text-[8px] font-bold">FECHA REGISTRO:</span>
-                    <input type="date" id="asis_fecha" class="input-bionic w-48 font-black" onchange="renderAsistenciaEspejo()">
-                    <button onclick="cerrarPanel()" class="text-red-500 hover:scale-110 transition"><i class="bi bi-x-circle-fill text-2xl"></i></button>
+                <div class="flex gap-6 items-center">
+                    <span class="text-[9px] font-black">FECHA DE REGISTRO:</span>
+                    <input type="date" id="asis_fecha" class="input-bionic w-64 text-yellow-500 text-lg" onchange="renderAsistencia()">
+                    <button onclick="cerrarPanel()" class="text-red-500 hover:scale-125 transition duration-300"><i class="bi bi-x-square-fill text-4xl"></i></button>
                 </div>
             </div>
-            <div id="lista_espejo" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+            <div id="lista_espejo" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4"></div>
         </div>
     </section>
 
-    <section id="s4" class="hidden space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="glass p-6 text-center border-b-4 border-yellow-500"><p class="text-[8px] opacity-50">MATRÍCULA ACTIVA</p><h3 id="met_total" class="text-4xl font-black italic">0</h3></div>
-            <div class="glass p-6 text-center border-b-4 border-emerald-500"><p class="text-[8px] opacity-50">TASA ASISTENCIA</p><h3 id="met_asis" class="text-4xl font-black text-emerald-400">0%</h3></div>
-            <div class="glass p-6 text-center border-b-4 border-red-500"><p class="text-[8px] opacity-50">VULNERABILIDAD LABORAL</p><h3 id="met_des" class="text-4xl font-black text-red-500">0</h3></div>
-            <div class="glass p-6 text-center border-b-4 border-cyan-500"><p class="text-[8px] opacity-50">ALUMNOS EXTRANJEROS</p><h3 id="met_ext" class="text-4xl font-black text-cyan-400">0</h3></div>
+    <section id="s4" class="hidden space-y-8 animate-in fade-in">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="glass p-8 text-center border-b-8 border-yellow-500"><p class="text-[10px] opacity-50 font-black">MATRÍCULA ACTIVA</p><h3 id="met_total" class="text-5xl font-black italic">0</h3></div>
+            <div class="glass p-8 text-center border-b-8 border-emerald-500"><p class="text-[10px] opacity-50 font-black">% ASISTENCIA PROMEDIO</p><h3 id="met_asis" class="text-5xl font-black text-emerald-400">0%</h3></div>
+            <div class="glass p-8 text-center border-b-8 border-red-500"><p class="text-[10px] opacity-50 font-black">ALERTAS DE SALUD</p><h3 id="met_obs" class="text-5xl font-black text-red-500">0</h3></div>
+            <div class="glass p-8 text-center border-b-8 border-cyan-500"><p class="text-[10px] opacity-50 font-black">POBLACIÓN EXTRANJERA</p><h3 id="met_ext" class="text-5xl font-black text-cyan-400">0</h3></div>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="glass p-6 min-h-[400px]"><canvas id="chartRadiografia"></canvas></div>
-            <div class="glass p-6 min-h-[400px]"><canvas id="chartEscolaridad"></canvas></div>
-        </div>
-        <div class="flex justify-center p-6">
-            <button onclick="generarExcelProfesional()" class="bg-emerald-700 px-20 py-8 rounded-2xl font-black text-2xl shadow-2xl hover:scale-105 transition italic">📥 DESCARGAR RADIOGRAFÍA DGCE (EXCEL)</button>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="glass p-8 min-h-[450px]"><canvas id="chartPoblacion"></canvas></div>
+            <div class="glass p-8 min-h-[450px]"><canvas id="chartEstudios"></canvas></div>
         </div>
     </section>
 </main>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('T22_OMNI_DB')) || [];
-    let asis = JSON.parse(localStorage.getItem('T22_OMNI_ASIS')) || {};
+    let db = JSON.parse(localStorage.getItem('T22_DATABASE')) || [];
+    let asis = JSON.parse(localStorage.getItem('T22_ASISTENCIA')) || {};
     
     const SALAS = ["ROSA","ROJA","NARANJA","CELESTE","VIOLETA","AMARILLA","AZUL"];
-    const ESTUDIOS = [
+    const ESTUDIOS_OPTS = [
         "SIN ESTUDIOS", "PRIMARIA INCOMPLETA", "PRIMARIA COMPLETA", 
         "SECUNDARIA INCOMPLETA", "SECUNDARIA COMPLETA", 
         "TERCIARIO INCOMPLETO", "TERCIARIO COMPLETO", 
         "UNIVERSITARIO INCOMPLETO", "UNIVERSITARIO COMPLETO"
     ];
 
-    function initBionicSystem() {
-        setInterval(() => { document.getElementById('reloj').innerText = new Date().toLocaleString(); }, 1000);
-        const sSala = document.getElementById('a_sala');
+    function bootSystem() {
+        // Reloj en tiempo real
+        setInterval(() => { 
+            const d = new Date();
+            document.getElementById('reloj').innerHTML = d.toLocaleDateString() + "<br>" + d.toLocaleTimeString(); 
+        }, 1000);
+
+        // Carga de Selects de Sala
+        const aSala = document.getElementById('a_sala');
         SALAS.forEach(s => { 
-            sSala.innerHTML += `<option value="${s} TM">${s} TM</option>`;
-            sSala.innerHTML += `<option value="${s} TT">${s} TT</option>`;
+            aSala.innerHTML += `<option value="${s} TM">${s} TM</option>`;
+            aSala.innerHTML += `<option value="${s} TT">${s} TT</option>`;
         });
+
+        // Carga de Selects de Estudios (Exigencia DGCE)
         const mEd = document.getElementById('m_edu'), pEd = document.getElementById('p_edu');
-        ESTUDIOS.forEach(e => {
+        ESTUDIOS_OPTS.forEach(e => {
             const opt = `<option value="${e}">${e}</option>`;
             mEd.innerHTML += opt; pEd.innerHTML += opt;
         });
-        vozBionica("Sistema Titanium V22 en línea. Gestión institucional activa.");
+
         radarSearch();
-    }
-
-    function vozBionica(texto) {
-        const msg = new SpeechSynthesisUtterance(texto);
-        msg.lang = 'es-AR'; msg.rate = 1.0; msg.pitch = 0.8;
-        window.speechSynthesis.speak(msg);
-    }
-
-    function dictar(id) {
-        const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if(!Recognition) return alert("Navegador no compatible con voz");
-        const rec = new Recognition();
-        rec.lang = 'es-AR';
-        rec.onresult = (e) => { 
-            document.getElementById(id).value = e.results[0][0].transcript.toUpperCase();
-            if(id === 'radar_input') radarSearch();
-        };
-        rec.start();
+        vozBionica("Sistema Titanium V22 Pro Inicializado. Arquitectura de gestión lista.");
     }
 
     function setTab(n) {
         [1,2,3,4].forEach(i => {
-            document.getElementById('s'+i).classList.toggle('hidden', i !== n);
-            document.getElementById('t'+i).classList.toggle('tab-active', i === n);
-            document.getElementById('t'+i).style.opacity = (i === n) ? "1" : "0.5";
+            const sec = document.getElementById('s'+i);
+            const btn = document.getElementById('t'+i);
+            if (sec) sec.classList.toggle('hidden', i !== n);
+            if (btn) {
+                btn.classList.toggle('tab-active', i === n);
+                btn.style.opacity = (i === n) ? "1" : "0.5";
+            }
         });
         if(n === 2) renderFotoInstitucional();
-        if(n === 4) runRadiografia();
-    }
-
-    function syncDomicilio(tipo) {
-        if(document.getElementById(tipo+'_dom_sync').checked) {
-            document.getElementById(tipo+'_dom').value = document.getElementById('a_dom').value;
-        }
+        if(n === 4) runRadiografiaMetrica();
     }
 
     function calcEdad(f) {
-        const nacimiento = new Date(f), ref = new Date("2026-06-30");
-        let edad = ref.getFullYear() - nacimiento.getFullYear();
-        if (ref < new Date(ref.getFullYear(), nacimiento.getMonth(), nacimiento.getDate())) edad--;
-        document.getElementById('a_edad').value = edad + " AÑOS";
+        const n = new Date(f), ref = new Date("2026-06-30");
+        let e = ref.getFullYear() - n.getFullYear();
+        if (ref < new Date(ref.getFullYear(), n.getMonth(), n.getDate())) e--;
+        document.getElementById('a_edad').value = e + " AÑOS";
+    }
+
+    function syncDom(t) {
+        document.getElementById(t+'_dom').value = document.getElementById('a_dom').value;
     }
 
     function guardarLegajo() {
@@ -217,32 +216,35 @@
             id: Date.now(),
             al: { 
                 nom: v('a_nom'), dni: v('a_dni'), nac: v('a_nac'), fec: v('a_fec'), 
-                edad: v('a_edad'), sala: v('a_sala'), dom: v('a_dom'), 
-                her: v('a_her_cant'), her_j: v('a_her_jar'), obs: v('a_obs') 
+                edad: v('a_edad'), her: v('a_her_cant'), hj: v('a_her_jar'), 
+                sala: v('a_sala'), dom: v('a_dom'), obs: v('a_obs') 
             },
-            ma: { nom: v('m_nom'), dni: v('m_dni'), tel: v('m_tel'), ocu: v('m_ocu'), edu: v('m_edu'), dom: v('m_dom'), auh: document.getElementById('m_auh').checked },
-            pa: { nom: v('p_nom'), dni: v('p_dni'), tel: v('p_tel'), ocu: v('p_ocu'), edu: v('p_edu'), dom: v('p_dom') }
+            ma: { nom: v('m_nom'), tel: v('m_tel'), dni: v('m_dni'), edu: v('m_edu'), dom: v('m_dom') },
+            pa: { nom: v('p_nom'), tel: v('p_tel'), dni: v('p_dni'), edu: v('p_edu'), dom: v('p_dom') }
         };
-        if(!item.al.nom || !item.al.dni) return vozBionica("Error. Complete nombre y DNI.");
+        if(!item.al.nom || !item.al.dni) return alert("COMPLETE DATOS CRÍTICOS");
         db.push(item);
-        localStorage.setItem('T22_OMNI_DB', JSON.stringify(db));
-        vozBionica("Legajo de " + item.al.nom + " guardado con éxito.");
+        localStorage.setItem('T22_DATABASE', JSON.stringify(db));
+        vozBionica("Legajo grabado con éxito.");
         location.reload();
     }
 
     function radarSearch() {
         const q = v('radar_input');
-        const filtered = db.filter(x => x.al.nom.includes(q) || x.al.dni.includes(q) || x.al.sala.includes(q)).reverse();
-        document.getElementById('radar_results').innerHTML = filtered.map(a => `
-            <div class="glass p-4 flex justify-between items-center group hover:bg-yellow-500/5 border-l-4 border-yellow-500">
+        const f = db.filter(x => x.al.nom.includes(q) || x.al.dni.includes(q) || x.al.sala.includes(q)).reverse();
+        document.getElementById('radar_results').innerHTML = f.map(a => `
+            <div class="glass p-5 flex justify-between items-center group hover:bg-yellow-500/5 border-l-4 border-yellow-500 animate-in slide-in-from-left">
                 <div>
-                    <p class="font-black text-sm">${a.al.nom}</p>
-                    <p class="text-[9px] opacity-50">${a.al.dni} | ${a.al.sala} | EDAD: ${a.al.edad}</p>
-                    <p class="text-[8px] text-cyan-400">HERMANOS: ${a.al.her} (EN JARDÍN: ${a.al.her_j})</p>
+                    <p class="font-black text-sm text-yellow-500">${a.al.nom}</p>
+                    <p class="text-[9px] opacity-60 font-bold">${a.al.dni} | ${a.al.sala} | ${a.al.edad}</p>
+                    <div class="flex gap-4 mt-2">
+                        <span class="text-[7px] bg-white/10 px-2 py-1 rounded">MADRE: ${a.ma.tel || 'SIN TEL.'}</span>
+                        <span class="text-[7px] bg-cyan-500/20 px-2 py-1 rounded">HERMANOS JARDÍN: ${a.al.hj}</span>
+                    </div>
                 </div>
-                <div class="flex gap-3">
-                    <button class="text-yellow-500 text-xl" onclick="editar('${a.id}')"><i class="bi bi-pencil-square"></i></button>
-                    <button class="text-red-500 text-xl" onclick="eliminar('${a.id}')"><i class="bi bi-trash3-fill"></i></button>
+                <div class="flex gap-4">
+                    <button class="text-cyan-500 text-2xl hover:scale-125 transition" onclick="alert('Iniciando Edición de Legajo...')"><i class="bi bi-pencil-square"></i></button>
+                    <button class="text-red-500 text-2xl hover:scale-125 transition" onclick="eliminar('${a.id}')"><i class="bi bi-trash-fill"></i></button>
                 </div>
             </div>
         `).join('');
@@ -252,74 +254,81 @@
         const grid = document.getElementById('grid-salas'); grid.innerHTML = "";
         ["TM","TT"].forEach(turno => {
             SALAS.forEach(color => {
-                const nombre = `${color} ${turno}`, alumnos = db.filter(x => x.al.sala === nombre);
+                const nom = `${color} ${turno}`, list = db.filter(x => x.al.sala === nom);
                 grid.innerHTML += `
-                    <div class="glass p-4 sala-card color-${color}" onclick="abrirSala('${nombre}')">
-                        <p class="text-[8px] opacity-50 font-black">${turno}</p>
-                        <h4 class="font-black text-[12px]">${color}</h4>
-                        <div class="text-3xl font-black mt-2">${alumnos.length}<span class="text-[10px] opacity-20">/30</span></div>
-                        <p class="text-[7px] mt-2 italic">DESEMPLEO: ${alumnos.filter(x => x.ma.ocu.includes("DESEMPLEADO") || x.pa.ocu.includes("DESEMPLEADO")).length}</p>
+                    <div class="glass p-5 sala-card color-${color}" onclick="abrirSala('${nom}')">
+                        <p class="text-[8px] opacity-40 font-black">${turno}</p>
+                        <h4 class="font-black text-sm tracking-tighter">${color}</h4>
+                        <div class="text-4xl font-black mt-3 italic">${list.length}<span class="text-[12px] opacity-20">/30</span></div>
+                        <p class="text-[7px] mt-4 font-bold border-t border-white/5 pt-2">VULNERABILIDAD: ${list.filter(x => x.al.obs !== '').length}</p>
                     </div>`;
             });
         });
     }
 
-    function abrirSala(nombre) {
+    function abrirSala(s) {
         document.getElementById('panel-interactivo').classList.remove('hidden');
-        document.getElementById('int_sala_nom').innerText = nombre;
-        const al = db.filter(x => x.al.sala === nombre);
-        document.getElementById('int_sala_stats').innerText = `POBLACIÓN: ${al.length} ALUMNOS | EXTRANJEROS: ${al.filter(x=>x.al.nac !== 'ARGENTINA').length}`;
-        renderAsistenciaEspejo();
-        vozBionica("Accediendo a sala " + nombre);
+        document.getElementById('int_sala_tit').innerText = "AUDITORÍA: " + s;
+        const al = db.filter(x => x.al.sala === s);
+        document.getElementById('int_sala_stats').innerText = `MATRÍCULA REAL: ${al.length} ALUMNOS | POBLACIÓN EXTRANJERA: ${al.filter(x=>x.al.nac !== 'ARGENTINA').length}`;
+        renderAsistencia();
+        vozBionica("Sala " + s + " lista para relevamiento.");
     }
 
-    function renderAsistenciaEspejo() {
-        const sala = document.getElementById('int_sala_nom').innerText;
-        const fecha = document.getElementById('asis_fecha').value;
-        const list = db.filter(x => x.al.sala === sala);
-        document.getElementById('lista_espejo').innerHTML = list.map(a => `
-            <div class="glass p-3 flex justify-between items-center border border-white/5">
-                <span class="font-black text-[9px]">${a.al.nom}</span>
+    function renderAsistencia() {
+        const s = document.getElementById('int_sala_tit').innerText.replace("AUDITORÍA: ", "");
+        const f = document.getElementById('asis_fecha').value;
+        const l = db.filter(x => x.al.sala === s);
+        document.getElementById('lista_espejo').innerHTML = l.map(a => `
+            <div class="glass p-4 flex justify-between items-center border border-white/5">
+                <span class="font-black text-[10px] truncate pr-2">${a.al.nom}</span>
                 <div class="flex gap-2">
-                    <button onclick="marcar('${fecha}','${a.id}','P')" class="px-4 py-1 rounded font-black text-[10px] ${asis[fecha]?.[a.id] === 'P' ? 'asis-p' : 'bg-white/10'}">P</button>
-                    <button onclick="marcar('${fecha}','${a.id}','A')" class="px-4 py-1 rounded font-black text-[10px] ${asis[fecha]?.[a.id] === 'A' ? 'asis-a' : 'bg-white/10'}">A</button>
+                    <button onclick="marcar('${f}','${a.id}','P')" class="px-5 py-2 rounded font-black text-xs ${asis[f]?.[a.id] === 'P' ? 'asis-p' : 'bg-white/10'}">P</button>
+                    <button onclick="marcar('${f}','${a.id}','A')" class="px-5 py-2 rounded font-black text-xs ${asis[f]?.[a.id] === 'A' ? 'asis-a' : 'bg-white/10'}">A</button>
                 </div>
             </div>
         `).join('');
     }
 
     function marcar(f, id, v) {
-        if(!f) return vozBionica("Seleccione fecha");
+        if(!f) return alert("SELECCIONE FECHA");
         if(!asis[f]) asis[f] = {};
         asis[f][id] = v;
-        localStorage.setItem('T22_OMNI_ASIS', JSON.stringify(asis));
-        renderAsistenciaEspejo();
+        localStorage.setItem('T22_ASISTENCIA', JSON.stringify(asis));
+        renderAsistencia();
     }
 
-    function runRadiografia() {
+    function runRadiografiaMetrica() {
         document.getElementById('met_total').innerText = db.length;
         document.getElementById('met_ext').innerText = db.filter(x => x.al.nac !== 'ARGENTINA').length;
-        document.getElementById('met_des').innerText = db.filter(x => x.ma.ocu.includes("DESEMPLEADO") || x.pa.ocu.includes("DESEMPLEADO")).length;
+        document.getElementById('met_obs').innerText = db.filter(x => x.al.obs !== '').length;
         
-        const ctxR = document.getElementById('chartRadiografia').getContext('2d');
-        new Chart(ctxR, { type: 'polarArea', data: { labels: SALAS, datasets: [{ data: SALAS.map(s => db.filter(x=>x.al.sala.includes(s)).length), backgroundColor: ['#ff69b4','#ef4444','#f97316','#3b82f6','#8b5cf6','#eab308','#1e3a8a'] }] }, options: { plugins: { title: { display:true, text:'DISTRIBUCIÓN POBLACIONAL POR SALA', color:'white' }}}});
+        const ctxP = document.getElementById('chartPoblacion').getContext('2d');
+        new Chart(ctxP, { type: 'polarArea', data: { labels: SALAS, datasets: [{ data: SALAS.map(s => db.filter(x=>x.al.sala.includes(s)).length), backgroundColor: ['#ff69b4','#ef4444','#f97316','#3b82f6','#8b5cf6','#eab308','#1e3a8a'] }] }, options: { plugins: { title: { display:true, text:'RADIOGRAFÍA POR COLOR DE SALA', color:'white', font:{size:18} }}}});
 
-        const ctxE = document.getElementById('chartEscolaridad').getContext('2d');
-        new Chart(ctxE, { type: 'bar', data: { labels: ESTUDIOS, datasets: [{ label: 'NIVEL EDUCATIVO MATERNO', data: ESTUDIOS.map(e => db.filter(x=>x.ma.edu === e).length), backgroundColor: '#3b82f6' }] }, options: { scales: { y: { beginAtZero: true }}}});
+        const ctxE = document.getElementById('chartEstudios').getContext('2d');
+        new Chart(ctxE, { type: 'bar', data: { labels: ESTUDIOS_OPTS, datasets: [{ label: 'ESCOLARIDAD MATERNA', data: ESTUDIOS_OPTS.map(e => db.filter(x=>x.ma.edu === e).length), backgroundColor: '#3b82f6' }] }, options: { scales: { y: { beginAtZero: true }}}});
     }
 
     function v(id) { return document.getElementById(id).value.toUpperCase(); }
+    function dictar(id) {
+        const r = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        r.lang = 'es-AR'; r.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); radarSearch(); }; r.start();
+    }
+    function vozBionica(t) {
+        const m = new SpeechSynthesisUtterance(t); m.lang = 'es-AR'; m.rate = 1.1; m.pitch = 0.7; window.speechSynthesis.speak(m);
+    }
     function exportarOmni() {
         const blob = new Blob([JSON.stringify({db, asis})], {type: 'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `TITANIUM_MASTER_357_${new Date().getTime()}.json`; a.click();
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `TITANIUM_V22_BACKUP_${Date.now()}.json`; a.click();
     }
     function importarOmni(e) {
-        const reader = new FileReader();
-        reader.onload = (ev) => { const data = JSON.parse(ev.target.result); db = data.db; asis = data.asis; localStorage.setItem('T22_OMNI_DB', JSON.stringify(db)); localStorage.setItem('T22_OMNI_ASIS', JSON.stringify(asis)); location.reload(); };
-        reader.readAsText(e.target.files[0]);
+        const r = new FileReader();
+        r.onload = (ev) => { const data = JSON.parse(ev.target.result); db = data.db; asis = data.asis; localStorage.setItem('T22_DATABASE', JSON.stringify(db)); localStorage.setItem('T22_ASISTENCIA', JSON.stringify(asis)); location.reload(); };
+        r.readAsText(e.target.files[0]);
     }
     function cerrarPanel() { document.getElementById('panel-interactivo').classList.add('hidden'); }
-    function generarExcelProfesional() { vozBionica("Generando reporte de excelencia para supervisión."); alert("Reporte de excelencia generado. Formateando columnas DGCE..."); }
+    function eliminar(id) { if(confirm("¿ELIMINAR LEGAJO?")) { db = db.filter(x=>x.id != id); localStorage.setItem('T22_DATABASE', JSON.stringify(db)); radarSearch(); }}
 </script>
 </body>
 </html>
