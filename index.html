@@ -2,172 +2,273 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TITANIUM V23 MASTER | DGCE PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        body { background: #010409; color: #e6edf3; font-family: 'Segoe UI', sans-serif; text-transform: uppercase; font-size: 11px; }
-        .glass { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; }
-        .input-pro { background: #010409; border: 1px solid #30363d; padding: 10px; border-radius: 4px; color: white; width: 100%; font-weight: bold; }
-        .input-pro:focus { border-color: #facc15; outline: none; }
-        .btn-sala { transition: 0.3s; cursor: pointer; border-bottom: 4px solid transparent; }
-        .card-alumno { border-left: 4px solid #facc15; background: #161b22; transition: 0.2s; cursor: pointer; }
-        .card-alumno:hover { transform: scale(1.02); background: #21262d; }
+        :root { --gold: #facc15; --panel: #0d1117; --border: #30363d; }
+        body { background: #010409; color: #e6edf3; font-family: 'Segoe UI', sans-serif; font-size: 11px; text-transform: uppercase; }
+        .bionic { font-weight: 700; color: #fff; }
+        .input-titan { background: #010409; border: 1px solid var(--border); padding: 10px; border-radius: 6px; color: #fff; width: 100%; font-weight: bold; }
+        .input-titan:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 10px rgba(250,204,21,0.2); }
+        .glass { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; }
+        .tab-active { border-bottom: 3px solid var(--gold); color: var(--gold); background: rgba(250,204,21,0.05); }
+        .card-interactiva { cursor: pointer; transition: 0.3s; border-left: 4px solid var(--gold); }
+        .card-interactiva:hover { transform: translateY(-3px); background: #161b22; }
+        .sala-tag { padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 900; }
     </style>
 </head>
 <body>
 
-<header class="p-4 glass flex justify-between items-center border-b border-yellow-500">
-    <div class="flex items-center gap-3">
-        <i class="bi bi-shield-shaded text-yellow-500 text-3xl"></i>
-        <div>
-            <h1 class="text-xl font-black italic">TITANIUM V23 <span class="text-yellow-500">MASTER</span></h1>
-            <p class="text-[8px] opacity-60 tracking-widest">SISTEMA ÚNICO INSTITUCIONAL | DGCE</p>
+<header class="p-4 glass flex flex-wrap justify-between items-center sticky top-0 z-50 bg-[#010409] border-b border-yellow-500/30">
+    <div class="flex items-center gap-4">
+        <h1 class="text-xl font-black italic text-yellow-500">TITANIUM V23 MASTER</h1>
+        <div class="hidden md:flex gap-2">
+            <button onclick="exportarExcel()" class="bg-green-600/20 text-green-400 border border-green-500 px-3 py-1 rounded font-black text-[9px]">EXPORTAR DGCE</button>
+            <button onclick="document.getElementById('import').click()" class="bg-blue-600/20 text-blue-400 border border-blue-500 px-3 py-1 rounded font-black text-[9px]">IMPORTAR</button>
+            <input type="file" id="import" class="hidden" onchange="importarDatos(event)">
         </div>
     </div>
-    <div class="flex gap-2">
-        <button onclick="exportarExcel()" class="bg-green-600 px-4 py-2 rounded font-bold text-[10px]"><i class="bi bi-file-earmark-excel"></i> EXPORTAR DGCE</button>
-        <button onclick="respaldoJSON()" class="bg-blue-600 px-4 py-2 rounded font-bold text-[10px]">BACKUP OMNI</button>
+    <div class="flex-1 max-w-md mx-4">
+        <input type="text" id="radar" onkeyup="radarInteligente()" class="input-titan" placeholder="RADAR: DNI, APELLIDO O SALA...">
     </div>
 </header>
 
-<main class="p-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <section class="glass p-4 space-y-4">
-        <h2 class="text-yellow-500 font-black border-b border-white/10 pb-2 italic">I. LEGAJO 360° - DATOS ALUMNO</h2>
-        <div class="grid grid-cols-2 gap-2">
-            <input id="a_apellido" class="input-pro" placeholder="APELLIDO">
-            <input id="a_nombre" class="input-pro" placeholder="NOMBRE">
-            <input id="a_dni" class="input-pro" placeholder="DNI">
-            <input id="a_nacionalidad" class="input-pro" placeholder="NACIONALIDAD" value="ARGENTINA">
-            <input id="a_fec_nac" type="date" class="input-pro" onchange="calcularEdad(this.value)">
-            <div id="display_edad" class="bg-yellow-500 text-black p-2 rounded font-black flex items-center justify-center">EDAD AL 30/06: --</div>
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-            <input id="a_domicilio" class="input-pro" placeholder="DOMICILIO REAL">
-            <input id="a_tel" class="input-pro" placeholder="TELÉFONO CONTACTO">
-            <input id="a_hermanos" type="number" class="input-pro" placeholder="CANT. HERMANOS">
-            <select id="a_her_jar" class="input-pro">
-                <option value="NO">¿HERMANOS EN EL JARDÍN? NO</option>
-                <option value="SI">¿HERMANOS EN EL JARDÍN? SI</option>
-            </select>
-        </div>
-        <select id="a_sala" class="input-pro border-yellow-500 text-yellow-500">
-            <option value="ROSA">SALA ROSA</option><option value="ROJA">SALA ROJA</option>
-            <option value="NARANJA">SALA NARANJA</option><option value="CELESTE">SALA CELESTE</option>
-            <option value="VIOLETA">SALA VIOLETA</option><option value="AMARILLA">SALA AMARILLA</option>
-            <option value="AZUL">SALA AZUL</option>
-        </select>
+<nav class="flex glass rounded-none border-b border-white/5 overflow-x-auto">
+    <button onclick="showSection('s1')" id="t1" class="flex-1 p-4 tab-active font-black tracking-widest">LEGAJO 360</button>
+    <button onclick="showSection('s2')" id="t2" class="flex-1 p-4 opacity-50 font-black tracking-widest">FOTO INSTITUCIONAL</button>
+    <button onclick="showSection('s3')" id="t3" class="flex-1 p-4 opacity-50 font-black tracking-widest">ASISTENCIA ESPEJO</button>
+    <button onclick="showSection('s4')" id="t4" class="flex-1 p-4 opacity-50 font-black tracking-widest">SUPERVISIÓN STATS</button>
+</nav>
 
-        <h2 class="text-cyan-400 font-black border-b border-white/10 pb-2 italic mt-6">II. VÍNCULOS Y ESCOLARIDAD</h2>
-        <div class="p-3 bg-white/5 rounded space-y-2">
-            <p class="text-cyan-400 font-bold text-[9px]">DATOS MADRE / TUTORA</p>
-            <div class="grid grid-cols-2 gap-2">
-                <input id="m_nom" class="input-pro" placeholder="NOMBRE Y APELLIDO">
-                <input id="m_dni" class="input-pro" placeholder="DNI">
-                <input id="m_nac" class="input-pro" placeholder="NACIONALIDAD">
-                <input id="m_tel" class="input-pro" placeholder="TELÉFONO">
-                <input id="m_ocu" class="input-pro" placeholder="OCUPACIÓN">
-                <select id="m_auh" class="input-pro"><option value="NO">RECIBE AUH: NO</option><option value="SI">RECIBE AUH: SI</option></select>
+<main class="p-4">
+    <section id="s1" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-6">
+            <div class="glass p-5 border-t-4 border-yellow-500">
+                <h3 class="text-yellow-500 font-black italic mb-4">I. DATOS DEL ALUMNO</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input id="a_apellido" class="input-titan" placeholder="APELLIDO">
+                    <input id="a_nombre" class="input-titan" placeholder="NOMBRE">
+                    <input id="a_dni" class="input-titan" placeholder="DNI">
+                    <input id="a_nacionalidad" class="input-titan" placeholder="NACIONALIDAD" value="ARGENTINA">
+                    <input id="a_fec_nac" type="date" class="input-titan" onchange="calcEdad(this.value)">
+                    <div id="v_edad" class="bg-yellow-500 text-black p-2 rounded font-black text-center">EDAD 30/06: --</div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <input id="a_dom" class="input-titan" placeholder="DOMICILIO REAL">
+                    <input id="a_tel" class="input-titan" placeholder="TELÉFONO DE CONTACTO">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                    <input id="a_her_cant" type="number" class="input-titan" placeholder="CANT. HERMANOS">
+                    <select id="a_her_jar" class="input-titan">
+                        <option value="NO">HERMANOS EN JARDÍN: NO</option>
+                        <option value="SI">HERMANOS EN JARDÍN: SI</option>
+                    </select>
+                    <select id="a_sala" class="input-titan text-yellow-500 font-black"></select>
+                </div>
             </div>
-            <select id="m_edu" class="input-pro edu-select"></select>
-            <div class="flex gap-2 items-center">
-                <input id="m_dom" class="input-pro" placeholder="DOMICILIO MADRE">
-                <button onclick="copiarDom('m')" class="bg-white/10 p-2 rounded text-[8px]">IGUAL ALUMNO</button>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass p-5 border-t-4 border-cyan-500 space-y-3">
+                    <h3 class="text-cyan-500 font-black italic border-b border-white/5 pb-2">TUTOR 1 / MADRE</h3>
+                    <input id="m_nom" class="input-titan" placeholder="NOMBRE Y APELLIDO">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input id="m_dni" class="input-titan" placeholder="DNI">
+                        <input id="m_nac" class="input-titan" placeholder="NACIONALIDAD">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input id="m_ocu" class="input-titan" placeholder="OCUPACIÓN">
+                        <input id="m_tel" class="input-titan" placeholder="TELÉFONO">
+                    </div>
+                    <select id="m_edu" class="input-titan edu-list"></select>
+                    <div class="flex items-center gap-2">
+                        <input id="m_dom" class="input-titan" placeholder="DOMICILIO">
+                        <button onclick="copyDom('m')" class="bg-white/5 p-2 rounded text-[8px]">ESPEJO</button>
+                    </div>
+                </div>
+                <div class="glass p-5 border-t-4 border-pink-500 space-y-3">
+                    <h3 class="text-pink-500 font-black italic border-b border-white/5 pb-2">TUTOR 2 / PADRE</h3>
+                    <input id="p_nom" class="input-titan" placeholder="NOMBRE Y APELLIDO">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input id="p_dni" class="input-titan" placeholder="DNI">
+                        <input id="p_nac" class="input-titan" placeholder="NACIONALIDAD">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input id="p_ocu" class="input-titan" placeholder="OCUPACIÓN">
+                        <input id="p_tel" class="input-titan" placeholder="TELÉFONO">
+                    </div>
+                    <select id="p_edu" class="input-titan edu-list"></select>
+                    <div class="flex items-center gap-2">
+                        <input id="p_dom" class="input-titan" placeholder="DOMICILIO">
+                        <button onclick="copyDom('p')" class="bg-white/5 p-2 rounded text-[8px]">ESPEJO</button>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="p-3 bg-white/5 rounded space-y-2">
-            <p class="text-pink-400 font-bold text-[9px]">DATOS PADRE / TUTOR</p>
-            <div class="grid grid-cols-2 gap-2">
-                <input id="p_nom" class="input-pro" placeholder="NOMBRE Y APELLIDO">
-                <input id="p_dni" class="input-pro" placeholder="DNI">
-            </div>
-            <select id="p_edu" class="input-pro edu-select"></select>
-            <div class="flex gap-2 items-center">
-                <input id="p_dom" class="input-pro" placeholder="DOMICILIO PADRE">
-                <button onclick="copiarDom('p')" class="bg-white/10 p-2 rounded text-[8px]">IGUAL ALUMNO</button>
-            </div>
+            <button onclick="saveData()" class="w-full bg-yellow-500 text-black p-4 rounded-xl font-black text-lg hover:bg-yellow-400 transition shadow-lg">GRABAR EN MATRÍCULA OFICIAL</button>
         </div>
 
-        <button onclick="guardarLegajo()" class="w-full bg-green-600 p-4 rounded font-black text-lg shadow-lg hover:bg-green-500 transition">GUARDAR LEGAJO COMPLETO</button>
+        <div class="space-y-4">
+            <div class="glass p-5 h-full min-h-[400px]">
+                <h3 class="text-white font-black italic mb-4">VISTA PREVIA INTERACTIVA</h3>
+                <div id="card_live" class="p-6 rounded-2xl bg-gradient-to-br from-[#161b22] to-black border border-yellow-500/30 text-center space-y-4">
+                    <p class="opacity-20 mt-20">ESPERANDO DATOS...</p>
+                </div>
+            </div>
+        </div>
     </section>
 
-    <section class="space-y-4">
-        <div class="glass p-4">
-            <h2 class="text-yellow-500 font-black mb-3 italic">RADAR DE MATRÍCULA POR SALA</h2>
-            <div id="botones-salas" class="flex flex-wrap gap-2"></div>
-            <input type="text" id="buscador" onkeyup="filtrarRadar()" class="input-pro mt-4" placeholder="BUSCAR POR APELLIDO O DNI...">
+    <section id="s2" class="hidden space-y-6">
+        <div id="color_grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3"></div>
+        <div id="sala_detail" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8"></div>
+    </section>
+
+    <section id="s3" class="hidden glass p-6">
+        <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+            <h2 class="text-2xl font-black text-yellow-500 italic">ASISTENCIA ESPEJO</h2>
+            <input type="date" id="asis_date" class="input-titan w-48" onchange="renderAsis()">
         </div>
-        
-        <div id="contenedor-tarjetas" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div id="asis_grid" class="space-y-4"></div>
+    </section>
+
+    <section id="s4" class="hidden space-y-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="glass p-6 border-b-4 border-yellow-500 text-center">
+                <p class="text-[9px] opacity-50">MATRÍCULA REAL</p>
+                <h3 id="st_mat" class="text-3xl font-black italic">0</h3>
             </div>
+            <div id="st_asis" class="glass p-6 border-b-4 border-green-500 text-center">
+                <p class="text-[9px] opacity-50">% ASISTENCIA PROMEDIO</p>
+                <h3 class="text-3xl font-black italic">0%</h3>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="glass p-6">
+                <canvas id="chart_salas"></canvas>
+            </div>
+            <div class="glass p-6">
+                <canvas id="chart_edu"></canvas>
+            </div>
+        </div>
     </section>
 </main>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('TITANIUM_DB')) || [];
-    const SALAS = ["ROSA", "ROJA", "NARANJA", "CELESTE", "VIOLETA", "AMARILLA", "AZUL"];
-    const ESTUDIOS = ["SIN ESTUDIOS", "PRIMARIA INCOMPLETA", "PRIMARIA COMPLETA", "SECUNDARIA INCOMPLETA", "SECUNDARIA COMPLETA", "TERCIARIO INCOMPLETO", "TERCIARIO COMPLETO", "UNIVERSITARIO INCOMPLETO", "UNIVERSITARIO COMPLETO"];
+    let db = JSON.parse(localStorage.getItem('TITANIUM_PRO')) || [];
+    let asis = JSON.parse(localStorage.getItem('TITANIUM_ASIS')) || {};
+    
+    const SALAS = [
+        {id:'ROSA', color:'#ec4899'}, {id:'ROJA', color:'#ef4444'}, {id:'NARANJA', color:'#f97316'},
+        {id:'CELESTE', color:'#0ea5e9'}, {id:'VIOLETA', color:'#a855f7'}, {id:'AMARILLA', color:'#eab308'}, {id:'AZUL', color:'#1d4ed8'}
+    ];
+
+    const NIVELES = [
+        "SIN ESTUDIOS", "PRIMARIA INCOMPLETA", "PRIMARIA COMPLETA", 
+        "SECUNDARIA INCOMPLETA", "SECUNDARIA COMPLETA", "TERCIARIO INCOMPLETO", 
+        "TERCIARIO COMPLETO", "UNIVERSITARIO INCOMPLETO", "UNIVERSITARIO COMPLETO"
+    ];
 
     function init() {
-        const eduSelectors = document.querySelectorAll('.edu-select');
-        eduSelectors.forEach(sel => {
-            ESTUDIOS.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
+        // Cargar selectores
+        const sSala = document.getElementById('a_sala');
+        SALAS.forEach(s => {
+            sSala.innerHTML += `<option value="${s.id} TM">${s.id} TM</option><option value="${s.id} TT">${s.id} TT</option>`;
         });
 
-        const sContainer = document.getElementById('botones-salas');
-        SALAS.forEach(s => {
-            sContainer.innerHTML += `<button onclick="renderRadar('${s}')" class="btn-sala bg-white/5 px-3 py-2 rounded font-bold text-[9px] hover:bg-yellow-500 hover:text-black">${s}</button>`;
+        document.querySelectorAll('.edu-list').forEach(sel => {
+            NIVELES.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
         });
-        renderRadar('ROSA');
+
+        document.getElementById('asis_date').valueAsDate = new Date();
+        renderColorButtons();
+        updateStats();
     }
 
-    function calcularEdad(fecha) {
-        const nac = new Date(fecha);
+    function calcEdad(f) {
+        const nac = new Date(f);
         const corte = new Date(new Date().getFullYear(), 5, 30);
         let edad = corte.getFullYear() - nac.getFullYear();
         if (corte < new Date(corte.getFullYear(), nac.getMonth(), nac.getDate())) edad--;
-        document.getElementById('display_edad').innerText = `EDAD AL 30/06: ${edad} AÑOS`;
+        document.getElementById('v_edad').innerText = `EDAD 30/06: ${edad} AÑOS`;
         return edad;
     }
 
-    function copiarDom(tipo) {
-        document.getElementById(tipo + '_dom').value = document.getElementById('a_domicilio').value;
+    function copyDom(t) {
+        document.getElementById(t+'_dom').value = document.getElementById('a_dom').value;
     }
 
-    function guardarLegajo() {
-        const alumno = {
-            apellido: document.getElementById('a_apellido').value,
-            nombre: document.getElementById('a_nombre').value,
-            dni: document.getElementById('a_dni').value,
-            sala: document.getElementById('a_sala').value,
-            auh: document.getElementById('m_auh').value,
-            // ... resto de campos
+    function showSection(id) {
+        document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+        document.querySelectorAll('nav button').forEach(b => b.classList.add('opacity-50', 'tab-active'));
+        // Lógica de pestañas simplificada
+        if(id === 's3') renderAsis();
+        if(id === 's4') renderCharts();
+    }
+
+    function saveData() {
+        const item = {
+            id: Date.now(),
+            al: {
+                nom: document.getElementById('a_nombre').value,
+                ape: document.getElementById('a_apellido').value,
+                dni: document.getElementById('a_dni').value,
+                sala: document.getElementById('a_sala').value,
+                dom: document.getElementById('a_dom').value,
+                tel: document.getElementById('a_tel').value
+            },
+            tut1: {
+                nom: document.getElementById('m_nom').value,
+                edu: document.getElementById('m_edu').value,
+                dom: document.getElementById('m_dom').value
+            },
+            tut2: {
+                nom: document.getElementById('p_nom').value,
+                edu: document.getElementById('p_edu').value,
+                dom: document.getElementById('p_dom').value
+            }
         };
-        db.push(alumno);
-        localStorage.setItem('TITANIUM_DB', JSON.stringify(db));
-        alert("LEGAJO GUARDADO");
-        renderRadar(alumno.sala);
+        db.push(item);
+        localStorage.setItem('TITANIUM_PRO', JSON.stringify(db));
+        alert("¡LEGAJO MASTER GUARDADO!");
+        updateStats();
     }
 
-    function renderRadar(sala) {
-        const cont = document.getElementById('contenedor-tarjetas');
-        const filtrados = db.filter(a => a.sala === sala);
-        cont.innerHTML = filtrados.map(a => `
-            <div class="card-alumno p-4 rounded shadow-xl">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h3 class="font-black text-white text-sm">${a.apellido}, ${a.nombre}</h3>
-                        <p class="text-yellow-500 font-bold text-[10px]">DNI: ${a.dni}</p>
-                    </div>
-                    <span class="bg-green-500/20 text-green-400 px-2 py-1 rounded text-[8px]">AUH: ${a.auh}</span>
-                </div>
-                <div class="mt-3 flex gap-2">
-                    <button class="bg-blue-500 text-white px-2 py-1 rounded text-[9px]">EDITAR</button>
-                    <button class="bg-white/10 text-white px-2 py-1 rounded text-[9px]">VER LEGAJO 360</button>
-                </div>
+    function renderColorButtons() {
+        const cont = document.getElementById('color_grid');
+        SALAS.forEach(s => {
+            cont.innerHTML += `
+                <button onclick="renderSalaCards('${s.id}')" class="glass p-4 text-center border-b-4 hover:brightness-125 transition" style="border-color:${s.color}">
+                    <span class="font-black italic">${s.id}</span>
+                    <div class="text-[8px] opacity-50">${db.filter(x=>x.al.sala.startsWith(s.id)).length} ALUMNOS</div>
+                </button>
+            `;
+        });
+    }
+
+    function renderSalaCards(colorId) {
+        const cont = document.getElementById('sala_detail');
+        const filtrados = db.filter(x => x.al.sala.startsWith(colorId));
+        cont.innerHTML = filtrados.map(x => `
+            <div class="glass p-4 card-interactiva" onclick="alert('Legajo completo de ${x.al.nom}')">
+                <h4 class="font-black italic">${x.al.ape}, ${x.al.nom}</h4>
+                <p class="text-yellow-500 text-[9px]">${x.al.dni}</p>
+                <div class="mt-2 text-[7px] opacity-60">PADRE: ${x.tut2.nom} / MADRE: ${x.tut1.nom}</div>
             </div>
         `).join('');
+    }
+
+    function exportarExcel() {
+        const ws = XLSX.utils.json_to_sheet(db.map(x => ({
+            APELLIDO: x.al.ape, NOMBRE: x.al.nom, DNI: x.al.dni, SALA: x.al.sala, 
+            MADRE: x.tut1.nom, ESCOLARIDAD_M: x.tut1.edu,
+            PADRE: x.tut2.nom, ESCOLARIDAD_P: x.tut2.edu
+        })));
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Matricula");
+        XLSX.writeFile(wb, "TITANIUM_DGCE_REPORTE.xlsx");
     }
 
     init();
