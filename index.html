@@ -10,7 +10,7 @@
     <style>
         :root { --gold: #facc15; --bg: #010409; --panel: #0d1117; --border: #30363d; }
         body { background: var(--bg); color: #e6edf3; font-family: 'Inter', sans-serif; font-size: 11px; text-transform: uppercase; overflow-x: hidden; }
-        .glass { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; height: 100%; }
+        .glass { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; height: 100%; position: relative;}
         .input-bionic { background: #010409; border: 1px solid var(--border); padding: 12px; border-radius: 6px; color: #fff; width: 100%; transition: 0.3s; font-weight: 600; position: relative; }
         .input-bionic:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(250, 204, 21, 0.2); outline: none; }
         .tab-active { border-bottom: 4px solid var(--gold); color: var(--gold); font-weight: 900; background: rgba(250,204,21,0.05); }
@@ -18,95 +18,147 @@
         .mic-btn:hover { color: #ef4444; }
         .mic-active { color: #ef4444 !important; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        .sala-pill { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 10px; border-radius: 8px; text-align: center; transition: 0.3s; }
-        .sala-pill:hover { border-color: var(--gold); background: rgba(250,204,21,0.05); }
+        .sala-pill { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 10px; border-radius: 8px; text-align: center; transition: 0.3s; cursor: pointer; }
+        .sala-pill:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(250,204,21,0.1); }
         .full { border-color: #ef4444 !important; color: #ef4444; }
         .asis-p { background: #16a34a !important; color: white; border: 2px solid #22c55e; }
         .asis-a { background: #dc2626 !important; color: white; border: 2px solid #ef4444; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+        #search-results { position: absolute; top: 100%; left: 0; right: 0; background: var(--panel); border: 1px solid var(--gold); z-index: 2000; border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto; display: none; }
+        .search-item { padding: 10px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
+        .search-item:hover { background: rgba(250,204,21,0.1); }
     </style>
 </head>
 <body onload="initSystem()">
 
-<header class="glass rounded-none border-b border-yellow-500/40 p-5 flex justify-between items-center sticky top-0 z-[1000] bg-[#010409]">
-    <div class="flex items-center gap-5">
+<header class="glass rounded-none border-b border-yellow-500/40 p-4 flex flex-col md:flex-row justify-between items-center sticky top-0 z-[1000] bg-[#010409] gap-4">
+    <div class="flex items-center gap-5 w-full md:w-auto">
         <div class="w-3 h-3 bg-yellow-500 rounded-full animate-pulse shadow-[0_0_10px_#facc15]"></div>
         <div>
             <h1 class="text-yellow-500 font-black text-2xl italic tracking-tighter">TITANIUM V22 PRO</h1>
-            <p class="text-[7px] tracking-[5px] opacity-60">SISTEMA ÚNICO INSTITUCIONAL | ARQUITECTURA DE DATOS</p>
+            <p class="text-[7px] tracking-[5px] opacity-60">OMNI-MANAGEMENT ARCHITECT</p>
         </div>
     </div>
-    <div id="reloj" class="text-emerald-400 font-mono text-xs text-right leading-none"></div>
+    
+    <div class="relative w-full md:w-1/3">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"><i class="bi bi-search text-yellow-500"></i></div>
+        <input type="text" id="global_search" onkeyup="buscarInteligente()" class="bg-[#0d1117] border border-yellow-500/50 text-white text-xs rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full pl-10 p-3 font-bold" placeholder="BUSCADOR INTELIGENTE: DNI O APELLIDO...">
+        <div id="search-results"></div>
+    </div>
+
+    <div id="reloj" class="text-emerald-400 font-mono text-xs text-right leading-none hidden md:block"></div>
 </header>
 
-<nav class="flex glass rounded-none border-b border-white/5 sticky top-[85px] z-[900] bg-[#010409]">
-    <button onclick="setTab(1)" id="t1" class="flex-1 p-5 tab-active font-black tracking-widest">LEGAJO 360°</button>
-    <button onclick="setTab(2)" id="t2" class="flex-1 p-5 opacity-50 font-black tracking-widest">AUDITORÍA (ESPEJO)</button>
-    <button onclick="setTab(3)" id="t3" class="flex-1 p-5 opacity-50 font-black tracking-widest">SUPERVISIÓN (EXCEL)</button>
+<nav class="flex glass rounded-none border-b border-white/5 sticky top-[72px] md:top-[85px] z-[900] bg-[#010409] overflow-x-auto">
+    <button onclick="setTab(1)" id="t1" class="flex-1 p-4 tab-active font-black tracking-widest min-w-[150px]">LEGAJO 360°</button>
+    <button onclick="setTab(4)" id="t4" class="flex-1 p-4 opacity-50 font-black tracking-widest min-w-[150px]">LISTA ESPERA</button>
+    <button onclick="setTab(2)" id="t2" class="flex-1 p-4 opacity-50 font-black tracking-widest min-w-[150px]">AUDITORÍA</button>
+    <button onclick="setTab(3)" id="t3" class="flex-1 p-4 opacity-50 font-black tracking-widest min-w-[150px]">SUPERVISIÓN</button>
 </nav>
 
-<main class="p-6 space-y-8">
+<main class="p-4 md:p-6 space-y-8">
     <section id="s1" class="space-y-6 animate-in fade-in">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="glass p-6 border-t-4 border-yellow-500 space-y-4">
-                <h3 class="text-yellow-500 font-black text-xs italic">DATOS DEL ALUMNO</h3>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <div class="glass p-6 border-t-4 border-purple-500 flex flex-col items-center justify-center space-y-4">
+                <h3 class="text-purple-500 font-black text-xs italic text-center w-full">ESCÁNER BIOMÉTRICO (FOTO)</h3>
+                <div class="w-full aspect-square bg-black border border-white/10 rounded-xl relative overflow-hidden flex items-center justify-center group">
+                    <video id="video_legajo" class="absolute inset-0 w-full h-full object-cover hidden" autoplay playsinline></video>
+                    <img id="foto_preview" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                    <i class="bi bi-camera text-4xl text-white/20 group-hover:text-purple-500 transition cursor-pointer" onclick="iniciarCamara('legajo')" id="icon_cam_legajo"></i>
+                </div>
+                <button onclick="capturarFoto('legajo')" class="bg-purple-600/20 text-purple-400 border border-purple-500/50 w-full py-2 rounded font-bold hover:bg-purple-600 hover:text-white transition hidden" id="btn_cap_legajo">TOMAR FOTO</button>
+            </div>
+
+            <div class="glass p-6 border-t-4 border-yellow-500 space-y-4 lg:col-span-1">
+                <h3 class="text-yellow-500 font-black text-xs italic">DATOS ALUMNO</h3>
                 <div class="relative"><input id="a_nom" class="input-bionic w-full" placeholder="APELLIDO Y NOMBRE"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('a_nom')"></i></div>
+                <div class="relative"><input id="a_dni" class="input-bionic w-full" placeholder="DNI"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('a_dni')"></i></div>
                 <div class="flex gap-2">
-                    <div class="relative flex-1"><input id="a_dni" class="input-bionic w-full" placeholder="DNI"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('a_dni')"></i></div>
-                    <div class="relative flex-1"><input id="a_nac" class="input-bionic w-full" placeholder="NACIONALIDAD" value="ARGENTINA"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('a_nac')"></i></div>
+                    <input id="a_nac" class="input-bionic flex-1" placeholder="NACIONALIDAD" value="ARGENTINA">
+                    <input id="a_edad" class="input-bionic flex-1 text-yellow-500" readonly placeholder="EDAD (AUTO)">
                 </div>
-                <div class="flex gap-2">
-                    <input id="a_fec" type="date" class="input-bionic flex-1" onchange="calcularEdad(this.value)">
-                    <input id="a_edad" class="input-bionic flex-1 text-yellow-500" readonly placeholder="EDAD AL 30/06">
-                </div>
-                <select id="a_sala" class="input-bionic w-full font-black text-yellow-500" onchange="previsualizarCupo()"></select>
-                <div class="relative"><input id="a_dom" class="input-bionic w-full" placeholder="DOMICILIO REAL"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('a_dom')"></i></div>
-                <textarea id="a_salud" class="input-bionic w-full h-16" placeholder="ALERTAS MÉDICAS"></textarea>
+                <input id="a_fec" type="date" class="input-bionic w-full" onchange="calcularEdad(this.value)">
+                <select id="a_sala" class="input-bionic w-full font-black text-yellow-500"></select>
+                <div class="relative"><input id="a_dom" class="input-bionic w-full" placeholder="DOMICILIO"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('a_dom')"></i></div>
             </div>
 
             <div class="glass p-6 border-t-4 border-cyan-500 space-y-4">
                 <h3 class="text-cyan-500 font-black text-xs italic">MADRE / TUTORA</h3>
                 <div class="relative"><input id="m_nom" class="input-bionic w-full" placeholder="NOMBRE COMPLETO"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('m_nom')"></i></div>
                 <div class="flex gap-2">
-                    <div class="relative flex-1"><input id="m_dni" class="input-bionic w-full" placeholder="DNI"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('m_dni')"></i></div>
-                    <div class="relative flex-1"><input id="m_nac" class="input-bionic w-full" placeholder="NACIONALIDAD" value="ARGENTINA"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('m_nac')"></i></div>
+                    <input id="m_dni" class="input-bionic flex-1" placeholder="DNI">
+                    <input id="m_nac" class="input-bionic flex-1" placeholder="NACIÓN" value="ARGENTINA">
                 </div>
                 <div class="relative"><input id="m_tel" class="input-bionic w-full" placeholder="TELÉFONO"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('m_tel')"></i></div>
                 <select id="m_edu" class="input-bionic w-full text-cyan-400"></select>
-                <div class="relative"><input id="m_dom" class="input-bionic w-full" placeholder="DOMICILIO"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('m_dom')"></i></div>
-                <label class="flex items-center gap-2 text-[8px] opacity-70"><input type="checkbox" onchange="syncDom('m')"> MISMO DOMICILIO QUE ALUMNO</label>
+                <label class="flex items-center gap-2 text-[8px] opacity-70"><input type="checkbox" onchange="syncDom('m')"> COPIAR DOMICILIO</label>
             </div>
 
             <div class="glass p-6 border-t-4 border-pink-500 space-y-4">
                 <h3 class="text-pink-500 font-black text-xs italic">PADRE / TUTOR</h3>
                 <div class="relative"><input id="p_nom" class="input-bionic w-full" placeholder="NOMBRE COMPLETO"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('p_nom')"></i></div>
                 <div class="flex gap-2">
-                    <div class="relative flex-1"><input id="p_dni" class="input-bionic w-full" placeholder="DNI"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('p_dni')"></i></div>
-                    <div class="relative flex-1"><input id="p_nac" class="input-bionic w-full" placeholder="NACIONALIDAD" value="ARGENTINA"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('p_nac')"></i></div>
+                    <input id="p_dni" class="input-bionic flex-1" placeholder="DNI">
+                    <input id="p_nac" class="input-bionic flex-1" placeholder="NACIÓN" value="ARGENTINA">
                 </div>
                 <div class="relative"><input id="p_tel" class="input-bionic w-full" placeholder="TELÉFONO"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('p_tel')"></i></div>
                 <select id="p_edu" class="input-bionic w-full text-pink-400"></select>
-                <div class="relative"><input id="p_dom" class="input-bionic w-full" placeholder="DOMICILIO"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('p_dom')"></i></div>
-                <label class="flex items-center gap-2 text-[8px] opacity-70"><input type="checkbox" onchange="syncDom('p')"> MISMO DOMICILIO QUE ALUMNO</label>
+                <label class="flex items-center gap-2 text-[8px] opacity-70"><input type="checkbox" onchange="syncDom('p')"> COPIAR DOMICILIO</label>
             </div>
         </div>
 
         <div class="glass p-6">
-            <h4 class="text-[9px] font-black tracking-widest mb-4 opacity-50 italic text-center">PANEL DE CONTROL DE VACANTES (SALA POR SALA)</h4>
+            <h4 class="text-[10px] font-black tracking-widest mb-4 opacity-70 italic text-center text-yellow-500"><i class="bi bi-grid-3x3-gap-fill mr-2"></i> TARJETERO INSTITUCIONAL: CLICK EN SALA PARA VER ALUMNOS</h4>
             <div id="grid-preview" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4"></div>
         </div>
 
-        <button onclick="guardarLegajo()" class="w-full bg-emerald-600 py-6 rounded-xl font-black text-xl italic hover:bg-emerald-500 transition shadow-2xl">GRABAR LEGAJO 360° E IMPACTAR MATRÍCULA</button>
+        <div class="flex gap-4">
+            <button onclick="limpiarFormulario()" class="w-1/4 bg-red-600/20 text-red-500 border border-red-500 py-6 rounded-xl font-black text-xl italic hover:bg-red-600 hover:text-white transition">VACIAR</button>
+            <button onclick="guardarLegajo()" class="w-3/4 bg-emerald-600 py-6 rounded-xl font-black text-xl italic hover:bg-emerald-500 transition shadow-[0_0_20px_rgba(16,185,129,0.4)]">GRABAR LEGAJO 360° E IMPACTAR MATRÍCULA</button>
+        </div>
+    </section>
+
+    <section id="s4" class="hidden space-y-6 animate-in slide-in-from-right">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="glass p-8 space-y-6 lg:col-span-1 border-t-4 border-orange-500">
+                <h2 class="text-2xl font-black italic text-orange-500">CARGA LISTA DE ESPERA</h2>
+                <div class="space-y-4">
+                    <input id="e_nom" class="input-bionic" placeholder="APELLIDO Y NOMBRE ALUMNO">
+                    <div class="relative">
+                        <input id="e_dni" class="input-bionic" placeholder="DNI ALUMNO">
+                        <i class="bi bi-upc-scan absolute right-4 top-3 text-xl text-orange-500 cursor-pointer" onclick="iniciarCamara('espera')" title="Escanear DNI"></i>
+                    </div>
+                    <div id="box_cam_espera" class="w-full h-32 bg-black rounded hidden relative overflow-hidden border border-orange-500/50">
+                         <video id="video_espera" class="absolute inset-0 w-full h-full object-cover" autoplay playsinline></video>
+                         <button onclick="capturarDniEspera()" class="absolute bottom-2 left-1/2 -translate-x-1/2 bg-orange-600 text-white text-[9px] px-4 py-1 rounded font-bold">CAPTURAR DNI</button>
+                    </div>
+                    <select id="e_sala" class="input-bionic text-orange-400"></select>
+                    <input id="e_tel" class="input-bionic" placeholder="TELÉFONO CONTACTO">
+                    <button onclick="guardarEspera()" class="w-full bg-orange-600 py-4 rounded font-black hover:bg-orange-500 transition">AGREGAR A ESPERA</button>
+                </div>
+            </div>
+            
+            <div class="glass p-8 lg:col-span-2">
+                <h3 class="text-xl font-black italic mb-4">ESTADO: LISTA DE ESPERA ACTIVA</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="text-orange-500 border-b border-white/10"><tr><th class="p-2">FECHA</th><th class="p-2">ALUMNO</th><th class="p-2">DNI</th><th class="p-2">SALA BUSCADA</th><th class="p-2">CONTACTO</th><th class="p-2">ACCIÓN</th></tr></thead>
+                        <tbody id="tabla_espera"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </section>
 
     <section id="s2" class="hidden space-y-6 animate-in slide-in-from-right">
-        <div class="glass p-8 flex justify-between items-center">
+        <div class="glass p-8 flex flex-col md:flex-row justify-between md:items-center gap-4 border-t-4 border-yellow-500">
             <div>
                 <h2 class="text-3xl font-black italic text-yellow-500">AUDITORÍA: ESPEJO DE MATRÍCULA</h2>
-                <p class="opacity-50">TOMAR ASISTENCIA DIARIA SEGÚN CALENDARIO</p>
+                <p class="opacity-50">TOMAR ASISTENCIA DIARIA SEGÚN CALENDARIO INSTITUCIONAL</p>
             </div>
-            <input type="date" id="asis_fecha" class="input-bionic text-xl text-yellow-500 w-72" onchange="renderListaAsis()">
+            <input type="date" id="asis_fecha" class="input-bionic text-xl text-yellow-500 w-full md:w-72" onchange="renderListaAsis()">
         </div>
         <div id="grid-salas-asis" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4"></div>
         <div id="panel-lista" class="glass p-8 hidden border-l-[10px] border-yellow-500">
@@ -117,30 +169,63 @@
 
     <section id="s3" class="hidden space-y-6 animate-in fade-in">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div class="glass p-6 text-center border-b-4 border-yellow-500"><p class="text-[9px] opacity-50 font-bold">MATRÍCULA TOTAL</p><h3 id="m_total" class="text-4xl font-black italic">0</h3></div>
-            <div class="glass p-6 text-center border-b-4 border-emerald-500"><p class="text-[9px] opacity-50 font-bold">% ASISTENCIA PROMEDIO</p><h3 id="m_asis" class="text-4xl font-black text-emerald-400">0%</h3></div>
-            <div class="glass p-6 text-center border-b-4 border-red-500"><p class="text-[9px] opacity-50 font-bold">PADRES DESEMPLEADOS</p><h3 id="m_des" class="text-4xl font-black text-red-500">0</h3></div>
+            <div class="glass p-6 text-center border-b-4 border-yellow-500"><p class="text-[9px] opacity-50 font-bold">MATRÍCULA ACTIVA</p><h3 id="m_total" class="text-4xl font-black italic">0</h3></div>
+            <div class="glass p-6 text-center border-b-4 border-orange-500"><p class="text-[9px] opacity-50 font-bold">EN LISTA ESPERA</p><h3 id="m_esp" class="text-4xl font-black text-orange-400">0</h3></div>
+            <div class="glass p-6 text-center border-b-4 border-emerald-500"><p class="text-[9px] opacity-50 font-bold">ASISTENCIA HOY</p><h3 id="m_asis" class="text-4xl font-black text-emerald-400">--%</h3></div>
             <div class="glass p-6 text-center border-b-4 border-cyan-500"><p class="text-[9px] opacity-50 font-bold">POBLACIÓN EXTRANJERA</p><h3 id="m_ext" class="text-4xl font-black text-cyan-400">0</h3></div>
         </div>
-        <div class="glass p-10 flex flex-col items-center gap-6">
-            <h3 class="text-2xl font-black italic">REPORTE OFICIAL PARA SUPERVISIÓN</h3>
-            <button onclick="descargarExcelSupervision()" class="bg-blue-600 px-20 py-8 rounded-2xl font-black text-2xl italic hover:scale-105 transition-all shadow-2xl">📥 DESCARGAR REPORTE DGCE (CSV/EXCEL)</button>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="glass p-10 flex flex-col items-center gap-6 justify-center border border-blue-500/30">
+                <h3 class="text-xl font-black italic">EXIGENCIA DGCE</h3>
+                <button onclick="descargarExcelSupervision()" class="bg-blue-600 w-full py-6 rounded-xl font-black text-xl italic hover:scale-[1.02] transition shadow-2xl">📥 EXPORTAR EXCEL SUPERVISIÓN</button>
+            </div>
+            
+            <div class="glass p-10 flex flex-col items-center gap-6 border border-emerald-500/30">
+                <h3 class="text-xl font-black italic">RESPALDO DE INGENIERÍA (BASE DE DATOS)</h3>
+                <div class="flex gap-4 w-full">
+                    <button onclick="exportarJSON()" class="bg-[#0d1117] border-2 border-emerald-500 text-emerald-500 flex-1 py-4 rounded-xl font-black hover:bg-emerald-500 hover:text-white transition"><i class="bi bi-download mr-2"></i> DESCARGAR BACKUP (JSON)</button>
+                    <label class="bg-emerald-600 text-white flex-1 py-4 rounded-xl font-black text-center cursor-pointer hover:bg-emerald-500 transition">
+                        <i class="bi bi-upload mr-2"></i> IMPORTAR BACKUP
+                        <input type="file" id="import_file" accept=".json" class="hidden" onchange="importarJSON(event)">
+                    </label>
+                </div>
+            </div>
         </div>
     </section>
 </main>
 
+<div id="modal_sala" class="fixed inset-0 bg-black/90 hidden z-[2000] flex justify-center items-center p-4 backdrop-blur-sm">
+    <div class="glass bg-[#0d1117] w-full max-w-2xl border-yellow-500 relative flex flex-col h-[80vh]">
+        <button onclick="document.getElementById('modal_sala').classList.add('hidden')" class="absolute top-4 right-4 text-red-500 text-2xl hover:scale-110"><i class="bi bi-x-circle-fill"></i></button>
+        <div class="p-6 border-b border-white/10">
+            <h2 id="modal_sala_tit" class="text-2xl font-black italic text-yellow-500">SALA</h2>
+            <p class="text-[10px] opacity-50">LISTADO DE MATRÍCULA CONFIRMADA</p>
+        </div>
+        <div class="p-6 overflow-y-auto flex-1 space-y-2" id="modal_sala_lista"></div>
+    </div>
+</div>
+
+<canvas id="canvas_oculto" class="hidden"></canvas>
+
 <script>
     let db = JSON.parse(localStorage.getItem('T22_DATABASE')) || [];
     let asis = JSON.parse(localStorage.getItem('T22_ATTENDANCE')) || {};
+    let espera = JSON.parse(localStorage.getItem('T22_WAITLIST')) || [];
+    let fotoActualBase64 = "";
+    let streamActual = null;
+
     const SALAS = ["ROSA","ROJA","NARANJA","CELESTE","VIOLETA","AMARILLA","AZUL"];
-    const ESCOLARIDAD = ["SIN ESTUDIOS", "PRIMARIA INCOMP.", "PRIMARIA COMP.", "SECUNDARIA INCOMP.", "SECUNDARIA COMP.", "TERCIARIO INCOMP.", "TERCIARIO COMP.", "UNIVERSITARIO INCOMP.", "UNIVERSITARIO COMP."];
+    const ESCOLARIDAD = ["SIN ESTUDIOS", "PRIMARIA INCOMP.", "PRIMARIA COMP.", "SECUNDARIA INCOMP.", "SECUNDARIA COMP.", "TERCIARIO/UNIV. INCOMP.", "TERCIARIO/UNIV. COMP."];
 
     function initSystem() {
         setInterval(() => { document.getElementById('reloj').innerText = new Date().toLocaleString(); }, 1000);
         
         const sSala = document.getElementById('a_sala');
+        const eSala = document.getElementById('e_sala');
         SALAS.forEach(s => {
-            sSala.innerHTML += `<option value="${s} TM">${s} TM</option><option value="${s} TT">${s} TT</option>`;
+            const opts = `<option value="${s} TM">${s} TM</option><option value="${s} TT">${s} TT</option>`;
+            sSala.innerHTML += opts; eSala.innerHTML += opts;
         });
 
         const mEd = document.getElementById('m_edu'), pEd = document.getElementById('p_edu');
@@ -149,12 +234,13 @@
             mEd.innerHTML += opt; pEd.innerHTML += opt;
         });
 
-        actualizarVistaPrevia();
-        vozBionica("Titanium V22 Pro en línea. Arquitectura configurada sin omisiones.");
+        actualizarTarjetero();
+        renderTablaEspera();
+        vozBionica("Ingeniería Titanium V22 Pro en línea. Todos los módulos operativos.");
     }
 
     function setTab(n) {
-        [1,2,3].forEach(i => {
+        [1,2,3,4].forEach(i => {
             const s = document.getElementById('s'+i);
             const t = document.getElementById('t'+i);
             if(s) s.classList.toggle('hidden', i !== n);
@@ -162,8 +248,92 @@
         });
         if(n === 2) renderSalasAsis();
         if(n === 3) runMetricas();
+        if(streamActual) detenerCamara(); // Apagar cámara si cambia de tab
     }
 
+    // --- BUSCADOR INTELIGENTE ---
+    function buscarInteligente() {
+        const query = document.getElementById('global_search').value.toUpperCase();
+        const resBox = document.getElementById('search-results');
+        if(query.length < 2) { resBox.style.display = 'none'; return; }
+        
+        const resultados = db.filter(x => x.al.nom.includes(query) || x.al.dni.includes(query));
+        resBox.innerHTML = resultados.map(r => `
+            <div class="search-item" onclick="cargarEnFormulario(${r.id})">
+                <span class="text-yellow-500 font-black">${r.al.nom}</span> - DNI: ${r.al.dni} <br>
+                <span class="text-[9px] opacity-70">SALA: ${r.al.sala}</span>
+            </div>
+        `).join('');
+        resBox.style.display = resultados.length > 0 ? 'block' : 'none';
+    }
+
+    function cargarEnFormulario(id) {
+        const r = db.find(x => x.id === id);
+        if(!r) return;
+        document.getElementById('a_nom').value = r.al.nom;
+        document.getElementById('a_dni').value = r.al.dni;
+        document.getElementById('a_nac').value = r.al.nac;
+        document.getElementById('a_sala').value = r.al.sala;
+        document.getElementById('a_dom').value = r.al.dom;
+        if(r.foto) {
+            document.getElementById('foto_preview').src = r.foto;
+            document.getElementById('foto_preview').classList.remove('hidden');
+            fotoActualBase64 = r.foto;
+        }
+        document.getElementById('search-results').style.display = 'none';
+        document.getElementById('global_search').value = "";
+        setTab(1);
+        vozBionica(`Legajo de ${r.al.nom} recuperado.`);
+    }
+
+    // --- ESCÁNER BIOMÉTRICO (CÁMARA) ---
+    async function iniciarCamara(tipo) {
+        try {
+            streamActual = await navigator.mediaDevices.getUserMedia({ video: true });
+            if(tipo === 'legajo') {
+                const video = document.getElementById('video_legajo');
+                video.srcObject = streamActual;
+                video.classList.remove('hidden');
+                document.getElementById('icon_cam_legajo').classList.add('hidden');
+                document.getElementById('btn_cap_legajo').classList.remove('hidden');
+                document.getElementById('foto_preview').classList.add('hidden');
+            } else if (tipo === 'espera') {
+                document.getElementById('box_cam_espera').classList.remove('hidden');
+                document.getElementById('video_espera').srcObject = streamActual;
+            }
+        } catch(err) { alert("Error al acceder a la cámara. Verifique permisos."); }
+    }
+
+    function capturarFoto(tipo) {
+        const video = document.getElementById('video_legajo');
+        const canvas = document.getElementById('canvas_oculto');
+        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        fotoActualBase64 = canvas.toDataURL('image/jpeg', 0.8);
+        
+        document.getElementById('foto_preview').src = fotoActualBase64;
+        document.getElementById('foto_preview').classList.remove('hidden');
+        video.classList.add('hidden');
+        document.getElementById('btn_cap_legajo').classList.add('hidden');
+        document.getElementById('icon_cam_legajo').classList.remove('hidden');
+        detenerCamara();
+        vozBionica("Foto capturada con éxito.");
+    }
+
+    function capturarDniEspera() {
+        // Simulación de escaneo OCR visual para la demostración
+        detenerCamara();
+        document.getElementById('box_cam_espera').classList.add('hidden');
+        document.getElementById('e_dni').value = "DNI ESCANEADO...";
+        setTimeout(() => { document.getElementById('e_dni').value = ""; document.getElementById('e_dni').focus(); }, 1500);
+        vozBionica("Captura de DNI realizada. Ingrese número.");
+    }
+
+    function detenerCamara() {
+        if(streamActual) { streamActual.getTracks().forEach(t => t.stop()); streamActual = null; }
+    }
+
+    // --- LEGAJO 360 & TARJETERO ---
     function calcularEdad(f) {
         const n = new Date(f), ref = new Date("2026-06-30");
         let e = ref.getFullYear() - n.getFullYear();
@@ -171,11 +341,9 @@
         document.getElementById('a_edad').value = e + " AÑOS";
     }
 
-    function syncDom(tipo) {
-        document.getElementById(tipo+'_dom').value = document.getElementById('a_dom').value;
-    }
+    function syncDom(tipo) { document.getElementById(tipo+'_dom').value = document.getElementById('a_dom').value; }
 
-    function actualizarVistaPrevia() {
+    function actualizarTarjetero() {
         const grid = document.getElementById('grid-preview');
         grid.innerHTML = "";
         ["TM", "TT"].forEach(turno => {
@@ -183,109 +351,145 @@
                 const nom = `${color} ${turno}`;
                 const cant = db.filter(x => x.al.sala === nom).length;
                 grid.innerHTML += `
-                    <div class="sala-pill ${cant >= 30 ? 'full' : ''}">
+                    <div class="sala-pill ${cant >= 30 ? 'full' : ''}" onclick="verDetalleSala('${nom}')">
                         <p class="text-[7px] opacity-40">${turno}</p>
-                        <p class="font-black text-[9px]">${color}</p>
-                        <p class="text-lg font-black italic">${cant} <span class="text-[9px] opacity-30">/ 30</span></p>
+                        <p class="font-black text-[10px]">${color}</p>
+                        <p class="text-xl font-black italic">${cant} <span class="text-[9px] opacity-30">/ 30</span></p>
                     </div>`;
             });
         });
     }
 
-    function guardarLegajo() {
-        const item = {
-            id: Date.now(),
-            al: { nom: v('a_nom'), dni: v('a_dni'), nac: v('a_nac'), sala: v('a_sala'), dom: v('a_dom'), edad: v('a_edad'), salud: v('a_salud') },
-            ma: { nom: v('m_nom'), dni: v('m_dni'), nac: v('m_nac'), tel: v('m_tel'), edu: v('m_edu'), dom: v('m_dom') },
-            pa: { nom: v('p_nom'), dni: v('p_dni'), nac: v('p_nac'), tel: v('p_tel'), edu: v('p_edu'), dom: v('p_dom') }
-        };
-        if(!item.al.nom || !item.al.dni) return alert("ERROR: DATOS CRÍTICOS FALTANTES");
-        db.push(item);
-        localStorage.setItem('T22_DATABASE', JSON.stringify(db));
-        vozBionica("Impacto exitoso. Legajo grabado.");
-        actualizarVistaPrevia();
-        location.reload();
-    }
-
-    let salaActiva = "";
-    function renderSalasAsis() {
-        const grid = document.getElementById('grid-salas-asis');
-        grid.innerHTML = "";
-        ["TM", "TT"].forEach(t => {
-            SALAS.forEach(c => {
-                const nom = `${c} ${t}`;
-                grid.innerHTML += `<button onclick="seleccionarSala('${nom}')" class="glass p-4 font-black text-[10px] hover:border-yellow-500 transition">${nom}</button>`;
-            });
-        });
-    }
-
-    function seleccionarSala(s) {
-        salaActiva = s;
-        document.getElementById('panel-lista').classList.remove('hidden');
-        document.getElementById('sala_activa_tit').innerText = "ESPEJO DE MATRÍCULA: " + s;
-        renderListaAsis();
-    }
-
-    function renderListaAsis() {
-        const fecha = document.getElementById('asis_fecha').value;
-        const lista = db.filter(x => x.al.sala === salaActiva);
-        const cont = document.getElementById('lista-alumnos');
-        cont.innerHTML = lista.map(a => `
-            <div class="glass p-4 flex justify-between items-center border border-white/5">
-                <span class="font-bold text-[9px] truncate pr-2">${a.al.nom}</span>
-                <div class="flex gap-2">
-                    <button onclick="marcar('${fecha}','${a.id}','P')" class="px-4 py-2 rounded font-black ${asis[fecha]?.[a.id] === 'P' ? 'asis-p' : 'bg-white/10'}">P</button>
-                    <button onclick="marcar('${fecha}','${a.id}','A')" class="px-4 py-2 rounded font-black ${asis[fecha]?.[a.id] === 'A' ? 'asis-a' : 'bg-white/10'}">A</button>
+    function verDetalleSala(sala) {
+        const lista = db.filter(x => x.al.sala === sala);
+        document.getElementById('modal_sala_tit').innerText = `SALA: ${sala} (${lista.length}/30)`;
+        document.getElementById('modal_sala_lista').innerHTML = lista.map((a, i) => `
+            <div class="bg-[#010409] p-3 rounded border border-white/5 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <span class="text-white/30 font-mono text-[9px] w-4">${i+1}</span>
+                    ${a.foto ? `<img src="${a.foto}" class="w-8 h-8 rounded-full object-cover border border-yellow-500">` : `<div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center"><i class="bi bi-person text-white/50"></i></div>`}
+                    <span class="font-bold text-xs">${a.al.nom}</span>
                 </div>
+                <span class="font-mono text-[9px] text-yellow-500">${a.al.dni}</span>
             </div>
+        `).join('') || '<p class="opacity-50 text-center py-10">SALA VACÍA</p>';
+        document.getElementById('modal_sala').classList.remove('hidden');
+    }
+
+    function guardarLegajo() {
+        const dni = v('a_dni');
+        if(!v('a_nom') || !dni) return alert("ERROR: NOMBRE Y DNI SON OBLIGATORIOS.");
+        
+        // Evitar duplicados (actualizar si existe)
+        const idx = db.findIndex(x => x.al.dni === dni);
+        const item = {
+            id: idx >= 0 ? db[idx].id : Date.now(),
+            foto: fotoActualBase64 || (idx >= 0 ? db[idx].foto : ""),
+            al: { nom: v('a_nom'), dni: dni, nac: v('a_nac'), sala: v('a_sala'), dom: v('a_dom'), edad: v('a_edad') },
+            ma: { nom: v('m_nom'), dni: v('m_dni'), nac: v('m_nac'), tel: v('m_tel'), edu: v('m_edu') },
+            pa: { nom: v('p_nom'), dni: v('p_dni'), nac: v('p_nac'), tel: v('p_tel'), edu: v('p_edu') }
+        };
+        
+        if(idx >= 0) db[idx] = item; else db.push(item);
+        
+        localStorage.setItem('T22_DATABASE', JSON.stringify(db));
+        vozBionica("Impacto exitoso. Legajo guardado en base de datos.");
+        limpiarFormulario();
+        actualizarTarjetero();
+    }
+
+    function limpiarFormulario() {
+        document.querySelectorAll('.input-bionic').forEach(el => { if(el.tagName!=='SELECT' && el.id!=='a_nac') el.value = ''; });
+        fotoActualBase64 = "";
+        document.getElementById('foto_preview').classList.add('hidden');
+        document.getElementById('foto_preview').src = "";
+    }
+
+    // --- LISTA DE ESPERA ---
+    function guardarEspera() {
+        if(!v('e_nom') || !v('e_dni')) return alert("NOMBRE Y DNI REQUERIDOS");
+        espera.push({ id: Date.now(), fec: new Date().toLocaleDateString(), nom: v('e_nom'), dni: v('e_dni'), sala: v('e_sala'), tel: v('e_tel') });
+        localStorage.setItem('T22_WAITLIST', JSON.stringify(espera));
+        document.getElementById('e_nom').value = ""; document.getElementById('e_dni').value = ""; document.getElementById('e_tel').value = "";
+        renderTablaEspera();
+        vozBionica("Aspirante ingresado a lista de espera.");
+    }
+    
+    function renderTablaEspera() {
+        document.getElementById('tabla_espera').innerHTML = espera.map(x => `
+            <tr class="border-b border-white/5 hover:bg-white/5">
+                <td class="p-2 opacity-70">${x.fec}</td><td class="p-2 font-bold">${x.nom}</td><td class="p-2 text-orange-400">${x.dni}</td><td class="p-2">${x.sala}</td><td class="p-2">${x.tel}</td>
+                <td class="p-2"><button onclick="borrarEspera(${x.id})" class="text-red-500 hover:text-red-400"><i class="bi bi-trash-fill"></i></button></td>
+            </tr>
         `).join('');
     }
+    function borrarEspera(id) { espera = espera.filter(x => x.id !== id); localStorage.setItem('T22_WAITLIST', JSON.stringify(espera)); renderTablaEspera(); }
 
-    function marcar(f, id, v) {
-        if(!f) return alert("SELECCIONE FECHA EN EL CALENDARIO");
-        if(!asis[f]) asis[f] = {};
-        asis[f][id] = v;
-        localStorage.setItem('T22_ATTENDANCE', JSON.stringify(asis));
-        renderListaAsis();
+    // --- AUDITORÍA (MANTENIDO) ---
+    let salaActiva = "";
+    function renderSalasAsis() {
+        const grid = document.getElementById('grid-salas-asis'); grid.innerHTML = "";
+        ["TM", "TT"].forEach(t => { SALAS.forEach(c => { const nom = `${c} ${t}`; grid.innerHTML += `<button onclick="seleccionarSala('${nom}')" class="glass p-4 font-black text-[10px] hover:border-yellow-500 transition">${nom}</button>`; }); });
     }
+    function seleccionarSala(s) { salaActiva = s; document.getElementById('panel-lista').classList.remove('hidden'); document.getElementById('sala_activa_tit').innerText = "ESPEJO: " + s; renderListaAsis(); }
+    function renderListaAsis() {
+        const f = document.getElementById('asis_fecha').value; const lista = db.filter(x => x.al.sala === salaActiva);
+        document.getElementById('lista-alumnos').innerHTML = lista.map(a => `
+            <div class="glass p-4 flex justify-between items-center border border-white/5">
+                <span class="font-bold text-[9px] truncate pr-2">${a.al.nom}</span>
+                <div class="flex gap-2"><button onclick="marcar('${f}','${a.id}','P')" class="px-4 py-2 rounded font-black ${asis[f]?.[a.id] === 'P' ? 'asis-p' : 'bg-white/10'}">P</button><button onclick="marcar('${f}','${a.id}','A')" class="px-4 py-2 rounded font-black ${asis[f]?.[a.id] === 'A' ? 'asis-a' : 'bg-white/10'}">A</button></div>
+            </div>`).join('');
+    }
+    function marcar(f, id, v) { if(!f) return alert("SELECCIONE FECHA"); if(!asis[f]) asis[f] = {}; asis[f][id] = v; localStorage.setItem('T22_ATTENDANCE', JSON.stringify(asis)); renderListaAsis(); }
 
+    // --- SUPERVISIÓN E IMPORT/EXPORT ---
     function runMetricas() {
         document.getElementById('m_total').innerText = db.length;
+        document.getElementById('m_esp').innerText = espera.length;
         document.getElementById('m_ext').innerText = db.filter(x => x.al.nac !== "ARGENTINA").length;
-        document.getElementById('m_des').innerText = db.filter(x => x.ma.edu === "SIN ESTUDIOS" || x.pa.edu === "SIN ESTUDIOS").length;
     }
 
     function descargarExcelSupervision() {
-        let csv = "ID;ALUMNO;DNI;SALA;NAC_ALUMNO;MADRE;NAC_MADRE;TEL_MADRE;ESCOLARIDAD_M;PADRE;NAC_PADRE;TEL_PADRE;ESCOLARIDAD_P\n";
-        db.forEach(x => {
-            csv += `${x.id};${x.al.nom};${x.al.dni};${x.al.sala};${x.al.nac};${x.ma.nom};${x.ma.nac};${x.ma.tel};${x.ma.edu};${x.pa.nom};${x.pa.nac};${x.pa.tel};${x.pa.edu}\n`;
-        });
+        let csv = "ID;ALUMNO;DNI;SALA;NAC_ALUMNO;MADRE;ESCOLARIDAD_M;PADRE;ESCOLARIDAD_P\n";
+        db.forEach(x => { csv += `${x.id};${x.al.nom};${x.al.dni};${x.al.sala};${x.al.nac};${x.ma.nom};${x.ma.edu};${x.pa.nom};${x.pa.edu}\n`; });
         const blob = new Blob([csv], { type: 'text/csv' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = "REPORTE_TITANIUM_SUPERVISION.csv";
-        a.click();
-        vozBionica("Generando reporte de excelencia para supervisión.");
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "REPORTE_TITANIUM_DGCE.csv"; a.click();
     }
 
-    function escuchar(id) {
-        const mic = event.target;
-        mic.classList.add('mic-active');
-        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        rec.lang = 'es-AR';
-        rec.onresult = (e) => {
-            document.getElementById(id).value = e.results[0][0].transcript.toUpperCase();
-            mic.classList.remove('mic-active');
+    function exportarJSON() {
+        const data = { db: db, asis: asis, espera: espera };
+        const blob = new Blob([JSON.stringify(data)], {type: "application/json"});
+        const url  = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = `TITANIUM_BACKUP_${new Date().toISOString().split('T')[0]}.json`; a.click();
+        vozBionica("Backup de base de datos exportado con éxito.");
+    }
+
+    function importarJSON(e) {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            try {
+                const data = JSON.parse(evt.target.result);
+                if(data.db) localStorage.setItem('T22_DATABASE', JSON.stringify(data.db));
+                if(data.asis) localStorage.setItem('T22_ATTENDANCE', JSON.stringify(data.asis));
+                if(data.espera) localStorage.setItem('T22_WAITLIST', JSON.stringify(data.espera));
+                alert("BASE DE DATOS RESTAURADA CON ÉXITO.");
+                location.reload();
+            } catch(err) { alert("ERROR AL LEER EL ARCHIVO JSON."); }
         };
-        rec.onerror = () => mic.classList.remove('mic-active');
-        rec.start();
+        reader.readAsText(file);
     }
 
+    // --- HERRAMIENTAS ---
     function v(id) { return document.getElementById(id).value.toUpperCase(); }
-    function vozBionica(t) {
-        const u = new SpeechSynthesisUtterance(t);
-        u.lang = 'es-AR'; u.rate = 1.1; window.speechSynthesis.speak(u);
+    function escuchar(id) {
+        const mic = event.target; mic.classList.add('mic-active');
+        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        rec.lang = 'es-AR'; rec.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); mic.classList.remove('mic-active'); };
+        rec.onerror = () => mic.classList.remove('mic-active'); rec.start();
     }
+    function vozBionica(t) { const u = new SpeechSynthesisUtterance(t); u.lang = 'es-AR'; u.rate = 1.1; window.speechSynthesis.speak(u); }
 </script>
 </body>
 </html>
