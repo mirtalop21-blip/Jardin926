@@ -1,253 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TITANIUM V22 PRO | SISTEMA DE GESTIÓN TOTAL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root { --gold: #facc15; --bg: #010409; --panel: #0d1117; --border: #30363d; }
+        body { background: var(--bg); color: #e6edf3; font-family: 'Inter', sans-serif; font-size: 11px; text-transform: uppercase; overflow-x: hidden; }
+        .glass { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; height: 100%; }
+        .input-bionic { background: #010409; border: 1px solid var(--border); padding: 12px; border-radius: 6px; color: #fff; width: 100%; transition: 0.3s; font-weight: 600; position: relative; }
+        .input-bionic:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(250, 204, 21, 0.2); outline: none; }
+        .tab-active { border-bottom: 4px solid var(--gold); color: var(--gold); font-weight: 900; background: rgba(250,204,21,0.05); }
+        .mic-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #6e7681; cursor: pointer; font-size: 14px; transition: 0.3s; }
+        .mic-btn:hover { color: #ef4444; }
+        .mic-active { color: #ef4444 !important; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .sala-pill { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 10px; border-radius: 8px; text-align: center; transition: 0.3s; }
+        .sala-pill:hover { border-color: var(--gold); background: rgba(250,204,21,0.05); }
+        .full { border-color: #ef4444 !important; color: #ef4444; }
+        .asis-p { background: #16a34a !important; color: white; border: 2px solid #22c55e; }
+        .asis-a { background: #dc2626 !important; color: white; border: 2px solid #ef4444; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+    </style>
+</head>
+<body onload="initSystem()">
 
-        <div class="lg:col-span-1 glass p-6 border-t-4 border-cyan-500 space-y-5">
-            <h3 class="text-cyan-500 font-black text-lg italic">PADRES / TUTORES</h3>
-            <div class="space-y-4">
-                <p class="text-[9px] text-cyan-400 font-black">MADRE / TUTORA</p>
-                <input id="m_nom" class="input-bionic" placeholder="APELLIDO Y NOMBRE">
+<header class="glass rounded-none border-b border-yellow-500/40 p-5 flex justify-between items-center sticky top-0 z-[1000] bg-[#010409]">
+    <div class="flex items-center gap-5">
+        <div class="w-3 h-3 bg-yellow-500 rounded-full animate-pulse shadow-[0_0_10px_#facc15]"></div>
+        <div>
+            <h1 class="text-yellow-500 font-black text-2xl italic tracking-tighter">TITANIUM V22 PRO</h1>
+            <p class="text-[7px] tracking-[5px] opacity-60">SISTEMA ÚNICO INSTITUCIONAL | ARQUITECTURA DE DATOS</p>
+        </div>
+    </div>
+    <div id="reloj" class="text-emerald-400 font-mono text-xs text-right leading-none"></div>
+</header>
+
+<nav class="flex glass rounded-none border-b border-white/5 sticky top-[85px] z-[900] bg-[#010409]">
+    <button onclick="setTab(1)" id="t1" class="flex-1 p-5 tab-active font-black tracking-widest">LEGAJO 360°</button>
+    <button onclick="setTab(2)" id="t2" class="flex-1 p-5 opacity-50 font-black tracking-widest">AUDITORÍA (ESPEJO)</button>
+    <button onclick="setTab(3)" id="t3" class="flex-1 p-5 opacity-50 font-black tracking-widest">SUPERVISIÓN (EXCEL)</button>
+</nav>
+
+<main class="p-6 space-y-8">
+    <section id="s1" class="space-y-6 animate-in fade-in">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="glass p-6 border-t-4 border-yellow-500 space-y-4">
+                <h3 class="text-yellow-500 font-black text-xs italic">DATOS DEL ALUMNO</h3>
+                <div class="relative"><input id="a_nom" class="input-bionic w-full" placeholder="APELLIDO Y NOMBRE"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('a_nom')"></i></div>
                 <div class="flex gap-2">
-                    <input id="m_tel" class="input-bionic" placeholder="TELÉFONO">
-                    <input id="m_dni" class="input-bionic" placeholder="DNI">
+                    <div class="relative flex-1"><input id="a_dni" class="input-bionic w-full" placeholder="DNI"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('a_dni')"></i></div>
+                    <div class="relative flex-1"><input id="a_nac" class="input-bionic w-full" placeholder="NACIONALIDAD" value="ARGENTINA"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('a_nac')"></i></div>
                 </div>
-                <select id="m_edu" class="input-bionic"></select>
-                <input id="m_dom" class="input-bionic" placeholder="DOMICILIO">
-                <label class="flex items-center gap-2 text-[8px] italic"><input type="checkbox" onchange="syncDom('m')"> SINCRONIZAR CON DOMICILIO ALUMNO</label>
+                <div class="flex gap-2">
+                    <input id="a_fec" type="date" class="input-bionic flex-1" onchange="calcularEdad(this.value)">
+                    <input id="a_edad" class="input-bionic flex-1 text-yellow-500" readonly placeholder="EDAD AL 30/06">
+                </div>
+                <select id="a_sala" class="input-bionic w-full font-black text-yellow-500" onchange="previsualizarCupo()"></select>
+                <div class="relative"><input id="a_dom" class="input-bionic w-full" placeholder="DOMICILIO REAL"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('a_dom')"></i></div>
+                <textarea id="a_salud" class="input-bionic w-full h-16" placeholder="ALERTAS MÉDICAS"></textarea>
             </div>
-            <hr class="opacity-10">
-            <div class="space-y-4">
-                <p class="text-[9px] text-pink-400 font-black">PADRE / TUTOR</p>
-                <input id="p_nom" class="input-bionic" placeholder="APELLIDO Y NOMBRE">
+
+            <div class="glass p-6 border-t-4 border-cyan-500 space-y-4">
+                <h3 class="text-cyan-500 font-black text-xs italic">MADRE / TUTORA</h3>
+                <div class="relative"><input id="m_nom" class="input-bionic w-full" placeholder="NOMBRE COMPLETO"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('m_nom')"></i></div>
                 <div class="flex gap-2">
-                    <input id="p_tel" class="input-bionic" placeholder="TELÉFONO">
-                    <input id="p_dni" class="input-bionic" placeholder="DNI">
+                    <div class="relative flex-1"><input id="m_dni" class="input-bionic w-full" placeholder="DNI"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('m_dni')"></i></div>
+                    <div class="relative flex-1"><input id="m_nac" class="input-bionic w-full" placeholder="NACIONALIDAD" value="ARGENTINA"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('m_nac')"></i></div>
                 </div>
-                <select id="p_edu" class="input-bionic"></select>
-                <input id="p_dom" class="input-bionic" placeholder="DOMICILIO">
-                <label class="flex items-center gap-2 text-[8px] italic"><input type="checkbox" onchange="syncDom('p')"> SINCRONIZAR CON DOMICILIO ALUMNO</label>
+                <div class="relative"><input id="m_tel" class="input-bionic w-full" placeholder="TELÉFONO"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('m_tel')"></i></div>
+                <select id="m_edu" class="input-bionic w-full text-cyan-400"></select>
+                <div class="relative"><input id="m_dom" class="input-bionic w-full" placeholder="DOMICILIO"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('m_dom')"></i></div>
+                <label class="flex items-center gap-2 text-[8px] opacity-70"><input type="checkbox" onchange="syncDom('m')"> MISMO DOMICILIO QUE ALUMNO</label>
+            </div>
+
+            <div class="glass p-6 border-t-4 border-pink-500 space-y-4">
+                <h3 class="text-pink-500 font-black text-xs italic">PADRE / TUTOR</h3>
+                <div class="relative"><input id="p_nom" class="input-bionic w-full" placeholder="NOMBRE COMPLETO"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('p_nom')"></i></div>
+                <div class="flex gap-2">
+                    <div class="relative flex-1"><input id="p_dni" class="input-bionic w-full" placeholder="DNI"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('p_dni')"></i></div>
+                    <div class="relative flex-1"><input id="p_nac" class="input-bionic w-full" placeholder="NACIONALIDAD" value="ARGENTINA"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('p_nac')"></i></div>
+                </div>
+                <div class="relative"><input id="p_tel" class="input-bionic w-full" placeholder="TELÉFONO"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('p_tel')"></i></div>
+                <select id="p_edu" class="input-bionic w-full text-pink-400"></select>
+                <div class="relative"><input id="p_dom" class="input-bionic w-full" placeholder="DOMICILIO"><i class="bi bi-mic-fill mic-btn" onclick="escuchar('p_dom')"></i></div>
+                <label class="flex items-center gap-2 text-[8px] opacity-70"><input type="checkbox" onchange="syncDom('p')"> MISMO DOMICILIO QUE ALUMNO</label>
             </div>
         </div>
 
-        <div class="lg:col-span-2 flex flex-col gap-5">
-            <div class="glass p-5 flex gap-4">
-                <input type="text" id="radar_input" onkeyup="radarSearch()" class="input-bionic border-yellow-500 text-lg py-4" placeholder="📡 BUSCADOR RADAR: DNI, APELLIDO O SALA...">
-                <button onclick="dictar('radar_input')" class="bg-red-600 px-6 rounded shadow-xl hover:bg-red-500"><i class="bi bi-mic-fill text-xl"></i></button>
+        <div class="glass p-6">
+            <h4 class="text-[9px] font-black tracking-widest mb-4 opacity-50 italic text-center">PANEL DE CONTROL DE VACANTES (SALA POR SALA)</h4>
+            <div id="grid-preview" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4"></div>
+        </div>
+
+        <button onclick="guardarLegajo()" class="w-full bg-emerald-600 py-6 rounded-xl font-black text-xl italic hover:bg-emerald-500 transition shadow-2xl">GRABAR LEGAJO 360° E IMPACTAR MATRÍCULA</button>
+    </section>
+
+    <section id="s2" class="hidden space-y-6 animate-in slide-in-from-right">
+        <div class="glass p-8 flex justify-between items-center">
+            <div>
+                <h2 class="text-3xl font-black italic text-yellow-500">AUDITORÍA: ESPEJO DE MATRÍCULA</h2>
+                <p class="opacity-50">TOMAR ASISTENCIA DIARIA SEGÚN CALENDARIO</p>
             </div>
-            <div id="radar_results" class="space-y-3 overflow-y-auto max-h-[550px] pr-4"></div>
+            <input type="date" id="asis_fecha" class="input-bionic text-xl text-yellow-500 w-72" onchange="renderListaAsis()">
+        </div>
+        <div id="grid-salas-asis" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4"></div>
+        <div id="panel-lista" class="glass p-8 hidden border-l-[10px] border-yellow-500">
+            <h3 id="sala_activa_tit" class="text-xl font-black italic mb-6"></h3>
+            <div id="lista-alumnos" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
         </div>
     </section>
 
-    <section id="s2" class="hidden space-y-8 animate-in slide-in-from-right">
-        <div id="grid-salas" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6"></div>
-        
-        <div id="panel-interactivo" class="glass p-8 hidden border-l-[12px] border-yellow-500 shadow-2xl">
-            <div class="flex justify-between items-center mb-8 border-b border-white/5 pb-6">
-                <div>
-                    <h2 id="int_sala_tit" class="text-4xl font-black italic text-yellow-500 tracking-tighter"></h2>
-                    <p id="int_sala_stats" class="text-[10px] opacity-60 font-bold mt-1"></p>
-                </div>
-                <div class="flex gap-6 items-center">
-                    <span class="text-[9px] font-black">FECHA DE REGISTRO:</span>
-                    <input type="date" id="asis_fecha" class="input-bionic w-64 text-yellow-500 text-lg" onchange="renderAsistencia()">
-                    <button onclick="cerrarPanel()" class="text-red-500 hover:scale-125 transition duration-300"><i class="bi bi-x-square-fill text-4xl"></i></button>
-                </div>
-            </div>
-            <div id="lista_espejo" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4"></div>
-        </div>
-    </section>
-
-    <section id="s4" class="hidden space-y-8 animate-in fade-in">
+    <section id="s3" class="hidden space-y-6 animate-in fade-in">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div class="glass p-8 text-center border-b-8 border-yellow-500"><p class="text-[10px] opacity-50 font-black">MATRÍCULA ACTIVA</p><h3 id="met_total" class="text-5xl font-black italic">0</h3></div>
-            <div class="glass p-8 text-center border-b-8 border-emerald-500"><p class="text-[10px] opacity-50 font-black">% ASISTENCIA PROMEDIO</p><h3 id="met_asis" class="text-5xl font-black text-emerald-400">0%</h3></div>
-            <div class="glass p-8 text-center border-b-8 border-red-500"><p class="text-[10px] opacity-50 font-black">ALERTAS DE SALUD</p><h3 id="met_obs" class="text-5xl font-black text-red-500">0</h3></div>
-            <div class="glass p-8 text-center border-b-8 border-cyan-500"><p class="text-[10px] opacity-50 font-black">POBLACIÓN EXTRANJERA</p><h3 id="met_ext" class="text-5xl font-black text-cyan-400">0</h3></div>
+            <div class="glass p-6 text-center border-b-4 border-yellow-500"><p class="text-[9px] opacity-50 font-bold">MATRÍCULA TOTAL</p><h3 id="m_total" class="text-4xl font-black italic">0</h3></div>
+            <div class="glass p-6 text-center border-b-4 border-emerald-500"><p class="text-[9px] opacity-50 font-bold">% ASISTENCIA PROMEDIO</p><h3 id="m_asis" class="text-4xl font-black text-emerald-400">0%</h3></div>
+            <div class="glass p-6 text-center border-b-4 border-red-500"><p class="text-[9px] opacity-50 font-bold">PADRES DESEMPLEADOS</p><h3 id="m_des" class="text-4xl font-black text-red-500">0</h3></div>
+            <div class="glass p-6 text-center border-b-4 border-cyan-500"><p class="text-[9px] opacity-50 font-bold">POBLACIÓN EXTRANJERA</p><h3 id="m_ext" class="text-4xl font-black text-cyan-400">0</h3></div>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="glass p-8 min-h-[450px]"><canvas id="chartPoblacion"></canvas></div>
-            <div class="glass p-8 min-h-[450px]"><canvas id="chartEstudios"></canvas></div>
+        <div class="glass p-10 flex flex-col items-center gap-6">
+            <h3 class="text-2xl font-black italic">REPORTE OFICIAL PARA SUPERVISIÓN</h3>
+            <button onclick="descargarExcelSupervision()" class="bg-blue-600 px-20 py-8 rounded-2xl font-black text-2xl italic hover:scale-105 transition-all shadow-2xl">📥 DESCARGAR REPORTE DGCE (CSV/EXCEL)</button>
         </div>
     </section>
 </main>
 
 <script>
     let db = JSON.parse(localStorage.getItem('T22_DATABASE')) || [];
-    let asis = JSON.parse(localStorage.getItem('T22_ASISTENCIA')) || {};
-    
+    let asis = JSON.parse(localStorage.getItem('T22_ATTENDANCE')) || {};
     const SALAS = ["ROSA","ROJA","NARANJA","CELESTE","VIOLETA","AMARILLA","AZUL"];
-    const ESTUDIOS_OPTS = [
-        "SIN ESTUDIOS", "PRIMARIA INCOMPLETA", "PRIMARIA COMPLETA", 
-        "SECUNDARIA INCOMPLETA", "SECUNDARIA COMPLETA", 
-        "TERCIARIO INCOMPLETO", "TERCIARIO COMPLETO", 
-        "UNIVERSITARIO INCOMPLETO", "UNIVERSITARIO COMPLETO"
-    ];
+    const ESCOLARIDAD = ["SIN ESTUDIOS", "PRIMARIA INCOMP.", "PRIMARIA COMP.", "SECUNDARIA INCOMP.", "SECUNDARIA COMP.", "TERCIARIO INCOMP.", "TERCIARIO COMP.", "UNIVERSITARIO INCOMP.", "UNIVERSITARIO COMP."];
 
-    function bootSystem() {
-        // Reloj en tiempo real
-        setInterval(() => { 
-            const d = new Date();
-            document.getElementById('reloj').innerHTML = d.toLocaleDateString() + "<br>" + d.toLocaleTimeString(); 
-        }, 1000);
-
-        // Carga de Selects de Sala
-        const aSala = document.getElementById('a_sala');
-        SALAS.forEach(s => { 
-            aSala.innerHTML += `<option value="${s} TM">${s} TM</option>`;
-            aSala.innerHTML += `<option value="${s} TT">${s} TT</option>`;
+    function initSystem() {
+        setInterval(() => { document.getElementById('reloj').innerText = new Date().toLocaleString(); }, 1000);
+        
+        const sSala = document.getElementById('a_sala');
+        SALAS.forEach(s => {
+            sSala.innerHTML += `<option value="${s} TM">${s} TM</option><option value="${s} TT">${s} TT</option>`;
         });
 
-        // Carga de Selects de Estudios (Exigencia DGCE)
         const mEd = document.getElementById('m_edu'), pEd = document.getElementById('p_edu');
-        ESTUDIOS_OPTS.forEach(e => {
+        ESCOLARIDAD.forEach(e => {
             const opt = `<option value="${e}">${e}</option>`;
             mEd.innerHTML += opt; pEd.innerHTML += opt;
         });
 
-        radarSearch();
-        vozBionica("Sistema Titanium V22 Pro Inicializado. Arquitectura de gestión lista.");
+        actualizarVistaPrevia();
+        vozBionica("Titanium V22 Pro en línea. Arquitectura configurada sin omisiones.");
     }
 
     function setTab(n) {
-        [1,2,3,4].forEach(i => {
-            const sec = document.getElementById('s'+i);
-            const btn = document.getElementById('t'+i);
-            if (sec) sec.classList.toggle('hidden', i !== n);
-            if (btn) {
-                btn.classList.toggle('tab-active', i === n);
-                btn.style.opacity = (i === n) ? "1" : "0.5";
-            }
+        [1,2,3].forEach(i => {
+            const s = document.getElementById('s'+i);
+            const t = document.getElementById('t'+i);
+            if(s) s.classList.toggle('hidden', i !== n);
+            if(t) { t.classList.toggle('tab-active', i === n); t.style.opacity = (i === n) ? "1" : "0.5"; }
         });
-        if(n === 2) renderFotoInstitucional();
-        if(n === 4) runRadiografiaMetrica();
+        if(n === 2) renderSalasAsis();
+        if(n === 3) runMetricas();
     }
 
-    function calcEdad(f) {
+    function calcularEdad(f) {
         const n = new Date(f), ref = new Date("2026-06-30");
         let e = ref.getFullYear() - n.getFullYear();
         if (ref < new Date(ref.getFullYear(), n.getMonth(), n.getDate())) e--;
         document.getElementById('a_edad').value = e + " AÑOS";
     }
 
-    function syncDom(t) {
-        document.getElementById(t+'_dom').value = document.getElementById('a_dom').value;
+    function syncDom(tipo) {
+        document.getElementById(tipo+'_dom').value = document.getElementById('a_dom').value;
     }
 
-    function guardarLegajo() {
-        const item = {
-            id: Date.now(),
-            al: { 
-                nom: v('a_nom'), dni: v('a_dni'), nac: v('a_nac'), fec: v('a_fec'), 
-                edad: v('a_edad'), her: v('a_her_cant'), hj: v('a_her_jar'), 
-                sala: v('a_sala'), dom: v('a_dom'), obs: v('a_obs') 
-            },
-            ma: { nom: v('m_nom'), tel: v('m_tel'), dni: v('m_dni'), edu: v('m_edu'), dom: v('m_dom') },
-            pa: { nom: v('p_nom'), tel: v('p_tel'), dni: v('p_dni'), edu: v('p_edu'), dom: v('p_dom') }
-        };
-        if(!item.al.nom || !item.al.dni) return alert("COMPLETE DATOS CRÍTICOS");
-        db.push(item);
-        localStorage.setItem('T22_DATABASE', JSON.stringify(db));
-        vozBionica("Legajo grabado con éxito.");
-        location.reload();
-    }
-
-    function radarSearch() {
-        const q = v('radar_input');
-        const f = db.filter(x => x.al.nom.includes(q) || x.al.dni.includes(q) || x.al.sala.includes(q)).reverse();
-        document.getElementById('radar_results').innerHTML = f.map(a => `
-            <div class="glass p-5 flex justify-between items-center group hover:bg-yellow-500/5 border-l-4 border-yellow-500 animate-in slide-in-from-left">
-                <div>
-                    <p class="font-black text-sm text-yellow-500">${a.al.nom}</p>
-                    <p class="text-[9px] opacity-60 font-bold">${a.al.dni} | ${a.al.sala} | ${a.al.edad}</p>
-                    <div class="flex gap-4 mt-2">
-                        <span class="text-[7px] bg-white/10 px-2 py-1 rounded">MADRE: ${a.ma.tel || 'SIN TEL.'}</span>
-                        <span class="text-[7px] bg-cyan-500/20 px-2 py-1 rounded">HERMANOS JARDÍN: ${a.al.hj}</span>
-                    </div>
-                </div>
-                <div class="flex gap-4">
-                    <button class="text-cyan-500 text-2xl hover:scale-125 transition" onclick="alert('Iniciando Edición de Legajo...')"><i class="bi bi-pencil-square"></i></button>
-                    <button class="text-red-500 text-2xl hover:scale-125 transition" onclick="eliminar('${a.id}')"><i class="bi bi-trash-fill"></i></button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function renderFotoInstitucional() {
-        const grid = document.getElementById('grid-salas'); grid.innerHTML = "";
-        ["TM","TT"].forEach(turno => {
+    function actualizarVistaPrevia() {
+        const grid = document.getElementById('grid-preview');
+        grid.innerHTML = "";
+        ["TM", "TT"].forEach(turno => {
             SALAS.forEach(color => {
-                const nom = `${color} ${turno}`, list = db.filter(x => x.al.sala === nom);
+                const nom = `${color} ${turno}`;
+                const cant = db.filter(x => x.al.sala === nom).length;
                 grid.innerHTML += `
-                    <div class="glass p-5 sala-card color-${color}" onclick="abrirSala('${nom}')">
-                        <p class="text-[8px] opacity-40 font-black">${turno}</p>
-                        <h4 class="font-black text-sm tracking-tighter">${color}</h4>
-                        <div class="text-4xl font-black mt-3 italic">${list.length}<span class="text-[12px] opacity-20">/30</span></div>
-                        <p class="text-[7px] mt-4 font-bold border-t border-white/5 pt-2">VULNERABILIDAD: ${list.filter(x => x.al.obs !== '').length}</p>
+                    <div class="sala-pill ${cant >= 30 ? 'full' : ''}">
+                        <p class="text-[7px] opacity-40">${turno}</p>
+                        <p class="font-black text-[9px]">${color}</p>
+                        <p class="text-lg font-black italic">${cant} <span class="text-[9px] opacity-30">/ 30</span></p>
                     </div>`;
             });
         });
     }
 
-    function abrirSala(s) {
-        document.getElementById('panel-interactivo').classList.remove('hidden');
-        document.getElementById('int_sala_tit').innerText = "AUDITORÍA: " + s;
-        const al = db.filter(x => x.al.sala === s);
-        document.getElementById('int_sala_stats').innerText = `MATRÍCULA REAL: ${al.length} ALUMNOS | POBLACIÓN EXTRANJERA: ${al.filter(x=>x.al.nac !== 'ARGENTINA').length}`;
-        renderAsistencia();
-        vozBionica("Sala " + s + " lista para relevamiento.");
+    function guardarLegajo() {
+        const item = {
+            id: Date.now(),
+            al: { nom: v('a_nom'), dni: v('a_dni'), nac: v('a_nac'), sala: v('a_sala'), dom: v('a_dom'), edad: v('a_edad'), salud: v('a_salud') },
+            ma: { nom: v('m_nom'), dni: v('m_dni'), nac: v('m_nac'), tel: v('m_tel'), edu: v('m_edu'), dom: v('m_dom') },
+            pa: { nom: v('p_nom'), dni: v('p_dni'), nac: v('p_nac'), tel: v('p_tel'), edu: v('p_edu'), dom: v('p_dom') }
+        };
+        if(!item.al.nom || !item.al.dni) return alert("ERROR: DATOS CRÍTICOS FALTANTES");
+        db.push(item);
+        localStorage.setItem('T22_DATABASE', JSON.stringify(db));
+        vozBionica("Impacto exitoso. Legajo grabado.");
+        actualizarVistaPrevia();
+        location.reload();
     }
 
-    function renderAsistencia() {
-        const s = document.getElementById('int_sala_tit').innerText.replace("AUDITORÍA: ", "");
-        const f = document.getElementById('asis_fecha').value;
-        const l = db.filter(x => x.al.sala === s);
-        document.getElementById('lista_espejo').innerHTML = l.map(a => `
+    let salaActiva = "";
+    function renderSalasAsis() {
+        const grid = document.getElementById('grid-salas-asis');
+        grid.innerHTML = "";
+        ["TM", "TT"].forEach(t => {
+            SALAS.forEach(c => {
+                const nom = `${c} ${t}`;
+                grid.innerHTML += `<button onclick="seleccionarSala('${nom}')" class="glass p-4 font-black text-[10px] hover:border-yellow-500 transition">${nom}</button>`;
+            });
+        });
+    }
+
+    function seleccionarSala(s) {
+        salaActiva = s;
+        document.getElementById('panel-lista').classList.remove('hidden');
+        document.getElementById('sala_activa_tit').innerText = "ESPEJO DE MATRÍCULA: " + s;
+        renderListaAsis();
+    }
+
+    function renderListaAsis() {
+        const fecha = document.getElementById('asis_fecha').value;
+        const lista = db.filter(x => x.al.sala === salaActiva);
+        const cont = document.getElementById('lista-alumnos');
+        cont.innerHTML = lista.map(a => `
             <div class="glass p-4 flex justify-between items-center border border-white/5">
-                <span class="font-black text-[10px] truncate pr-2">${a.al.nom}</span>
+                <span class="font-bold text-[9px] truncate pr-2">${a.al.nom}</span>
                 <div class="flex gap-2">
-                    <button onclick="marcar('${f}','${a.id}','P')" class="px-5 py-2 rounded font-black text-xs ${asis[f]?.[a.id] === 'P' ? 'asis-p' : 'bg-white/10'}">P</button>
-                    <button onclick="marcar('${f}','${a.id}','A')" class="px-5 py-2 rounded font-black text-xs ${asis[f]?.[a.id] === 'A' ? 'asis-a' : 'bg-white/10'}">A</button>
+                    <button onclick="marcar('${fecha}','${a.id}','P')" class="px-4 py-2 rounded font-black ${asis[fecha]?.[a.id] === 'P' ? 'asis-p' : 'bg-white/10'}">P</button>
+                    <button onclick="marcar('${fecha}','${a.id}','A')" class="px-4 py-2 rounded font-black ${asis[fecha]?.[a.id] === 'A' ? 'asis-a' : 'bg-white/10'}">A</button>
                 </div>
             </div>
         `).join('');
     }
 
     function marcar(f, id, v) {
-        if(!f) return alert("SELECCIONE FECHA");
+        if(!f) return alert("SELECCIONE FECHA EN EL CALENDARIO");
         if(!asis[f]) asis[f] = {};
         asis[f][id] = v;
-        localStorage.setItem('T22_ASISTENCIA', JSON.stringify(asis));
-        renderAsistencia();
+        localStorage.setItem('T22_ATTENDANCE', JSON.stringify(asis));
+        renderListaAsis();
     }
 
-    function runRadiografiaMetrica() {
-        document.getElementById('met_total').innerText = db.length;
-        document.getElementById('met_ext').innerText = db.filter(x => x.al.nac !== 'ARGENTINA').length;
-        document.getElementById('met_obs').innerText = db.filter(x => x.al.obs !== '').length;
-        
-        const ctxP = document.getElementById('chartPoblacion').getContext('2d');
-        new Chart(ctxP, { type: 'polarArea', data: { labels: SALAS, datasets: [{ data: SALAS.map(s => db.filter(x=>x.al.sala.includes(s)).length), backgroundColor: ['#ff69b4','#ef4444','#f97316','#3b82f6','#8b5cf6','#eab308','#1e3a8a'] }] }, options: { plugins: { title: { display:true, text:'RADIOGRAFÍA POR COLOR DE SALA', color:'white', font:{size:18} }}}});
+    function runMetricas() {
+        document.getElementById('m_total').innerText = db.length;
+        document.getElementById('m_ext').innerText = db.filter(x => x.al.nac !== "ARGENTINA").length;
+        document.getElementById('m_des').innerText = db.filter(x => x.ma.edu === "SIN ESTUDIOS" || x.pa.edu === "SIN ESTUDIOS").length;
+    }
 
-        const ctxE = document.getElementById('chartEstudios').getContext('2d');
-        new Chart(ctxE, { type: 'bar', data: { labels: ESTUDIOS_OPTS, datasets: [{ label: 'ESCOLARIDAD MATERNA', data: ESTUDIOS_OPTS.map(e => db.filter(x=>x.ma.edu === e).length), backgroundColor: '#3b82f6' }] }, options: { scales: { y: { beginAtZero: true }}}});
+    function descargarExcelSupervision() {
+        let csv = "ID;ALUMNO;DNI;SALA;NAC_ALUMNO;MADRE;NAC_MADRE;TEL_MADRE;ESCOLARIDAD_M;PADRE;NAC_PADRE;TEL_PADRE;ESCOLARIDAD_P\n";
+        db.forEach(x => {
+            csv += `${x.id};${x.al.nom};${x.al.dni};${x.al.sala};${x.al.nac};${x.ma.nom};${x.ma.nac};${x.ma.tel};${x.ma.edu};${x.pa.nom};${x.pa.nac};${x.pa.tel};${x.pa.edu}\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = "REPORTE_TITANIUM_SUPERVISION.csv";
+        a.click();
+        vozBionica("Generando reporte de excelencia para supervisión.");
+    }
+
+    function escuchar(id) {
+        const mic = event.target;
+        mic.classList.add('mic-active');
+        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        rec.lang = 'es-AR';
+        rec.onresult = (e) => {
+            document.getElementById(id).value = e.results[0][0].transcript.toUpperCase();
+            mic.classList.remove('mic-active');
+        };
+        rec.onerror = () => mic.classList.remove('mic-active');
+        rec.start();
     }
 
     function v(id) { return document.getElementById(id).value.toUpperCase(); }
-    function dictar(id) {
-        const r = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        r.lang = 'es-AR'; r.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); radarSearch(); }; r.start();
-    }
     function vozBionica(t) {
-        const m = new SpeechSynthesisUtterance(t); m.lang = 'es-AR'; m.rate = 1.1; m.pitch = 0.7; window.speechSynthesis.speak(m);
+        const u = new SpeechSynthesisUtterance(t);
+        u.lang = 'es-AR'; u.rate = 1.1; window.speechSynthesis.speak(u);
     }
-    function exportarOmni() {
-        const blob = new Blob([JSON.stringify({db, asis})], {type: 'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `TITANIUM_V22_BACKUP_${Date.now()}.json`; a.click();
-    }
-    function importarOmni(e) {
-        const r = new FileReader();
-        r.onload = (ev) => { const data = JSON.parse(ev.target.result); db = data.db; asis = data.asis; localStorage.setItem('T22_DATABASE', JSON.stringify(db)); localStorage.setItem('T22_ASISTENCIA', JSON.stringify(asis)); location.reload(); };
-        r.readAsText(e.target.files[0]);
-    }
-    function cerrarPanel() { document.getElementById('panel-interactivo').classList.add('hidden'); }
-    function eliminar(id) { if(confirm("¿ELIMINAR LEGAJO?")) { db = db.filter(x=>x.id != id); localStorage.setItem('T22_DATABASE', JSON.stringify(db)); radarSearch(); }}
 </script>
 </body>
 </html>
