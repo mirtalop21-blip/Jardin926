@@ -3,296 +3,463 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITANIUM V22 | SUPERVISIÓN DGCE</title>
+    <title>TITANIUM V22 | NUCLEAR ARCHITECT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        :root { --nuclear: #dfff00; --panel: #0a0f1d; }
-        body { background: #02040a; color: #e2e8f0; font-family: 'Inter', sans-serif; font-size: 11px; text-transform: uppercase; }
-        .input-bionic { background: rgba(0,0,0,0.6); border: 1px solid #1e293b; padding: 10px; border-radius: 5px; color: #fff; width: 100%; transition: 0.2s; }
-        .input-bionic:focus { border-color: var(--nuclear); outline: none; box-shadow: 0 0 10px rgba(223, 255, 0, 0.2); }
-        .glass-panel { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
-        .tab-active { background: var(--nuclear); color: #000; font-weight: 900; box-shadow: 0 0 15px rgba(223, 255, 0, 0.4); }
-        .voice-pulse { animation: pulse 1.5s infinite; color: #ef4444; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        :root { --glow: #00f2ff; --nuclear: #dfff00; }
+        body { background: #020617; color: #e2e8f0; font-family: 'Inter', sans-serif; font-size: 10px; text-transform: uppercase; overflow: hidden; }
+        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        .input-nuclear { background: rgba(0,0,0,0.4); border: 1px solid #334155; padding: 10px; border-radius: 6px; color: #fff; width: 100%; transition: 0.3s; }
+        .input-nuclear:focus { border-color: var(--nuclear); box-shadow: 0 0 15px rgba(223, 255, 0, 0.3); outline: none; }
+        .btn-action { transition: all 0.3s; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-action:hover { transform: translateY(-2px); filter: brightness(1.2); }
+        .tab-active { border-bottom: 3px solid var(--nuclear); color: var(--nuclear); font-weight: 900; background: rgba(223, 255, 0, 0.05); }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--nuclear); border-radius: 10px; }
+        .card-sala { position: relative; overflow: hidden; }
+        .card-sala::after { content: ''; position: absolute; top:0; left:0; width: 100%; height: 100%; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05)); }
+        .voice-active { animation: pulse 1.5s infinite; background: #ef4444 !important; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body onload="initSystem()">
 
-<header class="h-16 glass-panel sticky top-0 z-[1000] flex justify-between items-center px-6 border-b border-white/10">
+<header class="h-16 glass flex justify-between items-center px-6 border-b border-white/10 z-[1000] sticky top-0">
     <div class="flex items-center gap-4">
-        <div class="bg-nuclear p-2 rounded text-black font-black italic shadow-lg">14 SALAS</div>
+        <div class="w-10 h-10 bg-nuclear rounded-lg flex items-center justify-center text-black font-black text-xl shadow-[0_0_20px_rgba(223,255,0,0.5)]">T</div>
         <div>
-            <h1 class="text-xl font-black tracking-tighter">TITANIUM <span class="text-nuclear">SUPERVISIÓN</span></h1>
-            <p id="clock" class="text-[8px] opacity-60 font-mono"></p>
+            <h1 class="text-lg font-black tracking-tighter">TITANIUM <span class="text-nuclear">V22 NUCLEAR</span></h1>
+            <p class="text-[7px] opacity-50">SISTEMA INTEGRAL DE SUPERVISIÓN Y GESTIÓN</p>
         </div>
     </div>
-    <div class="flex gap-2">
-        <button onclick="document.getElementById('fileIn').click()" class="bg-blue-600 px-4 py-2 rounded text-[9px] font-bold">IMPORTAR (357 ALUMNOS+)</button>
-        <input type="file" id="fileIn" class="hidden" onchange="importarData(event)">
-        <button onclick="exportarExcel()" class="bg-emerald-600 px-4 py-2 rounded text-[9px] font-bold">EXPORTAR DGCE EXCEL</button>
-        <button onclick="exportarJSON()" class="bg-slate-700 px-4 py-2 rounded text-[9px] font-bold">BACKUP SISTEMA</button>
+    <div class="flex gap-3">
+        <button onclick="document.getElementById('importFile').click()" class="btn-action bg-slate-800 px-4 py-2 rounded-md font-bold border border-white/10 text-[9px]"><i class="bi bi-cloud-upload"></i> IMPORTAR</button>
+        <input type="file" id="importFile" class="hidden" onchange="importarData(event)">
+        <button onclick="exportarExcel()" class="btn-action bg-emerald-700 px-4 py-2 rounded-md font-bold text-[9px]"><i class="bi bi-file-earmark-excel"></i> EXCEL DGCE</button>
+        <button onclick="exportarJSON()" class="btn-action bg-blue-700 px-4 py-2 rounded-md font-bold text-[9px]"><i class="bi bi-database"></i> BACKUP JSON</button>
     </div>
 </header>
 
-<div class="grid grid-cols-2 md:grid-cols-5 gap-3 p-4">
-    <div class="glass-panel p-4 rounded-xl border-l-4 border-nuclear">
-        <p class="text-[9px] opacity-50">MATRÍCULA CARGADA</p>
-        <h2 id="dash_total" class="text-2xl font-black italic">0</h2>
-    </div>
-    <div class="glass-panel p-4 rounded-xl border-l-4 border-cyan-400">
-        <p class="text-[9px] opacity-50">EFICIENCIA DE CARGA</p>
-        <h2 id="dash_efi" class="text-2xl font-black italic">0%</h2>
-    </div>
-    <div class="glass-panel p-4 rounded-xl border-l-4 border-pink-500">
-        <p class="text-[9px] opacity-50">POBLACIÓN AUH</p>
-        <h2 id="dash_auh" class="text-2xl font-black italic">0</h2>
-    </div>
-    <div class="glass-panel p-4 rounded-xl border-l-4 border-orange-500">
-        <p class="text-[9px] opacity-50">LISTA DE ESPERA</p>
-        <h2 id="dash_espera" class="text-2xl font-black italic">0</h2>
-    </div>
-    <div class="glass-panel p-4 rounded-xl border-l-4 border-purple-500">
-        <p class="text-[9px] opacity-50">ALERTAS DIRECTIVAS</p>
-        <h2 id="dash_alert" class="text-2xl font-black italic">!</h2>
+<div class="flex h-[calc(100vh-64px)]">
+    <nav class="w-20 glass flex flex-col items-center py-6 gap-8 border-r border-white/5">
+        <button onclick="nav(1)" id="n1" class="text-2xl opacity-50 hover:opacity-100 transition"><i class="bi bi-person-vcard"></i><p class="text-[6px] mt-1">LEGAJO</p></button>
+        <button onclick="nav(2)" id="n2" class="text-2xl opacity-50 hover:opacity-100 transition"><i class="bi bi-grid-3x3-gap"></i><p class="text-[6px] mt-1">SALAS</p></button>
+        <button onclick="nav(3)" id="n3" class="text-2xl opacity-50 hover:opacity-100 transition"><i class="bi bi-graph-up-arrow"></i><p class="text-[6px] mt-1">ALTAS/BAJAS</p></button>
+        <button onclick="nav(4)" id="n4" class="text-2xl opacity-50 hover:opacity-100 transition"><i class="bi bi-calendar-check"></i><p class="text-[6px] mt-1">ASISTENCIA</p></button>
+        <button onclick="nav(5)" id="n5" class="text-2xl opacity-50 hover:opacity-100 transition text-orange-400"><i class="bi bi-hourglass-split"></i><p class="text-[6px] mt-1">ESPERA</p></button>
+        <button onclick="nav(6)" id="n6" class="text-2xl opacity-50 hover:opacity-100 transition text-nuclear"><i class="bi bi-eye"></i><p class="text-[6px] mt-1">SUPERVISIÓN</p></button>
+    </nav>
+
+    <main class="flex-1 overflow-y-auto bg-[#010409] p-6">
+        
+        <section id="view1" class="space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-black italic">LEGAJO BIÓNICO 360°</h2>
+                <div class="flex gap-2">
+                    <button id="voiceBtn" onclick="toggleVoice()" class="btn-action bg-red-600 px-6 py-3 rounded-full font-black text-[10px]"><i class="bi bi-mic-fill"></i> CARGA POR VOZ</button>
+                    <button onclick="scanDNI()" class="btn-action bg-cyan-600 px-6 py-3 rounded-full font-black text-[10px]"><i class="bi bi-qr-code-scan"></i> ESCANEO DNI</button>
+                </div>
+            </div>
+
+            <div class="glass p-6 rounded-2xl border-nuclear/20">
+                <div class="relative mb-8">
+                    <input type="text" id="radar" onkeyup="radarSearch()" class="w-full bg-black/60 border-2 border-nuclear/30 p-5 pl-14 rounded-2xl text-xl font-bold italic outline-none text-nuclear" placeholder="RADAR: DNI O APELLIDO PARA VISTA PREVIA / EDITAR">
+                    <i class="bi bi-radar text-nuclear text-2xl absolute left-5 top-5"></i>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="space-y-4">
+                        <h3 class="text-nuclear font-black border-b border-nuclear/30 pb-2">I. DATOS DEL ALUMNO</h3>
+                        <input id="a_nom" class="input-nuclear" placeholder="APELLIDO Y NOMBRE">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input id="a_dni" class="input-nuclear" placeholder="DNI">
+                            <input id="a_nac" class="input-nuclear" placeholder="NACIONALIDAD" value="ARGENTINA">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input id="a_fec" type="date" class="input-nuclear" onchange="calcEdad(this.value)">
+                            <input id="a_edad" class="input-nuclear" placeholder="EDAD AL 30/6" readonly>
+                        </div>
+                        <input id="a_dom" class="input-nuclear" placeholder="DOMICILIO COMPLETO">
+                        <select id="a_sala" class="input-nuclear text-nuclear font-bold italic"></select>
+                        <textarea id="a_salud" class="input-nuclear h-20" placeholder="ALERTAS DE SALUD / LEGAJO MÉDICO"></textarea>
+                    </div>
+
+                    <div class="space-y-4 bg-white/5 p-4 rounded-xl">
+                        <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                            <h3 class="text-cyan-400 font-black">II. PADRES / TUTORES</h3>
+                            <button onclick="copyDom()" class="bg-cyan-900 text-[8px] px-2 py-1 rounded">MISMO DOMICILIO</button>
+                        </div>
+                        <div class="space-y-2">
+                            <input id="p1_nom" class="input-nuclear" placeholder="NOMBRE MADRE/TUTOR 1">
+                            <div class="grid grid-cols-2 gap-2">
+                                <input id="p1_dni" class="input-nuclear" placeholder="DNI">
+                                <input id="p1_tel" class="input-nuclear" placeholder="TELÉFONO">
+                            </div>
+                            <select id="p1_edu" class="input-nuclear edu-list"></select>
+                        </div>
+                        <hr class="opacity-10">
+                        <div class="space-y-2">
+                            <input id="p2_nom" class="input-nuclear" placeholder="NOMBRE PADRE/TUTOR 2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <input id="p2_dni" class="input-nuclear" placeholder="DNI">
+                                <input id="p2_tel" class="input-nuclear" placeholder="TELÉFONO">
+                            </div>
+                            <select id="p2_edu" class="input-nuclear edu-list"></select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="text-emerald-500 font-black border-b border-emerald-500/30 pb-2">III. RELEVAMIENTO SOCIAL</h3>
+                        <label class="flex justify-between items-center p-3 bg-white/5 rounded-lg border border-white/5">
+                            <span class="font-bold italic">PERCIBE AUH</span>
+                            <input type="checkbox" id="a_auh" class="w-6 h-6 accent-nuclear">
+                        </label>
+                        <input id="p_dom" class="input-nuclear" placeholder="DOMICILIO PADRES (SI ES OTRO)">
+                        <input id="p_ocupa" class="input-nuclear" placeholder="OCUPACIÓN / TRABAJO">
+                        <input id="p_aux_tel" class="input-nuclear" placeholder="TELÉFONO DE EMERGENCIA / AUX">
+                        
+                        <div class="pt-4 space-y-2">
+                            <button onclick="guardarLegajo()" class="w-full bg-nuclear text-black py-4 rounded-xl font-black text-lg shadow-[0_0_30px_rgba(223,255,0,0.2)]">GUARDAR Y FINALIZAR CARGA</button>
+                            <button onclick="limpiar()" class="w-full bg-slate-800 py-2 rounded-lg opacity-50">RESETEAR CAMPOS</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view2" class="hidden space-y-6">
+            <h2 class="text-2xl font-black">FOTOGRAFÍA INTERACTIVA DE SALAS</h2>
+            <div id="gridSalas" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4"></div>
+            
+            <div id="salaDetalle" class="glass p-8 rounded-3xl border-t-8 hidden">
+                <div class="flex justify-between items-start mb-6">
+                    <h2 id="det_sala_nom" class="text-4xl font-black italic"></h2>
+                    <button onclick="cerrarDetalle()" class="bg-red-500 px-4 py-1 rounded-full text-[10px]">CERRAR</button>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="bg-black/40 p-4 rounded-xl max-h-[500px] overflow-y-auto" id="det_lista"></div>
+                    <div class="lg:col-span-2 space-y-4">
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="bg-white/5 p-4 rounded-xl border-l-4 border-nuclear"><p class="text-[8px] opacity-50">MATRÍCULA</p><h4 id="s_count" class="text-2xl font-black">0</h4></div>
+                            <div class="bg-white/5 p-4 rounded-xl border-l-4 border-cyan-400"><p class="text-[8px] opacity-50">PADRES UNIV/TERC</p><h4 id="s_edu" class="text-2xl font-black">0</h4></div>
+                            <div class="bg-white/5 p-4 rounded-xl border-l-4 border-emerald-400"><p class="text-[8px] opacity-50">COBERTURA AUH</p><h4 id="s_auh" class="text-2xl font-black">0%</h4></div>
+                        </div>
+                        <canvas id="salaChart" class="w-full h-64"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view5" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-black text-orange-400 italic">LISTA DE ESPERA INTELIGENTE</h2>
+                <button onclick="abrirCargaEspera()" class="bg-orange-500 text-black px-6 py-2 rounded-full font-black">+ NUEVA SOLICITUD</button>
+            </div>
+            <div class="glass p-6 rounded-2xl">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="border-b border-white/10 text-orange-400">
+                            <th class="p-3">POS.</th>
+                            <th class="p-3">ALUMNO</th>
+                            <th class="p-3">DNI</th>
+                            <th class="p-3">SALA SOLICITADA</th>
+                            <th class="p-3">CONTACTO</th>
+                            <th class="p-3">ACCIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaEsperaBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="view6" class="hidden space-y-8">
+            <div class="bg-nuclear text-black p-8 rounded-3xl flex justify-between items-center shadow-[0_0_50px_rgba(223,255,0,0.2)]">
+                <div>
+                    <h2 class="text-5xl font-black italic tracking-tighter">FOTOGRAFÍA INSTITUCIONAL</h2>
+                    <p class="font-bold tracking-widest opacity-70">ESPEJO DE MATRÍCULA EN TIEMPO REAL</p>
+                </div>
+                <div class="text-right">
+                    <h3 class="text-6xl font-black" id="sup_total">0</h3>
+                    <p class="font-bold italic">TOTAL ALUMNOS CARGADOS</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="glass p-6 rounded-2xl border-l-4 border-nuclear">
+                    <p class="opacity-50 font-bold mb-2">POBLACIÓN AUH</p>
+                    <h4 id="sup_auh" class="text-3xl font-black">0</h4>
+                    <div class="w-full bg-white/5 h-2 mt-4 rounded-full overflow-hidden"><div id="bar_auh" class="bg-nuclear h-full"></div></div>
+                </div>
+                <div class="glass p-6 rounded-2xl border-l-4 border-cyan-400">
+                    <p class="opacity-50 font-bold mb-2">PADRES C/ ESTUDIOS COMP.</p>
+                    <h4 id="sup_edu" class="text-3xl font-black">0</h4>
+                    <div class="w-full bg-white/5 h-2 mt-4 rounded-full overflow-hidden"><div id="bar_edu" class="bg-cyan-400 h-full"></div></div>
+                </div>
+                <div class="glass p-6 rounded-2xl border-l-4 border-emerald-400">
+                    <p class="opacity-50 font-bold mb-2">ASISTENCIA PROMEDIO</p>
+                    <h4 id="sup_asis" class="text-3xl font-black">0%</h4>
+                </div>
+                <div class="glass p-6 rounded-2xl border-l-4 border-red-500">
+                    <p class="opacity-50 font-bold mb-2">ALTAS/BAJAS MES</p>
+                    <h4 id="sup_mov" class="text-3xl font-black">0</h4>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="glass p-6 rounded-3xl">
+                    <h3 class="font-black italic mb-4 border-b border-white/5 pb-2">DISTRIBUCIÓN POR SALA</h3>
+                    <canvas id="supChartSalas"></canvas>
+                </div>
+                <div class="glass p-6 rounded-3xl">
+                    <h3 class="font-black italic mb-4 border-b border-white/5 pb-2">RELEVAMIENTO SOCIO-EDUCATIVO</h3>
+                    <canvas id="supChartSocio"></canvas>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<div id="modalEspera" class="fixed inset-0 bg-black/90 z-[2000] hidden flex items-center justify-center p-4">
+    <div class="glass p-8 rounded-3xl w-full max-w-2xl border-orange-500/30">
+        <h2 class="text-orange-400 text-2xl font-black mb-6 italic">CARGA SOLICITUD DE VACANTE</h2>
+        <div class="grid grid-cols-2 gap-4">
+            <input id="e_nom" class="input-nuclear col-span-2" placeholder="NOMBRE ALUMNO">
+            <input id="e_dni" class="input-nuclear" placeholder="DNI">
+            <select id="e_sala" class="input-nuclear"></select>
+            <input id="e_p_nom" class="input-nuclear" placeholder="PADRE/MADRE">
+            <input id="e_tel" class="input-nuclear" placeholder="TELÉFONO CONTACTO">
+            <input id="e_dom" class="input-nuclear col-span-2" placeholder="DOMICILIO">
+        </div>
+        <div class="flex gap-4 mt-8">
+            <button onclick="guardarEspera()" class="flex-1 bg-orange-500 text-black py-4 rounded-xl font-black">REGISTRAR EN LISTA</button>
+            <button onclick="document.getElementById('modalEspera').classList.add('hidden')" class="px-8 bg-slate-800 rounded-xl font-black">CANCELAR</button>
+        </div>
     </div>
 </div>
 
-<nav class="flex px-4 gap-1 border-b border-white/5">
-    <button onclick="nav(1)" id="t1" class="tab-active px-6 py-3 rounded-t-lg transition font-black">1. LEGAJO 360°</button>
-    <button onclick="nav(2)" id="t2" class="px-6 py-3 rounded-t-lg transition opacity-50">2. FOTOGRAFÍA SALAS</button>
-    <button onclick="nav(3)" id="t3" class="px-6 py-3 rounded-t-lg transition opacity-50">3. ALTAS/BAJAS</button>
-    <button onclick="nav(4)" id="t4" class="px-6 py-3 rounded-t-lg transition opacity-50 text-orange-400">4. LISTA ESPERA</button>
-    <button onclick="nav(5)" id="t5" class="px-6 py-3 rounded-t-lg transition opacity-50 text-nuclear">5. SUPERVISIÓN TOTAL</button>
-</nav>
-
-<main class="p-4 h-[calc(100vh-250px)] overflow-y-auto">
-    
-    <div id="view1" class="space-y-4">
-        <div class="glass-panel p-6 rounded-2xl border border-nuclear/20">
-            <div class="flex gap-4 mb-6">
-                <div class="flex-1 relative">
-                    <i class="bi bi-search absolute left-4 top-4 text-nuclear"></i>
-                    <input type="text" id="radar" onkeyup="radarSearch()" class="w-full bg-black/40 border-2 border-nuclear/30 p-4 pl-12 rounded-xl text-lg font-bold" placeholder="BUSCAR POR DNI O APELLIDO...">
-                </div>
-                <button onclick="toggleVoice()" id="voiceBtn" class="bg-red-600 px-6 rounded-xl font-black flex items-center gap-2">
-                    <i class="bi bi-mic-fill"></i> CARGA VOZ
-                </button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="space-y-3">
-                    <h3 class="text-nuclear font-black border-b border-white/10 pb-2 italic">I. ALUMNO</h3>
-                    <input id="a_nom" class="input-bionic" placeholder="APELLIDO Y NOMBRE">
-                    <div class="grid grid-cols-2 gap-2">
-                        <input id="a_dni" class="input-bionic" placeholder="DNI">
-                        <input id="a_nac" class="input-bionic" placeholder="NACIONALIDAD" value="ARGENTINA">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <input id="a_fec" type="date" class="input-bionic" onchange="calcEdad(this.value)">
-                        <input id="a_edad" class="input-bionic text-nuclear" placeholder="EDAD 30/6" readonly>
-                    </div>
-                    <input id="a_dom" class="input-bionic" placeholder="DOMICILIO ALUMNO">
-                    <select id="a_sala" class="input-bionic text-nuclear font-black"></select>
-                </div>
-
-                <div class="space-y-3 bg-white/5 p-4 rounded-xl">
-                    <h3 class="text-cyan-400 font-black border-b border-white/10 pb-2 italic">II. PADRES / TUTORES</h3>
-                    <input id="p1_nom" class="input-bionic" placeholder="MADRE/PADRE 1">
-                    <div class="grid grid-cols-2 gap-2">
-                        <input id="p1_dni" class="input-bionic" placeholder="DNI">
-                        <input id="p1_tel" class="input-bionic" placeholder="TELÉFONO">
-                    </div>
-                    <select id="p1_edu" class="input-bionic edu-list"></select>
-                    <hr class="opacity-10">
-                    <input id="p2_nom" class="input-bionic" placeholder="MADRE/PADRE 2">
-                    <div class="grid grid-cols-2 gap-2">
-                        <input id="p2_dni" class="input-bionic" placeholder="DNI">
-                        <input id="p2_tel" class="input-bionic" placeholder="TELÉFONO">
-                    </div>
-                    <select id="p2_edu" class="input-bionic edu-list"></select>
-                </div>
-
-                <div class="space-y-3">
-                    <h3 class="text-emerald-500 font-black border-b border-white/10 pb-2 italic">III. RELEVAMIENTO</h3>
-                    <label class="flex justify-between p-3 glass-panel rounded-lg cursor-pointer">
-                        <span>PERCIBE AUH</span>
-                        <input type="checkbox" id="a_auh" class="w-5 h-5 accent-nuclear">
-                    </label>
-                    <input id="p_dom" class="input-bionic" placeholder="DOMICILIO (OTRO)">
-                    <input id="p_ocupa" class="input-bionic" placeholder="OCUPACIÓN">
-                    <input id="p_aux_tel" class="input-bionic" placeholder="TEL. EMERGENCIA">
-                    <button onclick="guardarLegajo()" class="w-full bg-nuclear text-black py-4 rounded-xl font-black text-lg hover:scale-105 transition shadow-lg shadow-yellow-500/20">GUARDAR LEGAJO</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="view2" class="hidden">
-        <div id="gridSalas" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4"></div>
-    </div>
-
-    <div id="view5" class="hidden space-y-6">
-        <div class="bg-nuclear p-8 rounded-3xl text-black">
-            <h2 class="text-5xl font-black italic">FOTOGRAFÍA INSTITUCIONAL</h2>
-            <p class="font-bold tracking-widest">RELEVAMIENTO INTEGRAL PARA SUPERVISIÓN</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="glass-panel p-6 rounded-2xl italic">
-                <h3 class="text-nuclear font-black mb-4">SOCIO-ECONÓMICO</h3>
-                <p>TOTAL AUH: <span id="sup_auh" class="font-black"></span></p>
-                <p>PADRES ESTUDIOS COMP: <span id="sup_edu" class="font-black"></span></p>
-            </div>
-            <div class="glass-panel p-6 rounded-2xl italic">
-                <h3 class="text-cyan-400 font-black mb-4">MOVIMIENTOS</h3>
-                <p>ALTAS DEL MES: <span id="sup_altas" class="font-black"></span></p>
-                <p>BAJAS DEL MES: <span id="sup_bajas" class="font-black"></span></p>
-            </div>
-            <div class="glass-panel p-6 rounded-2xl italic">
-                <h3 class="text-orange-400 font-black mb-4">ASISTENCIA</h3>
-                <p>PROMEDIO SEMANAL: <span class="font-black">94%</span></p>
-                <p>ALERTA INASISTENCIA: <span class="text-red-500 font-black italic">0</span></p>
-            </div>
-        </div>
-        <div class="glass-panel p-6 rounded-2xl">
-            <h3 class="font-black mb-4">POBLACIÓN POR SALA (LECTURA REAL)</h3>
-            <canvas id="supChart" class="w-full h-64"></canvas>
-        </div>
-    </div>
-
-</main>
-
 <script>
-    let DB_MASTER = JSON.parse(localStorage.getItem('T22_NUCLEAR')) || [];
-    let ESPERA = JSON.parse(localStorage.getItem('T22_ESPERA')) || [];
+    let DB_MASTER = JSON.parse(localStorage.getItem('T22_DB')) || [];
+    let MOV_MASTER = JSON.parse(localStorage.getItem('T22_MOV')) || [];
+    let ESPERA_MASTER = JSON.parse(localStorage.getItem('T22_ESPERA')) || [];
 
     const SALAS = [
-        {id:'ROSA TM', col:'#f472b6', cupo:25}, {id:'ROSA TT', col:'#f472b6', cupo:25},
-        {id:'ROJA TM', col:'#ef4444', cupo:25}, {id:'ROJA TT', col:'#ef4444', cupo:25},
-        {id:'NARANJA TM', col:'#f97316', cupo:30}, {id:'NARANJA TT', col:'#f97316', cupo:30},
-        {id:'CELESTE TM', col:'#0ea5e9', cupo:30}, {id:'CELESTE TT', col:'#0ea5e9', cupo:30},
-        {id:'VIOLETA TM', col:'#8b5cf6', cupo:30}, {id:'VIOLETA TT', col:'#8b5cf6', cupo:30},
-        {id:'AMARILLA TM', col:'#facc15', cupo:30}, {id:'AMARILLA TT', col:'#facc15', cupo:30},
-        {id:'AZUL TM', col:'#3b82f6', cupo:30}, {id:'AZUL TT', col:'#3b82f6', cupo:30}
+        {id: 'ROSA TM', col: '#f472b6', cupo: 25}, {id: 'ROJA TM', col: '#ef4444', cupo: 25},
+        {id: 'NARANJA TM', col: '#f97316', cupo: 30}, {id: 'CELESTE TM', col: '#0ea5e9', cupo: 30},
+        {id: 'AMARILLA TM', col: '#eab308', cupo: 30}, {id: 'VERDE TM', col: '#22c55e', cupo: 30},
+        {id: 'AZUL TM', col: '#3b82f6', cupo: 30},
+        {id: 'ROSA TT', col: '#f472b6', cupo: 25}, {id: 'ROJA TT', col: '#ef4444', cupo: 25},
+        {id: 'NARANJA TT', col: '#f97316', cupo: 30}, {id: 'CELESTE TT', col: '#0ea5e9', cupo: 30},
+        {id: 'AMARILLA TT', col: '#eab308', cupo: 30}, {id: 'VERDE TT', col: '#22c55e', cupo: 30},
+        {id: 'AZUL TT', col: '#3b82f6', cupo: 30}
     ];
 
-    const EDU = ["P. COMPLETA", "P. INCOMPLETA", "S. COMPLETA", "S. INCOMPLETA", "T/U COMPLETO", "T/U INCOMPLETO"];
+    const EDU_LEVELS = [
+        "PRIMARIA INCOMPLETA", "PRIMARIA COMPLETA", 
+        "SECUNDARIA INCOMPLETA", "SECUNDARIA COMPLETA", 
+        "TERCIARIA INCOMPLETA", "TERCIARIA COMPLETA", 
+        "UNIVERSITARIO INCOMPLETO", "UNIVERSITARIO COMPLETO"
+    ];
 
     function initSystem() {
-        // Cargar Salas
-        const s = document.getElementById('a_sala');
-        SALAS.forEach(x => s.innerHTML += `<option value="${x.id}">${x.id}</option>`);
-        
-        // Cargar Estudios
-        document.querySelectorAll('.edu-list').forEach(sel => {
-            EDU.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
+        const selects = ['a_sala', 'e_sala'];
+        selects.forEach(selId => {
+            const el = document.getElementById(selId);
+            SALAS.forEach(s => el.innerHTML += `<option value="${s.id}">${s.id}</option>`);
         });
 
-        setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleString();
-        }, 1000);
+        document.querySelectorAll('.edu-list').forEach(sel => {
+            sel.innerHTML = `<option value="">NIVEL DE ESTUDIOS</option>`;
+            EDU_LEVELS.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
+        });
 
-        actualizarDash();
         renderGridSalas();
+        renderEspera();
+        nav(1);
     }
 
-    function nav(n) {
-        for(let i=1; i<=5; i++){
-            document.getElementById('view'+i).classList.add('hidden');
-            document.getElementById('t'+i).className = "px-6 py-3 rounded-t-lg transition opacity-50";
-        }
-        document.getElementById('view'+n).classList.remove('hidden');
-        document.getElementById('t'+n).className = "tab-active px-6 py-3 rounded-t-lg transition font-black";
-        if(n === 5) runSupervision();
+    // CARGA POR VOZ (Speech Recognition)
+    const recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognizer;
+    if(recognition) {
+        recognizer = new recognition();
+        recognizer.lang = 'es-AR';
+        recognizer.onresult = (event) => {
+            const text = event.results[0][0].transcript.toUpperCase();
+            alert("CAPTADO: " + text);
+            // Lógica simple de parseo: "Nombre Juan DNI 123" -> se puede automatizar más.
+        };
+    }
+
+    function toggleVoice() {
+        const btn = document.getElementById('voiceBtn');
+        btn.classList.toggle('voice-active');
+        if(btn.classList.contains('voice-active')) recognizer.start();
+        else recognizer.stop();
+    }
+
+    function scanDNI() {
+        alert("SOLICITANDO ACCESO A CÁMARA PARA ESCANEO DE CÓDIGO PDF417...");
+        // Integrar librería como QuaggaJS o Html5Qrcode para escaneo real.
     }
 
     function radarSearch() {
         const q = document.getElementById('radar').value.toUpperCase();
         if(q.length < 3) return;
-        const a = DB_MASTER.find(x => x.dni.includes(q) || x.nom.includes(q));
-        if(a) {
-            document.getElementById('a_nom').value = a.nom;
-            document.getElementById('a_dni').value = a.dni;
-            document.getElementById('a_dom').value = a.dom;
-            document.getElementById('a_sala').value = a.sala;
-            document.getElementById('a_auh').checked = a.auh;
-            document.getElementById('p1_nom').value = a.p1_nom;
-            document.getElementById('p1_dni').value = a.p1_dni;
-            document.getElementById('p1_tel').value = a.p1_tel;
-            document.getElementById('p1_edu').value = a.p1_edu;
-            document.getElementById('p2_nom').value = a.p2_nom;
-            document.getElementById('p2_dni').value = a.p2_dni;
-            document.getElementById('p2_tel').value = a.p2_tel;
-            document.getElementById('p2_edu').value = a.p2_edu;
-            document.getElementById('p_dom').value = a.p_dom;
-            document.getElementById('p_ocupa').value = a.p_ocupa;
-            document.getElementById('p_aux_tel').value = a.p_aux_tel;
-            calcEdad(a.fec);
-        }
+        const alu = DB_MASTER.find(x => x.dni.includes(q) || x.nom.includes(q));
+        if(alu) cargarForm(alu);
+    }
+
+    function cargarForm(alu) {
+        document.getElementById('a_nom').value = alu.nom;
+        document.getElementById('a_dni').value = alu.dni;
+        document.getElementById('a_fec').value = alu.fec;
+        document.getElementById('a_dom').value = alu.dom;
+        document.getElementById('a_sala').value = alu.sala;
+        document.getElementById('a_auh').checked = alu.auh;
+        document.getElementById('p1_nom').value = alu.p1_nom;
+        document.getElementById('p1_dni').value = alu.p1_dni;
+        document.getElementById('p1_tel').value = alu.p1_tel;
+        document.getElementById('p1_edu').value = alu.p1_edu;
+        document.getElementById('p2_nom').value = alu.p2_nom;
+        document.getElementById('p2_dni').value = alu.p2_dni;
+        document.getElementById('p2_tel').value = alu.p2_tel;
+        document.getElementById('p2_edu').value = alu.p2_edu;
+        document.getElementById('p_dom').value = alu.p_dom;
+        document.getElementById('p_ocupa').value = alu.p_ocupa;
+        document.getElementById('p_aux_tel').value = alu.p_aux_tel;
+        calcEdad(alu.fec);
     }
 
     function guardarLegajo() {
-        const a = {
-            nom: v('a_nom'), dni: v('a_dni'), fec: v('a_fec'), dom: v('a_dom'), 
-            sala: v('a_sala'), auh: document.getElementById('a_auh').checked,
+        const alu = {
+            nom: v('a_nom'), dni: v('a_dni'), nac: v('a_nac'), fec: v('a_fec'), 
+            dom: v('a_dom'), sala: v('a_sala'), auh: document.getElementById('a_auh').checked,
             p1_nom: v('p1_nom'), p1_dni: v('p1_dni'), p1_tel: v('p1_tel'), p1_edu: v('p1_edu'),
             p2_nom: v('p2_nom'), p2_dni: v('p2_dni'), p2_tel: v('p2_tel'), p2_edu: v('p2_edu'),
             p_dom: v('p_dom'), p_ocupa: v('p_ocupa'), p_aux_tel: v('p_aux_tel'),
-            mes: new Date().getMonth() + 1
+            stamp: new Date().toISOString()
         };
 
-        const idx = DB_MASTER.findIndex(x => x.dni === a.dni);
-        if(idx > -1) DB_MASTER[idx] = a;
-        else DB_MASTER.push(a);
-
+        const idx = DB_MASTER.findIndex(x => x.dni === alu.dni);
+        if(idx > -1) DB_MASTER[idx] = alu;
+        else {
+            DB_MASTER.push(alu);
+            MOV_MASTER.push({dni: alu.dni, nom: alu.nom, tipo: 'ALTA', mes: new Date().getMonth()+1, sala: alu.sala});
+        }
+        
         save();
-        actualizarDash();
-        renderGridSalas();
-        alert("LEGAJO GUARDADO Y ACTUALIZADO");
+        alert("TITANIUM: CARGA CULMINADA. MATRÍCULA ACTUALIZADA.");
+        limpiar();
     }
 
     function renderGridSalas() {
         const grid = document.getElementById('gridSalas');
         grid.innerHTML = SALAS.map(s => {
             const count = DB_MASTER.filter(x => x.sala === s.id).length;
+            const perc = (count / s.cupo) * 100;
             return `
-                <div class="glass-panel p-4 rounded-xl border-t-4" style="border-top-color:${s.col}">
+                <div onclick="verDetalleSala('${s.id}', '${s.col}')" class="card-sala glass p-4 border-t-4" style="border-top-color: ${s.col}">
                     <p class="text-[9px] font-black italic">${s.id}</p>
-                    <h2 class="text-2xl font-black">${count}</h2>
-                    <p class="text-[8px] opacity-40">CUPO: ${s.cupo}</p>
+                    <h2 class="text-2xl font-black">${count}<span class="text-[10px] opacity-20">/${s.cupo}</span></h2>
+                    <div class="w-full bg-white/5 h-1 mt-2 rounded-full overflow-hidden">
+                        <div class="h-full" style="width: ${perc}%; background: ${s.col}"></div>
+                    </div>
                 </div>
             `;
         }).join('');
     }
 
+    function verDetalleSala(id, col) {
+        const panel = document.getElementById('salaDetalle');
+        panel.classList.remove('hidden');
+        panel.style.borderTopColor = col;
+        document.getElementById('det_sala_nom').innerText = "SALA " + id;
+        
+        const alumnos = DB_MASTER.filter(x => x.sala === id);
+        document.getElementById('s_count').innerText = alumnos.length;
+        document.getElementById('s_auh').innerText = alumnos.length ? Math.round((alumnos.filter(a => a.auh).length / alumnos.length)*100) + "%" : "0%";
+        
+        document.getElementById('det_lista').innerHTML = alumnos.map(a => `
+            <div class="flex justify-between items-center p-3 bg-white/5 rounded-lg mb-2 border border-white/5">
+                <div>
+                    <p class="font-black text-[10px]">${a.nom}</p>
+                    <p class="text-[7px] opacity-40">DNI: ${a.dni} | PADRE: ${a.p1_nom}</p>
+                </div>
+                <button onclick="darBaja('${a.dni}')" class="text-red-500 text-lg hover:scale-120 transition"><i class="bi bi-person-x"></i></button>
+            </div>
+        `).join('') || "SALA VACÍA";
+
+        panel.scrollIntoView({behavior: 'smooth'});
+    }
+
+    function abrirCargaEspera() {
+        document.getElementById('modalEspera').classList.remove('hidden');
+    }
+
+    function guardarEspera() {
+        const e = {
+            nom: v('e_nom'), dni: v('e_dni'), sala: v('e_sala'), p: v('e_p_nom'), tel: v('e_tel'), dom: v('e_dom'),
+            fecha: new Date().toLocaleDateString()
+        };
+        ESPERA_MASTER.push(e);
+        localStorage.setItem('T22_ESPERA', JSON.stringify(ESPERA_MASTER));
+        renderEspera();
+        document.getElementById('modalEspera').classList.add('hidden');
+    }
+
+    function renderEspera() {
+        const body = document.getElementById('listaEsperaBody');
+        body.innerHTML = ESPERA_MASTER.map((e, idx) => `
+            <tr class="border-b border-white/5 hover:bg-white/5">
+                <td class="p-3 font-black text-orange-400">#${idx + 1}</td>
+                <td class="p-3 font-bold">${e.nom}</td>
+                <td class="p-3 opacity-50">${e.dni}</td>
+                <td class="p-3 font-black italic">${e.sala}</td>
+                <td class="p-3">${e.tel}</td>
+                <td class="p-3"><button onclick="otorgarVacante(${idx})" class="bg-emerald-600 px-3 py-1 rounded-full text-[8px] font-black">OTORGAR VACANTE</button></td>
+            </tr>
+        `).join('');
+    }
+
+    function nav(n) {
+        for(let i=1; i<=6; i++) {
+            if(document.getElementById('view'+i)) document.getElementById('view'+i).classList.add('hidden');
+            if(document.getElementById('n'+i)) document.getElementById('n'+i).classList.remove('tab-active');
+        }
+        document.getElementById('view'+n).classList.remove('hidden');
+        document.getElementById('n'+n).classList.add('tab-active');
+        if(n === 6) runSupervision();
+    }
+
     function runSupervision() {
-        document.getElementById('sup_auh').innerText = DB_MASTER.filter(x => x.auh).length;
-        document.getElementById('sup_edu').innerText = DB_MASTER.filter(x => x.p1_edu.includes("COMPLETA")).length;
-        document.getElementById('sup_altas').innerText = DB_MASTER.length;
-        document.getElementById('sup_bajas').innerText = "0";
+        document.getElementById('sup_total').innerText = DB_MASTER.length;
+        document.getElementById('sup_auh').innerText = DB_MASTER.filter(a => a.auh).length;
+        const comp = DB_MASTER.filter(a => a.p1_edu.includes("COMPLETA") || a.p2_edu.includes("COMPLETA")).length;
+        document.getElementById('sup_edu').innerText = comp;
+        
+        document.getElementById('bar_auh').style.width = (DB_MASTER.filter(a => a.auh).length / DB_MASTER.length * 100) + "%";
+        document.getElementById('bar_edu').style.width = (comp / DB_MASTER.length * 100) + "%";
     }
 
-    function save() { localStorage.setItem('T22_NUCLEAR', JSON.stringify(DB_MASTER)); }
     function v(id) { return document.getElementById(id).value.toUpperCase(); }
-    function actualizarDash() {
-        document.getElementById('dash_total').innerText = DB_MASTER.length;
-        document.getElementById('dash_efi').innerText = Math.round((DB_MASTER.length/420)*100) + "%";
-        document.getElementById('dash_auh').innerText = DB_MASTER.filter(x => x.auh).length;
+    function save() {
+        localStorage.setItem('T22_DB', JSON.stringify(DB_MASTER));
+        localStorage.setItem('T22_MOV', JSON.stringify(MOV_MASTER));
     }
-
+    function limpiar() {
+        document.querySelectorAll('input').forEach(i => i.value = "");
+        document.querySelectorAll('select').forEach(i => i.selectedIndex = 0);
+        document.querySelectorAll('textarea').forEach(i => i.value = "");
+    }
     function calcEdad(f) {
-        const h = new Date("2026-06-30"); const n = new Date(f);
+        const n = new Date(f); const h = new Date("2026-06-30");
         let e = h.getFullYear() - n.getFullYear();
         if (h < new Date(h.getFullYear(), n.getMonth(), n.getDate())) e--;
-        document.getElementById('a_edad').innerText = e + " AÑOS";
-    }
-
-    function toggleVoice() {
-        const btn = document.getElementById('voiceBtn');
-        btn.classList.toggle('voice-pulse');
-        // Integración Speech-to-Text aquí
+        document.getElementById('a_edad').value = e + " AÑOS";
     }
 </script>
 </body>
