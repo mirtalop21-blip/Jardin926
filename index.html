@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITANIUM 360 PRO | FULL ENGINE 2026</title>
+    <title>TITANIUM 360 SUPREMA | ENGINE DGCyE PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,159 +11,223 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --nuke: #dfff00; --alert: #ff003c; --bionic: #00d4ff; --bg: #0d1117; }
+        :root { --nuke: #dfff00; --alert: #ff003c; --bionic: #00d4ff; --bg: #0b0e14; }
         body { background: var(--bg); color: #f0f6fc; font-family: 'Orbitron', sans-serif; font-size: 10px; text-transform: uppercase; font-weight: 700; }
-        .glass-panel { background: rgba(22, 27, 34, 0.95); border: 1px solid rgba(223, 255, 0, 0.15); border-radius: 8px; }
-        .input-bionic { background: #010409; border: 1px solid #30363d; padding: 10px; border-radius: 4px; color: var(--nuke); width: 100%; border-left: 3px solid var(--nuke); font-size: 11px; margin-bottom: 5px; }
-        .tab-active { border-bottom: 4px solid var(--nuke); color: var(--nuke); background: rgba(223, 255, 0, 0.05); }
-        .S-ROSA { border-left: 10px solid #ff69b4; } .S-ROJA { border-left: 10px solid #ff0000; }
-        .S-NARANJA { border-left: 10px solid #ffa500; } .S-CELESTE { border-left: 10px solid #87ceeb; }
-        .S-VIOLETA { border-left: 10px solid #8a2be2; } .S-AMARILLA { border-left: 10px solid #ffff00; }
-        .S-AZUL { border-left: 10px solid #0000ff; }
-        .btn-voz-on { animation: pulse 1s infinite; background: var(--alert) !important; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .glass { background: rgba(22, 27, 34, 0.98); border: 1px solid rgba(223, 255, 0, 0.2); border-radius: 4px; }
+        .input-bionic { background: #010409; border: 1px solid #30363d; padding: 10px; color: var(--nuke); width: 100%; border-left: 3px solid var(--nuke); font-size: 11px; margin-bottom: 4px; }
+        .input-mirror { border-left: 3px solid var(--bionic); }
+        .tab-active { border-bottom: 4px solid var(--nuke); color: var(--nuke); background: rgba(223, 255, 0, 0.1); }
+        .btn-voz-on { animation: pulse 1s infinite; background: var(--alert) !important; color: white; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 60, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 0, 60, 0); } }
+        /* Colores Oficiales Sala */
+        .S-ROSA { border-top: 10px solid #ff69b4; } .S-ROJA { border-top: 10px solid #ff0000; }
+        .S-NARANJA { border-top: 10px solid #ffa500; } .S-CELESTE { border-top: 10px solid #87ceeb; }
+        .S-VIOLETA { border-top: 10px solid #8a2be2; } .S-AMARILLA { border-top: 10px solid #ffff00; }
+        .S-AZUL { border-top: 10px solid #0000ff; }
+        .wait-blue { animation: blink-blue 2s infinite; }
+        @keyframes blink-blue { 0%, 100% { background: #000; } 50% { background: #000044; } }
     </style>
 </head>
 <body onload="initApp()">
 
-<header class="glass-panel m-2 p-4 flex justify-between items-center sticky top-0 z-[1000] border-b-2 border-nuke">
+<header class="glass m-2 p-4 flex justify-between items-center sticky top-0 z-[1000] border-b-2 border-nuke">
     <div class="flex items-center gap-4">
-        <div class="bg-nuke text-black px-4 py-2 rounded font-black shadow-[0_0_15px_rgba(223,255,0,0.5)]">TITANIUM 360</div>
-        <h1 class="text-lg font-black tracking-tighter">SISTEMA <span class="text-nuke">BIÓNICO</span></h1>
+        <div class="bg-nuke text-black px-4 py-2 rounded font-black">TITANIUM 360 SUPREMA</div>
+        <div id="reloj" class="text-nuke text-xs"></div>
     </div>
     <div class="flex gap-2">
-        <button id="btnVoz" onclick="toggleVoz()" class="bg-zinc-800 px-4 py-2 rounded border border-red-500"><i class="bi bi-mic"></i> VOZ</button>
-        <button onclick="exportExcel()" class="bg-emerald-700 px-4 py-2 rounded">EXCEL</button>
-        <button onclick="exportJSON()" class="bg-indigo-700 px-4 py-2 rounded">JSON</button>
+        <button id="btnVoz" onclick="toggleVoz()" class="bg-zinc-900 border border-red-600 px-4 py-2 rounded"><i class="bi bi-mic"></i> VOZ BIÓNICA</button>
+        <button onclick="exportExcel()" class="bg-emerald-800 px-4 py-2 rounded">EXCEL OFICIAL DGCyE</button>
+        <button onclick="exportJSON()" class="bg-indigo-800 px-4 py-2 rounded">BACKUP JSON</button>
+        <label class="bg-blue-800 px-4 py-2 rounded cursor-pointer text-[9px]">IMPORTAR <input type="file" class="hidden" onchange="importData(this)"></label>
     </div>
 </header>
 
-<nav class="flex px-2 gap-1 overflow-x-auto mb-4 bg-black/50 sticky top-[80px] z-[999]">
-    <button onclick="nav(1)" id="n1" class="px-6 py-4 tab-active min-w-fit">1. MATRÍCULA</button>
-    <button onclick="nav(2)" id="n2" class="px-6 py-4 opacity-50 min-w-fit">2. FOTO INTERACTIVA</button>
-    <button onclick="nav(3)" id="n3" class="px-6 py-4 opacity-50 min-w-fit">3. RADAR ASISTENCIA</button>
-    <button onclick="nav(4)" id="n4" class="px-6 py-4 opacity-50 min-w-fit">4. LISTA ESPERA</button>
-    <button onclick="nav(5)" id="n5" class="px-6 py-4 opacity-50 min-w-fit">5. BAJAS</button>
-    <button onclick="nav(6)" id="n6" class="px-6 py-4 opacity-50 min-w-fit text-nuke">6. SUPERVISIÓN</button>
+<nav class="flex px-2 gap-1 overflow-x-auto mb-4 bg-black/80 sticky top-[80px] z-[999]">
+    <button onclick="nav(1)" id="n1" class="px-6 py-4 tab-active min-w-fit">1. LEGAJO INTEGRAL</button>
+    <button onclick="nav(2)" id="n2" class="px-6 py-4 opacity-50 min-w-fit">2. FOTOGRAFÍA INSTITUCIONAL</button>
+    <button onclick="nav(3)" id="n3" class="px-6 py-4 opacity-50 min-w-fit">3. ASISTENCIA & RADAR</button>
+    <button onclick="nav(4)" id="n4" class="px-6 py-4 opacity-50 min-w-fit">4. LISTA ESPERA (PARIADEO)</button>
+    <button onclick="nav(5)" id="n5" class="px-6 py-4 opacity-50 min-w-fit text-red-500">5. BAJAS / CALENDARIO</button>
+    <button onclick="nav(6)" id="n6" class="px-6 py-4 opacity-50 min-w-fit text-nuke">6. SUPERVISIÓN ÉLITE</button>
 </nav>
 
 <main class="p-2">
     <section id="view1" class="space-y-4">
-        <div class="glass-panel p-6">
-            <input type="text" id="radarBusqueda" onkeyup="radarCore()" class="w-full bg-black border-2 border-nuke p-4 rounded text-xl mb-6" placeholder="BUSCADOR RADAR: DNI O NOMBRE...">
+        <div class="glass p-6">
+            <div class="flex gap-4 mb-6">
+                <input type="text" id="radarMain" onkeyup="radarCore()" class="flex-1 bg-black border-2 border-nuke p-4 text-xl text-nuke" placeholder="RADAR: ESCRIBA APELLIDO O DNI PARA RECUPERACIÓN TOTAL...">
+                <button onclick="nav(3)" class="bg-nuke text-black px-6 font-black">SCAN DNI</button>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div>
-                    <h3 class="text-nuke border-b border-nuke/30 mb-2">DATOS ALUMNO</h3>
+                <div class="space-y-1">
+                    <h3 class="text-nuke border-b border-nuke/40 mb-2">I. DATOS DEL ALUMNO</h3>
                     <input id="a_nom" class="input-bionic" placeholder="APELLIDOS Y NOMBRES">
-                    <input id="a_dni" class="input-bionic" placeholder="DNI">
-                    <input type="date" id="a_f_nac" class="input-bionic" onchange="calcEdad()">
-                    <div id="a_edad" class="bg-zinc-900 p-2 text-nuke rounded mb-2 text-center italic">EDAD AL 30/06: --</div>
+                    <div class="grid grid-cols-2 gap-1">
+                        <input id="a_dni" class="input-bionic" placeholder="DNI">
+                        <input id="a_nac" class="input-bionic" placeholder="NACIONALIDAD" value="ARGENTINA">
+                    </div>
+                    <div class="grid grid-cols-2 gap-1">
+                        <input type="date" id="a_f_nac" class="input-bionic" onchange="calcEdad()">
+                        <div id="a_edad" class="bg-zinc-900 p-3 text-nuke rounded text-center text-[9px]">EDAD AL 30/06: --</div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1">
+                        <input id="a_her" class="input-bionic" placeholder="CANT. HERMANOS">
+                        <select id="a_her_j" class="input-bionic"><option value="NO">¿HERM. EN JARDÍN? NO</option><option value="SI">SI</option></select>
+                    </div>
                     <input id="a_dom" class="input-bionic" placeholder="DOMICILIO REAL">
                     <select id="a_sala" class="input-bionic"></select>
-                    <textarea id="a_salud" class="input-bionic h-20" placeholder="SALUD / OBSERVACIONES"></textarea>
+                    <textarea id="a_salud" class="input-bionic h-24" placeholder="LEGAJO DE SALUD / CUD / ALERGIAS / OBSERVACIONES DGCyE"></textarea>
                 </div>
-                <div>
-                    <h3 class="text-blue-400 border-b border-blue-400/30 mb-2">TUTOR 1</h3>
-                    <input id="p1_nom" class="input-bionic" placeholder="NOMBRE COMPLETO">
-                    <input id="p1_dni" class="input-bionic" placeholder="DNI">
-                    <input id="p1_tel" class="input-bionic" placeholder="TELÉFONO">
-                    <select id="p1_edu" class="input-bionic edu-sel"></select>
+
+                <div class="space-y-1">
+                    <h3 class="text-bionic border-b border-bionic/40 mb-2">II. DATOS MADRE</h3>
+                    <input id="m_nom" class="input-bionic input-mirror" placeholder="APELLIDO Y NOMBRE">
+                    <div class="grid grid-cols-2 gap-1">
+                        <input id="m_dni" class="input-bionic input-mirror" placeholder="DNI">
+                        <input id="m_nac" class="input-bionic input-mirror" placeholder="NACIONALIDAD">
+                    </div>
+                    <input id="m_ocu" class="input-bionic input-mirror" placeholder="OCUPACIÓN / TRABAJO">
+                    <select id="m_edu" class="input-bionic input-mirror edu-opt"></select>
+                    <div class="flex gap-1">
+                        <input id="m_dom" class="input-bionic input-mirror flex-1" placeholder="DOMICILIO">
+                        <button onclick="mirrorDom('m')" class="bg-zinc-800 p-1 text-[7px]">IDEM ALUM</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1">
+                        <input id="m_tel" class="input-bionic input-mirror" placeholder="TELÉFONO">
+                        <select id="m_auh" class="input-bionic input-mirror"><option value="NO">AUH: NO</option><option value="SI">SI</option></select>
+                    </div>
                 </div>
-                <div>
-                    <h3 class="text-emerald-400 border-b border-emerald-400/30 mb-2">TUTOR 2</h3>
-                    <input id="p2_nom" class="input-bionic" placeholder="NOMBRE COMPLETO">
-                    <input id="p2_dni" class="input-bionic" placeholder="DNI">
-                    <input id="p2_tel" class="input-bionic" placeholder="TELÉFONO">
-                    <select id="p2_edu" class="input-bionic edu-sel"></select>
+
+                <div class="space-y-1">
+                    <h3 class="text-bionic border-b border-bionic/40 mb-2">III. DATOS PADRE</h3>
+                    <input id="p_nom" class="input-bionic input-mirror" placeholder="APELLIDO Y NOMBRE">
+                    <div class="grid grid-cols-2 gap-1">
+                        <input id="p_dni" class="input-bionic input-mirror" placeholder="DNI">
+                        <input id="p_nac" class="input-bionic input-mirror" placeholder="NACIONALIDAD">
+                    </div>
+                    <input id="p_ocu" class="input-bionic input-mirror" placeholder="OCUPACIÓN">
+                    <select id="p_edu" class="input-bionic input-mirror edu-opt"></select>
+                    <div class="flex gap-1">
+                        <input id="p_dom" class="input-bionic input-mirror flex-1" placeholder="DOMICILIO">
+                        <button onclick="mirrorDom('p')" class="bg-zinc-800 p-1 text-[7px]">IDEM ALUM</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1">
+                        <input id="p_tel" class="input-bionic input-mirror" placeholder="TELÉFONO">
+                        <select id="p_auh" class="input-bionic input-mirror"><option value="NO">AUH: NO</option><option value="SI">SI</option></select>
+                    </div>
                 </div>
             </div>
-            <div class="flex gap-2 mt-4">
-                <button onclick="saveData('DB')" class="flex-1 bg-nuke text-black py-4 font-black rounded hover:brightness-110">GUARDAR EN MATRÍCULA</button>
-                <button onclick="saveData('ESPERA')" class="flex-1 bg-orange-600 text-white py-4 font-black rounded">A LISTA DE ESPERA</button>
+            <div class="flex gap-2 mt-6">
+                <button onclick="commitData('DB')" class="flex-1 bg-nuke text-black py-4 font-black text-lg">CONSOLIDAR MATRÍCULA</button>
+                <button onclick="commitData('ESPERA')" class="flex-1 bg-orange-600 text-white py-4 font-black">REGISTRAR EN ESPERA</button>
             </div>
         </div>
     </section>
 
     <section id="view2" class="hidden space-y-4">
-        <div id="filtrosSalas" class="flex gap-2 overflow-x-auto p-2 bg-black/40 rounded"></div>
-        <div id="gridInteractiva" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+        <div id="filterBar" class="flex gap-2 overflow-x-auto pb-2"></div>
+        <div id="fotoGrid" class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-3"></div>
     </section>
 
     <section id="view3" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div class="glass-panel p-6">
-            <h2 class="text-nuke mb-4">ESCÁNER BIÓNICO</h2>
-            <video id="preview" class="w-full rounded border border-nuke bg-black"></video>
-            <button onclick="startScan()" class="w-full mt-4 bg-blue-600 py-3 rounded">ACTIVAR CÁMARA</button>
+        <div class="glass p-6">
+            <h2 class="text-nuke font-black mb-4">SCANNER DE DOCUMENTACIÓN</h2>
+            <video id="preview" class="w-full rounded border-2 border-nuke bg-black"></video>
+            <div class="mt-4 flex gap-2">
+                <button onclick="startScan('asis')" class="flex-1 bg-blue-700 py-3 rounded">MODO ASISTENCIA</button>
+                <button onclick="startScan('radar')" class="flex-1 bg-nuke text-black py-3 rounded">MODO RADAR LEGAJO</button>
+            </div>
         </div>
-        <div class="glass-panel p-6">
-            <h2 class="text-nuke mb-4">LISTADO PRESENTES <span id="countAsis" class="text-white"></span></h2>
-            <div id="listaPresentes" class="space-y-2"></div>
+        <div class="glass p-6">
+            <h2 class="text-nuke font-black border-b border-nuke/20 mb-4">PRESENTISMO TIEMPO REAL</h2>
+            <div id="asisList" class="space-y-1 max-h-[400px] overflow-y-auto"></div>
         </div>
     </section>
 
-    <section id="view4" class="hidden glass-panel p-6">
-        <h2 class="text-orange-500 font-black mb-4 underline">ASPIRANTES EN ESPERA</h2>
-        <div id="listaEspera" class="space-y-2"></div>
+    <section id="view4" class="hidden glass p-6 wait-blue">
+        <h2 class="text-bionic font-black mb-6">SISTEMA DE VACANTES DISPONIBLES (PARIADEO AZUL)</h2>
+        <div id="esperaList" class="space-y-2"></div>
     </section>
 
-    <section id="view5" class="hidden glass-panel p-6">
-        <h2 class="text-red-500 font-black mb-4 underline">HISTORIAL DE BAJAS</h2>
-        <div id="listaBajas" class="space-y-2"></div>
+    <section id="view5" class="hidden space-y-4">
+        <div class="glass p-6 border-l-8 border-red-600">
+            <h2 class="text-red-500 font-black mb-4 italic">HISTORIAL TÉCNICO DE BAJAS</h2>
+            <div id="bajasList" class="space-y-2"></div>
+        </div>
     </section>
 
     <section id="view6" class="hidden space-y-6">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="glass-panel p-4 border-l-4 border-nuke text-center">
-                <p class="text-[8px]">TOTAL MATRÍCULA</p><h2 id="st1" class="text-2xl">0</h2>
+            <div class="glass p-6 text-center border-b-4 border-nuke">
+                <p class="opacity-50">MATRÍCULA ACTIVA</p><h2 id="m1" class="text-4xl">0</h2>
             </div>
-            <div class="glass-panel p-4 border-l-4 border-orange-500 text-center">
-                <p class="text-[8px]">EN ESPERA</p><h2 id="st2" class="text-2xl">0</h2>
+            <div class="glass p-6 text-center border-b-4 border-blue-500">
+                <p class="opacity-50">PRESENTISMO PROMEDIO</p><h2 id="m2" class="text-4xl">0%</h2>
             </div>
-            <div class="glass-panel p-4 border-l-4 border-red-500 text-center">
-                <p class="text-[8px]">BAJAS</p><h2 id="st3" class="text-2xl">0</h2>
+            <div class="glass p-6 text-center border-b-4 border-red-500">
+                <p class="opacity-50">BAJAS DEL CICLO</p><h2 id="m3" class="text-4xl">0</h2>
             </div>
-            <div class="glass-panel p-4 border-l-4 border-blue-500 text-center">
-                <p class="text-[8px]">ASISTENCIA %</p><h2 id="st4" class="text-2xl">0%</h2>
+            <div class="glass p-6 text-center border-b-4 border-orange-500">
+                <p class="opacity-50">ASPIRANTES</p><h2 id="m4" class="text-4xl">0</h2>
             </div>
         </div>
-        <div class="glass-panel p-6 min-h-[400px]">
-            <canvas id="chartSuperv"></canvas>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="glass p-4 h-[350px]"><canvas id="chart1"></canvas></div>
+            <div class="glass p-4 h-[350px]"><canvas id="chart2"></canvas></div>
+        </div>
+        <div id="fotoRigurosa" class="glass p-6">
+            <h3 class="text-nuke border-b mb-4">FOTOGRAFÍA RIGUROSA POR SALA (EXIGENCIA DGCE)</h3>
+            <div id="resumenSalas" class="grid grid-cols-2 md:grid-cols-4 gap-2"></div>
         </div>
     </section>
 </main>
 
 <script>
-    let DB = JSON.parse(localStorage.getItem('TIT_DB')) || [];
-    let BAJAS = JSON.parse(localStorage.getItem('TIT_BAJAS')) || [];
-    let ESPERA = JSON.parse(localStorage.getItem('TIT_ESPERA')) || [];
-    let ASIS = [];
+    let DB = JSON.parse(localStorage.getItem('T360_DB')) || [];
+    let BAJAS = JSON.parse(localStorage.getItem('T360_BAJAS')) || [];
+    let ESPERA = JSON.parse(localStorage.getItem('T360_ESPERA')) || [];
+    let ASIS_HOY = JSON.parse(localStorage.getItem('T360_ASIS')) || {};
     let scanner = null;
-    let recog = null;
+    let recognition = null;
 
     const SALAS = ['ROSA', 'ROJA', 'NARANJA', 'CELESTE', 'VIOLETA', 'AMARILLA', 'AZUL'];
-    const EDU = ['S/D', 'SECUNDARIO COMP', 'TERCIARIO INC', 'TERCIARIO COMP', 'UNIVERSITARIO'];
+    const EDUCACION = [
+        'SIN ESTUDIOS', 
+        'PRIMARIA INCOMPLETA', 'PRIMARIA COMPLETA', 
+        'SECUNDARIA INCOMPLETA', 'SECUNDARIA COMPLETA', 
+        'TERCIARIA INCOMPLETA', 'TERCIARIA COMPLETA', 
+        'UNIVERSITARIO INCOMPLETO', 'UNIVERSITARIO COMPLETO'
+    ];
 
     function initApp() {
-        // Llenar selectores
-        const sSala = document.getElementById('a_sala');
-        sSala.innerHTML = '<option value="">SELECCIONAR SALA</option>';
-        SALAS.forEach(s => {
-            sSala.innerHTML += `<option value="${s}-TM">${s} MAÑANA</option>`;
-            sSala.innerHTML += `<option value="${s}-TT">${s} TARDE</option>`;
-        });
-        document.querySelectorAll('.edu-sel').forEach(el => {
-            EDU.forEach(e => el.innerHTML += `<option value="${e}">${e}</option>`);
-        });
-        updateInterface();
+        populateSelectors();
+        sync();
+        setInterval(() => document.getElementById('reloj').innerText = new Date().toLocaleString(), 1000);
         initVoz();
     }
 
-    // --- MOTOR DE VOZ ---
+    function populateSelectors() {
+        const s = document.getElementById('a_sala');
+        s.innerHTML = '<option value="">SALA / TURNO</option>';
+        SALAS.forEach(sala => {
+            ['TM', 'TT'].forEach(turno => {
+                s.innerHTML += `<option value="${sala}-${turno}">${sala} - ${turno}</option>`;
+            });
+        });
+        document.querySelectorAll('.edu-opt').forEach(sel => {
+            sel.innerHTML = '<option value="">NIVEL ESTUDIOS</option>';
+            EDUCACION.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
+        });
+    }
+
+    // --- BIÓNICA & VOZ ---
     function initVoz() {
         if (!('webkitSpeechRecognition' in window)) return;
-        recog = new webkitSpeechRecognition();
-        recog.lang = 'es-AR';
-        recog.onresult = (e) => {
+        recognition = new webkitSpeechRecognition();
+        recognition.lang = 'es-AR';
+        recognition.onresult = (e) => {
             const t = e.results[0][0].transcript.toUpperCase();
             if(t.includes('NOMBRE')) document.getElementById('a_nom').value = t.replace('NOMBRE', '').trim();
             if(t.includes('DNI')) document.getElementById('a_dni').value = t.replace(/[^0-9]/g, '');
@@ -173,11 +237,11 @@
 
     function toggleVoz() {
         const b = document.getElementById('btnVoz');
-        if(b.classList.contains('btn-voz-on')) { recog.stop(); b.classList.remove('btn-voz-on'); }
-        else { recog.start(); b.classList.add('btn-voz-on'); }
+        if(b.classList.contains('btn-voz-on')) { recognition.stop(); b.classList.remove('btn-voz-on'); }
+        else { recognition.start(); b.classList.add('btn-voz-on'); }
     }
 
-    // --- LÓGICA DE DATOS ---
+    // --- MOTOR DE CÁLCULO & ESPEJO ---
     function calcEdad() {
         const f = new Date(document.getElementById('a_f_nac').value);
         if(!f) return;
@@ -186,206 +250,230 @@
         document.getElementById('a_edad').innerText = `EDAD AL 30/06: ${edad} AÑOS`;
     }
 
-    function saveData(type) {
-        const dni = document.getElementById('a_dni').value;
-        if(!dni) return alert("DNI REQUERIDO");
-
-        const data = {
-            dni,
-            nom: document.getElementById('a_nom').value.toUpperCase(),
-            f_nac: document.getElementById('a_f_nac').value,
-            dom: document.getElementById('a_dom').value,
-            sala: document.getElementById('a_sala').value,
-            salud: document.getElementById('a_salud').value,
-            p1_nom: document.getElementById('p1_nom').value,
-            p1_tel: document.getElementById('p1_tel').value,
-            p2_nom: document.getElementById('p2_nom').value,
-            p2_tel: document.getElementById('p2_tel').value,
-            stamp: new Date().toLocaleString()
-        };
-
-        if(type === 'DB') {
-            const i = DB.findIndex(x => x.dni === dni);
-            if(i > -1) DB[i] = data; else DB.push(data);
-        } else {
-            ESPERA.push(data);
-        }
-
-        sync();
-        clearForm();
-        alert("SISTEMA ACTUALIZADO");
+    function mirrorDom(p) {
+        document.getElementById(p + '_dom').value = document.getElementById('a_dom').value;
     }
 
     function radarCore() {
-        const q = document.getElementById('radarBusqueda').value.toUpperCase();
+        const q = document.getElementById('radarMain').value.toUpperCase();
         if(q.length < 3) return;
-        const a = DB.find(x => x.dni === q || x.nom.includes(q)) || ESPERA.find(x => x.dni === q || x.nom.includes(q));
-        if(a) loadLegajo(a);
+        const alu = DB.find(x => x.dni === q || x.nom.includes(q)) || ESPERA.find(x => x.dni === q || x.nom.includes(q));
+        if(alu) fillForm(alu);
     }
 
-    function loadLegajo(a) {
-        document.getElementById('a_nom').value = a.nom;
-        document.getElementById('a_dni').value = a.dni;
-        document.getElementById('a_f_nac').value = a.f_nac;
-        document.getElementById('a_dom').value = a.dom;
-        document.getElementById('a_sala').value = a.sala;
-        document.getElementById('a_salud').value = a.salud;
-        document.getElementById('p1_nom').value = a.p1_nom;
-        document.getElementById('p1_tel').value = a.p1_tel;
-        document.getElementById('p2_nom').value = a.p2_nom;
-        document.getElementById('p2_tel').value = a.p2_tel;
+    function fillForm(a) {
+        Object.keys(a).forEach(k => {
+            const el = document.getElementById(k);
+            if(el) el.value = a[k];
+        });
         calcEdad();
         nav(1);
     }
 
-    // --- VISTAS DINÁMICAS ---
-    function renderFoto(filtro = 'TODO') {
-        const container = document.getElementById('gridInteractiva');
-        container.innerHTML = '';
-        const data = filtro === 'TODO' ? DB : DB.filter(x => x.sala.includes(filtro));
+    // --- PERSISTENCIA & DATOS ---
+    function commitData(type) {
+        const dni = document.getElementById('a_dni').value;
+        if(!dni) return alert("CRÍTICO: DNI ES OBLIGATORIO");
 
-        data.forEach(a => {
-            const color = a.sala.split('-')[0];
-            container.innerHTML += `
-                <div class="glass-panel p-4 S-${color} cursor-pointer hover:bg-zinc-800 transition-all" onclick='loadLegajo(${JSON.stringify(a)})'>
-                    <p class="text-[7px] opacity-50">${a.dni}</p>
-                    <h3 class="text-nuke truncate">${a.nom}</h3>
-                    <p class="text-[8px]">${a.sala}</p>
-                    <button onclick="event.stopPropagation(); processBaja('${a.dni}')" class="mt-2 text-red-500 border border-red-500 px-2 py-1 rounded text-[7px] w-full">DAR DE BAJA</button>
+        const record = {};
+        document.querySelectorAll('input, select, textarea').forEach(i => {
+            if(i.id && i.id !== 'radarMain') record[i.id] = i.value.toUpperCase();
+        });
+        record.stamp = new Date().toLocaleDateString();
+
+        if(type === 'DB') {
+            const idx = DB.findIndex(x => x.a_dni === dni);
+            if(idx > -1) DB[idx] = record; else DB.push(record);
+        } else {
+            ESPERA.push(record);
+        }
+        sync();
+        clearForm();
+        alert("NÚCLEO ACTUALIZADO: CONSOLIDACIÓN EXITOSA");
+    }
+
+    function sync() {
+        localStorage.setItem('T360_DB', JSON.stringify(DB));
+        localStorage.setItem('T360_BAJAS', JSON.stringify(BAJAS));
+        localStorage.setItem('T360_ESPERA', JSON.stringify(ESPERA));
+        localStorage.setItem('T360_ASIS', JSON.stringify(ASIS_HOY));
+        updateUI();
+    }
+
+    function updateUI() {
+        const bar = document.getElementById('filterBar');
+        bar.innerHTML = `<button onclick="renderFoto('TODO')" class="bg-zinc-800 px-4 py-2 rounded text-[8px]">TOTAL MATRÍCULA (${DB.length})</button>`;
+        SALAS.forEach(s => {
+            const c = DB.filter(x => x.a_sala.includes(s)).length;
+            bar.innerHTML += `<button onclick="renderFoto('${s}')" class="bg-zinc-900 border-b-2 border-nuke px-4 py-2 rounded text-[8px]">${s} (${c})</button>`;
+        });
+    }
+
+    // --- FOTO INSTITUCIONAL ---
+    function renderFoto(f = 'TODO') {
+        const g = document.getElementById('fotoGrid');
+        g.innerHTML = '';
+        const list = f === 'TODO' ? DB : DB.filter(x => x.a_sala.includes(f));
+        list.forEach(a => {
+            const color = a.a_sala.split('-')[0];
+            g.innerHTML += `
+                <div class="glass p-3 S-${color} cursor-pointer hover:bg-zinc-800" onclick='fillForm(${JSON.stringify(a)})'>
+                    <p class="text-[7px] text-nuke">${a.a_dni}</p>
+                    <h4 class="truncate">${a.a_nom}</h4>
+                    <p class="text-[7px] opacity-60">${a.a_sala}</p>
+                    <div class="flex gap-1 mt-2">
+                        <button onclick="event.stopPropagation(); darDeBaja('${a.a_dni}')" class="text-red-500 border border-red-500/30 px-1 rounded text-[7px] w-full">BAJA</button>
+                    </div>
                 </div>
             `;
         });
     }
 
-    function processBaja(dni) {
-        const m = prompt("MOTIVO DE BAJA:");
-        if(!m) return;
-        const i = DB.findIndex(x => x.dni === dni);
+    function darDeBaja(dni) {
+        const mot = prompt("MOTIVO TÉCNICO DE LA BAJA:");
+        if(!mot) return;
+        const i = DB.findIndex(x => x.a_dni === dni);
         const alu = DB.splice(i, 1)[0];
-        alu.baja_motivo = m;
+        alu.baja_motivo = mot;
         alu.baja_fecha = new Date().toLocaleDateString();
         BAJAS.push(alu);
         sync();
         renderFoto();
     }
 
+    // --- ASISTENCIA RADAR ---
+    function startScan(mode) {
+        if(scanner) scanner.stop();
+        scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+        scanner.addListener('scan', (content) => {
+            if(mode === 'asis') {
+                ASIS_HOY[content] = { hora: new Date().toLocaleTimeString(), status: 'P' };
+                renderAsis();
+            } else {
+                document.getElementById('radarMain').value = content;
+                radarCore();
+            }
+        });
+        Instascan.Camera.getCameras().then(cams => { if(cams.length > 0) scanner.start(cams[0]); });
+    }
+
+    function renderAsis() {
+        const l = document.getElementById('asisList');
+        l.innerHTML = '';
+        Object.keys(ASIS_HOY).forEach(dni => {
+            const alu = DB.find(x => x.a_dni === dni);
+            l.innerHTML += `
+                <div class="p-2 border-l-4 border-nuke bg-nuke/5 flex justify-between">
+                    <span>${alu ? alu.a_nom : dni}</span>
+                    <span class="text-nuke">${ASIS_HOY[dni].hora}</span>
+                </div>
+            `;
+        });
+    }
+
+    // --- LISTA ESPERA ---
     function renderEspera() {
-        const cont = document.getElementById('listaEspera');
-        cont.innerHTML = '';
-        ESPERA.forEach((a, index) => {
-            cont.innerHTML += `
-                <div class="glass-panel p-3 flex justify-between items-center border-l-4 border-orange-500">
+        const l = document.getElementById('esperaList');
+        l.innerHTML = '';
+        ESPERA.forEach(a => {
+            l.innerHTML += `
+                <div class="glass p-4 border-l-4 border-bionic flex justify-between items-center">
                     <div>
-                        <h4 class="text-orange-400">${a.nom}</h4>
-                        <p class="text-[8px]">${a.sala} | REGISTRO: ${a.stamp}</p>
+                        <h4 class="text-bionic">${a.a_nom}</h4>
+                        <p class="text-[8px]">${a.a_sala} | MADRE: ${a.m_nom} - TEL: ${a.m_tel}</p>
                     </div>
-                    <button onclick="promover('${a.dni}')" class="bg-emerald-600 px-3 py-1 rounded text-[8px]">PROMOVER A MATRÍCULA</button>
+                    <button onclick="promover('${a.a_dni}')" class="bg-bionic text-black px-4 py-2 rounded text-[9px] font-black">OTORGAR VACANTE</button>
                 </div>
             `;
         });
     }
 
     function promover(dni) {
-        const i = ESPERA.findIndex(x => x.dni === dni);
+        const i = ESPERA.findIndex(x => x.a_dni === dni);
         const alu = ESPERA.splice(i, 1)[0];
         DB.push(alu);
         sync();
         renderEspera();
-        alert("ALUMNO PROMOVIDO A MATRÍCULA ACTIVA");
+        alert("VACANTE ASIGNADA: MOVIDO A MATRÍCULA ACTIVA");
     }
 
-    function renderBajas() {
-        const cont = document.getElementById('listaBajas');
-        cont.innerHTML = '';
-        BAJAS.forEach(a => {
-            cont.innerHTML += `
-                <div class="glass-panel p-3 border-l-4 border-red-500 opacity-70">
-                    <h4 class="text-red-500">${a.nom}</h4>
-                    <p class="text-[8px]">BAJA EL: ${a.baja_fecha} - MOTIVO: ${a.baja_motivo}</p>
+    // --- SUPERVISIÓN ÉLITE ---
+    function runSupervision() {
+        document.getElementById('m1').innerText = DB.length;
+        document.getElementById('m3').innerText = BAJAS.length;
+        document.getElementById('m4').innerText = ESPERA.length;
+        const pres = Object.keys(ASIS_HOY).length;
+        document.getElementById('m2').innerText = DB.length > 0 ? Math.round((pres/DB.length)*100) + "%" : "0%";
+
+        // Gráfico de Población
+        const ctx1 = document.getElementById('chart1').getContext('2d');
+        if(window.ch1) window.ch1.destroy();
+        window.ch1 = new Chart(ctx1, {
+            type: 'polarArea',
+            data: {
+                labels: SALAS,
+                datasets: [{
+                    data: SALAS.map(s => DB.filter(x => x.a_sala.includes(s)).length),
+                    backgroundColor: ['#ff69b4', '#ff0000', '#ffa500', '#87ceeb', '#8a2be2', '#ffff00', '#0000ff']
+                }]
+            },
+            options: { plugins: { legend: { labels: { color: '#fff' } } } }
+        });
+
+        const res = document.getElementById('resumenSalas');
+        res.innerHTML = '';
+        SALAS.forEach(s => {
+            const t = DB.filter(x => x.a_sala.includes(s)).length;
+            const auh = DB.filter(x => x.a_sala.includes(s) && (x.m_auh==='SI' || x.p_auh==='SI')).length;
+            res.innerHTML += `
+                <div class="p-3 bg-zinc-900 border border-zinc-700">
+                    <p class="text-nuke">${s}</p>
+                    <p class="text-xl">${t}</p>
+                    <p class="text-[7px] opacity-50">AUH: ${auh}</p>
                 </div>
             `;
         });
     }
 
-    // --- SUPERVISIÓN ---
-    function runSupervision() {
-        document.getElementById('st1').innerText = DB.length;
-        document.getElementById('st2').innerText = ESPERA.length;
-        document.getElementById('st3').innerText = BAJAS.length;
-        document.getElementById('st4').innerText = DB.length > 0 ? Math.round((ASIS.length / DB.length) * 100) + "%" : "0%";
-
-        const ctx = document.getElementById('chartSuperv').getContext('2d');
-        if(window.myChart) window.myChart.destroy();
-        window.myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: SALAS,
-                datasets: [{
-                    label: 'ALUMNOS POR SALA',
-                    data: SALAS.map(s => DB.filter(x => x.sala.includes(s)).length),
-                    backgroundColor: ['#ff69b4', '#ff0000', '#ffa500', '#87ceeb', '#8a2be2', '#ffff00', '#0000ff']
-                }]
-            },
-            options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { color: '#333' } } } }
-        });
-    }
-
     // --- SISTEMA ---
-    function sync() {
-        localStorage.setItem('TIT_DB', JSON.stringify(DB));
-        localStorage.setItem('TIT_BAJAS', JSON.stringify(BAJAS));
-        localStorage.setItem('TIT_ESPERA', JSON.stringify(ESPERA));
-        updateInterface();
-    }
-
-    function updateInterface() {
-        const f = document.getElementById('filtrosSalas');
-        f.innerHTML = `<button onclick="renderFoto('TODO')" class="bg-zinc-800 px-4 py-2 rounded text-[8px] min-w-fit">TODOS (${DB.length})</button>`;
-        SALAS.forEach(s => {
-            const count = DB.filter(x => x.sala.includes(s)).length;
-            f.innerHTML += `<button onclick="renderFoto('${s}')" class="bg-zinc-700 px-4 py-2 rounded text-[8px] min-w-fit border-b-2 border-nuke">${s} (${count})</button>`;
-        });
-    }
-
     function nav(n) {
         document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
         document.querySelectorAll('nav button').forEach(b => b.classList.add('opacity-50'));
         document.getElementById('view'+n).classList.remove('hidden');
         document.getElementById('n'+n).classList.remove('opacity-50');
         document.getElementById('n'+n).classList.add('tab-active');
-        if(n === 2) renderFoto();
-        if(n === 4) renderEspera();
-        if(n === 5) renderBajas();
-        if(n === 6) runSupervision();
-    }
-
-    function startScan() {
-        scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-        scanner.addListener('scan', (content) => {
-            if(!ASIS.includes(content)) {
-                ASIS.push(content);
-                const alu = DB.find(x => x.dni === content);
-                document.getElementById('listaPresentes').innerHTML += `<div class="p-2 bg-nuke/10 border border-nuke rounded text-[9px]">${alu ? alu.nom : content} - PRESENTE</div>`;
-                document.getElementById('countAsis').innerText = `(${ASIS.length})`;
-            }
-        });
-        Instascan.Camera.getCameras().then(cams => { if(cams.length > 0) scanner.start(cams[0]); });
-    }
-
-    function clearForm() {
-        document.querySelectorAll('input, select, textarea').forEach(i => i.value = '');
+        if(n===2) renderFoto();
+        if(n===4) renderEspera();
+        if(n===5) renderBajas();
+        if(n===6) runSupervision();
     }
 
     function exportExcel() {
         const ws = XLSX.utils.json_to_sheet(DB);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "MATRICULA");
-        XLSX.writeFile(wb, "TITANIUM_DATA.xlsx");
+        XLSX.utils.book_append_sheet(wb, ws, "MATRICULA_OFICIAL");
+        XLSX.writeFile(wb, `TITANIUM_EXIGENCIA_SUPERVISION_${new Date().toLocaleDateString()}.xlsx`);
     }
 
     function exportJSON() {
-        const blob = new Blob([JSON.stringify({DB, BAJAS, ESPERA})], {type: 'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "BACKUP.json"; a.click();
+        const blob = new Blob([JSON.stringify({DB, BAJAS, ESPERA, ASIS_HOY})], {type: 'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "TITANIUM_MASTER_BACKUP.json"; a.click();
+    }
+
+    function importData(input) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const d = JSON.parse(e.target.result);
+            DB = d.DB; BAJAS = d.BAJAS; ESPERA = d.ESPERA; ASIS_HOY = d.ASIS_HOY;
+            sync(); location.reload();
+        };
+        reader.readAsText(input.files[0]);
+    }
+
+    function clearForm() {
+        document.querySelectorAll('input, select, textarea').forEach(i => {
+            if(i.id !== 'a_nac') i.value = '';
+        });
     }
 </script>
 </body>
