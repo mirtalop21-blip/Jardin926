@@ -22,6 +22,7 @@
         .S-VIOLETA { border-left: 5px solid #8a2be2; } .S-AMARILLA { border-left: 5px solid #ffff00; }
         .S-AZUL { border-left: 5px solid #0000ff; }
         ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: var(--nuke); }
+        .alert-row { background: rgba(255, 0, 0, 0.1); border-left: 4px solid #ff0000 !important; }
     </style>
 </head>
 <body onload="initSystem()">
@@ -47,6 +48,7 @@
     <button onclick="show(4)" id="t4" class="btn-tab flex-1 text-orange-500 font-bold">4. LISTA DE ESPERA</button>
     <button onclick="show(5)" id="t5" class="btn-tab flex-1 text-red-500 font-bold">5. BAJAS</button>
     <button onclick="show(6)" id="t6" class="btn-tab flex-1 text-nuke font-black">6. SUPERVISIÓN ÉLITE</button>
+    <button onclick="show(7)" id="t7" class="btn-tab flex-1 text-cyan-400 font-bold">7. ASISTENCIA & ALERTAS</button>
 </nav>
 
 <main class="p-3">
@@ -56,7 +58,6 @@
                 <input type="text" id="radar" onkeyup="smartRadar()" class="flex-1 bg-black border-2 border-nuke p-4 text-xl font-bold placeholder-zinc-800 uppercase" placeholder="RADAR: APELLIDO O DNI...">
                 <button onclick="startDniScan('radar')" class="bg-zinc-800 px-6 text-nuke font-black border border-nuke/30 hover:bg-zinc-700">SCAN DNI</button>
             </div>
-
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" id="form_container">
                 <div class="space-y-2">
                     <h2 class="text-nuke border-b border-nuke/20 pb-1 italic font-bold">I. DATOS DEL ALUMNO</h2>
@@ -80,7 +81,6 @@
                     <select id="alu_sala" class="input-elite text-nuke font-bold"></select>
                     <textarea id="alu_salud" class="input-elite h-20" placeholder="FICHA DE SALUD / CUD / OBSERVACIONES"></textarea>
                 </div>
-
                 <div class="space-y-2">
                     <h2 class="text-zinc-500 border-b border-zinc-700 pb-1 font-bold italic">II. MADRE / TUTOR 1</h2>
                     <input id="m_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
@@ -97,7 +97,6 @@
                     </div>
                     <input id="m_tel" class="input-elite" placeholder="TELÉFONO CONTACTO">
                 </div>
-
                 <div class="space-y-2">
                     <h2 class="text-zinc-500 border-b border-zinc-700 pb-1 font-bold italic">III. PADRE / TUTOR 2</h2>
                     <input id="p_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
@@ -112,7 +111,6 @@
                     <input id="p_tel" class="input-elite" placeholder="TELÉFONO CONTACTO">
                 </div>
             </div>
-
             <div class="flex gap-4 mt-8">
                 <button onclick="saveRecord()" class="flex-1 bg-nuke text-black font-black py-4 text-lg shadow-[0_0_20px_rgba(223,255,0,0.3)] hover:scale-[1.01] transition uppercase">Consolidar Matrícula 360</button>
                 <button onclick="clearForm()" class="bg-zinc-800 px-8 text-xs font-bold uppercase">Limpiar</button>
@@ -135,12 +133,10 @@
         <div class="neon-border p-4 bg-zinc-900/50">
             <h3 class="text-center font-black mb-4">MÓDULO DE ESCANEO ACTIVO</h3>
             <video id="v-preview" class="w-full h-64 bg-black rounded border border-nuke mb-4 object-cover"></video>
-            <div class="flex gap-2">
-                <button onclick="startDniScan('radar')" class="flex-1 bg-zinc-800 py-4 font-black text-nuke border border-nuke/30">MODO IDENTIFICACIÓN DNI</button>
-            </div>
+            <button onclick="startDniScan('radar')" class="w-full bg-zinc-800 py-4 font-black text-nuke border border-nuke/30">MODO IDENTIFICACIÓN DNI</button>
         </div>
         <div class="neon-border p-4 bg-zinc-900/50 flex flex-col justify-center items-center">
-            <p class="text-zinc-500 italic">Apunte al código PDF417 del DNI para cargar datos automáticamente.</p>
+            <p class="text-zinc-500 italic text-center">Apunte al código PDF417 del DNI para cargar datos automáticamente.</p>
         </div>
     </section>
 
@@ -157,9 +153,11 @@
         </div>
     </section>
 
-    <section id="v5" class="hidden space-y-4">
+    <section id="v5" class="hidden space-y-6">
         <div class="bg-red-950/20 p-6 border-l-4 border-red-600 neon-border">
-            <h2 class="text-red-500 font-black text-xl mb-4">REGISTRO HISTÓRICO DE BAJAS</h2>
+            <h2 class="text-red-500 font-black text-xl mb-4 italic">RESUMEN DE BAJAS POR SALA (14 SECCIONES)</h2>
+            <div id="bajas_stats_grid" class="grid grid-cols-2 md:grid-cols-7 gap-2 mb-6"></div>
+            <h2 class="text-red-500 font-black text-sm mb-4 border-b border-red-900 pb-2">REGISTRO HISTÓRICO CRONOLÓGICO</h2>
             <div id="bajas_log" class="space-y-2"></div>
         </div>
     </section>
@@ -186,15 +184,57 @@
             <div class="neon-border bg-black/40 p-4"><canvas id="chartPoblacion"></canvas></div>
             <div class="neon-border bg-black/40 p-4"><canvas id="chartSocio"></canvas></div>
         </div>
-        <div id="analisis_supervision" class="p-6 bg-zinc-900/80 border border-nuke/20 grid grid-cols-1 md:grid-cols-3 gap-6 text-[11px] leading-relaxed"></div>
+    </section>
+
+    <section id="v7" class="hidden space-y-6">
+        <div class="neon-border p-6 bg-cyan-950/10 border-l-4 border-cyan-500">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-cyan-400 font-black text-xl italic uppercase text-shadow">Módulo de Asistencia & Alertas Tempranas</h2>
+                <label class="bg-cyan-600 text-black font-black px-6 py-3 cursor-pointer hover:bg-cyan-400 transition text-[10px]">
+                    ESCANEAR ARCHIVO DE ASISTENCIA (Excel/CSV)
+                    <input type="file" class="hidden" accept=".xlsx, .xls, .csv" onchange="processAttendance(this)">
+                </label>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="col-span-2 bg-black/50 p-4 border border-cyan-900/30">
+                    <h3 class="text-cyan-500 font-bold mb-4 flex items-center gap-2">
+                        <span class="animate-pulse">●</span> REGISTRO DE PRESENTISMO ACTUAL
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-[10px]">
+                            <thead class="bg-zinc-800 text-cyan-400">
+                                <tr>
+                                    <th class="p-2">ALUMNO</th>
+                                    <th class="p-2">SALA</th>
+                                    <th class="p-2 text-center">FALTAS MES</th>
+                                    <th class="p-2 text-center">ESTADO</th>
+                                    <th class="p-2 text-center">ACCIÓN</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendance_table_body"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="bg-red-900/20 p-4 border border-red-500/50">
+                        <h3 class="text-red-500 font-black mb-2 uppercase">Alertas de Riesgo</h3>
+                        <div id="alerts_container" class="space-y-2">
+                            <p class="text-zinc-500 italic">No hay alertas críticas detectadas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 </main>
 
 <script>
-    // BASE DE DATOS
     let DB = JSON.parse(localStorage.getItem('T360_ELITE_DB')) || [];
     let ESPERA = JSON.parse(localStorage.getItem('T360_ELITE_ESP')) || [];
     let BAJAS = JSON.parse(localStorage.getItem('T360_ELITE_BAJ')) || [];
+    let ASISTENCIA = JSON.parse(localStorage.getItem('T360_ELITE_ASI')) || {};
 
     const SALAS = ['ROSA', 'ROJA', 'NARANJA', 'CELESTE', 'VIOLETA', 'AMARILLA', 'AZUL'];
     const ESTUDIOS = ['SIN ESTUDIOS', 'PRIMARIA COMP.', 'PRIMARIA INCOMP.', 'SECUNDARIA COMP.', 'SECUNDARIA INCOMP.', 'TERCIARIA COMP.', 'TERCIARIA INCOMP.', 'UNIVERSITARIA COMP.', 'UNIVERSITARIA INCOMP.'];
@@ -218,14 +258,131 @@
         SALAS.forEach(s => {
             ['TM', 'TT'].forEach(t => sAlu.innerHTML += `<option value="${s}-${t}">${s} - ${t}</option>`);
         });
-
         document.querySelectorAll('.edu-selector').forEach(sel => {
             sel.innerHTML = '<option value="">NIVEL ESTUDIOS</option>';
             ESTUDIOS.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
         });
     }
 
-    // --- MÓDULO VOZ BIÓNICA ---
+    function refresh() {
+        localStorage.setItem('T360_ELITE_DB', JSON.stringify(DB));
+        localStorage.setItem('T360_ELITE_ESP', JSON.stringify(ESPERA));
+        localStorage.setItem('T360_ELITE_BAJ', JSON.stringify(BAJAS));
+        localStorage.setItem('T360_ELITE_ASI', JSON.stringify(ASISTENCIA));
+        runMetrics();
+        renderBajas();
+        renderAttendance();
+    }
+
+    // --- MEJORA: RENDER BAJAS SALA POR SALA ---
+    function renderBajas() {
+        const stats = document.getElementById('bajas_stats_grid');
+        const log = document.getElementById('bajas_log');
+        stats.innerHTML = '';
+        log.innerHTML = '';
+
+        SALAS.forEach(s => {
+            ['TM', 'TT'].forEach(t => {
+                const tag = `${s}-${t}`;
+                const count = BAJAS.filter(x => x.alu_sala === tag).length;
+                stats.innerHTML += `
+                    <div class="bg-black border border-red-900/30 p-2 text-center">
+                        <p class="text-[7px] text-zinc-500">${tag}</p>
+                        <p class="text-lg font-black text-red-500">${count}</p>
+                    </div>`;
+            });
+        });
+
+        BAJAS.sort((a,b) => new Date(b.baja_fecha) - new Date(a.baja_fecha)).forEach(b => {
+            log.innerHTML += `
+                <div class="p-2 border border-red-900 bg-red-950/10 flex justify-between items-center">
+                    <div>
+                        <span class="text-red-500 font-bold">${b.baja_fecha}</span> | 
+                        <span class="text-nuke font-bold">${b.alu_nombre}</span> | 
+                        SALA: ${b.alu_sala} | MOTIVO: ${b.baja_motivo}
+                    </div>
+                    <button onclick="restaurarAlu('${b.alu_dni}')" class="bg-zinc-800 px-3 py-1 text-[8px] hover:bg-green-700">RE-INCORPORAR</button>
+                </div>`;
+        });
+    }
+
+    // --- NUEVO: MÓDULO ASISTENCIA ---
+    function processAttendance(input) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, {type: 'array'});
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(sheet);
+            
+            rows.forEach(row => {
+                const dni = row.DNI || row.dni;
+                if(dni) {
+                    if(!ASISTENCIA[dni]) ASISTENCIA[dni] = { faltas: 0, historial: [] };
+                    if(row.ASISTENCIA === 'AUSENTE') {
+                        ASISTENCIA[dni].faltas++;
+                        ASISTENCIA[dni].historial.push(new Date().toLocaleDateString());
+                    }
+                }
+            });
+            refresh();
+            alert("ASISTENCIA PROCESADA CORRECTAMENTE");
+        };
+        reader.readAsArrayBuffer(input.files[0]);
+    }
+
+    function renderAttendance() {
+        const tbody = document.getElementById('attendance_table_body');
+        const alerts = document.getElementById('alerts_container');
+        if(!tbody) return;
+        
+        tbody.innerHTML = '';
+        alerts.innerHTML = '';
+        let hasAlerts = false;
+
+        DB.forEach(a => {
+            const asi = ASISTENCIA[a.alu_dni] || { faltas: 0 };
+            const isCritical = asi.faltas >= 3;
+            if(isCritical) hasAlerts = true;
+
+            tbody.innerHTML += `
+                <tr class="${isCritical ? 'alert-row' : 'border-b border-zinc-800'}">
+                    <td class="p-2 font-bold">${a.alu_nombre}</td>
+                    <td class="p-2">${a.alu_sala}</td>
+                    <td class="p-2 text-center font-black ${asi.faltas > 0 ? 'text-red-500' : ''}">${asi.faltas}</td>
+                    <td class="p-2 text-center">${isCritical ? '⚠️ RIESGO' : 'OK'}</td>
+                    <td class="p-2 text-center">
+                        <button onclick="window.open('https://wa.me/${a.m_tel}')" class="bg-emerald-700 px-2 py-1 rounded">MENS.</button>
+                    </td>
+                </tr>`;
+
+            if(isCritical) {
+                alerts.innerHTML += `
+                    <div class="bg-red-600 text-white p-2 text-[9px] font-bold flex justify-between items-center animate-pulse">
+                        <span>${a.alu_nombre} (${asi.faltas} FALTAS)</span>
+                        <button onclick="alertDirectivo('${a.alu_nombre}')">AVISAR</button>
+                    </div>`;
+            }
+        });
+        if(!hasAlerts) alerts.innerHTML = '<p class="text-zinc-500 italic">No hay alertas críticas detectadas.</p>';
+    }
+
+    function alertDirectivo(nombre) {
+        const tel = document.getElementById('tel_directivo').value;
+        if(!tel) return alert("INGRESE TELÉFONO DEL DIRECTIVO");
+        window.open(`https://wa.me/${tel}?text=ALERTA_360: El alumno ${nombre} presenta inasistencias reiteradas.`);
+    }
+
+    function restaurarAlu(dni) {
+        const idx = BAJAS.findIndex(x => x.alu_dni === dni);
+        const alu = BAJAS.splice(idx, 1)[0];
+        delete alu.baja_motivo;
+        delete alu.baja_fecha;
+        DB.push(alu);
+        refresh();
+    }
+
+    // --- FUNCIONES ORIGINALES (SIN TOCAR) ---
     function initVoice() {
         if (!('webkitSpeechRecognition' in window)) return;
         recognition = new webkitSpeechRecognition();
@@ -244,7 +401,6 @@
         recognition.start();
     }
 
-    // --- LÓGICA DE DATOS ---
     function calcLogic() {
         const fnac = new Date(document.getElementById('alu_f_nac').value);
         if(isNaN(fnac)) return;
@@ -257,15 +413,12 @@
     function saveRecord() {
         const dni = document.getElementById('alu_dni').value;
         if(!dni) return alert("ERROR: DNI OBLIGATORIO.");
-        
         const data = {};
         document.querySelectorAll('#form_container input, #form_container select, #form_container textarea').forEach(el => {
             if(el.id) data[el.id] = el.value.toUpperCase();
         });
-
         const idx = DB.findIndex(x => x.alu_dni === dni);
         if(idx > -1) DB[idx] = data; else DB.push(data);
-        
         refresh();
         alert("SISTEMA: LEGAJO CONSOLIDADO.");
         clearForm();
@@ -274,7 +427,7 @@
     function smartRadar() {
         const val = document.getElementById('radar').value.toUpperCase();
         if(val.length < 3) return;
-        const res = DB.find(x => x.alu_dni.includes(val) || x.alu_nombre.includes(val));
+        const res = DB.find(x => x.alu_dni.includes(val) || (x.alu_nombre && x.alu_nombre.includes(val)));
         if(res) {
             Object.keys(res).forEach(k => { const el = document.getElementById(k); if(el) el.value = res[k]; });
             calcLogic();
@@ -344,6 +497,7 @@
 
     function renderEspera() {
         const g = document.getElementById('espera_grid');
+        if(!g) return;
         g.innerHTML = '';
         ESPERA.forEach(a => {
             g.innerHTML += `
@@ -364,13 +518,13 @@
         show(1);
     }
 
-    // --- MÉTRICAS Y GRÁFICOS ---
     function runMetrics() {
+        if(!document.getElementById('st_mat')) return;
         document.getElementById('st_mat').innerText = DB.length;
         document.getElementById('st_ext').innerText = DB.filter(x => x.alu_nac !== 'ARGENTINA').length;
         document.getElementById('st_esp').innerText = ESPERA.length;
         document.getElementById('st_baj').innerText = BAJAS.length;
-        document.getElementById('st_work').innerText = DB.filter(x => x.m_ocu || x.p_ocu).length;
+        document.getElementById('st_work').innerText = DB.filter(x => (x.m_ocu && x.m_ocu !== '') || (x.p_ocu && x.p_ocu !== '')).length;
 
         const ctx1 = document.getElementById('chartPoblacion').getContext('2d');
         if(window.ch1) window.ch1.destroy();
@@ -384,7 +538,7 @@
                     backgroundColor: ['#ff69b4','#ff0000','#ffa500','#00d4ff','#8a2be2','#ffff00','#0000ff']
                 }]
             },
-            options: { scales: { y: { beginAtZero: true, ticks: { color: '#fff' } } } }
+            options: { plugins: { legend: { labels: { color: '#fff' } } }, scales: { y: { beginAtZero: true, ticks: { color: '#fff' } }, x: { ticks: { color: '#fff' } } } }
         });
 
         const ctx2 = document.getElementById('chartSocio').getContext('2d');
@@ -400,33 +554,7 @@
                     backgroundColor: 'rgba(223, 255, 0, 0.2)'
                 }]
             },
-            options: { scales: { r: { grid: { color: '#333' }, pointLabels: { color: '#fff' } } } }
-        });
-
-        const div = document.getElementById('analisis_supervision');
-        const nacPerc = DB.length ? ((DB.filter(x=>x.alu_nac==='ARGENTINA').length/DB.length)*100).toFixed(1) : 0;
-        div.innerHTML = `
-            <div><p class="text-nuke font-bold mb-2 uppercase">Población</p><p>Matrícula con un ${nacPerc}% de origen nacional. Estabilidad detectada.</p></div>
-            <div><p class="text-nuke font-bold mb-2 uppercase">Social</p><p>${ESPERA.length} familias en lista de espera. Necesidad de vacantes alta.</p></div>
-            <div><p class="text-nuke font-bold mb-2 uppercase">Laboral</p><p>${document.getElementById('st_work').innerText} tutores con ocupación declarada.</p></div>`;
-    }
-
-    // --- FUNCIONES AUXILIARES ---
-    function refresh() {
-        localStorage.setItem('T360_ELITE_DB', JSON.stringify(DB));
-        localStorage.setItem('T360_ELITE_ESP', JSON.stringify(ESPERA));
-        localStorage.setItem('T360_ELITE_BAJ', JSON.stringify(BAJAS));
-        runMetrics();
-        renderBajas();
-    }
-
-    function renderBajas() {
-        const log = document.getElementById('bajas_log');
-        log.innerHTML = '';
-        BAJAS.forEach(b => {
-            log.innerHTML += `<div class="p-2 border border-red-900 bg-red-950/10 text-[10px]">
-                <span class="text-red-500 font-bold">${b.baja_fecha}</span> | ${b.alu_nombre} | MOTIVO: ${b.baja_motivo}
-            </div>`;
+            options: { scales: { r: { grid: { color: '#333' }, pointLabels: { color: '#fff' }, ticks: { display: false } } } }
         });
     }
 
@@ -437,7 +565,9 @@
         document.getElementById('t'+n).classList.add('active-tab');
         if(n === 2) renderT14();
         if(n === 4) renderEspera();
+        if(n === 5) renderBajas();
         if(n === 6) runMetrics();
+        if(n === 7) renderAttendance();
     }
 
     function editAlu(dni) {
@@ -452,7 +582,6 @@
         if(scanner) scanner.stop();
         scanner = new Instascan.Scanner({ video: document.getElementById('v-preview'), mirror: false });
         scanner.addListener('scan', (content) => {
-            // Lógica simple para extraer DNI si viene de código PDF417 de Argentina
             let cleanDni = content.length > 20 ? content.split('@')[1] : content;
             if(mode === 'radar') {
                 document.getElementById('radar').value = cleanDni;
@@ -462,7 +591,7 @@
             scanner.stop();
         });
         Instascan.Camera.getCameras().then(c => {
-            if(c.length > 0) scanner.start(c[0]);
+            if(c.length > 0) scanner.start(c[c.length-1]);
             else alert("NO SE DETECTÓ CÁMARA");
         });
     }
@@ -475,7 +604,7 @@
     }
 
     function exportBackup() {
-        const data = { DB, ESPERA, BAJAS };
+        const data = { DB, ESPERA, BAJAS, ASISTENCIA };
         const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -487,7 +616,7 @@
         const reader = new FileReader();
         reader.onload = (e) => {
             const data = JSON.parse(e.target.result);
-            DB = data.DB || []; ESPERA = data.ESPERA || []; BAJAS = data.BAJAS || [];
+            DB = data.DB || []; ESPERA = data.ESPERA || []; BAJAS = data.BAJAS || []; ASISTENCIA = data.ASISTENCIA || {};
             refresh();
             alert("SISTEMA RESTAURADO: " + DB.length + " ALUMNOS.");
         };
