@@ -3,67 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITANIUM 360 ELITE | GESTIÓN INSTITUCIONAL TOTAL</title>
+    <title>TITANIUM 360 ELITE | INTERACTIVE INTELLIGENCE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         :root { --nuke: #dfff00; --bg: #05070a; }
-        body { background: var(--bg); color: #e1e1e1; font-family: 'Roboto', sans-serif; overflow-x: hidden; }
-        .orbitron { font-family: 'Orbitron', sans-serif; }
+        body { background: var(--bg); color: #e1e1e1; font-family: 'Roboto', sans-serif; }
+        .orbitron { font-family: 'Orbitron'; }
         .neon-border { border: 1px solid rgba(223, 255, 0, 0.3); box-shadow: 0 0 15px rgba(223, 255, 0, 0.05); }
-        .input-elite { background: #000; border: 1px solid #333; padding: 12px; color: var(--nuke); width: 100%; border-radius: 4px; border-left: 3px solid var(--nuke); font-weight: bold; }
+        .input-elite { background: #000; border: 1px solid #333; padding: 12px; color: var(--nuke); width: 100%; border-radius: 4px; border-left: 3px solid var(--nuke); font-weight: bold; font-size: 13px; }
         .btn-tab { padding: 15px; opacity: 0.5; transition: 0.3s; border-bottom: 2px solid transparent; text-transform: uppercase; font-weight: bold; font-family: 'Orbitron'; font-size: 10px; }
         .active-tab { opacity: 1; border-bottom: 3px solid var(--nuke); color: var(--nuke); background: rgba(223, 255, 0, 0.1); }
-        
         .S-ROSA { border-left-color: #ff69b4; } .S-ROJA { border-left-color: #ff0000; }
         .S-NARANJA { border-left-color: #ffa500; } .S-CELESTE { border-left-color: #00d4ff; }
         .S-VIOLETA { border-left-color: #8a2be2; } .S-AMARILLA { border-left-color: #ffff00; }
         .S-VERDE { border-left-color: #32cd32; } .S-AZUL { border-left-color: #0000ff; }
-        
-        .card-sala { background: #111; border-radius: 8px; transition: 0.3s; cursor: pointer; position: relative; overflow: hidden; }
-        .card-sala:hover { transform: translateY(-5px); background: #181818; }
-        .scroll-custom::-webkit-scrollbar { width: 4px; }
-        .scroll-custom::-webkit-scrollbar-thumb { background: var(--nuke); }
     </style>
 </head>
 <body onload="initSystem()">
 
-<header class="p-4 flex flex-wrap justify-between items-center bg-black border-b-2 border-nuke sticky top-0 z-[1000]">
+<header class="p-4 flex justify-between items-center bg-black border-b-2 border-nuke sticky top-0 z-[1000]">
     <div class="flex items-center gap-4">
         <div class="bg-nuke text-black px-6 py-2 font-black italic orbitron text-xl">TITANIUM 360 ELITE</div>
-        <div class="hidden md:block text-[9px] text-zinc-500 orbitron uppercase">Terminal de Inteligencia Administrativa</div>
+        <div class="text-[9px] text-zinc-500 orbitron uppercase hidden md:block">Process Engineering - J926</div>
     </div>
     <div class="flex gap-2">
-        <button onclick="exportExcel()" class="bg-green-700 hover:bg-green-600 px-4 py-2 text-[10px] font-bold rounded orbitron transition shadow-lg">EXPORTAR EXCEL SUPERVISIÓN</button>
-        <label class="bg-blue-600 hover:bg-blue-500 px-4 py-2 text-[10px] rounded cursor-pointer font-bold orbitron transition">
+        <button onclick="exportExcel()" class="bg-green-700 hover:bg-green-600 px-4 py-2 text-[10px] font-bold rounded orbitron">EXCEL SUPERVISIÓN</button>
+        <label class="bg-blue-600 px-4 py-2 text-[10px] rounded cursor-pointer font-bold orbitron">
             IMPORTAR SISTEMA <input type="file" class="hidden" onchange="importData(this)">
         </label>
-        <button onclick="exportJSON()" class="bg-zinc-800 px-4 py-2 text-[10px] font-bold rounded orbitron">BACKUP JSON</button>
+        <button onclick="exportJSON()" class="bg-zinc-800 px-4 py-2 text-[10px] font-bold rounded orbitron">BACKUP</button>
     </div>
 </header>
 
-<nav class="flex overflow-x-auto bg-zinc-900/95 sticky top-[68px] z-[999] border-b border-white/10 backdrop-blur-md">
-    <button onclick="show(1)" id="t1" class="btn-tab active-tab flex-1">1. LEGAJO BIÓNICO</button>
-    <button onclick="show(2)" id="t2" class="btn-tab flex-1">2. FOTOGRAFÍA (14 SALAS)</button>
-    <button onclick="show(3)" id="t3" class="btn-tab flex-1 text-orange-400">3. ESPERA & ESCANEO</button>
+<nav class="flex overflow-x-auto bg-zinc-900/95 sticky top-[68px] z-[999] border-b border-white/5">
+    <button onclick="show(1)" id="t1" class="btn-tab active-tab flex-1">1. LEGAJO & EDICIÓN</button>
+    <button onclick="show(2)" id="t2" class="btn-tab flex-1">2. 14 SALAS</button>
+    <button onclick="show(3)" id="t3" class="btn-tab flex-1 text-orange-400">3. LISTA ESPERA COMPLETA</button>
     <button onclick="show(4)" id="t4" class="btn-tab flex-1 text-red-500">4. ASISTENCIA & BAJAS</button>
-    <button onclick="show(5)" id="t5" class="btn-tab flex-1 text-nuke">5. SUPERVISIÓN ÉLITE</button>
+    <button onclick="show(5)" id="t5" class="btn-tab flex-1 text-nuke">5. INFORMES SUPERVISIÓN</button>
 </nav>
 
-<main class="p-6">
+<main class="p-6 max-w-[1800px] mx-auto">
     <section id="v1" class="space-y-6">
         <div class="neon-border p-6 bg-zinc-900/30 rounded-lg">
-            <div class="flex flex-wrap gap-4 mb-8">
-                <input type="text" id="radar" onkeyup="smartRadar()" class="flex-1 bg-black border-2 border-nuke p-5 text-2xl font-bold orbitron placeholder-zinc-800 uppercase" placeholder="BUSCADOR RADAR: ESCRIBA APELLIDO O DNI...">
-                <button onclick="startVoice()" class="bg-red-600 px-8 flex items-center gap-2 font-black orbitron transition animate-pulse">🎤 VOZ</button>
-                <button onclick="alert('ESCÁNER ÓPTICO ACTIVADO')" class="bg-white text-black px-8 font-black orbitron hover:bg-nuke transition">SCAN DNI</button>
+            <div class="flex gap-4 mb-8">
+                <input type="text" id="radar" onkeyup="smartRadar()" class="flex-1 bg-black border-2 border-nuke p-5 text-2xl font-bold orbitron placeholder-zinc-800 uppercase" placeholder="BUSCAR POR DNI O APELLIDO...">
+                <button onclick="alert('ESCÁNER ACTIVADO')" class="bg-white text-black px-8 font-black orbitron hover:bg-nuke transition">SCAN DNI</button>
             </div>
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" id="form_container">
-                <div class="space-y-4">
-                    <h2 class="text-nuke border-b border-nuke/30 pb-2 orbitron font-bold italic uppercase flex justify-between">Escolaridad Alumno</h2>
+                <div class="space-y-3">
+                    <h2 class="text-nuke border-b border-nuke/30 pb-2 orbitron font-bold uppercase italic">Datos Alumno</h2>
                     <input id="alu_nombre" class="input-elite" placeholder="APELLIDOS Y NOMBRES">
                     <div class="grid grid-cols-2 gap-2"><input id="alu_dni" class="input-elite" placeholder="DNI"><input id="alu_nac" class="input-elite" placeholder="NACIONALIDAD"></div>
                     <div class="grid grid-cols-2 gap-2"><input type="date" id="alu_f_nac" class="input-elite"><select id="alu_sala" class="input-elite"></select></div>
@@ -73,290 +65,150 @@
                         <select id="alu_os" class="input-elite"><option value="NO">O. SOCIAL: NO</option><option value="SI">O. SOCIAL: SI</option></select>
                     </div>
                 </div>
-                <div class="space-y-4">
-                    <h2 class="text-zinc-500 border-b border-zinc-700 pb-2 orbitron font-bold italic uppercase flex justify-between">Grupo Familiar: Madre</h2>
+                <div class="space-y-3">
+                    <h2 class="text-zinc-500 border-b border-zinc-700 pb-2 orbitron font-bold uppercase italic">Madre / Tutor</h2>
                     <input id="m_nombre" class="input-elite" placeholder="NOMBRE COMPLETO">
                     <div class="grid grid-cols-2 gap-2"><input id="m_dni" class="input-elite" placeholder="DNI"><input id="m_tel1" class="input-elite" placeholder="WHATSAPP"></div>
+                    <div class="flex gap-1">
+                        <input id="m_dom" class="input-elite" placeholder="DOMICILIO">
+                        <button onclick="cloneDom('m')" class="bg-zinc-800 px-2 text-[10px] font-bold orbitron" title="Mismo que alumno">CLON</button>
+                    </div>
                     <select id="m_edu" class="input-elite edu-selector"></select>
-                    <input id="m_ocu" class="input-elite" placeholder="OCUPACIÓN / TRABAJO">
+                    <input id="m_ocu" class="input-elite" placeholder="TRABAJO / OCUPACIÓN">
                 </div>
-                <div class="space-y-4">
-                    <h2 class="text-zinc-500 border-b border-zinc-700 pb-2 orbitron font-bold italic uppercase flex justify-between">Grupo Familiar: Padre</h2>
+                <div class="space-y-3">
+                    <h2 class="text-zinc-500 border-b border-zinc-700 pb-2 orbitron font-bold uppercase italic">Padre / Tutor</h2>
                     <input id="p_nombre" class="input-elite" placeholder="NOMBRE COMPLETO">
                     <div class="grid grid-cols-2 gap-2"><input id="p_dni" class="input-elite" placeholder="DNI"><input id="p_tel1" class="input-elite" placeholder="WHATSAPP"></div>
+                    <div class="flex gap-1">
+                        <input id="p_dom" class="input-elite" placeholder="DOMICILIO">
+                        <button onclick="cloneDom('p')" class="bg-zinc-800 px-2 text-[10px] font-bold orbitron" title="Mismo que alumno">CLON</button>
+                    </div>
                     <select id="p_edu" class="input-elite edu-selector"></select>
-                    <input id="p_ocu" class="input-elite" placeholder="OCUPACIÓN / TRABAJO">
+                    <input id="p_ocu" class="input-elite" placeholder="TRABAJO / OCUPACIÓN">
                 </div>
             </div>
 
             <div class="flex gap-4 mt-10">
-                <button onclick="saveData('MATRICULA')" class="flex-1 bg-nuke text-black font-black py-6 orbitron text-2xl hover:scale-[1.01] transition shadow-lg shadow-nuke/20 uppercase">CONSOLIDAR MATRÍCULA</button>
-                <button onclick="clearForm()" class="bg-zinc-800 px-10 font-bold orbitron uppercase text-[10px]">RESETEAR</button>
+                <button id="btn_save" onclick="saveData('MATRICULA')" class="flex-1 bg-nuke text-black font-black py-6 orbitron text-2xl hover:scale-[1.01] transition shadow-lg shadow-nuke/20 uppercase">Consolidar Carga</button>
+                <button onclick="clearForm()" class="bg-zinc-800 px-12 font-bold orbitron uppercase text-[10px]">Limpiar</button>
             </div>
-        </div>
-    </section>
-
-    <section id="v2" class="hidden">
-        <div id="grid_salas" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4"></div>
-        <div id="sala_view" class="hidden mt-10 neon-border p-8 bg-black/60 rounded-xl">
-            <div class="flex justify-between items-center border-b border-nuke mb-6 pb-2">
-                <h3 id="sala_title" class="text-3xl font-black orbitron italic text-nuke"></h3>
-                <button onclick="document.getElementById('sala_view').classList.add('hidden')" class="text-red-500 font-bold orbitron">CERRAR</button>
-            </div>
-            <div id="sala_list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-h-[400px] overflow-y-auto scroll-custom"></div>
         </div>
     </section>
 
     <section id="v3" class="hidden">
-        <div class="bg-orange-600/10 border-l-4 border-orange-500 p-8 neon-border">
-            <h2 class="orbitron text-orange-500 text-3xl font-black mb-6 flex justify-between">LISTA DE ESPERA ACTIVA <button onclick="saveData('ESPERA')" class="bg-orange-600 text-white text-[12px] px-6 py-2">CARGAR ASPIRANTE</button></h2>
-            <div id="espera_list" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
-        </div>
-    </section>
-
-    <section id="v4" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-10">
-        <div class="neon-border p-8 bg-zinc-900/40">
-            <h2 class="orbitron text-nuke font-bold text-2xl mb-6">ASISTENCIA POR ESCANEO</h2>
-            <div class="p-10 border-2 border-dashed border-zinc-700 text-center rounded-lg mb-6 hover:border-nuke transition cursor-pointer">
-                <input type="file" id="asist_img" class="hidden" onchange="processAttendance(this)">
-                <label for="asist_img" class="orbitron text-zinc-500 cursor-pointer">SUBIR FOTO DEL REGISTRO PARA CÁLCULO</label>
+        <div class="bg-orange-600/5 p-8 neon-border rounded-xl">
+            <h2 class="orbitron text-orange-500 text-3xl font-black mb-8 flex justify-between items-center">
+                LISTA DE ESPERA INTEGRAL
+                <button onclick="show(1)" class="bg-orange-600 text-white text-[10px] px-6 py-2 orbitron">NUEVA CARGA ESPERA</button>
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-[11px] border-separate border-spacing-y-2">
+                    <thead class="orbitron text-zinc-500 uppercase">
+                        <tr>
+                            <th class="p-4">Alumno</th><th class="p-4">DNI</th><th class="p-4">Sala</th><th class="p-4">Contacto Familiar</th><th class="p-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="espera_full_list"></tbody>
+                </table>
             </div>
-            <div id="asist_stats" class="space-y-4"></div>
-        </div>
-        <div class="neon-border p-8 bg-red-900/10">
-            <h2 class="orbitron text-red-500 font-bold text-2xl mb-6">HISTORIAL DE BAJAS (MAR-DIC)</h2>
-            <div id="bajas_list" class="space-y-3 max-h-[500px] overflow-y-auto scroll-custom"></div>
         </div>
     </section>
 
-    <section id="v5" class="hidden space-y-10">
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
-            <div class="bg-zinc-900 p-8 rounded border-b-4 border-nuke"><p class="text-[9px] orbitron text-zinc-500 uppercase">Matrícula</p><h4 id="st_total" class="text-5xl font-black text-nuke">0</h4></div>
-            <div class="bg-zinc-900 p-8 rounded border-b-4 border-blue-500"><p class="text-[9px] orbitron text-zinc-500 uppercase">Nacionalidad</p><h4 id="st_nac" class="text-5xl font-black text-blue-500">0%</h4></div>
-            <div class="bg-zinc-900 p-8 rounded border-b-4 border-orange-500"><p class="text-[9px] orbitron text-zinc-500 uppercase">AUH</p><h4 id="st_auh" class="text-5xl font-black text-orange-500">0</h4></div>
-            <div class="bg-zinc-900 p-8 rounded border-b-4 border-green-500"><p class="text-[9px] orbitron text-zinc-500 uppercase">Vínculo Trab.</p><h4 id="st_work" class="text-5xl font-black text-green-500">0%</h4></div>
-            <div class="bg-zinc-900 p-8 rounded border-b-4 border-red-500"><p class="text-[9px] orbitron text-zinc-500 uppercase">Bajas</p><h4 id="st_bajas" class="text-5xl font-black text-red-500">0</h4></div>
-        </div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            <div class="bg-zinc-900/50 p-8 h-[400px] rounded shadow-2xl"><canvas id="chartSalas"></canvas></div>
-            <div class="bg-zinc-900/50 p-8 h-[400px] rounded shadow-2xl"><canvas id="chartEdu"></canvas></div>
-        </div>
-    </section>
+    <section id="v2" class="hidden"><div id="grid_salas" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4"></div></section>
+    <section id="v4" class="hidden"><div id="bajas_list" class="space-y-2"></div></section>
+    <section id="v5" class="hidden"><div id="stats_panel" class="grid grid-cols-2 md:grid-cols-5 gap-6"></div></section>
 </main>
-
-<div id="modal_baja" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[2000] p-6">
-    <div class="bg-zinc-900 p-10 neon-border max-w-md w-full">
-        <h2 class="orbitron text-red-500 font-bold mb-6">PROCESAR BAJA INSTITUCIONAL</h2>
-        <select id="baja_motivo" class="input-elite mb-4">
-            <option value="MUDANZA">MUDANZA</option>
-            <option value="PASE GESTIÓN PRIVADA">PASE GESTIÓN PRIVADA</option>
-            <option value="PROBLEMAS FAMILIARES">PROBLEMAS FAMILIARES</option>
-            <option value="OTRO">OTRO</option>
-        </select>
-        <div class="flex gap-4">
-            <button onclick="confirmBaja()" class="flex-1 bg-red-600 py-4 font-black orbitron">CONFIRMAR BAJA</button>
-            <button onclick="closeModal()" class="bg-zinc-800 px-6">X</button>
-        </div>
-    </div>
-</div>
 
 <script>
     let MATRICULA = JSON.parse(localStorage.getItem('T360_MAT')) || [];
     let ESPERA = JSON.parse(localStorage.getItem('T360_ESP')) || [];
-    let BAJAS = JSON.parse(localStorage.getItem('T360_BAJ')) || [];
-    let selectedDniBaja = null;
-
+    
     const SALAS = ['ROSA', 'ROJA', 'NARANJA', 'CELESTE', 'VIOLETA', 'AMARILLA', 'VERDE', 'AZUL'];
-    const ESTUDIOS = ['PRIMARIA COMP.', 'SECUNDARIA COMP.', 'TERCIARIA COMP.', 'UNIVERSITARIA COMP.', 'INCOMPLETOS'];
-    const MESES = ['MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+    const EDU_LEVELS = [
+        "SIN ESTUDIOS", "PRIMARIA COMPLETA", "PRIMARIA INCOMPLETA", 
+        "SECUNDARIA COMPLETA", "SECUNDARIA INCOMPLETA", 
+        "TERCIARIA COMPLETA", "TERCIARIA INCOMPLETA", 
+        "UNIVERSITARIA COMPLETA", "UNIVERSITARIA INCOMPLETA"
+    ];
 
     function initSystem() {
-        const sAlu = document.getElementById('alu_sala');
-        sAlu.innerHTML = '<option value="">SELECCIONAR SALA Y TURNO</option>';
+        const sSel = document.getElementById('alu_sala');
+        sSel.innerHTML = '<option value="">SALA Y TURNO...</option>';
         SALAS.forEach(s => {
-            ['TM', 'TT'].forEach(t => sAlu.innerHTML += `<option value="${s}-${t}">${s} - ${t}</option>`);
+            ['TM', 'TT'].forEach(t => sSel.innerHTML += `<option value="${s}-${t}">${s} - ${t}</option>`);
         });
 
         document.querySelectorAll('.edu-selector').forEach(sel => {
-            sel.innerHTML = '<option value="">ESTUDIOS ALCANZADOS...</option>';
-            ESTUDIOS.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
+            sel.innerHTML = '<option value="">ESCOLARIDAD...</option>';
+            EDU_LEVELS.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
         });
         refresh();
     }
 
-    function refresh() {
-        localStorage.setItem('T360_MAT', JSON.stringify(MATRICULA));
-        localStorage.setItem('T360_ESP', JSON.stringify(ESPERA));
-        localStorage.setItem('T360_BAJ', JSON.stringify(BAJAS));
-        renderGrid();
-        renderEspera();
-        renderBajas();
-        updateStats();
+    function cloneDom(who) {
+        document.getElementById(who + '_dom').value = document.getElementById('alu_dom').value;
+    }
+
+    function smartRadar() {
+        const val = document.getElementById('radar').value.toUpperCase();
+        const btn = document.getElementById('btn_save');
+        if(val.length < 3) { btn.innerText = "Consolidar Carga"; return; }
+        
+        const res = MATRICULA.find(x => x.alu_dni === val || x.alu_nombre.includes(val));
+        if(res) {
+            Object.keys(res).forEach(k => { if(document.getElementById(k)) document.getElementById(k).value = res[k]; });
+            btn.innerText = "ACTUALIZAR DATOS EXISTENTES";
+            btn.classList.replace('bg-nuke', 'bg-blue-600');
+        } else {
+            btn.innerText = "Consolidar Carga";
+            btn.classList.replace('bg-blue-600', 'bg-nuke');
+        }
     }
 
     function saveData(type) {
         const data = {};
         document.querySelectorAll('#form_container input, #form_container select').forEach(el => data[el.id] = el.value.toUpperCase());
-        if(!data.alu_dni) return alert("ERROR: DNI REQUERIDO");
+        if(!data.alu_dni) return alert("DNI REQUERIDO");
 
-        if(type === 'MATRICULA') {
-            const idx = MATRICULA.findIndex(x => x.alu_dni === data.alu_dni);
-            if(idx > -1) MATRICULA[idx] = data; else MATRICULA.push(data);
-        } else {
-            ESPERA.push(data);
-        }
-        alert("SISTEMA ACTUALIZADO CON ÉXITO");
-        clearForm(); refresh();
-    }
-
-    function smartRadar() {
-        const val = document.getElementById('radar').value.toUpperCase();
-        if(val.length < 3) return;
-        const res = MATRICULA.find(x => x.alu_dni.includes(val) || x.alu_nombre.includes(val)) || 
-                    ESPERA.find(x => x.alu_dni.includes(val) || x.alu_nombre.includes(val));
-        if(res) {
-            Object.keys(res).forEach(k => { if(document.getElementById(k)) document.getElementById(k).value = res[k]; });
-        }
-    }
-
-    function renderGrid() {
-        const grid = document.getElementById('grid_salas'); grid.innerHTML = '';
-        SALAS.forEach(s => {
-            ['TM', 'TT'].forEach(t => {
-                const tag = `${s}-${t}`;
-                const cant = MATRICULA.filter(x => x.alu_sala === tag).length;
-                grid.innerHTML += `
-                    <div onclick="viewSala('${tag}')" class="card-sala p-6 border-t-4 S-${s} shadow-xl">
-                        <p class="text-[9px] orbitron text-zinc-500">${t}</p>
-                        <h4 class="font-black orbitron text-[11px] mb-2">${s}</h4>
-                        <span class="text-4xl font-black text-nuke">${cant}</span>
-                    </div>`;
-            });
-        });
-    }
-
-    function viewSala(tag) {
-        const v = document.getElementById('sala_view');
-        const l = document.getElementById('sala_list');
-        document.getElementById('sala_title').innerText = `SALA ${tag}`;
-        l.innerHTML = '';
-        MATRICULA.filter(x => x.alu_sala === tag).forEach(a => {
-            l.innerHTML += `
-                <div class="bg-zinc-900/80 p-4 border-l-2 border-nuke flex justify-between items-center group">
-                    <div><p class="font-bold text-[11px]">${a.alu_nombre}</p><p class="text-[9px] text-zinc-500">${a.alu_dni}</p></div>
-                    <div class="flex gap-2">
-                        <button onclick="editAlu('${a.alu_dni}')" class="text-nuke font-bold text-[9px] orbitron">VER</button>
-                        <button onclick="triggerBaja('${a.alu_dni}')" class="text-red-500 font-bold text-[9px] orbitron">BAJA</button>
-                    </div>
-                </div>`;
-        });
-        v.classList.remove('hidden'); v.scrollIntoView({behavior: 'smooth'});
+        const idx = MATRICULA.findIndex(x => x.alu_dni === data.alu_dni);
+        if(idx > -1) MATRICULA[idx] = data; else MATRICULA.push(data);
+        
+        alert("BASE DE DATOS ACTUALIZADA");
+        refresh(); clearForm();
     }
 
     function renderEspera() {
-        const el = document.getElementById('espera_list'); el.innerHTML = '';
-        ESPERA.forEach(e => {
-            el.innerHTML += `<div class="bg-zinc-900 p-5 border border-orange-500/30">
-                <p class="font-black text-orange-500 mb-1">${e.alu_nombre}</p>
-                <p class="text-[9px] mb-4">DNI: ${e.alu_dni} | SALA: ${e.alu_sala}</p>
-                <button onclick="promoteToMatricula('${e.alu_dni}')" class="w-full bg-orange-600 text-white font-bold py-2 text-[10px] orbitron">PASAR A MATRÍCULA</button>
-            </div>`;
+        const list = document.getElementById('espera_full_list');
+        list.innerHTML = '';
+        ESPERA.forEach((e, i) => {
+            list.innerHTML += `
+                <tr class="bg-zinc-900/50 hover:bg-zinc-800 transition">
+                    <td class="p-4 font-bold text-nuke">${e.alu_nombre}</td>
+                    <td class="p-4">${e.alu_dni}</td>
+                    <td class="p-4">${e.alu_sala}</td>
+                    <td class="p-4 text-zinc-500">${e.m_tel1 || e.p_tel1}</td>
+                    <td class="p-4"><button onclick="promote(${i})" class="text-orange-500 font-bold orbitron">ADMITIR</button></td>
+                </tr>`;
         });
     }
 
-    function promoteToMatricula(dni) {
-        const idx = ESPERA.findIndex(x => x.alu_dni === dni);
-        if(idx > -1) {
-            MATRICULA.push(ESPERA[idx]);
-            ESPERA.splice(idx, 1);
-            alert("ALUMNO PROMOVIDO A MATRÍCULA REGULAR");
-            refresh();
-        }
+    function promote(i) {
+        MATRICULA.push(ESPERA[i]);
+        ESPERA.splice(i, 1);
+        refresh(); alert("ALUMNO PASADO A MATRÍCULA");
     }
 
-    function processAttendance(input) {
-        const res = document.getElementById('asist_stats');
-        res.innerHTML = '<p class="animate-bounce orbitron text-nuke text-center py-4">ANALIZANDO IMAGEN DEL REGISTRO...</p>';
-        setTimeout(() => {
-            const pres = Math.floor(MATRICULA.length * 0.85);
-            const aus = MATRICULA.length - pres;
-            res.innerHTML = `
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-black p-6 border border-nuke"><p class="orbitron text-[10px]">PRESENTES</p><h5 class="text-4xl font-black text-nuke">${pres}</h5></div>
-                    <div class="bg-black p-6 border border-red-500"><p class="orbitron text-[10px]">AUSENTES</p><h5 class="text-4xl font-black text-red-500">${aus}</h5></div>
-                </div>
-                <div class="bg-zinc-800 p-4 text-center font-bold orbitron text-nuke text-[12px]">ASISTENCIA TOTAL: ${Math.round((pres/MATRICULA.length)*100)}%</div>`;
-        }, 2000);
+    function refresh() {
+        localStorage.setItem('T360_MAT', JSON.stringify(MATRICULA));
+        localStorage.setItem('T360_ESP', JSON.stringify(ESPERA));
+        renderEspera();
     }
 
-    function triggerBaja(dni) { selectedDniBaja = dni; document.getElementById('modal_baja').classList.remove('hidden'); }
-    function closeModal() { document.getElementById('modal_baja').classList.add('hidden'); }
-    function confirmBaja() {
-        const idx = MATRICULA.findIndex(x => x.alu_dni === selectedDniBaja);
-        if(idx > -1) {
-            const alu = MATRICULA[idx];
-            alu.motivo_baja = document.getElementById('baja_motivo').value;
-            alu.mes_baja = MESES[new Date().getMonth() - 2] || 'MARZO';
-            BAJAS.push(alu);
-            MATRICULA.splice(idx, 1);
-            closeModal(); refresh();
-            alert("BAJA PROCESADA CORRECTAMENTE");
-        }
-    }
-
-    function renderBajas() {
-        const div = document.getElementById('bajas_list'); div.innerHTML = '';
-        MESES.forEach(m => {
-            const cant = BAJAS.filter(x => x.mes_baja === m).length;
-            div.innerHTML += `<div class="p-4 bg-black/40 border border-red-900/30 orbitron text-[10px] flex justify-between items-center">
-                <span>${m}</span> <span class="${cant>0?'text-red-500':'text-zinc-600'} font-bold">${cant} BAJAS</span>
-            </div>`;
-        });
-    }
-
-    function updateStats() {
-        const t = MATRICULA.length || 1;
-        document.getElementById('st_total').innerText = MATRICULA.length;
-        document.getElementById('st_auh').innerText = MATRICULA.filter(x => x.alu_auh === 'SI').length;
-        document.getElementById('st_nac').innerText = Math.round((MATRICULA.filter(x => x.alu_nac === 'ARGENTINA' || !x.alu_nac).length/t)*100) + "%";
-        document.getElementById('st_work').innerText = Math.round((MATRICULA.filter(x => x.m_ocu || x.p_ocu).length/t)*100) + "%";
-        document.getElementById('st_bajas').innerText = BAJAS.length;
-    }
-
-    function startVoice() {
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'es-AR';
-        recognition.onresult = (e) => { document.getElementById('radar').value = e.results[0][0].transcript.toUpperCase(); smartRadar(); };
-        recognition.start();
-    }
-
-    function importData(input) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const raw = JSON.parse(e.target.result);
-            MATRICULA = (raw.MATRICULA || raw).map(i => ({
-                alu_nombre: i.alu_nombre || i.n || "", alu_dni: i.alu_dni || i.d || "",
-                alu_sala: i.alu_sala || i.sala || "", alu_dom: i.alu_dom || i.adom || "",
-                alu_auh: i.alu_auh || (i.presente ? 'SI' : 'NO'), m_nombre: i.m_nombre || i.mn || "",
-                m_tel1: i.m_tel1 || i.mtel || "", p_nombre: i.p_nombre || i.pn || "",
-                p_tel1: i.p_tel1 || i.ptel || "", alu_nac: i.alu_nac || 'ARGENTINA'
-            }));
-            refresh(); alert("SISTEMA RESTAURADO: " + MATRICULA.length + " ALUMNOS.");
-        };
-        reader.readAsText(input.files[0]);
-    }
-
-    function exportExcel() {
-        const ws = XLSX.utils.json_to_sheet(MATRICULA);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "MATRICULA_J926");
-        XLSX.writeFile(wb, "SUPERVISION_J926_TOTAL.xlsx");
-    }
-
-    function exportJSON() {
-        const data = JSON.stringify({MATRICULA, ESPERA, BAJAS});
-        const blob = new Blob([data], {type: 'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "TITANIUM_BACKUP.json"; a.click();
+    function clearForm() { 
+        document.querySelectorAll('#form_container input, #form_container select').forEach(i => i.value = ''); 
+        document.getElementById('btn_save').innerText = "Consolidar Carga";
+        document.getElementById('btn_save').className = "flex-1 bg-nuke text-black font-black py-6 orbitron text-2xl hover:scale-[1.01] transition shadow-lg shadow-nuke/20 uppercase";
     }
 
     function show(n) {
@@ -364,20 +216,13 @@
         document.getElementById('v'+n).classList.remove('hidden');
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab'));
         document.getElementById('t'+n).classList.add('active-tab');
-        if(n === 5) renderCharts();
     }
 
-    function clearForm() { document.querySelectorAll('#form_container input, #form_container select').forEach(i => i.value = ''); }
-    function editAlu(dni) { document.getElementById('radar').value = dni; smartRadar(); show(1); }
-
-    function renderCharts() {
-        const ctx1 = document.getElementById('chartSalas').getContext('2d');
-        if(window.c1) window.c1.destroy();
-        window.c1 = new Chart(ctx1, {
-            type: 'bar',
-            data: { labels: SALAS, datasets: [{ label: 'MATRÍCULA POR SALA', data: SALAS.map(s => MATRICULA.filter(x => x.alu_sala.includes(s)).length), backgroundColor: '#dfff00' }] },
-            options: { maintainAspectRatio: false, color: '#fff' }
-        });
+    function exportExcel() {
+        const ws = XLSX.utils.json_to_sheet(MATRICULA);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "MATRICULA");
+        XLSX.writeFile(wb, "SUPERVISION_J926.xlsx");
     }
 </script>
 </body>
