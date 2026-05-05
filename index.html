@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITANIUM 360 ELITE | FULL PROCESS ENGINEERING</title>
+    <title>TITANIUM 360 ELITE | SISTEMA INTEGRAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,11 +12,11 @@
         :root { --nuke: #dfff00; --bg: #05070a; }
         body { background: var(--bg); color: #e1e1e1; font-family: 'Orbitron', sans-serif; font-size: 11px; }
         .neon-border { border: 1px solid rgba(223, 255, 0, 0.3); box-shadow: 0 0 15px rgba(223, 255, 0, 0.05); }
-        .input-elite { background: #000; border: 1px solid #333; padding: 10px; color: var(--nuke); width: 100%; border-radius: 2px; }
-        .input-elite:focus { border-color: var(--nuke); outline: none; }
-        .btn-tab { padding: 15px; opacity: 0.5; transition: 0.3s; border-bottom: 2px solid transparent; text-transform: uppercase; font-weight: bold; }
+        .input-elite { background: #000; border: 1px solid #333; padding: 12px; color: var(--nuke); width: 100%; border-radius: 2px; font-weight: bold; }
+        .input-elite:focus { border-color: var(--nuke); outline: none; box-shadow: 0 0 8px rgba(223, 255, 0, 0.2); }
+        .btn-tab { padding: 15px; opacity: 0.5; transition: 0.3s; border-bottom: 2px solid transparent; font-weight: bold; }
         .active-tab { opacity: 1; border-bottom: 3px solid var(--nuke); color: var(--nuke); background: rgba(223, 255, 0, 0.05); }
-        /* Identificadores de Sala */
+        /* Bordes de Sala */
         .S-ROSA { border-left: 5px solid #ff69b4; } .S-ROJA { border-left: 5px solid #ff0000; }
         .S-NARANJA { border-left: 5px solid #ffa500; } .S-CELESTE { border-left: 5px solid #00d4ff; }
         .S-VIOLETA { border-left: 5px solid #8a2be2; } .S-AMARILLA { border-left: 5px solid #ffff00; }
@@ -25,109 +25,113 @@
 </head>
 <body onload="initSystem()">
 
-<header class="p-4 flex justify-between items-center bg-black border-b-2 border-nuke sticky top-0 z-[1000]">
+<header class="p-4 flex flex-wrap justify-between items-center bg-black border-b-2 border-nuke sticky top-0 z-[1000]">
     <div class="flex items-center gap-4">
         <div class="bg-nuke text-black px-4 py-2 font-black italic">TITANIUM 360° ELITE</div>
-        <div id="clock" class="text-[9px] text-zinc-500 uppercase tracking-widest"></div>
+        <div id="clock" class="text-[9px] text-zinc-500"></div>
     </div>
     <div class="flex gap-2">
-        <button onclick="exportExcelOfficial()" class="bg-emerald-700 px-4 py-2 text-[9px] font-bold rounded-sm">EXCEL MASTER</button>
-        <button onclick="exportBackup()" class="bg-indigo-700 px-4 py-2 text-[9px] rounded-sm">BACKUP SEGURIDAD</button>
-        <label class="bg-blue-700 px-4 py-2 text-[9px] rounded-sm cursor-pointer font-bold">IMPORTAR CARGA <input type="file" class="hidden" onchange="importData(this)"></label>
+        <button onclick="exportBackup()" class="bg-indigo-700 px-4 py-2 text-[9px] rounded-sm font-bold uppercase">Descargar Backup</button>
+        <label class="bg-blue-700 px-4 py-2 text-[9px] rounded-sm cursor-pointer font-bold uppercase">
+            Importar Alumnos <input type="file" class="hidden" onchange="importData(this)">
+        </label>
     </div>
 </header>
 
-<nav class="flex overflow-x-auto bg-zinc-900/80 sticky top-[62px] z-[999] backdrop-blur-md">
-    <button onclick="show(1)" id="t1" class="btn-tab active-tab flex-1">1. Legajo 360</button>
-    <button onclick="show(2)" id="t2" class="btn-tab flex-1">2. Foto Interactiva</button>
-    <button onclick="show(4)" id="t4" class="btn-tab flex-1 text-orange-400">3. Espera</button>
-    <button onclick="show(5)" id="t5" class="btn-tab flex-1 text-red-500">4. Bajas</button>
-    <button onclick="show(6)" id="t6" class="btn-tab flex-1 text-nuke">5. Métricas Élite</button>
+<nav class="flex overflow-x-auto bg-zinc-900/90 sticky top-[62px] z-[999] backdrop-blur-md">
+    <button onclick="show(1)" id="t1" class="btn-tab active-tab flex-1">1. LEGAJO 360</button>
+    <button onclick="show(2)" id="t2" class="btn-tab flex-1">2. FOTO INTERACTIVA</button>
+    <button onclick="show(3)" id="t3" class="btn-tab flex-1 text-orange-400">3. ESPERA</button>
+    <button onclick="show(4)" id="t4" class="btn-tab flex-1 text-red-500">4. BAJAS</button>
+    <button onclick="show(5)" id="t5" class="btn-tab flex-1 text-nuke">5. MÉTRICAS</button>
 </nav>
 
 <main class="p-4">
-    <section id="v1" class="space-y-4">
-        <div class="neon-border p-6 bg-zinc-900/30">
-            <input type="text" id="radar" onkeyup="smartRadar()" class="w-full bg-black border-2 border-nuke p-4 text-xl font-bold placeholder-zinc-800 uppercase mb-6" placeholder="BÚSQUEDA RÁPIDA (RADAR): APELLIDO O DNI...">
+    <section id="v1">
+        <div class="neon-border p-6 bg-zinc-900/20 mb-4">
+            <input type="text" id="radar" onkeyup="smartRadar()" class="w-full bg-black border-2 border-nuke p-4 text-xl font-bold placeholder-zinc-800 uppercase mb-6" placeholder="RADAR: BUSCAR POR DNI O NOMBRE...">
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" id="form_container">
                 <div class="space-y-3">
-                    <h2 class="text-nuke border-b border-nuke/20 pb-1 italic font-black uppercase">I. Datos Alumno</h2>
+                    <h2 class="text-nuke border-b border-nuke/20 pb-1 italic font-black">DATOS DEL ALUMNO</h2>
                     <input id="alu_nombre" class="input-elite" placeholder="APELLIDOS Y NOMBRES">
                     <div class="grid grid-cols-2 gap-2">
                         <input id="alu_dni" class="input-elite" placeholder="DNI">
                         <input type="date" id="alu_f_nac" class="input-elite" onchange="calcLogic()">
                     </div>
-                    <input id="alu_domicilio" class="input-elite" placeholder="DOMICILIO REAL ALUMNO">
+                    <input id="alu_domicilio" class="input-elite" placeholder="DOMICILIO DEL ALUMNO">
                     <select id="alu_sala" class="input-elite font-bold"></select>
-                    <textarea id="alu_salud" class="input-elite h-24" placeholder="OBSERVACIONES MÉDICAS / CUD / ALERTAS"></textarea>
+                    <textarea id="alu_salud" class="input-elite h-24" placeholder="FICHA MÉDICA / CUD / OBSERVACIONES"></textarea>
                 </div>
 
                 <div class="space-y-3">
-                    <h2 class="text-zinc-500 border-b border-zinc-700 pb-1 italic font-black uppercase">II. Madre / Tutor A</h2>
+                    <h2 class="text-zinc-500 border-b border-zinc-700 pb-1 italic font-black uppercase">Madre / Tutor</h2>
                     <input id="m_nombre" class="input-elite" placeholder="NOMBRE COMPLETO">
                     <input id="m_dni" class="input-elite" placeholder="DNI">
-                    <input id="m_tel" class="input-elite" placeholder="WHATSAPP / TELÉFONO">
-                    <input id="m_domicilio" class="input-elite" placeholder="DOMICILIO (SI DIFIERE DEL ALUMNO)">
+                    <input id="m_tel" class="input-elite" placeholder="TELÉFONO / WHATSAPP">
+                    <input id="m_domicilio" class="input-elite" placeholder="DOMICILIO MADRE">
                     <select id="m_estudios" class="input-elite edu-selector"></select>
-                    <input id="m_ocu" class="input-elite" placeholder="OCUPACIÓN / TRABAJO">
+                    <input id="m_ocu" class="input-elite" placeholder="OCUPACIÓN">
                 </div>
 
                 <div class="space-y-3">
-                    <h2 class="text-zinc-500 border-b border-zinc-700 pb-1 italic font-black uppercase">III. Padre / Tutor B</h2>
+                    <h2 class="text-zinc-500 border-b border-zinc-700 pb-1 italic font-black uppercase">Padre / Tutor</h2>
                     <input id="p_nombre" class="input-elite" placeholder="NOMBRE COMPLETO">
                     <input id="p_dni" class="input-elite" placeholder="DNI">
-                    <input id="p_tel" class="input-elite" placeholder="WHATSAPP / TELÉFONO">
-                    <input id="p_domicilio" class="input-elite" placeholder="DOMICILIO (SI DIFIERE DEL ALUMNO)">
+                    <input id="p_tel" class="input-elite" placeholder="TELÉFONO / WHATSAPP">
+                    <input id="p_domicilio" class="input-elite" placeholder="DOMICILIO PADRE">
                     <select id="p_estudios" class="input-elite edu-selector"></select>
-                    <input id="p_ocu" class="input-elite" placeholder="OCUPACIÓN / TRABAJO">
+                    <input id="p_ocu" class="input-elite" placeholder="OCUPACIÓN">
                 </div>
             </div>
 
             <div class="flex gap-4 mt-8">
-                <button onclick="saveRecord()" class="flex-1 bg-nuke text-black font-black py-4 text-lg hover:brightness-110 transition">CONSOLIDAR EN BASE DE DATOS</button>
-                <button onclick="clearForm()" class="bg-zinc-800 px-10 text-[10px] uppercase font-bold">Limpiar</button>
+                <button onclick="saveRecord()" class="flex-1 bg-nuke text-black font-black py-4 text-lg hover:scale-[1.01] transition uppercase">Guardar en Sistema</button>
+                <button onclick="clearForm()" class="bg-zinc-800 px-10 text-[10px] font-bold">LIMPIAR</button>
             </div>
         </div>
     </section>
 
-    <section id="v2" class="hidden space-y-6">
-        <div id="t14_grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3"></div>
-        
-        <div id="sala_detail" class="hidden neon-border p-6 bg-black/90 backdrop-blur-md">
+    <section id="v2" class="hidden">
+        <div id="t14_grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8"></div>
+        <div id="sala_detail" class="hidden neon-border p-6 bg-black/90">
             <div class="flex justify-between items-center mb-6 border-b border-zinc-800 pb-4">
-                <h2 id="view_sala_name" class="text-3xl font-black text-nuke italic"></h2>
+                <h2 id="view_sala_name" class="text-2xl font-black text-nuke italic"></h2>
                 <button onclick="closeSala()" class="bg-red-600 px-6 py-2 font-black text-[10px]">CERRAR PANEL</button>
             </div>
-            <div id="sala_list" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+            <div id="sala_list" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
         </div>
     </section>
 
-    <section id="v4" class="hidden bg-orange-900/10 p-6 neon-border">
-        <h2 class="text-orange-500 font-black mb-4">LISTA DE ESPERA ACTIVA</h2>
-        <div id="espera_content" class="grid grid-cols-1 md:grid-cols-4 gap-4"></div>
+    <section id="v3" class="hidden">
+        <div class="bg-orange-950/20 p-6 border-l-4 border-orange-500 neon-border">
+            <h2 class="text-orange-500 font-black mb-4 italic">LISTA DE ESPERA</h2>
+            <div id="espera_list" class="grid grid-cols-1 md:grid-cols-4 gap-4"></div>
+        </div>
     </section>
 
-    <section id="v5" class="hidden bg-red-900/10 p-6 neon-border">
-        <h2 class="text-red-500 font-black mb-4">HISTÓRICO DE BAJAS</h2>
-        <div id="bajas_content" class="space-y-2"></div>
+    <section id="v4" class="hidden">
+        <div class="bg-red-950/20 p-6 border-l-4 border-red-600 neon-border">
+            <h2 class="text-red-500 font-black mb-4 italic">HISTÓRICO DE BAJAS</h2>
+            <div id="bajas_list" class="space-y-2"></div>
+        </div>
     </section>
 
-    <section id="v6" class="hidden">
+    <section id="v5" class="hidden">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[400px]">
             <div class="bg-zinc-900/50 p-6 neon-border"><canvas id="chartSalas"></canvas></div>
-            <div class="bg-zinc-900/50 p-6 neon-border"><canvas id="chartEstudios"></canvas></div>
+            <div class="bg-zinc-900/50 p-6 neon-border"><canvas id="chartGeneral"></canvas></div>
         </div>
     </section>
 </main>
 
 <script>
-    let DB = JSON.parse(localStorage.getItem('T360_FINAL_DB')) || [];
-    let ESPERA = JSON.parse(localStorage.getItem('T360_FINAL_ESP')) || [];
-    let BAJAS = JSON.parse(localStorage.getItem('T360_FINAL_BAJ')) || [];
+    let DB = JSON.parse(localStorage.getItem('T360_ELITE_MASTER')) || [];
+    let ESPERA = JSON.parse(localStorage.getItem('T360_ELITE_ESP')) || [];
+    let BAJAS = JSON.parse(localStorage.getItem('T360_ELITE_BAJ')) || [];
 
-    const SALAS_DEF = ['ROSA', 'ROJA', 'NARANJA', 'CELESTE', 'VIOLETA', 'AMARILLA', 'VERDE', 'AZUL'];
-    const ESTUDIOS_OPC = [
+    const SALAS_CONFIG = ['ROSA', 'ROJA', 'NARANJA', 'CELESTE', 'VIOLETA', 'AMARILLA', 'VERDE', 'AZUL'];
+    const ESTUDIOS_DATA = [
         'PRIMARIA INCOMP.', 'PRIMARIA COMP.', 
         'SECUNDARIA INCOMP.', 'SECUNDARIA COMP.', 
         'TERCIARIA INCOMP.', 'TERCIARIA COMP.', 
@@ -135,36 +139,34 @@
     ];
 
     function initSystem() {
-        // Población de selectores
+        // Llenar selectores
         const sAlu = document.getElementById('alu_sala');
-        sAlu.innerHTML = '<option value="">SELECCIONAR SALA Y TURNO</option>';
-        SALAS_DEF.forEach(s => {
+        sAlu.innerHTML = '<option value="">ELEGIR SALA Y TURNO</option>';
+        SALAS_CONFIG.forEach(s => {
             ['TM', 'TT'].forEach(t => sAlu.innerHTML += `<option value="${s}-${t}">${s} - TURNO ${t}</option>`);
         });
 
         document.querySelectorAll('.edu-selector').forEach(sel => {
-            sel.innerHTML = '<option value="">NIVEL EDUCATIVO</option>';
-            ESTUDIOS_OPC.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
+            sel.innerHTML = '<option value="">NIVEL DE ESTUDIOS</option>';
+            ESTUDIOS_DATA.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
         });
 
-        setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleString();
-        }, 1000);
-
+        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleString(); }, 1000);
         refresh();
     }
 
     function refresh() {
-        localStorage.setItem('T360_FINAL_DB', JSON.stringify(DB));
-        localStorage.setItem('T360_FINAL_ESP', JSON.stringify(ESPERA));
-        localStorage.setItem('T360_FINAL_BAJ', JSON.stringify(BAJAS));
+        localStorage.setItem('T360_ELITE_MASTER', JSON.stringify(DB));
+        localStorage.setItem('T360_ELITE_ESP', JSON.stringify(ESPERA));
+        localStorage.setItem('T360_ELITE_BAJ', JSON.stringify(BAJAS));
         renderT14();
-        if(document.getElementById('v6').className === '') runMetrics();
+        renderEspera();
+        renderBajas();
     }
 
     function saveRecord() {
         const dni = document.getElementById('alu_dni').value;
-        if(!dni) return alert("EL DNI ES OBLIGATORIO PARA LA INGENIERÍA DE DATOS");
+        if(!dni) return alert("EL DNI ES REQUERIDO");
 
         const data = {};
         document.querySelectorAll('#form_container input, #form_container select, #form_container textarea').forEach(el => {
@@ -174,7 +176,7 @@
         const idx = DB.findIndex(x => x.alu_dni === dni);
         if(idx > -1) DB[idx] = data; else DB.push(data);
 
-        alert("LEGAJO CONSOLIDADO EXITOSAMENTE");
+        alert("REGISTRO GUARDADO CON ÉXITO");
         clearForm();
         refresh();
     }
@@ -182,11 +184,11 @@
     function smartRadar() {
         const val = document.getElementById('radar').value.toUpperCase();
         if(val.length < 3) return;
-        const alu = DB.find(x => x.alu_dni.includes(val) || x.alu_nombre.includes(val));
-        if(alu) {
-            Object.keys(alu).forEach(k => {
+        const res = DB.find(x => x.alu_dni.includes(val) || x.alu_nombre.includes(val));
+        if(res) {
+            Object.keys(res).forEach(k => {
                 const el = document.getElementById(k);
-                if(el) el.value = alu[k];
+                if(el) el.value = res[k];
             });
         }
     }
@@ -194,15 +196,15 @@
     function renderT14() {
         const grid = document.getElementById('t14_grid');
         grid.innerHTML = '';
-        SALAS_DEF.forEach(s => {
+        SALAS_CONFIG.forEach(s => {
             ['TM', 'TT'].forEach(t => {
                 const tag = `${s}-${t}`;
-                const count = DB.filter(x => x.alu_sala === tag).length;
+                const cant = DB.filter(x => x.alu_sala === tag).length;
                 grid.innerHTML += `
                     <div onclick="viewSala('${tag}')" class="bg-zinc-900 p-4 border-t-4 S-${s} cursor-pointer hover:bg-zinc-800 transition">
                         <p class="text-[7px] text-zinc-500">${t}</p>
                         <h3 class="font-black text-[9px]">${s}</h3>
-                        <p class="text-3xl font-black text-nuke">${count}</p>
+                        <p class="text-3xl font-black text-nuke">${cant}</p>
                     </div>`;
             });
         });
@@ -211,40 +213,59 @@
     function viewSala(tag) {
         const panel = document.getElementById('sala_detail');
         const list = document.getElementById('sala_list');
-        document.getElementById('view_sala_name').innerText = `GESTIÓN SALA: ${tag}`;
+        document.getElementById('view_sala_name').innerText = `SALA: ${tag}`;
         list.innerHTML = '';
         
         DB.filter(x => x.alu_sala === tag).forEach(a => {
             list.innerHTML += `
-                <div class="bg-zinc-800/50 p-3 border border-zinc-700 flex justify-between items-center">
+                <div class="bg-zinc-800/80 p-3 border border-zinc-700 flex justify-between items-center">
                     <div>
                         <p class="font-bold text-nuke text-[10px]">${a.alu_nombre}</p>
-                        <p class="text-[8px] text-zinc-400">DNI: ${a.alu_dni}</p>
+                        <p class="text-[8px] opacity-50">DNI: ${a.alu_dni}</p>
                     </div>
-                    <button onclick="loadToEdit('${a.alu_dni}')" class="bg-nuke text-black px-3 py-1 font-black text-[8px]">EDITAR</button>
+                    <button onclick="editAlu('${a.alu_dni}')" class="bg-zinc-700 px-3 py-1 text-[8px] font-black">VER</button>
                 </div>`;
         });
         panel.classList.remove('hidden');
     }
 
-    function loadToEdit(dni) {
+    function editAlu(dni) {
         document.getElementById('radar').value = dni;
         smartRadar();
         show(1);
     }
 
-    function closeSala() { document.getElementById('sala_detail').classList.add('hidden'); }
+    function renderEspera() {
+        const div = document.getElementById('espera_list');
+        div.innerHTML = '';
+        ESPERA.forEach(e => {
+            div.innerHTML += `<div class="bg-zinc-900 p-3 border border-orange-500/30">
+                <p class="font-bold text-orange-400">${e.alu_nombre}</p>
+                <p class="text-[8px]">${e.alu_tel || 'SIN TEL'}</p>
+            </div>`;
+        });
+    }
+
+    function renderBajas() {
+        const div = document.getElementById('bajas_list');
+        div.innerHTML = '';
+        BAJAS.forEach(b => {
+            div.innerHTML += `<div class="p-2 border border-red-900 bg-red-950/10 text-[9px]">
+                ${b.alu_nombre} | DNI: ${b.alu_dni} | MOTIVO: ${b.baja_motivo || 'NO ESPECIFICADO'}
+            </div>`;
+        });
+    }
 
     function show(n) {
         document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab'));
         document.getElementById('v'+n).classList.remove('hidden');
         document.getElementById('t'+n).classList.add('active-tab');
-        if(n === 6) runMetrics();
+        if(n === 5) runMetrics();
     }
 
     function clearForm() {
-        document.querySelectorAll('#form_container input, #form_container textarea').forEach(i => i.value = '');
+        document.querySelectorAll('#form_container input, #form_container select, #form_container textarea').forEach(i => i.value = '');
     }
 
     function exportBackup() {
@@ -252,21 +273,43 @@
         const blob = new Blob([data], {type: 'application/json'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `TITANIUM_BACKUP_TOTAL_${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `TITANIUM_MASTER_BACKUP.json`;
         a.click();
     }
 
     function importData(input) {
         const reader = new FileReader();
         reader.onload = (e) => {
-            try {
-                const data = JSON.parse(e.target.result);
-                DB = data.DB || []; ESPERA = data.ESPERA || []; BAJAS = data.BAJAS || [];
-                refresh();
-                alert("CARGA DEFINITIVA IMPORTADA: " + DB.length + " ALUMNOS.");
-            } catch(err) { alert("ERROR EN FORMATO DE ARCHIVO"); }
+            const raw = JSON.parse(e.target.result);
+            // Si el JSON viene de la versión anterior, mapeamos los campos
+            const mappedDB = (raw.DB || raw).map(item => ({
+                alu_nombre: item.n || item.alu_nombre || "",
+                alu_dni: item.d || item.alu_dni || "",
+                alu_f_nac: item.f || item.alu_f_nac || "",
+                alu_sala: item.sala || item.alu_sala || "",
+                alu_domicilio: item.adom || item.alu_domicilio || "",
+                m_nombre: item.mn || item.m_nombre || "",
+                m_tel: item.mtel || item.m_tel || "",
+                m_dni: item.m_dni || "",
+                m_domicilio: item.m_domicilio || "",
+                m_estudios: item.m_estudios || "",
+                p_nombre: item.pn || item.p_nombre || "",
+                p_tel: item.ptel || item.p_tel || "",
+                p_dni: item.p_dni || "",
+                p_domicilio: item.p_domicilio || "",
+                p_estudios: item.p_estudios || ""
+            }));
+            DB = mappedDB;
+            refresh();
+            alert("SISTEMA ACTUALIZADO: " + DB.length + " ALUMNOS CARGADOS.");
         };
         reader.readAsText(input.files[0]);
+    }
+
+    function closeSala() { document.getElementById('sala_detail').classList.add('hidden'); }
+
+    function calcLogic() {
+        // Función para cálculos de edad si fuera necesario
     }
 
     function runMetrics() {
@@ -275,10 +318,10 @@
         window.ch1 = new Chart(ctx1, {
             type: 'bar',
             data: {
-                labels: SALAS_DEF,
+                labels: SALAS_CONFIG,
                 datasets: [{
-                    label: 'ALUMNOS POR SALA',
-                    data: SALAS_DEF.map(s => DB.filter(x => x.alu_sala.includes(s)).length),
+                    label: 'MATRÍCULA POR COLOR',
+                    data: SALAS_CONFIG.map(s => DB.filter(x => x.alu_sala.includes(s)).length),
                     backgroundColor: '#dfff00'
                 }]
             },
