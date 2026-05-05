@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITANIUM 360 ELITE | GESTIÓN INSTITUCIONAL J926</title>
+    <title>TITANIUM 360 ELITE | FULL MANAGEMENT SYSTEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -13,63 +13,61 @@
         body { background: var(--bg); color: #e1e1e1; font-family: 'Roboto', sans-serif; overflow-x: hidden; }
         .orbitron { font-family: 'Orbitron'; }
         .neon-border { border: 1px solid rgba(223, 255, 0, 0.3); box-shadow: 0 0 15px rgba(223, 255, 0, 0.1); }
-        .input-elite { background: #000; border: 1px solid #333; padding: 10px; color: var(--nuke); width: 100%; border-radius: 4px; border-left: 3px solid var(--nuke); font-weight: bold; font-size: 12px; transition: 0.3s; }
-        .input-elite:focus { border-color: var(--nuke); outline: none; background: #0a0a0a; }
-        .btn-tab { padding: 15px; opacity: 0.4; transition: 0.3s; border-bottom: 2px solid transparent; text-transform: uppercase; font-weight: bold; font-family: 'Orbitron'; font-size: 10px; flex: 1; }
+        .input-elite { background: #000; border: 1px solid #333; padding: 10px; color: var(--nuke); width: 100%; border-radius: 4px; border-left: 3px solid var(--nuke); font-weight: bold; font-size: 12px; }
+        .btn-tab { padding: 12px; opacity: 0.4; transition: 0.3s; border-bottom: 2px solid transparent; text-transform: uppercase; font-weight: bold; font-family: 'Orbitron'; font-size: 9px; flex: 1; }
         .active-tab { opacity: 1; border-bottom: 3px solid var(--nuke); color: var(--nuke); background: rgba(223, 255, 0, 0.05); }
-        .card-sala { cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); }
-        .card-sala:hover { transform: translateY(-5px); filter: brightness(1.2); }
-        /* Colores de Salas */
-        .S-ROSA { background: #ff69b422; border-top: 4px solid #ff69b4; }
-        .S-ROJA { background: #ff000022; border-top: 4px solid #ff0000; }
-        .S-NARANJA { background: #ffa50022; border-top: 4px solid #ffa500; }
-        .S-CELESTE { background: #00d4ff22; border-top: 4px solid #00d4ff; }
-        .S-VIOLETA { background: #8a2be222; border-top: 4px solid #8a2be2; }
-        .S-AMARILLA { background: #ffff0022; border-top: 4px solid #ffff00; }
-        .S-VERDE { background: #32cd3222; border-top: 4px solid #32cd32; }
-        .S-AZUL { background: #0000ff22; border-top: 4px solid #0000ff; }
+        .card-sala { cursor: pointer; transition: 0.3s; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); padding: 15px; }
+        .card-sala:hover { transform: translateY(-5px); background: rgba(255,255,255,0.05); }
+        /* Identificadores de color para 14 Salas */
+        .S-ROSA { border-top: 4px solid #ff69b4; } .S-ROJA { border-top: 4px solid #ff0000; }
+        .S-NARANJA { border-top: 4px solid #ffa500; } .S-CELESTE { border-top: 4px solid #00d4ff; }
+        .S-VIOLETA { border-top: 4px solid #8a2be2; } .S-AMARILLA { border-top: 4px solid #ffff00; }
+        .S-VERDE { border-top: 4px solid #32cd32; } .S-AZUL { border-top: 4px solid #0000ff; }
     </style>
 </head>
 <body onload="initSystem()">
 
 <header class="p-4 flex justify-between items-center bg-black border-b-2 border-nuke sticky top-0 z-[1000]">
     <div class="flex items-center gap-4">
-        <div class="bg-nuke text-black px-6 py-2 font-black italic orbitron text-xl tracking-tighter">TITANIUM 360 ELITE</div>
-        <div class="hidden lg:block text-[10px] text-zinc-500 orbitron">SISTEMA INTEGRAL DE GESTIÓN EDUCATIVA | PROCESOS REAL-TIME</div>
+        <div class="bg-nuke text-black px-6 py-2 font-black italic orbitron text-xl">TITANIUM 360 ELITE</div>
+        <div class="hidden lg:block text-[9px] text-zinc-500 orbitron">JARDÍN 926 | ING. DE PROCESOS ADMINISTRATIVOS</div>
     </div>
     <div class="flex gap-2">
-        <button onclick="exportExcel()" class="bg-green-700 hover:bg-green-600 px-4 py-2 text-[10px] font-bold rounded orbitron">REPORTES EXCEL</button>
-        <button onclick="backupSystem()" class="bg-zinc-800 px-4 py-2 text-[10px] font-bold rounded orbitron">BACKUP NUBE</button>
+        <button onclick="exportExcel()" class="bg-green-700 hover:bg-green-600 px-4 py-2 text-[10px] font-bold rounded orbitron">EXCEL SUPERVISIÓN</button>
+        <button onclick="backupSystem()" class="bg-zinc-800 px-4 py-2 text-[10px] font-bold rounded orbitron">BACKUP JSON</button>
+        <label class="bg-blue-600 hover:bg-blue-500 px-4 py-2 text-[10px] rounded cursor-pointer font-bold orbitron">
+            IMPORTAR SISTEMA <input type="file" class="hidden" onchange="importData(this)">
+        </label>
     </div>
 </header>
 
 <nav class="flex overflow-x-auto bg-zinc-900/95 sticky top-[68px] z-[999] border-b border-white/5 shadow-2xl">
     <button onclick="show(1)" id="t1" class="btn-tab active-tab">1. LEGAJO & RADAR</button>
-    <button onclick="show(2)" id="t2" class="btn-tab">2. MAPA INTERACTIVO</button>
-    <button onclick="show(3)" id="t3" class="btn-tab">3. LISTA DE ESPERA</button>
-    <button onclick="show(4)" id="t4" class="btn-tab">4. ASISTENCIA & BAJAS</button>
-    <button onclick="show(5)" id="t5" class="btn-tab">5. ANALÍTICA ELITE</button>
+    <button onclick="show(2)" id="t2" class="btn-tab">2. MAPA 14 SALAS</button>
+    <button onclick="show(3)" id="t3" class="btn-tab text-orange-400">3. LISTA DE ESPERA</button>
+    <button onclick="show(4)" id="t4" class="btn-tab text-red-500">4. ASISTENCIA & BAJAS</button>
+    <button onclick="show(5)" id="t5" class="btn-tab text-nuke">5. ANALÍTICA SUPERVISIÓN</button>
 </nav>
 
-<main class="p-6 max-w-[1900px] mx-auto">
-    
+<main class="p-6 max-w-[2000px] mx-auto">
     <section id="v1" class="space-y-6">
-        <div class="neon-border p-6 bg-zinc-900/30 rounded-lg">
+        <div class="neon-border p-6 bg-zinc-900/20 rounded-lg">
             <div class="flex gap-4 mb-8">
-                <input type="text" id="radar" onkeyup="smartRadar()" class="flex-1 bg-black border-2 border-nuke p-5 text-2xl font-bold orbitron placeholder-zinc-800 uppercase" placeholder="INICIAR RADAR: BUSCAR POR DNI O APELLIDO...">
-                <button onclick="scanDNI()" class="bg-white text-black px-10 font-black orbitron hover:bg-nuke transition">SCAN DNI</button>
+                <input type="text" id="radar" onkeyup="smartRadar()" class="flex-1 bg-black border-2 border-nuke p-5 text-2xl font-bold orbitron placeholder-zinc-800 uppercase" placeholder="RADAR: DNI O APELLIDO DEL ALUMNO...">
+                <button onclick="startVoice()" class="bg-red-600 px-8 flex items-center gap-2 font-black orbitron animate-pulse">🎤 VOZ BIÓNICA</button>
+                <button onclick="alert('ESCÁNER ÓPTICO LISTO')" class="bg-white text-black px-8 font-black orbitron hover:bg-nuke transition">SCAN DNI</button>
             </div>
 
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-8" id="form_container">
-                <div class="bg-black/40 p-4 rounded border border-zinc-800 space-y-3">
+                <div class="bg-black/40 p-5 rounded border border-zinc-800 space-y-4">
                     <h2 class="text-nuke border-b border-nuke/30 pb-2 orbitron font-bold italic flex justify-between">DATOS ALUMNO <span id="label_edad" class="text-[10px] text-white">EDAD 30/06: --</span></h2>
                     <input id="alu_nombre" class="input-elite" placeholder="APELLIDOS Y NOMBRES">
                     <div class="grid grid-cols-2 gap-2"><input id="alu_dni" class="input-elite" placeholder="DNI"><input id="alu_nac" class="input-elite" placeholder="NACIONALIDAD"></div>
                     <div class="grid grid-cols-2 gap-2"><input type="date" id="alu_f_nac" onchange="calcEdad()" class="input-elite"><select id="alu_sala" class="input-elite"></select></div>
                     <input id="alu_dom" class="input-elite" placeholder="DOMICILIO REAL">
                     <div class="grid grid-cols-2 gap-2">
-                        <input id="alu_hermanos" class="input-elite" placeholder="CANT. HERMANOS">
-                        <select id="alu_hermanos_jardin" class="input-elite"><option value="NO">¿HERMANOS EN JARDÍN? NO</option><option value="SI">SI</option></select>
+                        <input id="alu_her" class="input-elite" placeholder="CANT. HERMANOS">
+                        <select id="alu_her_j" class="input-elite"><option value="NO">HERMANOS EN JARDÍN: NO</option><option value="SI">SI</option></select>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <select id="alu_auh" class="input-elite"><option value="NO">AUH: NO</option><option value="SI">SI</option></select>
@@ -77,223 +75,177 @@
                     </div>
                 </div>
 
-                <div class="bg-black/40 p-4 rounded border border-zinc-800 space-y-3">
+                <div class="bg-black/40 p-5 rounded border border-zinc-800 space-y-4">
                     <h2 class="text-zinc-500 border-b border-zinc-700 pb-2 orbitron font-bold italic">MADRE / TUTORA</h2>
                     <input id="m_nombre" class="input-elite" placeholder="NOMBRE Y APELLIDO">
                     <div class="grid grid-cols-2 gap-2"><input id="m_dni" class="input-elite" placeholder="DNI"><input id="m_tel" class="input-elite" placeholder="TELÉFONO"></div>
-                    <div class="flex gap-1">
-                        <input id="m_dom" class="input-elite" placeholder="DOMICILIO">
-                        <button onclick="cloneDom('m')" class="bg-zinc-800 px-3 text-[9px] font-bold orbitron">ALU</button>
-                    </div>
+                    <div class="flex gap-1"><input id="m_dom" class="input-elite" placeholder="DOMICILIO"><button onclick="cloneDom('m')" class="bg-zinc-800 px-3 text-[9px] font-bold orbitron">CLON</button></div>
                     <select id="m_edu" class="input-elite edu-selector"></select>
                     <input id="m_ocu" class="input-elite" placeholder="OCUPACIÓN / TRABAJO">
                 </div>
 
-                <div class="bg-black/40 p-4 rounded border border-zinc-800 space-y-3">
+                <div class="bg-black/40 p-5 rounded border border-zinc-800 space-y-4">
                     <h2 class="text-zinc-500 border-b border-zinc-700 pb-2 orbitron font-bold italic">PADRE / TUTOR</h2>
                     <input id="p_nombre" class="input-elite" placeholder="NOMBRE Y APELLIDO">
                     <div class="grid grid-cols-2 gap-2"><input id="p_dni" class="input-elite" placeholder="DNI"><input id="p_tel" class="input-elite" placeholder="TELÉFONO"></div>
-                    <div class="flex gap-1">
-                        <input id="p_dom" class="input-elite" placeholder="DOMICILIO">
-                        <button onclick="cloneDom('p')" class="bg-zinc-800 px-3 text-[9px] font-bold orbitron">ALU</button>
-                    </div>
+                    <div class="flex gap-1"><input id="p_dom" class="input-elite" placeholder="DOMICILIO"><button onclick="cloneDom('p')" class="bg-zinc-800 px-3 text-[9px] font-bold orbitron">CLON</button></div>
                     <select id="p_edu" class="input-elite edu-selector"></select>
                     <input id="p_ocu" class="input-elite" placeholder="OCUPACIÓN / TRABAJO">
                 </div>
             </div>
 
-            <div class="flex gap-4 mt-8">
-                <button id="btn_save" onclick="saveData('MAT')" class="flex-[2] bg-nuke text-black font-black py-5 orbitron text-xl hover:scale-[1.01] transition shadow-lg shadow-nuke/10 uppercase">CONSOLIDAR MATRÍCULA</button>
-                <button onclick="saveData('ESP')" class="flex-1 bg-orange-600 text-white font-bold orbitron uppercase text-xs">ENVIAR A ESPERA</button>
-                <button onclick="clearForm()" class="bg-zinc-800 px-10 font-bold orbitron text-xs">LIMPIAR</button>
+            <div class="flex gap-4 mt-10">
+                <button id="btn_save" onclick="saveData('MAT')" class="flex-[2] bg-nuke text-black font-black py-6 orbitron text-2xl hover:scale-[1.01] transition shadow-lg shadow-nuke/10 uppercase">CONSOLIDAR MATRÍCULA</button>
+                <button onclick="saveData('ESP')" class="flex-1 bg-orange-600 text-white font-bold orbitron text-[10px] uppercase">ENVIAR A ESPERA</button>
+                <button onclick="clearForm()" class="bg-zinc-800 px-12 font-bold orbitron text-[10px]">LIMPIAR</button>
             </div>
         </div>
     </section>
 
-    <section id="v2" class="hidden">
-        <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-4" id="mapa_grid"></div>
-        <div id="sala_detail" class="mt-8 p-6 bg-zinc-900 border border-nuke/20 rounded-lg hidden"></div>
+    <section id="v2" class="hidden space-y-10">
+        <h2 class="orbitron text-center text-zinc-500 tracking-[10px] uppercase">Fotografía Institucional 14 Salas</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-6" id="grid_salas"></div>
+        <div id="sala_detail" class="hidden neon-border p-10 bg-black/60 rounded-xl mt-12">
+            <div class="flex justify-between items-center border-b-2 border-nuke pb-4 mb-8">
+                <h3 id="sala_title" class="text-4xl font-black orbitron italic text-nuke"></h3>
+                <button onclick="document.getElementById('sala_detail').classList.add('hidden')" class="text-red-500 font-bold orbitron">CERRAR X</button>
+            </div>
+            <div id="sala_list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+        </div>
     </section>
 
     <section id="v3" class="hidden">
-        <div class="bg-black/60 p-6 rounded-lg border border-orange-500/20">
-            <h2 class="orbitron text-orange-500 text-2xl font-bold mb-6">LISTA DE ESPERA ESTRATÉGICA</h2>
+        <div class="bg-black/60 p-8 rounded-lg border border-orange-500/20">
+            <h2 class="orbitron text-orange-500 text-3xl font-bold mb-8">LISTA DE ESPERA ESTRATÉGICA</h2>
             <div class="overflow-x-auto"><table class="w-full text-left text-[11px]"><thead class="orbitron text-zinc-500 border-b border-zinc-800"><tr><th class="p-3">ALUMNO</th><th class="p-3">DNI</th><th class="p-3">SALA</th><th class="p-3">EDAD 30/6</th><th class="p-3">CONTACTO</th><th class="p-3">ACCIONES</th></tr></thead><tbody id="espera_table"></tbody></table></div>
         </div>
     </section>
 
-    <section id="v4" class="hidden">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="bg-zinc-900 p-6 rounded border border-blue-500/20">
-                <h2 class="orbitron text-blue-400 mb-4 font-bold uppercase">Registro de Asistencia Mensual</h2>
-                <input type="file" onchange="processAttendance(this)" class="input-elite mb-4">
-                <div id="assist_stats" class="grid grid-cols-3 gap-4 mb-6"></div>
-                <div id="alert_list" class="space-y-2"></div>
+    <section id="v4" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div class="bg-zinc-900/50 p-8 rounded-xl border border-blue-500/20">
+            <h2 class="orbitron text-blue-400 mb-6 font-bold text-2xl">ASISTENCIA POR FOTOGRAFÍA</h2>
+            <div class="p-10 border-2 border-dashed border-zinc-700 text-center rounded-lg mb-6 hover:border-nuke transition cursor-pointer">
+                <input type="file" id="asist_file" onchange="processAttendance(this)" class="hidden">
+                <label for="asist_file" class="cursor-pointer orbitron text-zinc-500">SUBIR FOTO DEL REGISTRO PARA CÁLCULO BIÓNICO</label>
             </div>
-            <div class="bg-zinc-900 p-6 rounded border border-red-500/20">
-                <h2 class="orbitron text-red-500 mb-4 font-bold uppercase">Bitácora de Bajas & Movimientos</h2>
-                <div id="bajas_table" class="space-y-2"></div>
-            </div>
+            <div id="assist_stats" class="grid grid-cols-2 gap-4"></div>
+        </div>
+        <div class="bg-zinc-900/50 p-8 rounded-xl border border-red-500/20">
+            <h2 class="orbitron text-red-500 mb-6 font-bold text-2xl uppercase">Registro Histórico de Bajas</h2>
+            <div id="bajas_list" class="space-y-2"></div>
         </div>
     </section>
 
-    <section id="v5" class="hidden">
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            <div class="bg-black p-6 rounded border border-zinc-800"><canvas id="chart_poblacion"></canvas></div>
-            <div class="bg-black p-6 rounded border border-zinc-800"><canvas id="chart_estudios"></canvas></div>
-            <div class="bg-black p-6 rounded border border-zinc-800"><canvas id="chart_trabajo"></canvas></div>
+    <section id="v5" class="hidden space-y-10">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-6" id="stats_elite"></div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 h-[450px]">
+            <div class="bg-black p-8 rounded border border-zinc-800 shadow-2xl"><canvas id="chart_salas"></canvas></div>
+            <div class="bg-black p-8 rounded border border-zinc-800 shadow-2xl"><canvas id="chart_poblacion"></canvas></div>
         </div>
     </section>
-
 </main>
 
 <script>
-    let DB = JSON.parse(localStorage.getItem('T360_DATA')) || { mat: [], esp: [], bajas: [], assist: [] };
-    const SALAS = [
-        {id:'ROSA', t:'TM'}, {id:'ROSA', t:'TT'}, {id:'ROJA', t:'TM'}, {id:'ROJA', t:'TT'},
-        {id:'NARANJA', t:'TM'}, {id:'NARANJA', t:'TT'}, {id:'CELESTE', t:'TM'}, {id:'CELESTE', t:'TT'},
-        {id:'VIOLETA', t:'TM'}, {id:'VIOLETA', t:'TT'}, {id:'AMARILLA', t:'TM'}, {id:'AMARILLA', t:'TT'},
-        {id:'VERDE', t:'TM'}, {id:'VERDE', t:'TT'}, {id:'AZUL', t:'TM'}, {id:'AZUL', t:'TT'}
-    ];
-
-    const EDU_OPTS = [
-        "SIN ESTUDIOS", "PRIMARIA COMPLETA", "PRIMARIA INCOMPLETA", "SECUNDARIA COMPLETA",
-        "SECUNDARIA INCOMPLETA", "TERCIARIA COMPLETA", "TERCIARIA INCOMPLETA",
-        "UNIVERSITARIO COMPLETA", "UNIVERSITARIO INCOMPLETA"
-    ];
+    let DATA = JSON.parse(localStorage.getItem('T360_ELITE_MASTER')) || { mat: [], esp: [], bajas: [] };
+    const SALAS_INST = ['ROSA', 'ROJA', 'NARANJA', 'CELESTE', 'VIOLETA', 'AMARILLA', 'VERDE', 'AZUL'];
+    const EDU_OPTS = ["SIN ESTUDIOS", "PRIMARIA COMPLETA", "PRIMARIA INCOMPLETA", "SECUNDARIA COMPLETA", "SECUNDARIA INCOMPLETA", "TERCIARIA COMPLETA", "TERCIARIA INCOMPLETA", "UNIVERSITARIO COMPLETA", "UNIVERSITARIO INCOMPLETA"];
 
     function initSystem() {
-        const sel = document.getElementById('alu_sala');
-        sel.innerHTML = '<option value="">SELECCIONAR SECCIÓN...</option>';
-        SALAS.forEach(s => sel.innerHTML += `<option value="${s.id}-${s.t}">${s.id} - ${s.t}</option>`);
-
-        document.querySelectorAll('.edu-selector').forEach(e => {
-            e.innerHTML = '<option value="">ESTUDIOS...</option>';
-            EDU_OPTS.forEach(o => e.innerHTML += `<option value="${o}">${o}</option>`);
-        });
-
-        renderMapa();
-        renderEspera();
-        refreshStats();
+        const sAlu = document.getElementById('alu_sala');
+        sAlu.innerHTML = '<option value="">SELECCIONAR SECCIÓN...</option>';
+        SALAS_INST.forEach(s => { ['TM', 'TT'].forEach(t => sAlu.innerHTML += `<option value="${s}-${t}">${s} - ${t}</option>`); });
+        document.querySelectorAll('.edu-selector').forEach(e => { e.innerHTML = '<option value="">ESTUDIOS...</option>'; EDU_OPTS.forEach(o => e.innerHTML += `<option value="${o}">${o}</option>`); });
+        refresh();
     }
 
     function calcEdad() {
-        const fnac = new Date(document.getElementById('alu_f_nac').value);
+        const f = new Date(document.getElementById('alu_f_nac').value);
         const ref = new Date('2026-06-30');
-        let edad = ref.getFullYear() - fnac.getFullYear();
-        if (ref < new Date(ref.getFullYear(), fnac.getMonth(), fnac.getDate())) edad--;
-        document.getElementById('label_edad').innerText = `EDAD 30/06: ${edad} AÑOS`;
-        return edad;
+        let e = ref.getFullYear() - f.getFullYear();
+        if (ref < new Date(ref.getFullYear(), f.getMonth(), f.getDate())) e--;
+        document.getElementById('label_edad').innerText = `EDAD 30/06: ${e} AÑOS`;
+        return e;
     }
 
     function smartRadar() {
         const val = document.getElementById('radar').value.toUpperCase();
         if(val.length < 3) return;
-        const res = DB.mat.find(x => x.alu_dni === val || x.alu_nombre.includes(val)) || DB.esp.find(x => x.alu_dni === val || x.alu_nombre.includes(val));
+        const res = DATA.mat.find(x => x.alu_dni === val || x.alu_nombre.includes(val)) || DATA.esp.find(x => x.alu_dni === val || x.alu_nombre.includes(val));
         if(res) {
             Object.keys(res).forEach(k => { if(document.getElementById(k)) document.getElementById(k).value = res[k]; });
             calcEdad();
-            document.getElementById('btn_save').innerText = "ACTUALIZAR LEGAJO";
-            document.getElementById('btn_save').className = "flex-[2] bg-blue-600 text-white font-black py-5 orbitron text-xl";
+            document.getElementById('btn_save').innerText = "ACTUALIZAR DATOS";
+            document.getElementById('btn_save').className = "flex-[2] bg-blue-600 text-white font-black py-6 orbitron text-2xl";
         }
     }
 
     function saveData(type) {
         const data = { edad_30_06: calcEdad() };
         document.querySelectorAll('#form_container input, #form_container select').forEach(i => data[i.id] = i.value.toUpperCase());
-        if(!data.alu_dni) return alert("ERROR: DNI OBLIGATORIO");
-
+        if(!data.alu_dni) return alert("DNI OBLIGATORIO");
         if(type === 'MAT') {
-            const idx = DB.mat.findIndex(x => x.alu_dni === data.alu_dni);
-            if(idx > -1) DB.mat[idx] = data; else DB.mat.push(data);
-        } else {
-            DB.esp.push(data);
-        }
-        
-        sync();
-        clearForm();
-        alert("SISTEMA ACTUALIZADO CORRECTAMENTE");
-    }
-
-    function renderMapa() {
-        const grid = document.getElementById('mapa_grid');
-        grid.innerHTML = '';
-        SALAS.forEach(s => {
-            const cant = DB.mat.filter(x => x.alu_sala === `${s.id}-${s.t}`).length;
-            grid.innerHTML += `
-                <div class="card-sala S-${s.id} p-4 rounded shadow-lg" onclick="showSalaDetail('${s.id}-${s.t}')">
-                    <div class="orbitron font-black text-[10px]">${s.id}</div>
-                    <div class="text-[9px] opacity-60">${s.t}</div>
-                    <div class="text-2xl font-black mt-2 text-white">${cant}</div>
-                    <div class="text-[8px] orbitron mt-1">MATRÍCULA</div>
-                </div>`;
-        });
-    }
-
-    function renderEspera() {
-        const tbody = document.getElementById('espera_table');
-        tbody.innerHTML = '';
-        DB.esp.forEach((e, i) => {
-            tbody.innerHTML += `
-                <tr class="border-b border-zinc-900 hover:bg-zinc-900 transition">
-                    <td class="p-3 font-bold text-nuke">${e.alu_nombre}</td>
-                    <td class="p-3">${e.alu_dni}</td>
-                    <td class="p-3">${e.alu_sala}</td>
-                    <td class="p-3">${e.edad_30_06}</td>
-                    <td class="p-3 text-[10px]">${e.m_tel || e.p_tel}</td>
-                    <td class="p-3"><button onclick="promote(${i})" class="bg-nuke text-black px-2 py-1 font-bold text-[9px] orbitron">ADMITIR</button></td>
-                </tr>`;
-        });
-    }
-
-    function promote(i) {
-        DB.mat.push(DB.esp[i]);
-        DB.esp.splice(i, 1);
-        sync();
+            const idx = DATA.mat.findIndex(x => x.alu_dni === data.alu_dni);
+            if(idx > -1) DATA.mat[idx] = data; else DATA.mat.push(data);
+        } else { DATA.esp.push(data); }
+        sync(); clearForm(); alert("REGISTRO CONSOLIDADO");
     }
 
     function sync() {
-        localStorage.setItem('T360_DATA', JSON.stringify(DB));
-        renderMapa();
-        renderEspera();
-        refreshStats();
+        localStorage.setItem('T360_ELITE_MASTER', JSON.stringify(DATA));
+        renderGrid(); renderEspera(); renderBajas(); updateStats();
     }
 
-    function clearForm() {
-        document.querySelectorAll('#form_container input, #form_container select').forEach(i => i.value = '');
-        document.getElementById('label_edad').innerText = "EDAD 30/06: --";
-        document.getElementById('btn_save').innerText = "CONSOLIDAR MATRÍCULA";
-        document.getElementById('btn_save').className = "flex-[2] bg-nuke text-black font-black py-5 orbitron text-xl";
+    function renderGrid() {
+        const grid = document.getElementById('grid_salas'); grid.innerHTML = '';
+        SALAS_INST.forEach(s => { ['TM', 'TT'].forEach(t => {
+            const tag = `${s}-${t}`; const cant = DATA.mat.filter(x => x.alu_sala === tag).length;
+            grid.innerHTML += `<div onclick="viewSala('${tag}')" class="card-sala S-${s}">
+                <div class="orbitron font-black text-[9px] text-zinc-500">${t}</div>
+                <div class="font-black text-[12px]">${s}</div>
+                <div class="text-4xl font-black text-nuke mt-2">${cant}</div>
+            </div>`;
+        });});
     }
 
-    function show(n) {
-        document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
-        document.getElementById('v'+n).classList.remove('hidden');
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab'));
-        document.getElementById('t'+n).classList.add('active-tab');
+    function viewSala(tag) {
+        const v = document.getElementById('sala_detail'); const l = document.getElementById('sala_list');
+        document.getElementById('sala_title').innerText = `SALA: ${tag}`; l.innerHTML = '';
+        DATA.mat.filter(x => x.alu_sala === tag).forEach(a => {
+            l.innerHTML += `<div class="bg-zinc-900 p-4 border-l-2 border-nuke flex justify-between">
+                <div><p class="font-bold text-[11px]">${a.alu_nombre}</p><p class="text-[9px] opacity-50">${a.alu_dni}</p></div>
+                <button onclick="editAlu('${a.alu_dni}')" class="text-nuke font-bold orbitron text-[9px]">VER</button>
+            </div>`;
+        });
+        v.classList.remove('hidden'); v.scrollIntoView({behavior:'smooth'});
     }
 
-    function refreshStats() {
-        // Lógica para actualizar gráficos de Chart.js basados en DB.mat
-        // (Mirta, aquí el sistema procesa nacionalidades, estudios, etc.)
+    function importData(input) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const raw = JSON.parse(e.target.result);
+            // MOTOR DE RECUPERACIÓN AUTOMÁTICO PARA LOS 360 ALUMNOS
+            const clean = (raw.MATRICULA || raw.mat || raw).map(i => ({
+                alu_nombre: i.alu_nombre || i.n || "", alu_dni: i.alu_dni || i.d || "",
+                alu_sala: i.alu_sala || i.sala || "", alu_dom: i.alu_dom || i.adom || "",
+                alu_auh: i.alu_auh || (i.presente ? 'SI' : 'NO'), m_nombre: i.m_nombre || i.mn || "",
+                m_tel: i.m_tel || i.mtel || "", p_nombre: i.p_nombre || i.pn || "",
+                p_tel: i.p_tel || i.ptel || "", alu_nac: i.alu_nac || 'ARGENTINA'
+            }));
+            DATA.mat = clean; sync(); alert("CARGA RECUPERADA CON ÉXITO");
+        };
+        reader.readAsText(input.files[0]);
     }
 
-    function cloneDom(who) { document.getElementById(who + '_dom').value = document.getElementById('alu_dom').value; }
-    
-    function exportExcel() {
-        const ws = XLSX.utils.json_to_sheet(DB.mat);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "MATRICULA_COMPLETA");
-        XLSX.writeFile(wb, `GESTION_J926_${new Date().toLocaleDateString()}.xlsx`);
+    function startVoice() {
+        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        rec.lang = 'es-AR'; rec.onresult = (e) => { document.getElementById('radar').value = e.results[0][0].transcript.toUpperCase(); smartRadar(); };
+        rec.start();
     }
 
-    function backupSystem() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(DB));
-        const dlAnchorElem = document.createElement('a');
-        dlAnchorElem.setAttribute("href", dataStr);
-        dlAnchorElem.setAttribute("download", "TITANIUM_BACKUP.json");
-        dlAnchorElem.click();
-    }
+    function show(n) { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); document.getElementById('v'+n).classList.remove('hidden'); document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab')); document.getElementById('t'+n).classList.add('active-tab'); if(n===5) renderCharts(); }
+    function clearForm() { document.querySelectorAll('#form_container input, #form_container select').forEach(i => i.value = ''); document.getElementById('label_edad').innerText = "EDAD 30/06: --"; }
+    function editAlu(dni) { document.getElementById('radar').value = dni; smartRadar(); show(1); }
+    function cloneDom(who) { document.getElementById(who+'_dom').value = document.getElementById('alu_dom').value; }
 </script>
 </body>
 </html>
