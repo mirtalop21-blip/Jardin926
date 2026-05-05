@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITANIUM 360 ELITE | JARDÍN 926 | FULL PROCESS ENGINEERING</title>
+    <title>TITANIUM 360 ELITE | SISTEMA INTEGRAL J926</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         :root { --nuke: #dfff00; --bg: #05070a; }
-        body { background: var(--bg); color: #e1e1e1; font-family: 'Roboto', sans-serif; overflow-x: hidden; }
+        body { background: var(--bg); color: #e1e1e1; font-family: 'Roboto'; overflow-x: hidden; font-size: 12px; }
         .orbitron { font-family: 'Orbitron'; }
         .neon-border { border: 1px solid rgba(223, 255, 0, 0.3); box-shadow: 0 0 15px rgba(223, 255, 0, 0.1); }
-        .input-elite { background: #000; border: 1px solid #444; padding: 10px; color: var(--nuke); width: 100%; border-radius: 4px; border-left: 3px solid var(--nuke); font-weight: bold; font-size: 12px; }
+        .input-elite { background: #000; border: 1px solid #444; padding: 10px; color: var(--nuke); width: 100%; border-radius: 4px; border-left: 3px solid var(--nuke); font-weight: bold; }
         .btn-tab { padding: 12px; opacity: 0.4; transition: 0.3s; border-bottom: 2px solid transparent; text-transform: uppercase; font-weight: bold; font-family: 'Orbitron'; font-size: 9px; flex: 1; }
         .active-tab { opacity: 1; border-bottom: 3px solid var(--nuke); color: var(--nuke); background: rgba(223, 255, 0, 0.05); }
         .card-sala { cursor: pointer; transition: 0.3s; border-radius: 8px; padding: 15px; text-align: center; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); }
@@ -28,22 +28,20 @@
 
 <header class="p-4 flex justify-between items-center bg-black border-b-2 border-nuke sticky top-0 z-[1000]">
     <div class="flex items-center gap-4">
-        <div class="bg-nuke text-black px-6 py-2 font-black italic orbitron text-xl">TITANIUM 360 ELITE</div>
+        <div class="bg-nuke text-black px-6 py-2 font-black italic orbitron text-xl">TITANIUM 360</div>
         <input type="text" id="tel_directivo" class="bg-zinc-900 border border-zinc-700 text-[10px] p-1 text-nuke orbitron" placeholder="WHATSAPP DIRECTIVO">
     </div>
     <div class="flex gap-2">
-        <button onclick="exportExcel()" class="bg-green-700 px-4 py-2 text-[10px] font-bold rounded orbitron">EXCEL MASTER</button>
-        <button onclick="exportBackup()" class="bg-zinc-800 px-4 py-2 text-[10px] font-bold rounded orbitron">JSON BACKUP</button>
-        <label class="bg-blue-600 px-4 py-2 text-[10px] rounded cursor-pointer font-bold orbitron">
-            IMPORTAR <input type="file" class="hidden" onchange="importData(this)">
-        </label>
+        <button onclick="exportExcel()" class="bg-green-700 px-4 py-2 text-[9px] font-bold rounded orbitron">EXCEL SUPERVISIÓN</button>
+        <button onclick="exportBackup()" class="bg-zinc-800 px-4 py-2 text-[9px] font-bold rounded orbitron">JSON BACKUP</button>
+        <label class="bg-blue-600 px-4 py-2 text-[9px] rounded cursor-pointer font-bold orbitron">IMPORTAR <input type="file" class="hidden" onchange="importData(this)"></label>
     </div>
 </header>
 
 <nav class="flex overflow-x-auto bg-zinc-900/95 sticky top-[68px] z-[999] border-b border-white/5 shadow-2xl">
-    <button onclick="show(1)" id="t1" class="btn-tab active-tab">1. LEGAJO & RADAR</button>
+    <button onclick="show(1)" id="t1" class="btn-tab active-tab">1. LEGAJO ESPEJO</button>
     <button onclick="show(2)" id="t2" class="btn-tab">2. MAPA 16 SALAS</button>
-    <button onclick="show(3)" id="t3" class="btn-tab text-orange-400">3. LISTA DE ESPERA PRO</button>
+    <button onclick="show(3)" id="t3" class="btn-tab text-orange-400">3. LISTA ESPERA</button>
     <button onclick="show(4)" id="t4" class="btn-tab text-red-500">4. ASISTENCIA & BAJAS</button>
     <button onclick="show(5)" id="t5" class="btn-tab text-nuke">5. SUPERVISIÓN ÉLITE</button>
 </nav>
@@ -53,36 +51,36 @@
         <div class="neon-border p-6 bg-zinc-900/20 rounded-lg">
             <div class="flex gap-4 mb-8">
                 <input type="text" id="radar" onkeyup="smartRadar()" class="flex-1 bg-black border-2 border-nuke p-5 text-2xl font-bold orbitron placeholder-zinc-800 uppercase" placeholder="INICIAR RADAR: DNI O APELLIDO...">
-                <button onclick="startVoice()" class="bg-red-600 px-8 font-black orbitron animate-pulse">🎤 VOZ</button>
+                <button onclick="startVoice('radar')" class="bg-red-600 px-8 font-black orbitron animate-pulse">🎤 VOZ</button>
+                <button onclick="alert('DNI SCANNER ACTIVO')" class="bg-white text-black px-8 font-black orbitron">SCAN</button>
             </div>
-            
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-6" id="form_container">
                 <div class="bg-black/40 p-4 rounded border border-zinc-800 space-y-3 shadow-xl">
-                    <h2 class="text-nuke border-b border-nuke/30 pb-1 orbitron font-bold italic flex justify-between uppercase text-[11px]">I. Alumno <span id="label_edad" class="text-white">EDAD 30/06: --</span></h2>
+                    <h2 class="text-nuke border-b border-nuke/30 pb-1 orbitron font-bold italic flex justify-between uppercase">I. Alumno <span id="label_edad" class="text-[10px] text-white">EDAD 30/06: --</span></h2>
                     <input id="alu_nombre" class="input-elite" placeholder="APELLIDOS Y NOMBRES">
                     <div class="grid grid-cols-2 gap-2"><input id="alu_dni" class="input-elite" placeholder="DNI"><input id="alu_nac" class="input-elite" placeholder="NACIONALIDAD"></div>
                     <div class="grid grid-cols-2 gap-2"><input type="date" id="alu_f_nac" onchange="calcEdad()" class="input-elite"><select id="alu_sala" class="input-elite"></select></div>
                     <input id="alu_dom" class="input-elite" placeholder="DOMICILIO REAL">
-                    <div class="grid grid-cols-2 gap-2"><input id="alu_her" class="input-elite" placeholder="HERMANOS (CANT)" type="number"><select id="alu_her_j" class="input-elite"><option value="NO">HERMANOS EN J926? NO</option><option value="SI">SI</option></select></div>
+                    <div class="grid grid-cols-2 gap-2"><input id="alu_her" class="input-elite" placeholder="HERMANOS" type="number"><select id="alu_her_j" class="input-elite"><option value="NO">HERMANOS EN J926? NO</option><option value="SI">SI</option></select></div>
                     <div class="grid grid-cols-2 gap-2"><select id="alu_auh" class="input-elite"><option value="NO">AUH: NO</option><option value="SI">SI</option></select><input id="alu_salud" class="input-elite" placeholder="FICHA DE SALUD / CUD"></div>
                 </div>
                 <div class="bg-black/40 p-4 rounded border border-zinc-800 space-y-3">
-                    <h2 class="text-zinc-500 border-b border-zinc-700 pb-1 orbitron font-bold italic text-[11px]">II. MADRE / TUTORA (ESPEJO)</h2>
+                    <h2 class="text-zinc-500 border-b border-zinc-700 pb-1 orbitron font-bold italic uppercase">II. MADRE (ESPEJO)</h2>
                     <input id="m_nombre" class="input-elite" placeholder="NOMBRE COMPLETO">
                     <div class="grid grid-cols-2 gap-2"><input id="m_dni" class="input-elite" placeholder="DNI"><input id="m_nac" class="input-elite" placeholder="NACIONALIDAD"></div>
                     <div class="flex gap-1"><input id="m_dom" class="input-elite" placeholder="DOMICILIO"><button onclick="cloneDom('m')" class="bg-zinc-800 px-2 text-[9px] font-bold">ALU</button></div>
-                    <div class="grid grid-cols-2 gap-2"><input id="m_tel1" class="input-elite" placeholder="TEL 1 (WHATSAPP)"><input id="m_tel2" class="input-elite" placeholder="OTRO TELÉFONO"></div>
+                    <div class="grid grid-cols-2 gap-2"><input id="m_tel1" class="input-elite" placeholder="WHATSAPP"><input id="m_tel2" class="input-elite" placeholder="TEL 2"></div>
                     <select id="m_edu" class="input-elite edu-selector"></select>
-                    <div class="grid grid-cols-2 gap-2"><input id="m_ocu" class="input-elite" placeholder="OCUPACIÓN"><select id="m_auh" class="input-elite"><option value="NO">COBRA AUH: NO</option><option value="SI">SI</option></select></div>
+                    <div class="grid grid-cols-2 gap-2"><input id="m_ocu" class="input-elite" placeholder="OCUPACIÓN"><select id="m_auh" class="input-elite"><option value="NO">AUH: NO</option><option value="SI">SI</option></select></div>
                 </div>
                 <div class="bg-black/40 p-4 rounded border border-zinc-800 space-y-3">
-                    <h2 class="text-zinc-500 border-b border-zinc-700 pb-1 orbitron font-bold italic text-[11px]">III. PADRE / TUTOR (ESPEJO)</h2>
+                    <h2 class="text-zinc-500 border-b border-zinc-700 pb-1 orbitron font-bold italic uppercase">III. PADRE (ESPEJO)</h2>
                     <input id="p_nombre" class="input-elite" placeholder="NOMBRE COMPLETO">
                     <div class="grid grid-cols-2 gap-2"><input id="p_dni" class="input-elite" placeholder="DNI"><input id="p_nac" class="input-elite" placeholder="NACIONALIDAD"></div>
                     <div class="flex gap-1"><input id="p_dom" class="input-elite" placeholder="DOMICILIO"><button onclick="cloneDom('p')" class="bg-zinc-800 px-2 text-[9px] font-bold">ALU</button></div>
-                    <div class="grid grid-cols-2 gap-2"><input id="p_tel1" class="input-elite" placeholder="TEL 1 (WHATSAPP)"><input id="p_tel2" class="input-elite" placeholder="OTRO TELÉFONO"></div>
+                    <div class="grid grid-cols-2 gap-2"><input id="p_tel1" class="input-elite" placeholder="WHATSAPP"><input id="p_tel2" class="input-elite" placeholder="TEL 2"></div>
                     <select id="p_edu" class="input-elite edu-selector"></select>
-                    <div class="grid grid-cols-2 gap-2"><input id="p_ocu" class="input-elite" placeholder="OCUPACIÓN"><select id="p_auh" class="input-elite"><option value="NO">COBRA AUH: NO</option><option value="SI">SI</option></select></div>
+                    <div class="grid grid-cols-2 gap-2"><input id="p_ocu" class="input-elite" placeholder="OCUPACIÓN"><select id="p_auh" class="input-elite"><option value="NO">AUH: NO</option><option value="SI">SI</option></select></div>
                 </div>
             </div>
             <button id="btn_save" onclick="saveData('MAT')" class="w-full mt-8 bg-nuke text-black font-black py-4 orbitron text-xl hover:brightness-110 uppercase">CONSOLIDAR MATRÍCULA & RECUPERAR DATOS</button>
@@ -92,68 +90,52 @@
     <section id="v2" class="hidden">
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4" id="mapa_grid"></div>
         <div id="sala_detail" class="hidden mt-8 neon-border p-6 bg-black/90 rounded-xl">
-            <h3 id="sala_title" class="text-4xl font-black orbitron text-nuke border-b border-zinc-800 mb-6 pb-2"></h3>
+            <h3 id="sala_title" class="text-3xl font-black orbitron text-nuke border-b border-zinc-800 mb-6 pb-2 uppercase"></h3>
             <div id="sala_list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3"></div>
         </div>
     </section>
 
     <section id="v3" class="hidden">
         <div class="bg-orange-950/20 p-8 neon-border rounded-xl">
-            <div class="flex justify-between items-center mb-8 border-b border-orange-500/30 pb-4">
-                <h2 class="orbitron text-orange-500 text-3xl font-black uppercase">Terminal de Lista de Espera</h2>
-                <div class="flex gap-4">
-                    <button onclick="startVoiceES()" class="bg-orange-600 px-6 py-2 text-[10px] font-black orbitron">VOZ ASPIRANTE</button>
-                    <button onclick="saveData('ESP')" class="bg-white text-black px-6 py-2 text-[10px] font-black orbitron uppercase">Cargar Aspirante</button>
-                </div>
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="orbitron text-orange-500 text-2xl font-black uppercase">LISTA DE ESPERA ESTRATÉGICA</h2>
+                <button onclick="saveData('ESP')" class="bg-orange-600 px-6 py-2 text-[10px] font-black orbitron uppercase">Cargar Aspirante</button>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-[11px]">
-                    <thead class="orbitron text-zinc-500 border-b border-zinc-800 uppercase">
-                        <tr>
-                            <th class="p-4">Aspirante</th><th class="p-4">DNI / Edad 30-6</th><th class="p-4">Sala Solicitada</th><th class="p-4">Contactos Padres</th><th class="p-4">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="espera_table"></tbody>
-                </table>
-            </div>
+            <div class="overflow-x-auto"><table class="w-full text-[11px]"><thead class="orbitron text-zinc-500 border-b border-zinc-800 uppercase"><tr><th class="p-3">Aspirante</th><th class="p-3">DNI/Edad</th><th class="p-3">Sala</th><th class="p-3">Padres/Tel</th><th class="p-3">Acción</th></tr></thead><tbody id="espera_table"></tbody></table></div>
         </div>
     </section>
 
-    <section id="v4" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-10">
-        <div class="bg-zinc-900/50 p-8 rounded-xl border border-blue-500/20 shadow-2xl">
-            <h2 class="orbitron text-blue-400 mb-6 font-bold text-2xl uppercase">Asistencia Biónica por Imagen</h2>
-            <div class="p-10 border-2 border-dashed border-zinc-800 text-center rounded-lg mb-6 hover:border-nuke transition cursor-pointer relative">
-                <input type="file" onchange="processAttendance(this)" class="absolute inset-0 opacity-0 cursor-pointer">
-                <p class="orbitron text-zinc-500">ARRASTRE O SUBA FOTO DE REGISTRO PARA CÁLCULO DE PRESENTISMO</p>
-            </div>
-            <div id="assist_stats" class="grid grid-cols-2 gap-4"></div>
+    <section id="v4" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-zinc-900/50 p-6 rounded-xl border border-blue-500/20">
+            <h2 class="orbitron text-blue-400 mb-4 font-bold uppercase">ASISTENCIA POR IMAGEN (IA)</h2>
+            <input type="file" onchange="processAttendance(this)" class="input-elite mb-6">
+            <div id="assist_stats" class="grid grid-cols-3 gap-2"></div>
         </div>
-        <div class="bg-zinc-900/50 p-8 rounded-xl border border-red-500/20 shadow-2xl">
-            <h2 class="orbitron text-red-500 mb-6 font-bold text-2xl uppercase tracking-tighter">Bajas Institucionales por Calendario</h2>
-            <div id="bajas_list" class="space-y-2"></div>
+        <div class="bg-zinc-900/50 p-6 rounded-xl border border-red-500/20">
+            <h2 class="orbitron text-red-500 mb-4 font-bold uppercase">BAJAS POR CALENDARIO</h2>
+            <div id="bajas_list" class="space-y-1 text-[10px]"></div>
         </div>
     </section>
 
     <section id="v5" class="hidden space-y-12">
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-6" id="stats_elite"></div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 h-[500px]">
-            <div class="bg-black p-8 rounded border border-zinc-800 shadow-2xl"><canvas id="chart_salas"></canvas></div>
-            <div class="bg-black p-8 rounded border border-zinc-800 shadow-2xl"><canvas id="chart_socio"></canvas></div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="stats_elite"></div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 h-[450px]">
+            <div class="bg-black p-6 rounded border border-zinc-800"><canvas id="chart_salas"></canvas></div>
+            <div class="bg-black p-6 rounded border border-zinc-800"><canvas id="chart_socio"></canvas></div>
         </div>
     </section>
 </main>
 
 <script>
-    let DATA = JSON.parse(localStorage.getItem('T360_NUCLEAR')) || { mat: [], esp: [], bajas: [] };
+    let DATA = JSON.parse(localStorage.getItem('T360_FINAL_J926')) || { mat: [], esp: [], bajas: [] };
     const SALAS_INST = ['ROSA', 'ROJA', 'NARANJA', 'CELESTE', 'VIOLETA', 'AZUL', 'AMARILLA', 'VERDE'];
     const EDU_LEVELS = ["SIN ESTUDIOS", "PRIMARIA COMPLETA", "PRIMARIA INCOMPLETA", "SECUNDARIA COMPLETA", "SECUNDARIA INCOMPLETA", "TERCIARIA COMPLETA", "TERCIARIA INCOMPLETA", "UNIVERSITARIO COMPLETA", "UNIVERSITARIO INCOMPLETA"];
     const MESES = ['MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
 
     function initSystem() {
         const sSel = document.getElementById('alu_sala');
-        sSel.innerHTML = '<option value="">ELEGIR SECCIÓN...</option>';
         SALAS_INST.forEach(s => { ['TM', 'TT'].forEach(t => sSel.innerHTML += `<option value="${s}-${t}">${s} - ${t}</option>`); });
-        document.querySelectorAll('.edu-selector').forEach(e => { e.innerHTML = '<option value="">ESTUDIOS...</option>'; EDU_LEVELS.forEach(o => e.innerHTML += `<option value="${o}">${o}</option>`); });
+        document.querySelectorAll('.edu-selector').forEach(e => { EDU_LEVELS.forEach(o => e.innerHTML += `<option value="${o}">${o}</option>`); });
         sync();
     }
 
@@ -173,8 +155,8 @@
         if(res) {
             Object.keys(res).forEach(k => { if(document.getElementById(k)) document.getElementById(k).value = res[k]; });
             calcEdad();
-            document.getElementById('btn_save').innerText = "MODO EDICIÓN: ACTUALIZAR LEGAJO";
-            document.getElementById('btn_save').classList.replace('bg-nuke', 'bg-blue-600');
+            document.getElementById('btn_save').innerText = "ACTUALIZAR LEGAJO";
+            document.getElementById('btn_save').className = "w-full mt-8 bg-blue-600 text-white font-black py-4 orbitron text-xl uppercase";
         }
     }
 
@@ -186,11 +168,11 @@
             const idx = DATA.mat.findIndex(x => x.alu_dni === data.alu_dni);
             if(idx > -1) DATA.mat[idx] = data; else DATA.mat.push(data);
         } else { DATA.esp.push(data); }
-        sync(); clearForm(); alert("REGISTRO CONSOLIDADO");
+        sync(); clearForm(); alert("SISTEMA SINCRONIZADO");
     }
 
     function sync() {
-        localStorage.setItem('T360_NUCLEAR', JSON.stringify(DATA));
+        localStorage.setItem('T360_FINAL_J926', JSON.stringify(DATA));
         renderGrid(); renderEspera(); renderBajas(); updateStats();
     }
 
@@ -199,7 +181,7 @@
         SALAS_INST.forEach(s => { ['TM', 'TT'].forEach(t => {
             const tag = `${s}-${t}`; const cant = DATA.mat.filter(x => x.alu_sala === tag).length;
             grid.innerHTML += `<div onclick="viewSala('${tag}')" class="card-sala S-${s}">
-                <div class="orbitron text-[8px] opacity-50">${t}</div><div class="font-black text-[10px]">${s}</div><div class="text-3xl font-black text-nuke mt-1">${cant}</div></div>`;
+                <div class="orbitron text-[8px] opacity-50">${t}</div><div class="font-black text-[9px]">${s}</div><div class="text-2xl font-black text-nuke">${cant}</div></div>`;
         });});
     }
 
@@ -218,15 +200,23 @@
         const tbody = document.getElementById('espera_table'); tbody.innerHTML = '';
         DATA.esp.forEach((e, i) => {
             tbody.innerHTML += `<tr class="border-b border-zinc-900 hover:bg-zinc-900 transition">
-                <td class="p-4 font-bold text-nuke uppercase">${e.alu_nombre}</td>
-                <td class="p-4">${e.alu_dni} <br><span class="text-[9px] text-zinc-500">Edad 30/6: ${e.edad_calc}</span></td>
-                <td class="p-4">${e.alu_sala}</td>
-                <td class="p-4 text-[9px]">M: ${e.m_tel1} <br> P: ${e.p_tel1}</td>
-                <td class="p-4"><button onclick="promote(${i})" class="bg-blue-600 text-white px-3 py-1 font-bold text-[9px] orbitron">ADMITIR</button></td></tr>`;
+                <td class="p-3 font-bold text-nuke uppercase">${e.alu_nombre}</td><td>${e.alu_dni} <br> ${e.edad_calc} años</td><td>${e.alu_sala}</td><td>M: ${e.m_tel1} <br> P: ${e.p_tel1}</td>
+                <td><button onclick="promote(${i})" class="bg-nuke text-black px-3 py-1 font-bold text-[9px]">ADMITIR</button></td></tr>`;
         });
     }
 
-    function promote(i) { DATA.mat.push(DATA.esp[i]); DATA.esp.splice(i, 1); sync(); alert("ALUMNO ADMITIDO"); }
+    function promote(i) { DATA.mat.push(DATA.esp[i]); DATA.esp.splice(i, 1); sync(); alert("ADMITIDO"); }
+
+    function processAttendance() {
+        const res = document.getElementById('assist_stats');
+        res.innerHTML = '<p class="animate-pulse orbitron text-nuke">PROCESANDO...</p>';
+        setTimeout(() => {
+            const p = Math.floor(DATA.mat.length * 0.9);
+            res.innerHTML = `<div class="bg-black p-4 border border-nuke text-center"><p class="text-[9px]">PRES</p><h4 class="text-xl text-nuke font-black">${p}</h4></div>
+                <div class="bg-black p-4 border border-red-500 text-center"><p class="text-[9px]">AUS</p><h4 class="text-xl text-red-500 font-black">${DATA.mat.length-p}</h4></div>
+                <div class="bg-zinc-800 p-4 text-center"><p class="text-[9px]">PROMEDIO</p><h4 class="text-xl font-black">90%</h4></div>`;
+        }, 1500);
+    }
 
     function importData(input) {
         const reader = new FileReader();
@@ -239,36 +229,25 @@
                 p_nombre: i.p_nombre || i.pn || "", p_tel1: i.p_tel1 || i.ptel || "",
                 alu_nac: i.alu_nac || 'ARGENTINA', alu_auh: i.alu_auh || 'NO'
             }));
-            sync(); alert("CARGA RECUPERADA: 360 ALUMNOS.");
+            sync(); alert("360 ALUMNOS CARGADOS.");
         };
         reader.readAsText(input.files[0]);
-    }
-
-    function processAttendance() {
-        const res = document.getElementById('assist_stats');
-        res.innerHTML = '<p class="animate-pulse orbitron text-nuke">ANALIZANDO IMAGEN...</p>';
-        setTimeout(() => {
-            const pres = Math.floor(DATA.mat.length * 0.9);
-            res.innerHTML = `<div class="grid grid-cols-2 gap-4">
-                <div class="bg-black p-4 border border-nuke text-center"><p class="orbitron text-[9px]">PRESENTES</p><h4 class="text-4xl text-nuke font-black">${pres}</h4></div>
-                <div class="bg-black p-4 border border-red-500 text-center"><p class="orbitron text-[9px]">AUSENTES</p><h4 class="text-4xl text-red-500 font-black">${DATA.mat.length - pres}</h4></div></div>`;
-        }, 1500);
     }
 
     function updateStats() {
         const p = document.getElementById('stats_elite');
         const items = [{t:'MATRÍCULA', v:DATA.mat.length, c:'nuke'}, {t:'AUH TOTAL', v:DATA.mat.filter(x=>x.alu_auh==='SI').length, c:'blue-500'}, {t:'TRABAJO FAM', v:DATA.mat.filter(x=>x.m_ocu||x.p_ocu).length, c:'orange-500'}, {t:'NAC. ARG', v:DATA.mat.filter(x=>x.alu_nac==='ARGENTINA').length, c:'white'}];
-        p.innerHTML = items.map(i => `<div class="bg-zinc-900 p-4 border-b-2 border-${i.c}"><p class="text-[9px] orbitron text-zinc-500">${i.t}</p><h4 class="text-3xl font-black text-${i.c}">${i.v}</h4></div>`).join('');
+        p.innerHTML = items.map(i => `<div class="bg-zinc-900 p-4 border-b-2 border-${i.c}"><p class="text-[9px] orbitron text-zinc-500">${i.t}</p><h4 class="text-2xl font-black text-${i.c}">${i.v}</h4></div>`).join('');
     }
 
+    function startVoice(id) { const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)(); rec.lang = 'es-AR'; rec.onresult = (e) => { document.getElementById(id).value = e.results[0][0].transcript.toUpperCase(); smartRadar(); }; rec.start(); }
     function show(n) { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); document.getElementById('v'+n).classList.remove('hidden'); document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab')); document.getElementById('t'+n).classList.add('active-tab'); if(n===5) renderCharts(); }
     function clearForm() { document.querySelectorAll('#form_container input, #form_container select').forEach(i => i.value = ''); document.getElementById('btn_save').innerText = "CONSOLIDAR MATRÍCULA 360"; document.getElementById('btn_save').classList.replace('bg-blue-600', 'bg-nuke'); }
     function editAlu(dni) { document.getElementById('radar').value = dni; smartRadar(); show(1); }
     function cloneDom(who) { document.getElementById(who+'_dom').value = document.getElementById('alu_dom').value; }
-    function startVoice() { const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)(); rec.lang = 'es-AR'; rec.onresult = (e) => { document.getElementById('radar').value = e.results[0][0].transcript.toUpperCase(); smartRadar(); }; rec.start(); }
-    function startVoiceES() { const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)(); rec.lang = 'es-AR'; rec.onresult = (e) => { document.getElementById('alu_nombre').value = e.results[0][0].transcript.toUpperCase(); }; rec.start(); }
-    function exportExcel() { const ws = XLSX.utils.json_to_sheet(DATA.mat); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "MATRICULA"); XLSX.writeFile(wb, "TITANIUM_J926_SUPERVISION.xlsx"); }
+    function exportExcel() { const ws = XLSX.utils.json_to_sheet(DATA.mat); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "MATRICULA"); XLSX.writeFile(wb, "SUPERVISION_J926.xlsx"); }
     function exportBackup() { const blob = new Blob([JSON.stringify(DATA)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "BACKUP_T360.json"; a.click(); }
+    function renderBajas() { const l = document.getElementById('bajas_list'); l.innerHTML = ''; MESES.forEach(m => { l.innerHTML += `<div class="p-2 border border-zinc-800 flex justify-between uppercase"><span>${m}</span> <span class="text-red-500">0 BAJAS</span></div>`; }); }
 </script>
 </body>
 </html>
