@@ -14,12 +14,12 @@
         body { background: var(--bg); color: #e1e1e1; font-family: 'Roboto'; overflow-x: hidden; font-size: 11px; }
         .orbitron { font-family: 'Orbitron'; }
         .font-black { font-weight: 900 !important; }
-        .neon-border { border: 1px solid rgba(223, 255, 0, 0.4); box-shadow: 0 0 20px rgba(223, 255, 0, 0.15); }
-        .input-elite { background: #000; border: 1px solid #555; padding: 12px; color: var(--nuke); width: 100%; border-radius: 6px; border-left: 4px solid var(--nuke); font-weight: 900; text-transform: uppercase; font-size: 12px; }
-        .btn-tab { padding: 14px; opacity: 0.4; transition: 0.3s; border-bottom: 3px solid transparent; font-family: 'Orbitron'; font-size: 10px; flex: 1; font-weight: 900; }
+        .neon-border { border: 1px solid rgba(223, 255, 0, 0.4); box-shadow: 0 0 15px rgba(223, 255, 0, 0.1); }
+        .input-elite { background: #000; border: 1px solid #555; padding: 10px; color: var(--nuke); width: 100%; border-radius: 6px; border-left: 4px solid var(--nuke); font-weight: 900; text-transform: uppercase; }
+        .btn-tab { padding: 14px; opacity: 0.4; transition: 0.3s; border-bottom: 3px solid transparent; font-family: 'Orbitron'; font-size: 9px; flex: 1; font-weight: 900; text-transform: uppercase; }
         .active-tab { opacity: 1; border-bottom: 4px solid var(--nuke); color: var(--nuke); background: rgba(223, 255, 0, 0.08); }
-        .card-sala { cursor: pointer; transition: 0.3s; border-radius: 10px; padding: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.2); background: #111; position: relative; }
-        .card-sala:hover { transform: translateY(-5px); border-color: var(--nuke); background: #1a1a1a; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .card-sala { cursor: pointer; transition: 0.3s; border-radius: 10px; padding: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.2); background: #111; }
+        .card-sala:hover { transform: translateY(-5px); border-color: var(--nuke); background: #1a1a1a; }
         .S-ROSA { border-top: 6px solid #ff69b4; } .S-ROJA { border-top: 6px solid #ff0000; }
         .S-NARANJA { border-top: 6px solid #ffa500; } .S-CELESTE { border-top: 6px solid #00d4ff; }
         .S-VIOLETA { border-top: 6px solid #8a2be2; } .S-AMARILLA { border-top: 6px solid #ffff00; }
@@ -34,9 +34,9 @@
         <input type="text" id="tel_directivos" class="bg-zinc-900 border border-zinc-700 text-nuke font-black p-1 text-[10px] w-40" placeholder="TEL. ALERTAS DIRECTIVOS">
     </div>
     <div class="flex gap-2">
-        <button onclick="exportExcel()" class="bg-green-700 px-4 py-1 text-[9px] font-black rounded orbitron uppercase shadow-lg">Excel Master</button>
-        <button onclick="exportBackup()" class="bg-zinc-800 px-4 py-1 text-[9px] font-black rounded orbitron uppercase shadow-lg">Backup JSON</button>
-        <label class="bg-blue-600 px-4 py-1 text-[9px] rounded cursor-pointer font-black orbitron uppercase shadow-lg">Importar <input type="file" class="hidden" onchange="importData(this)"></label>
+        <button onclick="exportExcel()" class="bg-green-700 px-4 py-1 text-[8px] font-black rounded orbitron shadow-lg uppercase">Excel Master</button>
+        <button onclick="exportBackup()" class="bg-zinc-800 px-4 py-1 text-[8px] font-black rounded orbitron shadow-lg uppercase">Backup JSON</button>
+        <label class="bg-blue-600 px-4 py-1 text-[8px] rounded cursor-pointer font-black orbitron shadow-lg uppercase">Importar <input type="file" class="hidden" onchange="importData(this)"></label>
     </div>
 </header>
 
@@ -54,9 +54,11 @@
             <div class="flex gap-3 mb-6">
                 <input type="text" id="radar" onkeyup="smartRadar()" class="flex-1 bg-black border-2 border-nuke p-4 text-2xl orbitron font-black text-nuke uppercase shadow-inner" placeholder="RADAR PROFESIONAL (DNI / APELLIDO)...">
                 <button onclick="startVoice('radar')" class="bg-red-600 px-8 font-black orbitron animate-pulse text-white shadow-lg">🎤 VOZ</button>
-                <button onclick="startScanner()" class="bg-white text-black px-6 font-black orbitron shadow-lg">SCAN</button>
+                <button onclick="startScanner()" class="bg-white text-black px-6 font-black orbitron shadow-lg uppercase">Scan</button>
             </div>
+            
             <div id="scanner_container" class="hidden mb-6 bg-black p-2 border-2 border-nuke rounded shadow-2xl"><video id="preview" class="w-full h-48 object-cover"></video></div>
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="form_master">
                 <div class="space-y-3 bg-black/50 p-5 rounded-lg border border-zinc-700 shadow-2xl">
                     <h2 class="text-nuke border-b-2 border-nuke/40 orbitron font-black text-xs flex justify-between uppercase italic mb-4">I. Legajo Alumno <span id="label_edad" class="text-white font-black"></span></h2>
@@ -64,7 +66,7 @@
                     <div class="grid grid-cols-2 gap-2"><input id="alu_dni" class="input-elite" placeholder="DNI"><input id="alu_nac" class="input-elite" placeholder="NACIONALIDAD" value="ARGENTINA"></div>
                     <div class="grid grid-cols-2 gap-2"><input type="date" id="alu_f_nac" onchange="calcEdad()" class="input-elite"><select id="alu_sala" class="input-elite"></select></div>
                     <input id="alu_dom" class="input-elite" placeholder="DOMICILIO REAL">
-                    <div class="grid grid-cols-2 gap-2"><input id="alu_her_cant" class="input-elite" placeholder="HERMANOS" type="number"><select id="alu_her_jardin" class="input-elite"><option value="NO">¿EN J926? NO</option><option value="SI">SI</option></select></div>
+                    <div class="grid grid-cols-2 gap-2"><input id="alu_her_cant" class="input-elite" placeholder="CANT. HERMANOS" type="number"><select id="alu_her_jardin" class="input-elite"><option value="NO">¿EN J926? NO</option><option value="SI">SI</option></select></div>
                     <input id="alu_salud" class="input-elite" placeholder="SALUD / CUD / ALERGIAS">
                     <select id="alu_auh" class="input-elite"><option value="NO">AUH: NO</option><option value="SI">SI</option></select>
                 </div>
@@ -104,7 +106,7 @@
 
     <section id="v3" class="hidden">
         <div class="bg-orange-950/20 p-8 neon-border rounded-xl shadow-2xl border-l-8 border-orange-600">
-            <h2 class="orbitron text-orange-500 text-3xl font-black mb-8 flex justify-between uppercase">Gestión de Vacantes <button onclick="saveData('esp')" class="bg-orange-600 text-white px-6 py-2 orbitron font-black text-xs uppercase shadow-lg">Cargar Aspirante</button></h2>
+            <h2 class="orbitron text-orange-500 text-3xl font-black mb-8 flex justify-between uppercase italic">Terminal Lista de Espera <button onclick="saveData('esp')" class="bg-orange-600 text-white px-6 py-2 orbitron font-black text-xs uppercase shadow-lg">Cargar Aspirante</button></h2>
             <div class="overflow-x-auto"><table class="w-full text-left text-[11px]"><thead class="orbitron text-zinc-500 border-b border-orange-500/30 uppercase"><tr><th class="p-4">Aspirante</th><th class="p-4">DNI / Edad 30-6</th><th class="p-4">Sala</th><th class="p-4">Padres/Tel</th><th class="p-4">Acción</th></tr></thead><tbody id="espera_table"></tbody></table></div>
         </div>
     </section>
@@ -140,7 +142,7 @@
 </main>
 
 <script>
-    let DATA = JSON.parse(localStorage.getItem('T360_FINAL_VFINAL')) || { mat: [], esp: [], bajas: [] };
+    let DATA = JSON.parse(localStorage.getItem('T360_FINAL_VOMNIBUS')) || { mat: [], esp: [], bajas: [] };
     const SALAS_INST = ['ROSA', 'ROJA', 'NARANJA', 'CELESTE', 'VIOLETA', 'AZUL', 'AMARILLA', 'VERDE'];
     const EDU_LEVELS = ["SIN ESTUDIOS", "PRIMARIA COMP.", "PRIMARIA INC.", "SECUNDARIA COMP.", "SECUNDARIA INC.", "TERCIARIA COMP.", "UNI. COMP.", "UNI. INC."];
 
@@ -156,7 +158,7 @@
         sync();
     }
 
-    function sync() { localStorage.setItem('T360_FINAL_VFINAL', JSON.stringify(DATA)); renderGrid(); renderEspera(); updateStats(); }
+    function sync() { localStorage.setItem('T360_FINAL_VOMNIBUS', JSON.stringify(DATA)); renderGrid(); renderEspera(); updateStats(); }
 
     function smartRadar() {
         const val = document.getElementById('radar').value.toUpperCase();
@@ -169,6 +171,7 @@
         }
     }
 
+    // --- FUNCIÓN CLAVE: RECUPERAR LEGAJO 100% DESDE SALA ---
     function editAlu(dni) {
         const alu = DATA.mat.find(x => x.alu_dni === dni);
         if(alu) {
@@ -232,10 +235,10 @@
     function renderBajas() { const l = document.getElementById('bajas_render'); l.innerHTML = ''; DATA.bajas.forEach(b => { l.innerHTML += `<div class="bg-black p-3 border-l-4 border-red-500 uppercase flex justify-between font-black text-[9px]">${b.alu_nombre} - ${b.motivo}</div>`; }); if(l.innerHTML === '') l.innerHTML = `<p class="text-center italic opacity-40">Sin bajas registradas este mes.</p>`; }
     function renderGrid() {
         const grid = document.getElementById('mapa_grid'); grid.innerHTML = '';
-        SALAS_INST.forEach(s => ['TM', 'TT'].forEach(t => {
+        SALAS_INST.forEach(s => { ['TM', 'TT'].forEach(t => {
             const tag = `${s}-${t}`; const cant = DATA.mat.filter(x => x.alu_sala.toUpperCase().includes(tag.toUpperCase())).length;
             grid.innerHTML += `<div onclick="viewSala('${tag}')" class="card-sala S-${s}"><div class="orbitron text-[8px] font-black opacity-60">${t}</div><div class="font-black text-[11px] uppercase">${s}</div><div class="text-3xl font-black text-nuke">${cant}</div></div>`;
-        }));
+        });});
     }
     function renderCharts() { 
         const ctx1 = document.getElementById('chart_salas').getContext('2d'); 
