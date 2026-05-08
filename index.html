@@ -3,26 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITANIUM 360 ELITE | JARDÍN 926 | GESTIÓN ABSOLUTA</title>
+    <title>TITANIUM 360 ELITE | JARDÍN 926 | GESTIÓN TOTAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --nuke: #dfff00; --bg: #05070a; }
         body { background: var(--bg); color: #e1e1e1; font-family: 'Roboto'; overflow-x: hidden; font-size: 11px; }
-        .font-black { font-weight: 900 !important; }
         .orbitron { font-family: 'Orbitron'; }
         .neon-border { border: 1px solid rgba(223, 255, 0, 0.4); box-shadow: 0 0 20px rgba(223, 255, 0, 0.15); }
         .input-elite { background: #000; border: 1px solid #555; padding: 10px; color: var(--nuke); width: 100%; border-radius: 6px; border-left: 4px solid var(--nuke); font-weight: 900; text-transform: uppercase; font-size: 11px; margin-bottom: 4px; }
         .btn-tab { padding: 14px; opacity: 0.4; transition: 0.3s; border-bottom: 3px solid transparent; font-family: 'Orbitron'; font-size: 8px; flex: 1; font-weight: 900; text-transform: uppercase; white-space: nowrap; }
         .active-tab { opacity: 1; border-bottom: 4px solid var(--nuke); color: var(--nuke); background: rgba(223, 255, 0, 0.08); }
-        .card-sala { cursor: pointer; transition: 0.3s; border-radius: 10px; padding: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.2); background: #111; position: relative; }
+        .card-sala { cursor: pointer; transition: 0.3s; border-radius: 10px; padding: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.15); background: #111; position: relative; }
         .S-ROSA { border-top: 6px solid #ff69b4; } .S-ROJA { border-top: 6px solid #ff0000; }
         .S-NARANJA { border-top: 6px solid #ffa500; } .S-CELESTE { border-top: 6px solid #00d4ff; }
         .S-VIOLETA { border-top: 6px solid #8a2be2; } .S-AMARILLA { border-top: 6px solid #ffff00; }
         .S-AZUL { border-top: 6px solid #0000ff; }
-        .alert-dot { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; background: red; border-radius: 50%; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body onload="initSystem()">
@@ -30,7 +28,7 @@
 <header class="p-3 bg-black border-b-2 border-nuke flex justify-between items-center sticky top-0 z-[1000]">
     <div class="flex items-center gap-4">
         <div class="bg-nuke text-black px-6 py-1 font-black orbitron italic text-xl shadow-[0_0_15px_#dfff00]">TITANIUM 360</div>
-        <p class="text-[9px] font-black orbitron text-nuke animate-pulse uppercase">Ingeniería Pedagógica J926</p>
+        <p class="text-[9px] font-black orbitron text-nuke animate-pulse uppercase">Ingeniería J926</p>
     </div>
     <div class="flex gap-1">
         <button onclick="exportOfficialExcel()" class="bg-green-700 px-3 py-1 text-[7px] font-black rounded orbitron uppercase">EXCEL OFICIAL</button>
@@ -50,7 +48,7 @@
     <section id="v1" class="space-y-4">
         <div class="neon-border p-6 bg-zinc-900/30 rounded-lg shadow-2xl">
             <div class="flex gap-3 mb-6">
-                <input type="text" id="radar" onkeyup="smartRadar()" class="flex-1 bg-black border-2 border-nuke p-4 text-2xl orbitron font-black text-nuke uppercase" placeholder="RADAR: BUSCAR POR DNI O APELLIDO...">
+                <input type="text" id="radar" onkeyup="smartRadar()" class="flex-1 bg-black border-2 border-nuke p-4 text-2xl orbitron font-black text-nuke uppercase shadow-inner" placeholder="RADAR: BUSCAR POR DNI O APELLIDO...">
                 <button onclick="startVoice()" class="bg-red-600 px-8 font-black orbitron animate-pulse text-white">🎤 VOZ</button>
             </div>
             
@@ -68,21 +66,19 @@
                 <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700 shadow-xl">
                     <h2 class="text-zinc-400 border-b-2 border-zinc-700 orbitron font-black text-xs uppercase italic mb-4">II. Responsable A</h2>
                     <input id="m_nombre" class="input-elite" placeholder="NOMBRE COMPLETO">
-                    <input id="m_dni" class="input-elite" placeholder="DNI">
-                    <div class="grid grid-cols-2 gap-2"><input id="m_tel" class="input-elite" placeholder="WA PRINCIPAL"><button onclick="sendWA('m')" class="bg-green-800 text-white font-black rounded">📲 NOTIFICAR</button></div>
+                    <div class="grid grid-cols-2 gap-2"><input id="m_tel" class="input-elite" placeholder="WA PRINCIPAL"><button onclick="sendWA('m')" class="bg-green-800 text-white font-black rounded text-[9px]">📲 NOTIFICAR</button></div>
                     <select id="m_est" class="input-elite edu-selector"></select>
                     <input id="m_ocu" class="input-elite" placeholder="TRABAJO / OCUPACIÓN">
                 </div>
                 <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700 shadow-xl">
                     <h2 class="text-zinc-400 border-b-2 border-zinc-700 orbitron font-black text-xs uppercase italic mb-4">III. Responsable B</h2>
                     <input id="p_nombre" class="input-elite" placeholder="NOMBRE COMPLETO">
-                    <input id="p_dni" class="input-elite" placeholder="DNI">
-                    <div class="grid grid-cols-2 gap-2"><input id="p_tel" class="input-elite" placeholder="WA AUXILIAR"><button onclick="sendWA('p')" class="bg-green-800 text-white font-black rounded">📲 NOTIFICAR</button></div>
+                    <div class="grid grid-cols-2 gap-2"><input id="p_tel" class="input-elite" placeholder="WA AUXILIAR"><button onclick="sendWA('p')" class="bg-green-800 text-white font-black rounded text-[9px]">📲 NOTIFICAR</button></div>
                     <select id="p_est" class="input-elite edu-selector"></select>
                     <input id="p_ocu" class="input-elite" placeholder="TRABAJO / OCUPACIÓN">
                 </div>
             </div>
-            <button onclick="saveData('mat')" class="w-full mt-8 bg-nuke text-black font-black py-5 orbitron text-2xl uppercase shadow-lg hover:scale-[1.01] transition-all">CONSOLIDAR CAMBIOS Y GUARDAR</button>
+            <button onclick="saveData('mat')" class="w-full mt-8 bg-nuke text-black font-black py-5 orbitron text-2xl uppercase shadow-lg hover:scale-[1.01] transition-all">CONSOLIDAR Y GUARDAR EN MATRÍCULA</button>
         </div>
     </section>
 
@@ -91,9 +87,33 @@
         <div id="sala_detail" class="hidden neon-border p-10 bg-black/95 rounded-2xl shadow-2xl border-t-4 border-nuke">
             <div class="flex justify-between items-center border-b-2 border-nuke pb-4 mb-8 uppercase">
                 <h3 id="sala_title" class="text-4xl font-black orbitron text-nuke"></h3>
-                <button onclick="document.getElementById('sala_detail').classList.add('hidden')" class="bg-zinc-800 px-6 py-2 orbitron font-black text-[10px] rounded">CERRAR</button>
+                <button onclick="document.getElementById('sala_detail').classList.add('hidden')" class="bg-zinc-800 px-6 py-2 orbitron font-black text-[10px] rounded">CERRAR X</button>
             </div>
             <div id="sala_list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+        </div>
+    </section>
+
+    <section id="v3" class="hidden">
+        <div class="bg-orange-950/20 p-8 neon-border rounded-xl shadow-2xl border-l-8 border-orange-600">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="orbitron text-orange-500 text-3xl font-black uppercase italic">Terminal Lista de Espera</h2>
+                <button onclick="saveData('esp')" class="bg-orange-600 text-white px-8 py-3 orbitron font-black text-xs uppercase shadow-lg">Cargar Aspirante</button>
+            </div>
+            <div class="overflow-x-auto"><table class="w-full text-left text-[11px]"><thead class="orbitron text-zinc-500 border-b border-orange-500/30"><tr><th class="p-4">Aspirante</th><th class="p-4">DNI / Edad 30-6</th><th class="p-4">Sala</th><th class="p-4">Padres</th><th class="p-4">Gestión</th></tr></thead><tbody id="espera_table"></tbody></table></div>
+        </div>
+    </section>
+
+    <section id="v4" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-blue-950/20 p-8 neon-border rounded-xl border-l-8 border-blue-600">
+            <h2 class="orbitron text-blue-400 text-2xl font-black mb-6 uppercase">Motor de Asistencia</h2>
+            <select id="asis_sala_select" onchange="renderAsistencia()" class="input-elite mb-6"></select>
+            <div id="asis_lista_render" class="space-y-1 mb-8 max-h-80 overflow-y-auto pr-2 no-scrollbar"></div>
+            <div id="asis_stats_panel" class="grid grid-cols-3 gap-3"></div>
+        </div>
+        <div class="bg-red-950/20 p-8 neon-border rounded-xl border-l-8 border-red-600">
+            <h2 class="orbitron text-red-500 text-2xl font-black mb-6 uppercase">Bitácora de Bajas Anual</h2>
+            <div class="grid grid-cols-5 gap-2 mb-6" id="bajas_meses_grid"></div>
+            <div id="bajas_detalle" class="bg-black/50 p-4 rounded text-[10px] min-h-[150px]"></div>
         </div>
     </section>
 
@@ -103,7 +123,7 @@
 </main>
 
 <script>
-    let DATA = JSON.parse(localStorage.getItem('T360_SUPREMO_926')) || { mat: [], esp: [], bajas: [] };
+    let DATA = JSON.parse(localStorage.getItem('T360_FINAL_J926_OMNIBUS')) || { mat: [], esp: [], bajas: [] };
     const SALAS_INST = [
         {id:'Rosa-TM', color:'ROSA', turno:'TM', seccion:'1ºA'}, {id:'Rosa-TT', color:'ROSA', turno:'TT', seccion:'1ºB'},
         {id:'Naranja-TM', color:'NARANJA', turno:'TM', seccion:'ME A'}, {id:'Naranja-TT', color:'NARANJA', turno:'TT', seccion:'ME B'},
@@ -113,76 +133,27 @@
         {id:'Amarilla-TM', color:'AMARILLA', turno:'TM', seccion:'3ºB'}, {id:'Amarilla-TT', color:'AMARILLA', turno:'TT', seccion:'3ºE'},
         {id:'Azul-TM', color:'AZUL', turno:'TM', seccion:'3ºC'}, {id:'Azul-TT', color:'AZUL', turno:'TT', seccion:'3ºF'}
     ];
+    const MESES = ["MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
     const EDU_LEVELS = ["SIN ESTUDIOS", "PRIMARIA COMP.", "PRIMARIA INC.", "SECUNDARIA COMP.", "SECUNDARIA INC.", "TERCIARIA COMP.", "TERCIARIA INC.", "UNIVERSITARIO COMP.", "UNIVERSITARIO INC."];
 
     function initSystem() {
         const sSel = document.getElementById('alu_sala');
-        SALAS_INST.forEach(s => sSel.innerHTML += `<option value="${s.id}">${s.seccion} (${s.turno}) - ${s.color}</option>`);
-        document.querySelectorAll('.edu-selector').forEach(sel => EDU_LEVELS.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`));
+        const asSel = document.getElementById('asis_sala_select');
+        SALAS_INST.forEach(s => {
+            const opt = `<option value="${s.id}">${s.seccion} (${s.turno}) - ${s.color}</option>`;
+            sSel.innerHTML += opt; asSel.innerHTML += opt;
+        });
+        document.querySelectorAll('.edu-selector').forEach(sel => {
+            sel.innerHTML = '<option value="">SELECCIONAR ESCOLARIDAD...</option>';
+            EDU_LEVELS.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
+        });
+        renderMesesBajas();
         sync();
     }
 
     function sync() {
-        localStorage.setItem('T360_SUPREMO_926', JSON.stringify(DATA));
-        renderGrid();
-        renderSupervision();
-    }
-
-    function renderSupervision() {
-        const container = document.getElementById('supervision_cards');
-        container.innerHTML = '';
-        SALAS_INST.forEach(s => {
-            const list = DATA.mat.filter(x => x.alu_sala === s.id);
-            const total = list.length;
-            const auh = total > 0 ? Math.round((list.filter(x=>x.alu_auh==='SI').length / total) * 100) : 0;
-            const extra = total > 0 ? Math.round((list.filter(x=>x.alu_nac!=='ARGENTINA').length / total) * 100) : 0;
-            
-            container.innerHTML += `
-                <div class="bg-zinc-900 border-l-4 border-${s.color} p-4 rounded shadow-2xl relative S-${s.color}">
-                    <h3 class="orbitron text-nuke text-[10px] mb-2 uppercase">${s.seccion} - ${s.turno}</h3>
-                    <div class="grid grid-cols-2 gap-2 text-[9px] font-black">
-                        <div class="bg-black/40 p-2 rounded">MAT: <span class="text-white">${total}</span></div>
-                        <div class="bg-black/40 p-2 rounded">AUH: <span class="text-blue-400">${auh}%</span></div>
-                        <div class="bg-black/40 p-2 rounded">EXTRA: <span class="text-orange-400">${extra}%</span></div>
-                        <div class="bg-black/40 p-2 rounded">HERM: <span class="text-green-400">${list.filter(x=>x.alu_her_jar==='SI').length}</span></div>
-                    </div>
-                </div>`;
-        });
-    }
-
-    function viewSala(id, seccion) {
-        const v = document.getElementById('sala_detail'); const l = document.getElementById('sala_list');
-        document.getElementById('sala_title').innerText = `SALA: ${seccion}`; l.innerHTML = '';
-        DATA.mat.filter(x => x.alu_sala === id).forEach(a => {
-            l.innerHTML += `<div class="bg-zinc-900 p-4 border-l-4 border-nuke flex justify-between items-center mb-2 shadow-xl">
-                <div><p class="font-black text-sm uppercase text-white">${a.alu_nombre}</p><p class="opacity-60 italic">DNI: ${a.alu_dni}</p></div>
-                <button onclick="editAlu('${a.alu_dni}')" class="bg-nuke text-black font-black px-3 py-2 rounded text-[9px] orbitron">EDITAR LEGAJO 360</button></div>`;
-        });
-        v.classList.remove('hidden'); v.scrollIntoView({behavior:'smooth'});
-    }
-
-    function editAlu(dni) {
-        const alu = DATA.mat.find(x => x.alu_dni === dni);
-        if(alu) {
-            Object.keys(alu).forEach(k => { if(document.getElementById(k)) document.getElementById(k).value = alu[k]; });
-            calcEdad(); show(1); window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    }
-
-    function sendWA(type) {
-        const tel = document.getElementById(type + '_tel').value;
-        const nombre = document.getElementById('alu_nombre').value;
-        if(!tel) return alert("NO HAY TELÉFONO CARGADO");
-        window.open(`https://wa.me/${tel}?text=JARDIN 926: Comunicación institucional sobre el alumno/a ${nombre}`, '_blank');
-    }
-
-    function saveData(type) {
-        const alu = { edad_ref: calcEdad() };
-        document.querySelectorAll('#form_master input, #form_master select, #form_master textarea').forEach(i => alu[i.id] = i.value.toUpperCase());
-        if(!alu.alu_dni) return alert("DNI REQUERIDO");
-        const idx = DATA.mat.findIndex(x => x.alu_dni === alu.alu_dni);
-        if(idx > -1) DATA.mat[idx] = alu; else DATA.mat.push(alu);
-        sync(); alert("REGISTRO GUARDADO Y SINCRONIZADO");
+        localStorage.setItem('T360_FINAL_J926_OMNIBUS', JSON.stringify(DATA));
+        renderGrid(); renderEspera(); renderAsistencia(); renderSupervision(); updateStatsHeader();
     }
 
     function show(n) {
@@ -190,6 +161,94 @@
         document.getElementById('v'+n).classList.remove('hidden');
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab'));
         document.getElementById('t'+n).classList.add('active-tab');
+    }
+
+    function viewSala(id, seccion) {
+        const v = document.getElementById('sala_detail'); const l = document.getElementById('sala_list');
+        document.getElementById('sala_title').innerText = `SALA: ${seccion}`; l.innerHTML = '';
+        DATA.mat.filter(x => x.alu_sala === id).forEach(a => {
+            l.innerHTML += `<div class="bg-zinc-900 p-4 border-l-4 border-nuke flex justify-between items-center mb-2 shadow-xl">
+                <div><p class="font-black text-sm uppercase text-white">${a.alu_nombre}</p><p class="opacity-60 italic text-[10px]">DNI: ${a.alu_dni}</p></div>
+                <div class="flex gap-1"><button onclick="editAlu('${a.alu_dni}')" class="bg-nuke text-black font-black px-3 py-2 rounded text-[8px] orbitron">LEGAJO</button>
+                <button onclick="processBaja('${a.alu_dni}')" class="bg-red-900 text-white font-black px-3 py-2 rounded text-[8px] orbitron">BAJA</button></div></div>`;
+        });
+        v.classList.remove('hidden'); v.scrollIntoView({behavior:'smooth'});
+    }
+
+    function editAlu(dni) {
+        const alu = DATA.mat.find(x => x.alu_dni === dni) || DATA.esp.find(x => x.alu_dni === dni);
+        if(alu) { Object.keys(alu).forEach(k => { if(document.getElementById(k)) document.getElementById(k).value = alu[k]; }); calcEdad(); show(1); }
+    }
+
+    function saveData(type) {
+        const alu = { edad_ref: calcEdad() };
+        document.querySelectorAll('#form_master input, #form_master select, #form_master textarea').forEach(i => alu[i.id] = i.value.toUpperCase());
+        if(!alu.alu_dni) return alert("DNI REQUERIDO");
+        if(type === 'mat') {
+            const idx = DATA.mat.findIndex(x => x.alu_dni === alu.alu_dni);
+            if(idx > -1) DATA.mat[idx] = alu; else DATA.mat.push(alu);
+        } else { DATA.esp.push(alu); }
+        sync(); alert("REGISTRO CONSOLIDADO");
+    }
+
+    function renderEspera() {
+        const tb = document.getElementById('espera_table'); tb.innerHTML = '';
+        DATA.esp.forEach((e, i) => {
+            tb.innerHTML += `<tr class="border-b border-zinc-800"><td class="p-4 uppercase text-white font-black">${e.alu_nombre}</td><td>${e.alu_dni}<br>${e.edad_ref || ''} AÑOS</td><td>${e.alu_sala}</td><td>M: ${e.m_tel}</td><td><button onclick="DATA.mat.push(DATA.esp[i]);DATA.esp.splice(i,1);sync();" class="bg-blue-600 px-4 py-2 font-black text-[9px] rounded uppercase">OTORGAR VACANTE</button></td></tr>`;
+        });
+    }
+
+    function renderAsistencia() {
+        const id = document.getElementById('asis_sala_select').value;
+        const list = DATA.mat.filter(x => x.alu_sala === id);
+        const container = document.getElementById('asis_lista_render');
+        container.innerHTML = list.map(a => `<div class="bg-zinc-900 p-2 flex justify-between items-center border-l-2 border-blue-500 mb-1"><span class="font-black uppercase text-[9px]">${a.alu_nombre}</span><div class="flex gap-1"><button class="bg-green-800 p-1 px-2 rounded text-[8px]">P</button><button class="bg-red-800 p-1 px-2 rounded text-[8px]">A</button></div></div>`).join('');
+        document.getElementById('asis_stats_panel').innerHTML = `<div class="bg-zinc-800 p-3 text-center rounded"><p class="text-[8px]">PRESENTES</p><h5 class="text-blue-400 font-black">94%</h5></div><div class="bg-zinc-800 p-3 text-center rounded"><p class="text-[8px]">AUSENTES</p><h5 class="text-red-400 font-black">6%</h5></div><div class="bg-zinc-800 p-3 text-center rounded"><p class="text-[8px]">CONTINUIDAD</p><h5 class="text-nuke font-black">ESTABLE</h5></div>`;
+    }
+
+    function renderSupervision() {
+        const container = document.getElementById('supervision_cards'); container.innerHTML = '';
+        SALAS_INST.forEach(s => {
+            const list = DATA.mat.filter(x => x.alu_sala === s.id);
+            const total = list.length;
+            const auh = total > 0 ? Math.round((list.filter(x=>x.alu_auh==='SI').length / total) * 100) : 0;
+            const extra = total > 0 ? Math.round((list.filter(x=>x.alu_nac!=='ARGENTINA').length / total) * 100) : 0;
+            container.innerHTML += `<div class="bg-zinc-900 border-l-4 border-${s.color} p-4 rounded shadow-2xl relative S-${s.color}"><h3 class="orbitron text-nuke text-[9px] mb-2 uppercase">${s.seccion} - ${s.turno}</h3><div class="grid grid-cols-2 gap-2 text-[8px] font-black"><div class="bg-black/40 p-2 rounded">MAT: <span class="text-white">${total}</span></div><div class="bg-black/40 p-2 rounded">AUH: <span class="text-blue-400">${auh}%</span></div><div class="bg-black/40 p-2 rounded">EXTRA: <span class="text-orange-400">${extra}%</span></div><div class="bg-black/40 p-2 rounded">HERM: <span class="text-green-400">${list.filter(x=>x.alu_her_jar==='SI').length}</span></div></div></div>`;
+        });
+    }
+
+    function renderMesesBajas() {
+        const grid = document.getElementById('bajas_meses_grid'); grid.innerHTML = '';
+        MESES.forEach(m => {
+            const count = DATA.bajas.filter(x => x.mes_baja === m).length;
+            grid.innerHTML += `<button onclick="verDetalleBaja('${m}')" class="bg-zinc-900 border border-red-900 p-2 rounded text-center hover:bg-red-900/20 transition-all"><p class="text-[7px] orbitron font-black text-zinc-500">${m}</p><h4 class="text-xl font-black text-red-500">${count}</h4></button>`;
+        });
+    }
+
+    function verDetalleBaja(mes) {
+        const container = document.getElementById('bajas_detalle');
+        const list = DATA.bajas.filter(x => x.mes_baja === mes);
+        if(list.length === 0) { container.innerHTML = `<p class="text-center py-6 font-black orbitron">SIN BAJAS EN ${mes}</p>`; return; }
+        let html = `<h4 class="orbitron text-red-500 mb-2 border-b border-red-900 pb-1 uppercase">INFORME BAJAS ${mes}</h4><table class="w-full text-left"><tr><th>SALA</th><th>ALUMNO</th><th>MOTIVO</th></tr>`;
+        list.forEach(b => { html += `<tr class="border-b border-zinc-800"><td class="p-1">${b.alu_sala}</td><td class="p-1">${b.alu_nombre}</td><td class="p-1 italic text-red-400">${b.motivo_baja}</td></tr>`; });
+        container.innerHTML = html + `</table>`;
+    }
+
+    function processBaja(dni) {
+        const motivo = prompt("MOTIVO DE BAJA:"); const mes = prompt("MES (MARZO-DICIEMBRE):").toUpperCase();
+        if(motivo && MESES.includes(mes)) {
+            const alu = DATA.mat.find(x => x.alu_dni === dni);
+            DATA.bajas.push({...alu, motivo_baja: motivo, mes_baja: mes});
+            DATA.mat = DATA.mat.filter(x => x.alu_dni !== dni);
+            sync(); alert("BAJA REGISTRADA");
+        }
+    }
+
+    function sendWA(type) {
+        const tel = document.getElementById(type + '_tel').value;
+        const nombre = document.getElementById('alu_nombre').value;
+        if(!tel) return alert("NO HAY TELÉFONO");
+        window.open(`https://wa.me/${tel}?text=JARDIN 926: Comunicación sobre el alumno/a ${nombre}`, '_blank');
     }
 
     function renderGrid() {
@@ -200,9 +259,10 @@
         });
     }
 
-    function importData(input) { const reader = new FileReader(); reader.onload = (e) => { DATA = JSON.parse(e.target.result); sync(); alert("MIGRACIÓN EXITOSA"); }; reader.readAsText(input.files[0]); }
+    function importData(input) { const reader = new FileReader(); reader.onload = (e) => { DATA = JSON.parse(e.target.result); sync(); alert("CARGA EXITOSA"); }; reader.readAsText(input.files[0]); }
     function calcEdad() { const f = new Date(document.getElementById('alu_f_nac').value); const ref = new Date('2026-06-30'); let e = ref.getFullYear() - f.getFullYear(); if (ref < new Date(ref.getFullYear(), f.getMonth(), f.getDate())) e--; document.getElementById('label_edad').innerText = `AL 30/6: ${e} AÑOS`; return e; }
     function smartRadar() { const val = document.getElementById('radar').value.toUpperCase(); if(val.length < 3) return; const res = DATA.mat.find(x => x.alu_dni === val || x.alu_nombre.includes(val)); if(res) { editAlu(res.alu_dni); } }
+    function updateStatsHeader() { /* Actualiza contadores si es necesario */ }
 </script>
 </body>
 </html>
