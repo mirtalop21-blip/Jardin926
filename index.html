@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITANIUM 360 | AUDITORÍA TOTAL J926</title>
+    <title>TITANIUM 360 ELITE | JARDÍN 926</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
         body { background: var(--bg); color: #e1e1e1; font-family: 'Roboto'; font-size: 11px; overflow-x: hidden; }
         .orbitron { font-family: 'Orbitron'; }
         .font-black { font-weight: 900 !important; }
-        .neon-border { border: 1px solid rgba(223, 255, 0, 0.4); box-shadow: 0 0 20px rgba(223, 255, 0, 0.1); }
+        .neon-border { border: 1px solid rgba(223, 255, 0, 0.4); box-shadow: 0 0 15px rgba(223, 255, 0, 0.1); }
         .input-elite { background: #000; border: 1px solid #333; padding: 10px; color: var(--nuke); width: 100%; border-radius: 6px; border-left: 4px solid var(--nuke); font-weight: 900; text-transform: uppercase; margin-bottom: 4px; outline: none; }
         .btn-tab { padding: 14px; opacity: 0.4; transition: 0.3s; border-bottom: 3px solid transparent; font-family: 'Orbitron'; font-size: 8px; flex: 1; font-weight: 900; text-transform: uppercase; white-space: nowrap; }
         .active-tab { opacity: 1; border-bottom: 4px solid var(--nuke); color: var(--nuke); background: rgba(223, 255, 0, 0.08); }
@@ -32,11 +32,13 @@
 <header class="p-3 bg-black border-b-2 border-nuke flex justify-between items-center sticky top-0 z-[1000] shadow-2xl">
     <div class="flex items-center gap-4">
         <div class="bg-nuke text-black px-6 py-1 font-black orbitron italic text-xl shadow-[0_0_20px_#dfff00]">TITANIUM 360</div>
-        <input type="text" id="radar_global" onkeyup="smartRadar('global')" class="bg-zinc-900 border border-nuke/30 p-2 rounded text-[10px] orbitron text-nuke w-48" placeholder="🔍 RADAR NUCLEAR (DNI/APELLIDO)">
+        <div class="flex bg-zinc-900 border border-nuke/30 rounded px-2 items-center">
+            <input type="text" id="radar_global" onkeyup="smartRadar('global')" class="bg-transparent p-1 text-[10px] orbitron text-nuke outline-none w-48" placeholder="🔍 RADAR (DNI/APELLIDO)">
+        </div>
     </div>
     <div class="flex gap-2">
         <div class="bg-zinc-800 px-3 py-1 rounded border border-zinc-700 text-[9px] font-black orbitron uppercase">Matrícula: <span id="header_total" class="text-nuke">0</span></div>
-        <label class="bg-blue-600 px-3 py-1 text-[7px] rounded cursor-pointer font-black orbitron text-white">IMPORTAR JSON <input type="file" class="hidden" onchange="importData(this)"></label>
+        <label class="bg-blue-600 px-3 py-1 text-[7px] rounded cursor-pointer font-black orbitron text-white uppercase">IMPORTAR JSON <input type="file" class="hidden" onchange="importData(this)"></label>
     </div>
 </header>
 
@@ -51,35 +53,33 @@
 <main class="p-4">
     <section id="v1" class="space-y-4">
         <div class="neon-border p-6 bg-zinc-900/30 rounded-lg">
-            <button onclick="startVoice()" class="w-full mb-6 bg-red-600 py-3 font-black orbitron text-white shadow-lg animate-pulse">🎤 INICIAR CARGA POR VOZ</button>
+            <button onclick="startVoice()" class="w-full mb-6 bg-red-600 py-3 font-black orbitron text-white shadow-lg animate-pulse flex justify-center items-center gap-2">🎤 INICIAR CARGA BIÓNICA POR VOZ</button>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="form_master">
-                <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700 shadow-xl">
-                    <h2 class="text-nuke border-b-2 border-nuke/40 orbitron font-black text-[10px] flex justify-between mb-4 uppercase">I. ALUMNO <span id="label_edad" class="text-white ml-2"></span></h2>
+                <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700">
+                    <h2 class="text-nuke border-b-2 border-nuke/40 orbitron font-black text-[10px] flex justify-between mb-4">I. ALUMNO <span id="label_edad" class="text-white ml-2"></span></h2>
                     <input id="alu_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
                     <div class="grid grid-cols-2 gap-2"><input id="alu_dni" class="input-elite" placeholder="DNI"><input id="alu_nac" class="input-elite" placeholder="NACIONALIDAD"></div>
                     <div class="grid grid-cols-2 gap-2"><input type="date" id="alu_f_nac" onchange="calcEdad()" class="input-elite"><select id="alu_sala" class="input-elite"></select></div>
                     <input id="alu_dom" class="input-elite" placeholder="DOMICILIO REAL">
-                    <textarea id="alu_salud" class="input-elite h-16" placeholder="FICHA SALUD / CUD / OBSERVACIONES"></textarea>
-                    <div class="grid grid-cols-2 gap-2"><input id="alu_her" class="input-elite" placeholder="CANT. HERMANOS" type="number"><select id="alu_auh" class="input-elite"><option value="NO">AUH: NO</option><option value="SI">SI</option></select></div>
+                    <textarea id="alu_salud" class="input-elite h-16" placeholder="OBSERVACIONES MÉDICAS / CUD"></textarea>
+                    <div class="grid grid-cols-2 gap-2"><input id="alu_her" class="input-elite" placeholder="HERMANOS" type="number"><select id="alu_auh" class="input-elite"><option value="NO">AUH: NO</option><option value="SI">SI</option></select></div>
                 </div>
-                <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700 shadow-xl">
-                    <h2 class="text-zinc-400 border-b-2 border-zinc-700 orbitron font-black text-[10px] uppercase mb-4 italic">II. MADRE</h2>
+                <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700">
+                    <h2 class="text-zinc-400 border-b-2 border-zinc-700 orbitron font-black text-[10px] uppercase mb-4 italic">II. MADRE (ESPEJO)</h2>
                     <input id="m_nombre" class="input-elite" placeholder="NOMBRE COMPLETO">
-                    <div class="grid grid-cols-2 gap-2"><input id="m_dni" class="input-elite" placeholder="DNI"><input id="m_nac" class="input-elite" placeholder="NACIONALIDAD"></div>
-                    <div class="grid grid-cols-2 gap-2"><input id="m_tel" class="input-elite" placeholder="WHATSAPP"><button onclick="sendWA('m')" class="bg-green-800 text-white font-black rounded text-[8px]">📲 WA</button></div>
+                    <div class="grid grid-cols-2 gap-2"><input id="m_dni" class="input-elite" placeholder="DNI"><input id="m_tel" class="input-elite" placeholder="WHATSAPP"></div>
                     <select id="m_est" class="input-elite edu-selector"></select>
                     <input id="m_ocu" class="input-elite" placeholder="TRABAJO / OCUPACIÓN">
                 </div>
-                <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700 shadow-xl">
-                    <h2 class="text-zinc-400 border-b-2 border-zinc-700 orbitron font-black text-[10px] uppercase mb-4 italic">III. PADRE</h2>
+                <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700">
+                    <h2 class="text-zinc-400 border-b-2 border-zinc-700 orbitron font-black text-[10px] uppercase mb-4 italic">III. PADRE (ESPEJO)</h2>
                     <input id="p_nombre" class="input-elite" placeholder="NOMBRE COMPLETO">
-                    <div class="grid grid-cols-2 gap-2"><input id="p_dni" class="input-elite" placeholder="DNI"><input id="p_nac" class="input-elite" placeholder="NACIONALIDAD"></div>
-                    <div class="grid grid-cols-2 gap-2"><input id="p_tel" class="input-elite" placeholder="WHATSAPP"><button onclick="sendWA('p')" class="bg-green-800 text-white font-black rounded text-[8px]">📲 WA</button></div>
+                    <div class="grid grid-cols-2 gap-2"><input id="p_dni" class="input-elite" placeholder="DNI"><input id="p_tel" class="input-elite" placeholder="WHATSAPP"></div>
                     <select id="p_est" class="input-elite edu-selector"></select>
                     <input id="p_ocu" class="input-elite" placeholder="TRABAJO / OCUPACIÓN">
                 </div>
             </div>
-            <button onclick="saveData('mat')" class="w-full mt-4 bg-nuke text-black font-black py-5 orbitron text-xl uppercase shadow-lg hover:scale-[1.01]">CONSOLIDAR Y GUARDAR MATRÍCULA NUCLEAR</button>
+            <button onclick="saveData('mat')" class="w-full mt-4 bg-nuke text-black font-black py-5 orbitron text-xl uppercase shadow-lg">CONSOLIDAR Y GUARDAR MATRÍCULA</button>
         </div>
     </section>
 
@@ -88,34 +88,16 @@
         <div id="sala_detail" class="hidden neon-border p-10 bg-black/95 rounded-2xl shadow-2xl border-t-4 border-nuke">
             <div class="flex justify-between items-center border-b-2 border-nuke pb-4 mb-8">
                 <h3 id="sala_title" class="text-4xl font-black orbitron text-nuke uppercase"></h3>
-                <button onclick="document.getElementById('sala_detail').classList.add('hidden')" class="bg-zinc-800 px-6 py-2 orbitron font-black text-xs rounded text-white">CERRAR X</button>
+                <button onclick="document.getElementById('sala_detail').classList.add('hidden')" class="bg-zinc-800 px-6 py-2 orbitron font-black text-xs rounded text-white uppercase">Cerrar X</button>
             </div>
             <div id="sala_list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
         </div>
     </section>
 
-    <section id="v3" class="hidden">
-        <div class="bg-orange-950/20 p-8 neon-border rounded-xl border-l-8 border-orange-600 shadow-2xl">
-            <h2 class="orbitron text-orange-500 text-2xl font-black mb-6 uppercase flex justify-between tracking-tighter">Terminal Espera Pro <button onclick="show(1)" class="bg-orange-600 text-white px-4 py-2 text-[10px] rounded">Carga Manual</button></h2>
-            <div class="overflow-x-auto"><table class="w-full text-left text-[10px]"><thead class="orbitron text-zinc-500 border-b border-orange-900/30 uppercase"><tr><th class="p-2">Aspirante</th><th class="p-2">DNI / Edad 30-6</th><th class="p-2">Tutor / Teléfono</th><th class="p-2">Acción</th></tr></thead><tbody id="espera_table"></tbody></table></div>
-        </div>
-    </section>
-
-    <section id="v4" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div class="bg-blue-950/20 p-8 neon-border rounded-xl border-l-8 border-pro">
-            <h2 class="orbitron text-pro text-2xl font-black mb-6 uppercase text-center">Motor de Asistencia</h2>
-            <select id="asis_sala_select" onchange="renderAsistencia()" class="input-elite mb-6"></select>
-            <div id="asis_lista_render" class="space-y-1 mb-8 max-h-80 overflow-y-auto pr-2 no-scrollbar"></div>
-        </div>
-        <div class="bg-red-950/20 p-8 neon-border rounded-xl border-l-8 border-red-600">
-            <h2 class="orbitron text-red-500 text-2xl font-black mb-6 uppercase text-center">Bajas</h2>
-            <div id="bajas_detalle" class="bg-black/50 p-4 rounded text-[10px] min-h-[150px]"></div>
-        </div>
-    </section>
-
     <section id="v5" class="hidden space-y-6">
+        <div class="alert-directivo orbitron text-[9px] uppercase">⚠️ ALERTA: Detectadas vacantes críticas en Sala de 2 años (Rosa/Celeste).</div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="supervision_cards"></div>
-        <div class="bg-zinc-900 p-6 rounded shadow-2xl border border-zinc-800 h-[300px]"><canvas id="chart_poblacion"></canvas></div>
+        <div class="bg-zinc-900 p-6 rounded shadow-2xl border border-zinc-800 h-[400px]"><canvas id="chart_poblacion"></canvas></div>
     </section>
 </main>
 
@@ -134,11 +116,7 @@
 
     function initSystem() {
         const sSel = document.getElementById('alu_sala');
-        const asSel = document.getElementById('asis_sala_select');
-        SALAS_INST.forEach(s => {
-            const opt = `<option value="${s.id}">${s.seccion} (${s.turno}) - ${s.color}</option>`;
-            sSel.innerHTML += opt; asSel.innerHTML += opt;
-        });
+        SALAS_INST.forEach(s => sSel.innerHTML += `<option value="${s.id}">${s.seccion} (${s.turno}) - ${s.color}</option>`);
         document.querySelectorAll('.edu-selector').forEach(sel => {
             sel.innerHTML = '<option value="">SELECCIONAR ESCOLARIDAD...</option>';
             EDU_LEVELS.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
@@ -147,44 +125,41 @@
     }
 
     function sync() {
-        localStorage.setItem('T360_J926_SUPREME_V3', JSON.stringify(DATA));
+        localStorage.setItem('T360_J926_DEFINITIVE_FINAL', JSON.stringify(DATA));
         document.getElementById('header_total').innerText = DATA.mat.length;
-        renderGrid(); renderEspera(); renderSupervision(); renderAsistencia();
+        renderGrid(); renderSupervision();
     }
 
     function renderSupervision() {
         const container = document.getElementById('supervision_cards'); container.innerHTML = '';
         SALAS_INST.forEach(s => {
-            const list = DATA.mat.filter(x => x.alu_sala === s.id);
+            const list = DATA.mat.filter(x => x.alu_sala.includes(s.id.split('-')[0]));
             const total = list.length;
-            const py = list.filter(x => x.alu_nac && x.alu_nac.toUpperCase().includes('PAR')).length;
-            const arg = list.filter(x => x.alu_nac && x.alu_nac.toUpperCase().includes('ARG')).length;
+            const py = list.filter(x => x.alu_nac && x.alu_nac.includes('PAR')).length;
+            const arg = list.filter(x => x.alu_nac && x.alu_nac.includes('ARG')).length;
             const trab = list.filter(x => x.m_ocu && !["DESOCUPADO","AMA DE CASA","SIN TRABAJO"].includes(x.m_ocu.toUpperCase())).length;
-            const cEst = list.filter(x => x.m_est && x.m_est.includes('COMP.')).length;
-            const auh = list.filter(x => x.alu_auh === 'SI').length;
-
-            container.innerHTML += `<div class="card-sala S-${s.color} text-left"><h3 class="orbitron text-nuke text-[9px] mb-2 font-black">${s.seccion}</h3><div class="space-y-1 text-[8px] font-black uppercase"><div class="flex justify-between border-b border-white/5"><span>Mat:</span><span>${total}</span></div><div class="flex justify-between border-b border-white/5"><span>PY:</span><span class="text-orange-400">${total>0?Math.round((py/total)*100):0}%</span></div><div class="flex justify-between border-b border-white/5"><span>TRAB:</span><span class="text-pro">${total>0?Math.round((trab/total)*100):0}%</span></div><div class="flex justify-between"><span>AUH:</span><span class="text-nuke">${total>0?Math.round((auh/total)*100):0}%</span></div></div></div>`;
+            container.innerHTML += `<div class="card-sala S-${s.color} text-left" style="cursor:default"><h3 class="orbitron text-nuke text-[10px] mb-2 font-black">${s.seccion}</h3><div class="space-y-1 text-[8px] font-black uppercase"><div class="flex justify-between border-b border-white/5"><span>MATRÍCULA:</span><span>${total}</span></div><div class="flex justify-between border-b border-white/5"><span>PY:</span><span class="text-orange-400">${py}</span></div><div class="flex justify-between border-b border-white/5"><span>AR:</span><span class="text-pro">${arg}</span></div><div class="flex justify-between"><span>TRABAJO:</span><span class="text-nuke">${total>0?Math.round((trab/total)*100):0}%</span></div></div></div>`;
         });
     }
 
     function viewSala(id, seccion) {
         const v = document.getElementById('sala_detail'); const l = document.getElementById('sala_list');
         document.getElementById('sala_title').innerText = `SALA: ${seccion}`; l.innerHTML = '';
-        DATA.mat.filter(x => x.alu_sala === id).forEach(a => {
+        DATA.mat.filter(x => x.alu_sala.includes(id.split('-')[0])).forEach(a => {
             l.innerHTML += `<div class="bg-zinc-900 p-4 border-l-4 border-nuke flex flex-col gap-2 shadow-xl rounded">
                 <div><p class="font-black text-sm uppercase text-white">${a.alu_nombre}</p><p class="opacity-60 italic text-[10px]">DNI: ${a.alu_dni || 'S/D'}</p></div>
                 <div class="grid grid-cols-2 gap-2 mt-2">
                     <button onclick="editAlu('${a.alu_dni}')" class="bg-nuke text-black font-black py-1 rounded text-[7px] orbitron uppercase">VER LEGAJO / EDITAR</button>
-                    <button onclick="processBaja('${a.alu_dni}')" class="bg-red-900 text-white font-black py-1 rounded text-[7px] orbitron">BAJA</button>
-                    <button onclick="sendWA_manual('${a.m_tel}', '${a.p_tel}', '${a.alu_nombre}')" class="bg-green-700 text-white font-black py-1 rounded text-[7px] orbitron">📲 WA</button>
-                    <button onclick="editAlu('${a.alu_dni}')" class="bg-zinc-800 text-white font-black py-1 rounded text-[7px] orbitron uppercase">GUARDAR</button>
+                    <button onclick="processBaja('${a.alu_dni}')" class="bg-red-900 text-white font-black py-1 rounded text-[7px] orbitron">DAR BAJA</button>
+                    <button onclick="sendWA_manual('${a.m_tel}', '${a.alu_nombre}')" class="bg-green-700 text-white font-black py-1 rounded text-[7px] orbitron">📲 WA</button>
+                    <button onclick="editAlu('${a.alu_dni}')" class="bg-zinc-800 text-white font-black py-1 rounded text-[7px] orbitron">GUARDAR</button>
                 </div></div>`;
         });
         v.classList.remove('hidden'); v.scrollIntoView({behavior:'smooth'});
     }
 
     function editAlu(dni) {
-        const alu = DATA.mat.find(x => x.alu_dni === dni) || DATA.esp.find(x => x.alu_dni === dni);
+        const alu = DATA.mat.find(x => x.alu_dni === dni);
         if(alu) { 
             Object.keys(alu).forEach(k => { if(document.getElementById(k)) document.getElementById(k).value = alu[k]; });
             calcEdad(); show(1); window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -198,20 +173,15 @@
         if(res) { editAlu(res.alu_dni); }
     }
 
-    function renderAsistencia() {
-        const id = document.getElementById('asis_sala_select').value;
-        const list = DATA.mat.filter(x => x.alu_sala === id);
-        document.getElementById('asis_lista_render').innerHTML = list.map(a => `<div class="bg-zinc-900 p-2 flex justify-between items-center border-l-2 border-pro mb-1"><span class="font-black uppercase text-[9px]">${a.alu_nombre}</span><div class="flex gap-1"><button class="bg-green-800 p-1 px-2 rounded text-[8px]">P</button><button class="bg-red-800 p-1 px-2 rounded text-[8px]">A</button></div></div>`).join('');
-    }
-
     function importData(input) {
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
-                DATA = JSON.parse(e.target.result);
+                const imported = JSON.parse(e.target.result);
+                DATA.mat = imported.mat || [];
                 sync();
-                alert("DATOS CARGADOS CON ÉXITO. REVISA LAS SALAS.");
-            } catch(err) { alert("ERROR EN ARCHIVO"); }
+                alert("CARGA EXITOSA: " + DATA.mat.length + " ALUMNOS.");
+            } catch(err) { alert("ERROR DE FORMATO JSON"); }
         };
         reader.readAsText(input.files[0]);
     }
@@ -222,7 +192,7 @@
         if(!alu.alu_dni) return alert("DNI REQUERIDO");
         const idx = DATA.mat.findIndex(x => x.alu_dni === alu.alu_dni);
         if(idx > -1) DATA.mat[idx] = alu; else DATA.mat.push(alu);
-        sync(); alert("CAMBIOS GUARDADOS.");
+        sync(); alert("REGISTRO GUARDADO.");
     }
 
     function show(n) { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); document.getElementById('v'+n).classList.remove('hidden'); document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab')); document.getElementById('t'+n).classList.add('active-tab'); }
@@ -230,15 +200,11 @@
     function renderGrid() {
         const grid = document.getElementById('mapa_grid'); grid.innerHTML = '';
         SALAS_INST.forEach(s => {
-            const cant = DATA.mat.filter(x => x.alu_sala === s.id).length;
+            const cant = DATA.mat.filter(x => x.alu_sala.includes(s.id.split('-')[0])).length;
             grid.innerHTML += `<div onclick="viewSala('${s.id}', '${s.seccion}')" class="card-sala S-${s.color}"><p class="orbitron text-[8px] font-black opacity-60">${s.turno}</p><p class="font-black text-[10px] uppercase">${s.color}</p><h4 class="text-3xl font-black text-nuke">${cant}</h4><p class="text-[9px] font-bold text-zinc-500">${s.seccion}</p></div>`;
         });
     }
-    function renderEspera() {
-        const tb = document.getElementById('espera_table'); tb.innerHTML = '';
-        DATA.esp.forEach((e, i) => { tb.innerHTML += `<tr class="border-b border-zinc-800 text-white"><td>${e.alu_nombre}</td><td>${e.alu_dni}</td><td>${e.m_tel}</td><td><button onclick="DATA.mat.push(DATA.esp[i]);DATA.esp.splice(i,1);sync();" class="bg-pro px-3 py-1 font-black text-[8px] rounded">ADMITIR</button></td></tr>`; });
-    }
-    function sendWA_manual(m, p, nombre) { const tel = prompt("1-Madre, 2-Padre", "1") === "1" ? m : p; if(!tel) return alert("SIN TELÉFONO"); window.open(`https://wa.me/${tel}?text=JARDIN 926: Hola, comunicamos por ${nombre}.`, '_blank'); }
+    function sendWA_manual(tel, nombre) { if(!tel) return alert("SIN TELÉFONO"); window.open(`https://wa.me/${tel}?text=JARDIN 926: Comunicación sobre ${nombre}.`, '_blank'); }
 </script>
 </body>
 </html>
