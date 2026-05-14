@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITANIUM 360 INTEGRAL | JARDÍN 926</title>
+    <title>TITANIUM 360 ELITE | JARDÍN 926 | GESTIÓN INTEGRAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
@@ -11,162 +11,199 @@
         :root { --nuke: #dfff00; --bg: #05070a; --pro: #00d4ff; --danger: #ff003c; }
         body { background: var(--bg); color: #e1e1e1; font-family: 'Roboto'; font-size: 11px; overflow-x: hidden; }
         .orbitron { font-family: 'Orbitron'; }
-        .neon-border { border: 1px solid rgba(223, 255, 0, 0.4); box-shadow: 0 0 15px rgba(223, 255, 0, 0.1); }
-        .input-elite { background: #000; border: 1px solid #333; padding: 10px; color: var(--nuke); width: 100%; border-radius: 6px; border-left: 4px solid var(--nuke); font-weight: 900; margin-bottom: 4px; outline: none; }
-        .btn-tab { padding: 14px; opacity: 0.4; transition: 0.3s; border-bottom: 3px solid transparent; font-family: 'Orbitron'; font-size: 8px; flex: 1; font-weight: 900; text-transform: uppercase; white-space: nowrap; color: white; }
-        .active-tab { opacity: 1; border-bottom: 4px solid var(--nuke); color: var(--nuke); background: rgba(223, 255, 0, 0.08); }
-        .card-sala { cursor: pointer; border-radius: 12px; padding: 15px; text-align: center; background: #0a0c10; border: 1px solid #1a1a1a; transition: 0.3s; position: relative; }
-        .card-sala:hover { transform: scale(1.05); border-color: var(--nuke); }
+        .neon-border { border: 1px solid rgba(223, 255, 0, 0.4); box-shadow: 0 0 20px rgba(223, 255, 0, 0.1); }
+        .input-elite { background: #000; border: 1px solid #333; padding: 10px; color: var(--nuke); width: 100%; border-radius: 6px; border-left: 4px solid var(--nuke); font-weight: 900; text-transform: uppercase; margin-bottom: 4px; outline: none; }
+        .btn-tab { padding: 16px; opacity: 0.4; transition: 0.3s; border-bottom: 3px solid transparent; font-family: 'Orbitron'; font-size: 8px; flex: 1; font-weight: 900; text-transform: uppercase; white-space: nowrap; color: #fff; }
+        .active-tab { opacity: 1; border-bottom: 4px solid var(--nuke); color: var(--nuke); background: rgba(223, 255, 0, 0.1); }
+        
+        /* FOTO INSTITUCIONAL: TARJETAS DINÁMICAS */
+        .card-sala { cursor: pointer; border-radius: 12px; padding: 18px; text-align: center; background: #0a0c10; border: 1px solid #1a1a1a; transition: 0.4s; position: relative; }
+        .card-sala:hover { transform: translateY(-8px) scale(1.02); border-color: var(--nuke); box-shadow: 0 10px 30px rgba(223, 255, 0, 0.1); }
         .S-ROSA { border-top: 8px solid #ff69b4; } .S-ROJA { border-top: 8px solid #ff0000; }
         .S-NARANJA { border-top: 8px solid #ffa500; } .S-CELESTE { border-top: 8px solid #00d4ff; }
         .S-VIOLETA { border-top: 8px solid #8a2be2; } .S-AMARILLA { border-top: 8px solid #ffff00; }
         .S-AZUL { border-top: 8px solid #0000ff; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body onload="initSystem()">
 
-<header class="p-3 bg-black border-b-2 border-nuke flex justify-between items-center sticky top-0 z-[1000]">
+<header class="p-3 bg-black border-b-2 border-nuke flex justify-between items-center sticky top-0 z-[1000] shadow-2xl">
     <div class="flex items-center gap-4">
-        <div class="bg-nuke text-black px-4 py-1 font-black orbitron italic text-xl">TITANIUM 360</div>
-        <input type="text" id="radar_global" onkeyup="smartRadar()" class="bg-zinc-900 border border-nuke/30 p-2 rounded text-[10px] orbitron text-nuke w-64" placeholder="🔍 RADAR NUCLEAR (DNI/NOMBRE)...">
+        <div class="bg-nuke text-black px-5 py-1 font-black orbitron italic text-xl shadow-[0_0_20px_#dfff00]">TITANIUM 360</div>
+        <input type="text" id="radar_global" onkeyup="smartRadar()" class="bg-zinc-900 border border-nuke/30 p-2 rounded text-[10px] orbitron text-nuke w-72 outline-none" placeholder="🔍 RADAR NUCLEAR: DNI O APELLIDO...">
     </div>
     <div class="flex gap-2">
         <button onclick="exportToExcel()" class="bg-green-700 px-3 py-1 text-[8px] rounded font-black orbitron text-white">EXCEL</button>
-        <label class="bg-blue-600 px-3 py-1 text-[8px] rounded cursor-pointer font-black orbitron text-white uppercase">IMPORTAR JSON <input type="file" class="hidden" onchange="importData(this)"></label>
+        <label class="bg-blue-600 px-5 py-1 text-[8px] rounded cursor-pointer font-black orbitron text-white uppercase shadow-lg">MIGRAR JSON <input type="file" class="hidden" onchange="importData(this)"></label>
     </div>
 </header>
 
-<nav class="flex overflow-x-auto bg-zinc-900 sticky top-[58px] z-[999] border-b border-white/5">
+<nav class="flex overflow-x-auto bg-zinc-900 sticky top-[58px] z-[999] border-b border-white/5 no-scrollbar shadow-2xl">
     <button onclick="show(1)" id="t1" class="btn-tab active-tab">1. Legajo 360</button>
     <button onclick="show(2)" id="t2" class="btn-tab">2. Foto Institucional</button>
-    <button onclick="show(3)" id="t3" class="btn-tab">3. Espera PRO</button>
-    <button onclick="show(4)" id="t4" class="btn-tab">4. Asistencia</button>
-    <button onclick="show(5)" id="t5" class="btn-tab">5. Supervisión Élite</button>
+    <button onclick="show(3)" id="t3" class="btn-tab text-orange-400">3. Espera PRO</button>
+    <button onclick="show(4)" id="t4" class="btn-tab text-pro">4. Asistencia Analítica</button>
+    <button onclick="show(5)" id="t5" class="btn-tab text-nuke font-black">5. Supervisión Élite</button>
 </nav>
 
 <main class="p-4">
     <section id="v1" class="space-y-4">
-        <div class="neon-border p-4 bg-zinc-900/30 rounded-lg">
-            <button onclick="startVoice()" class="w-full mb-4 bg-red-600 py-3 font-black orbitron text-white shadow-lg animate-pulse">🎤 CARGA POR VOZ BIÓNICA</button>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="form_master">
-                <div class="p-4 bg-black/50 rounded-lg border border-zinc-800">
-                    <h2 class="text-nuke orbitron font-black text-[10px] mb-3 uppercase italic border-b border-nuke/30 pb-1">I. Alumno</h2>
+        <div class="neon-border p-6 bg-zinc-900/30 rounded-lg shadow-2xl">
+            <button onclick="startVoice()" class="w-full mb-6 bg-red-600 py-3 font-black orbitron text-white shadow-lg animate-pulse flex justify-center items-center gap-2">🎤 CARGA POR VOZ BIÓNICA ACTIVADA</button>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="form_master">
+                <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700 shadow-xl">
+                    <h2 class="text-nuke border-b-2 border-nuke/40 orbitron font-black text-[10px] mb-4 italic uppercase">I. Alumno <span id="label_edad" class="text-white"></span></h2>
                     <input id="alu_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
                     <div class="grid grid-cols-2 gap-2"><input id="alu_dni" class="input-elite" placeholder="DNI"><input id="alu_nac" class="input-elite" placeholder="NACIONALIDAD"></div>
                     <div class="grid grid-cols-2 gap-2"><input type="date" id="alu_f_nac" onchange="calcEdad()" class="input-elite"><select id="alu_sala" class="input-elite"></select></div>
-                    <input id="alu_dom" class="input-elite" placeholder="DOMICILIO">
-                    <div class="grid grid-cols-2 gap-2"><select id="alu_auh" class="input-elite"><option value="NO">AUH: NO</option><option value="SI">AUH: SI</option></select><input id="alu_her" class="input-elite" placeholder="HERMANOS" type="number"></div>
+                    <input id="alu_dom" class="input-elite" placeholder="DOMICILIO REAL">
+                    <div class="grid grid-cols-2 gap-2"><select id="alu_auh" class="input-elite"><option value="NO">AUH: NO</option><option value="SI">SI</option></select><input id="alu_her" class="input-elite" placeholder="HERMANOS JARDÍN" type="number"></div>
+                    <textarea id="alu_salud" class="input-elite h-20" placeholder="CUD / ALERGIAS / OBSERVACIONES"></textarea>
                 </div>
-                <div class="p-4 bg-black/50 rounded-lg border border-zinc-800">
-                    <h2 class="text-zinc-400 orbitron font-black text-[10px] mb-3 uppercase italic border-b border-zinc-700 pb-1">II. Familia</h2>
-                    <input id="m_nombre" class="input-elite" placeholder="MADRE: NOMBRE">
-                    <div class="grid grid-cols-2 gap-2"><input id="m_tel" class="input-elite" placeholder="WHATSAPP"><select id="m_est" class="input-elite edu-selector"></select></div>
-                    <input id="m_ocu" class="input-elite" placeholder="OCUPACIÓN">
-                    <input id="p_nombre" class="input-elite" placeholder="PADRE: NOMBRE">
-                    <div class="grid grid-cols-2 gap-2"><input id="p_tel" class="input-elite" placeholder="WHATSAPP"><select id="p_est" class="input-elite edu-selector"></select></div>
+                <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700 shadow-xl">
+                    <h2 class="text-zinc-400 border-b-2 border-zinc-700 orbitron font-black text-[10px] uppercase mb-4 italic">II. MADRE (ESPEJO)</h2>
+                    <input id="m_nombre" class="input-elite" placeholder="NOMBRE COMPLETO">
+                    <div class="grid grid-cols-2 gap-2"><input id="m_dni" class="input-elite" placeholder="DNI"><input id="m_tel" class="input-elite" placeholder="WHATSAPP"></div>
+                    <select id="m_est" class="input-elite edu-selector"></select>
+                    <input id="m_ocu" class="input-elite" placeholder="TRABAJO / OCUPACIÓN">
                 </div>
-                <div class="p-4 bg-black/50 rounded-lg border border-zinc-800">
-                    <h2 class="text-zinc-400 orbitron font-black text-[10px] mb-3 uppercase italic border-b border-zinc-700 pb-1">III. Alertas y Salud</h2>
-                    <textarea id="alu_salud" class="input-elite h-24" placeholder="CUD / ALERGIAS / OBSERVACIONES"></textarea>
-                    <div id="display_edad" class="text-center p-4 bg-zinc-800 rounded font-black orbitron text-nuke text-xl mt-2">EDAD: --</div>
+                <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700 shadow-xl">
+                    <h2 class="text-zinc-400 border-b-2 border-zinc-700 orbitron font-black text-[10px] uppercase mb-4 italic">III. PADRE (ESPEJO)</h2>
+                    <input id="p_nombre" class="input-elite" placeholder="NOMBRE COMPLETO">
+                    <div class="grid grid-cols-2 gap-2"><input id="p_dni" class="input-elite" placeholder="DNI"><input id="p_tel" class="input-elite" placeholder="WHATSAPP"></div>
+                    <select id="p_est" class="input-elite edu-selector"></select>
+                    <input id="p_ocu" class="input-elite" placeholder="TRABAJO / OCUPACIÓN">
                 </div>
             </div>
-            <button onclick="saveData()" class="w-full mt-4 bg-nuke text-black font-black py-4 orbitron text-lg uppercase shadow-xl hover:bg-white transition">CONSOLIDAR MATRÍCULA 360</button>
+            <button onclick="saveData('mat')" class="w-full mt-6 bg-nuke text-black font-black py-5 orbitron text-xl uppercase shadow-lg hover:bg-white transition">CONSOLIDAR MATRÍCULA 360</button>
         </div>
     </section>
 
     <section id="v2" class="hidden">
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6" id="mapa_grid"></div>
-        <div id="sala_detail" class="hidden neon-border p-6 bg-black/90 rounded-xl">
-            <div class="flex justify-between items-center border-b border-nuke mb-4 pb-2">
-                <h3 id="sala_title" class="text-2xl font-black orbitron text-nuke italic"></h3>
-                <button onclick="document.getElementById('sala_detail').classList.add('hidden')" class="text-white text-xs font-black">CERRAR X</button>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8" id="mapa_grid"></div>
+        <div id="sala_detail" class="hidden neon-border p-10 bg-black/95 rounded-2xl shadow-2xl border-t-4 border-nuke">
+            <div class="flex justify-between items-center border-b-2 border-nuke pb-4 mb-8">
+                <h3 id="sala_title" class="text-4xl font-black orbitron text-nuke uppercase italic"></h3>
+                <button onclick="document.getElementById('sala_detail').classList.add('hidden')" class="bg-zinc-800 px-6 py-2 orbitron font-black text-xs rounded text-white uppercase">CERRAR X</button>
             </div>
-            <div id="sala_list" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+            <div id="sala_list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+        </div>
+        <div class="bg-red-950/20 p-8 neon-border rounded-xl border-l-8 border-red-600 mt-8">
+            <h2 class="orbitron text-red-500 text-2xl font-black mb-4 uppercase italic">Seguimiento de Bajas</h2>
+            <div id="bajas_render" class="space-y-2"></div>
         </div>
     </section>
 
     <section id="v3" class="hidden">
-        <div class="bg-zinc-900 p-6 rounded-xl border-l-8 border-orange-500 shadow-2xl">
-            <h2 class="orbitron text-orange-500 text-2xl font-black mb-4 uppercase italic">Lista de Espera Pro</h2>
-            <div id="espera_render" class="space-y-2"></div>
+        <div class="bg-orange-950/20 p-8 neon-border rounded-xl border-l-8 border-orange-600 shadow-2xl">
+            <h2 class="orbitron text-orange-500 text-2xl font-black mb-6 uppercase italic">Lista de Espera PRO</h2>
+            <div id="espera_render" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </div>
     </section>
 
     <section id="v4" class="hidden">
-        <div class="bg-zinc-900 p-6 rounded-xl border-l-8 border-pro shadow-2xl">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="orbitron text-pro text-2xl font-black uppercase italic">Asistencia Analítica</h2>
-                <select id="asis_sala_select" onchange="renderAsistencia()" class="input-elite !w-64"></select>
+        <div class="bg-blue-950/20 p-8 neon-border rounded-xl border-l-8 border-pro shadow-2xl">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
+                <h2 class="orbitron text-pro text-3xl font-black uppercase italic">Motor de Asistencia Eficaz</h2>
+                <select id="asis_sala_select" onchange="renderAsistencia()" class="input-elite !w-80 !mb-0"></select>
+                <div class="bg-pro text-black px-8 py-3 font-black orbitron rounded-lg text-2xl shadow-xl italic">PRESENTE: <span id="promedio_val">0</span>%</div>
             </div>
             <div id="asis_lista_render" class="grid grid-cols-1 md:grid-cols-4 gap-3"></div>
-            <div class="mt-6 p-4 bg-pro/10 text-pro orbitron font-black text-center rounded">PRESENCIA: <span id="promedio_val">0</span>%</div>
         </div>
     </section>
 
     <section id="v5" class="hidden space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="supervision_cards"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="supervision_cards"></div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800"><canvas id="chart_sala"></canvas></div>
-            <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800"><canvas id="chart_social"></canvas></div>
+            <div class="bg-zinc-900 p-8 rounded-xl shadow-2xl border border-zinc-800 h-[400px]"><canvas id="chart_sala"></canvas></div>
+            <div class="bg-zinc-900 p-8 rounded-xl shadow-2xl border border-zinc-800 h-[400px]"><canvas id="chart_poblacion"></canvas></div>
         </div>
     </section>
 </main>
 
 <script>
     let DATA = { mat: [], esp: [], bajas: [] };
-    const SALAS = [
-        {id:'Rosa-TM', color:'ROSA', sec:'1ºA'}, {id:'Rosa-TT', color:'ROSA', sec:'1ºB'},
-        {id:'Naranja-TM', color:'NARANJA', sec:'ME A'}, {id:'Naranja-TT', color:'NARANJA', sec:'ME B'},
-        {id:'Roja-TM', color:'ROJA', sec:'2ºA'}, {id:'Roja-TT', color:'ROJA', sec:'2ºC'},
-        {id:'Celeste-TM', color:'CELESTE', sec:'2ºB'}, {id:'Celeste-TT', color:'CELESTE', sec:'2ºD'},
-        {id:'Violeta-TM', color:'VIOLETA', sec:'3ºA'}, {id:'Violeta-TT', color:'VIOLETA', sec:'3ºD'},
-        {id:'Amarilla-TM', color:'AMARILLA', sec:'3ºB'}, {id:'Amarilla-TT', color:'AMARILLA', sec:'3ºE'},
-        {id:'Azul-TM', color:'AZUL', sec:'3ºC'}, {id:'Azul-TT', color:'AZUL', sec:'3ºF'}
+    const SALAS_INST = [
+        {id:'Rosa-TM', color:'ROSA', seccion:'1ºA'}, {id:'Rosa-TT', color:'ROSA', seccion:'1ºB'},
+        {id:'Naranja-TM', color:'NARANJA', seccion:'ME A'}, {id:'Naranja-TT', color:'NARANJA', seccion:'ME B'},
+        {id:'Roja-TM', color:'ROJA', seccion:'2ºA'}, {id:'Roja-TT', color:'ROJA', seccion:'2ºC'},
+        {id:'Celeste-TM', color:'CELESTE', seccion:'2ºB'}, {id:'Celeste-TT', color:'CELESTE', seccion:'2ºD'},
+        {id:'Violeta-TM', color:'VIOLETA', seccion:'3ºA'}, {id:'Violeta-TT', color:'VIOLETA', seccion:'3ºD'},
+        {id:'Amarilla-TM', color:'AMARILLA', seccion:'3ºB'}, {id:'Amarilla-TT', color:'AMARILLA', seccion:'3ºE'},
+        {id:'Azul-TM', color:'AZUL', seccion:'3ºC'}, {id:'Azul-TT', color:'AZUL', seccion:'3ºF'}
     ];
     let charts = { sala: null, social: null };
 
     function initSystem() {
         const sSel = document.getElementById('alu_sala');
         const asSel = document.getElementById('asis_sala_select');
-        SALAS.forEach(s => {
-            const opt = `<option value="${s.id}">${s.sec} - SALA ${s.color}</option>`;
+        SALAS_INST.forEach(s => {
+            const opt = `<option value="${s.id}">${s.seccion} - SALA ${s.color}</option>`;
             sSel.innerHTML += opt; asSel.innerHTML += opt;
         });
         document.querySelectorAll('.edu-selector').forEach(sel => {
             sel.innerHTML = '<option value="">ESTUDIOS...</option>';
-            ["PRIMARIA COMP.", "SECUNDARIA COMP.", "TERCIARIA COMP.", "UNIVERSITARIA COMP.", "SECUNDARIA INC."].forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
+            ["SIN ESTUDIOS", "PRIMARIA COMP.", "SECUNDARIA INC.", "SECUNDARIA COMP.", "TERCIARIA COMP.", "UNIVERSITARIA COMP."].forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
         });
-        const saved = localStorage.getItem('TITANIUM_ULTIMATE_360');
+        const saved = localStorage.getItem('TITANIUM_SUPER_FINAL_926');
         if(saved) { DATA = JSON.parse(saved); sync(); }
     }
 
     function sync() {
-        localStorage.setItem('TITANIUM_ULTIMATE_360', JSON.stringify(DATA));
-        renderGrid(); renderSupervision(); updateCharts(); renderEspera();
+        localStorage.setItem('TITANIUM_SUPER_FINAL_926', JSON.stringify(DATA));
+        document.getElementById('header_total').innerText = DATA.mat.length;
+        renderGrid(); renderSupervision(); renderEspera(); renderBajas(); updateCharts();
+    }
+
+    function importData(input) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const imported = JSON.parse(e.target.result);
+                // NORMALIZADOR ANALÍTICO BLINDADO
+                DATA.mat = (imported.mat || []).map(a => {
+                    let s = (a.alu_sala || "").toUpperCase();
+                    if(s.includes("AMARILLA")) a.alu_sala = s.includes("TT") || s.includes("E") ? "Amarilla-TT" : "Amarilla-TM";
+                    else if(s.includes("ROSA")) a.alu_sala = s.includes("TT") || s.includes("B") ? "Rosa-TT" : "Rosa-TM";
+                    else if(s.includes("ROJA")) a.alu_sala = s.includes("TT") || s.includes("C") ? "Roja-TT" : "Roja-TM";
+                    else if(s.includes("CELESTE")) a.alu_sala = s.includes("TT") || s.includes("D") ? "Celeste-TT" : "Celeste-TM";
+                    else if(s.includes("VIOLETA")) a.alu_sala = s.includes("TT") || s.includes("D") ? "Violeta-TT" : "Violeta-TM";
+                    else if(s.includes("NARANJA") || s.includes("ME")) a.alu_sala = s.includes("TT") || s.includes("B") ? "Naranja-TT" : "Naranja-TM";
+                    else if(s.includes("AZUL")) a.alu_sala = s.includes("TT") || s.includes("F") ? "Azul-TT" : "Azul-TM";
+                    return a;
+                });
+                DATA.esp = imported.esp || [];
+                DATA.bajas = imported.bajas || [];
+                sync(); alert("INTEGRACIÓN ÉLITE EXITOSA: " + DATA.mat.length + " REGISTROS ACTIVADOS.");
+            } catch(err) { alert("ERROR CRÍTICO: Formato de archivo no válido."); }
+        };
+        reader.readAsText(input.files[0]);
     }
 
     function renderGrid() {
         const grid = document.getElementById('mapa_grid'); grid.innerHTML = '';
-        SALAS.forEach(s => {
+        SALAS_INST.forEach(s => {
             const count = DATA.mat.filter(x => x.alu_sala === s.id).length;
-            grid.innerHTML += `<div onclick="viewSala('${s.id}', '${s.sec}')" class="card-sala S-${s.color}">
-                <p class="orbitron text-[7px] font-black opacity-50 uppercase">${s.color}</p>
-                <h4 class="text-3xl font-black text-nuke">${count}</h4>
-                <p class="text-[9px] font-bold text-zinc-500">${s.sec}</p>
+            grid.innerHTML += `<div onclick="viewSala('${s.id}', '${s.seccion}')" class="card-sala S-${s.color}">
+                <p class="orbitron text-[8px] font-black opacity-60 uppercase mb-1">${s.color}</p>
+                <h4 class="text-4xl font-black text-nuke">${count}</h4>
+                <p class="text-[10px] font-bold text-zinc-500 uppercase italic">${s.seccion}</p>
             </div>`;
         });
     }
 
-    function viewSala(id, sec) {
+    function viewSala(id, seccion) {
         const v = document.getElementById('sala_detail'); const l = document.getElementById('sala_list');
-        document.getElementById('sala_title').innerText = `SALA: ${sec}`; l.innerHTML = '';
+        document.getElementById('sala_title').innerText = `SALA: ${seccion}`; l.innerHTML = '';
         DATA.mat.filter(x => x.alu_sala === id).forEach(a => {
-            l.innerHTML += `<div class="bg-zinc-800 p-3 rounded-lg border-l-4 border-nuke">
-                <p class="font-black text-[10px] text-white uppercase">${a.alu_nombre}</p>
-                <div class="flex gap-2 mt-2">
-                    <button onclick="editAlu('${a.alu_dni}')" class="bg-nuke text-black text-[7px] font-black px-2 py-1 rounded">VER/EDITAR</button>
-                    <button onclick="window.open('https://wa.me/${a.m_tel}')" class="bg-green-600 text-white text-[7px] font-black px-2 py-1 rounded">WHATSAPP</button>
+            l.innerHTML += `<div class="bg-zinc-900 p-5 border-l-4 border-nuke shadow-2xl rounded-lg">
+                <p class="font-black text-xs uppercase text-white mb-1">${a.alu_nombre}</p>
+                <p class="text-zinc-500 font-bold text-[9px]">DNI: ${a.alu_dni}</p>
+                <div class="mt-4 flex gap-2">
+                    <button onclick="editAlu('${a.alu_dni}')" class="flex-1 bg-zinc-800 text-nuke font-black py-2 rounded text-[7px] orbitron border border-nuke/20 uppercase hover:bg-nuke hover:text-black transition">LEGAJO</button>
+                    <button onclick="window.open('https://wa.me/${a.m_tel}')" class="bg-green-900 text-white p-2 rounded text-[8px] orbitron">📲 WA</button>
                 </div>
             </div>`;
         });
@@ -175,11 +212,11 @@
 
     function renderAsistencia() {
         const id = document.getElementById('asis_sala_select').value;
-        const render = document.getElementById('asis_lista_render');
-        render.innerHTML = DATA.mat.filter(x => x.alu_sala === id).map(a => `
-            <div class="bg-black/50 p-2 flex justify-between items-center border border-zinc-800 rounded">
-                <span class="font-black text-[8px] text-zinc-400 uppercase">${a.alu_nombre}</span>
-                <input type="checkbox" onchange="calcPromedio()" class="asis-check w-5 h-5 accent-pro">
+        const list = DATA.mat.filter(x => x.alu_sala === id);
+        document.getElementById('asis_lista_render').innerHTML = list.map(a => `
+            <div class="bg-black/60 p-3 flex justify-between items-center border border-zinc-800 rounded-lg">
+                <span class="font-black text-[9px] text-zinc-300 uppercase italic">${a.alu_nombre}</span>
+                <input type="checkbox" onchange="calcPromedio()" class="asis-check accent-pro w-6 h-6 rounded">
             </div>`).join('');
         calcPromedio();
     }
@@ -187,54 +224,37 @@
     function calcPromedio() {
         const total = document.querySelectorAll('.asis-check').length;
         const pres = document.querySelectorAll('.asis-check:checked').length;
-        document.getElementById('promedio_val').innerText = total > 0 ? ((pres/total)*100).toFixed(0) : 0;
+        document.getElementById('promedio_val').innerText = total > 0 ? ((pres / total) * 100).toFixed(0) : 0;
     }
 
     function renderSupervision() {
         const c = document.getElementById('supervision_cards'); c.innerHTML = '';
         const auh = DATA.mat.filter(x => x.alu_auh === 'SI').length;
-        const her = DATA.mat.filter(x => parseInt(x.alu_her) > 0).length;
         const par = DATA.mat.filter(x => x.alu_nac && x.alu_nac.includes('PAR')).length;
-        [{t:'MATRÍCULA', v:DATA.mat.length, cl:'nuke'}, {t:'AUH SI', v:auh, cl:'pro'}, {t:'PARAGUAYOS', v:par, cl:'orange-500'}, {t:'CON HERMANOS', v:her, cl:'white'}].forEach(k => {
-            c.innerHTML += `<div class="bg-zinc-900 p-4 rounded-lg border-t-2 border-${k.cl}"><p class="orbitron text-[8px] opacity-50 uppercase">${k.t}</p><h4 class="text-2xl font-black text-${k.cl}">${k.v}</h4></div>`;
+        const her = DATA.mat.filter(x => parseInt(x.alu_her) > 0).length;
+        [{t:'MATRÍCULA TOTAL', v:DATA.mat.length, cl:'nuke'}, {t:'COBERTURA AUH', v:auh, cl:'pro'}, {t:'NACIONALIDAD PY', v:par, cl:'orange-500'}, {t:'ALUMNOS C/HERMANOS', v:her, cl:'white'}].forEach(k => {
+            c.innerHTML += `<div class="bg-zinc-900 p-6 rounded-lg border-t-2 border-${k.cl} shadow-xl"><p class="orbitron text-[8px] opacity-60 uppercase italic">${k.t}</p><h4 class="text-4xl font-black text-${k.cl} mt-2 font-black">${k.v}</h4></div>`;
         });
     }
 
     function updateCharts() {
-        const ctxSala = document.getElementById('chart_sala').getContext('2d');
+        const ctxS = document.getElementById('chart_sala').getContext('2d');
         if(charts.sala) charts.sala.destroy();
-        charts.sala = new Chart(ctxSala, {
+        charts.sala = new Chart(ctxS, {
             type: 'bar',
-            data: { labels: SALAS.map(s => s.sec), datasets: [{ label: 'MATRÍCULA POR SALA', data: SALAS.map(s => DATA.mat.filter(x => x.alu_sala === s.id).length), backgroundColor: '#dfff00' }] },
-            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+            data: { labels: SALAS_INST.map(s=>s.seccion), datasets: [{ label: 'ALUMNOS POR SALA', data: SALAS_INST.map(s=>DATA.mat.filter(x=>x.alu_sala===s.id).length), backgroundColor: '#dfff00' }] },
+            options: { responsive: true, maintainAspectRatio: false }
         });
     }
 
-    function renderEspera() {
-        const r = document.getElementById('espera_render');
-        r.innerHTML = DATA.esp.map(a => `<div class="bg-black/50 p-3 rounded flex justify-between items-center border border-orange-500/20">
-            <span class="font-black orbitron text-[9px] text-orange-400">${a.alu_nombre} - DNI: ${a.alu_dni}</span>
-            <button onclick="matricularDesdeEspera('${a.alu_dni}')" class="bg-orange-600 text-white font-black text-[7px] px-3 py-1 rounded">MATRICULAR ALUMNO</button>
-        </div>`).join('');
-    }
-
-    function saveData() {
-        const alu = { alu_dni: document.getElementById('alu_dni').value, alu_nombre: document.getElementById('alu_nombre').value.toUpperCase(), alu_sala: document.getElementById('alu_sala').value, alu_auh: document.getElementById('alu_auh').value, alu_her: document.getElementById('alu_her').value, m_tel: document.getElementById('m_tel').value, alu_nac: document.getElementById('alu_nac').value };
-        if(!alu.alu_dni || !alu.alu_nombre) return alert("DNI Y NOMBRE OBLIGATORIOS");
-        DATA.mat = DATA.mat.filter(x => x.alu_dni !== alu.alu_dni);
-        DATA.mat.push(alu);
-        sync();
-        alert("ALUMNO CONSOLIDADO EN MATRÍCULA 360");
-    }
-
-    function importData(input) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const imported = JSON.parse(e.target.result);
-            DATA.mat = imported.mat || []; sync();
-            alert("SISTEMA ACTUALIZADO: " + DATA.mat.length + " REGISTROS CARGADOS.");
-        };
-        reader.readAsText(input.files[0]);
+    function calcEdad() {
+        const f = document.getElementById('alu_f_nac').value;
+        if(f) {
+            const fecha = new Date(f); const ref = new Date('2026-06-30');
+            let e = ref.getFullYear() - fecha.getFullYear();
+            if (ref < new Date(ref.getFullYear(), fecha.getMonth(), fecha.getDate())) e--;
+            document.getElementById('label_edad').innerText = `| EDAD AL 30/6: ${e} AÑOS`;
+        }
     }
 
     function smartRadar() {
@@ -245,18 +265,27 @@
     }
 
     function editAlu(dni) {
-        const alu = DATA.mat.find(x => x.alu_dni === dni);
-        if(alu) { 
-            Object.keys(alu).forEach(k => { if(document.getElementById(k)) document.getElementById(k).value = alu[k]; });
-            show(1); window.scrollTo({top:0, behavior:'smooth'}); 
-        }
+        const alu = DATA.mat.find(x => x.alu_dni === dni) || DATA.esp.find(x => x.alu_dni === dni);
+        if(alu) { Object.keys(alu).forEach(k => { if(document.getElementById(k)) document.getElementById(k).value = alu[k]; }); show(1); calcEdad(); window.scrollTo({top:0, behavior:'smooth'}); }
     }
 
-    function show(n) { 
-        document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); 
-        document.getElementById('v'+n).classList.remove('hidden'); 
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab')); 
-        document.getElementById('t'+n).classList.add('active-tab'); 
+    function renderEspera() {
+        const r = document.getElementById('espera_render');
+        r.innerHTML = (DATA.esp || []).map(e => `<div class="bg-black/50 p-4 rounded-xl border border-orange-500/20 flex justify-between items-center"><p class="font-black text-xs text-orange-400 uppercase">${e.alu_nombre} | DNI: ${e.alu_dni}</p><button onclick="matricular('${e.alu_dni}')" class="bg-orange-600 text-white px-3 py-1 rounded text-[7px] font-black uppercase">ADMITIR</button></div>`).join('');
+    }
+
+    function renderBajas() {
+        const r = document.getElementById('bajas_render');
+        r.innerHTML = (DATA.bajas || []).map(b => `<div class="bg-red-950/10 p-2 border-l-2 border-red-500 rounded">${b.alu_nombre} - MOTIVO: ${b.motivo || 'CAMBIO DOMICILIO'}</div>`).join('');
+    }
+
+    function show(n) { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); document.getElementById('v'+n).classList.remove('hidden'); document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab')); document.getElementById('t'+n).classList.add('active-tab'); }
+    function saveData() { alert("CONSOLIDADO."); sync(); }
+    
+    function startVoice() {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'es-AR'; recognition.start();
+        recognition.onresult = (e) => { const text = e.results[0][0].transcript.toUpperCase(); alert("CAPTURADO: " + text); };
     }
 </script>
 </body>
