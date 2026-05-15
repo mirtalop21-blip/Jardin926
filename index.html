@@ -15,18 +15,13 @@
         .input-elite { background: #000; border: 1px solid #333; padding: 10px; color: var(--nuke); width: 100%; border-radius: 6px; border-left: 4px solid var(--nuke); font-weight: 900; text-transform: uppercase; margin-bottom: 4px; outline: none; }
         .btn-tab { padding: 16px; opacity: 0.4; transition: 0.3s; border-bottom: 3px solid transparent; font-family: 'Orbitron'; font-size: 8px; flex: 1; font-weight: 900; text-transform: uppercase; white-space: nowrap; color: white; }
         .active-tab { opacity: 1; border-bottom: 4px solid var(--nuke); color: var(--nuke); background: rgba(223, 255, 0, 0.1); }
-        
-        /* FOTO INTERACTIVA: TARJETAS DINÁMICAS */
-        .card-sala { cursor: pointer; border-radius: 12px; padding: 20px; text-align: center; background: #0a0c10; border: 1px solid #1a1a1a; transition: 0.4s; position: relative; }
-        .card-sala:hover { transform: translateY(-8px) scale(1.03); border-color: var(--nuke); box-shadow: 0 10px 30px rgba(223, 255, 0, 0.2); }
+        .card-sala { cursor: pointer; border-radius: 12px; padding: 18px; text-align: center; background: #0a0c10; border: 1px solid #1a1a1a; transition: 0.4s; position: relative; }
+        .card-sala:hover { transform: translateY(-8px) scale(1.02); border-color: var(--nuke); box-shadow: 0 10px 30px rgba(223, 255, 0, 0.2); }
         .S-ROSA { border-top: 8px solid #ff69b4; } .S-ROJA { border-top: 8px solid #ff0000; }
         .S-NARANJA { border-top: 8px solid #ffa500; } .S-CELESTE { border-top: 8px solid #00d4ff; }
         .S-VIOLETA { border-top: 8px solid #8a2be2; } .S-AMARILLA { border-top: 8px solid #ffff00; }
         .S-AZUL { border-top: 8px solid #0000ff; }
-        
-        .alert-directivo { background: rgba(255, 0, 60, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 10px; border-radius: 8px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .alert-directivo { background: rgba(255, 0, 60, 0.15); border: 1px solid var(--danger); padding: 12px; border-radius: 8px; color: #ff4d4d; }
     </style>
 </head>
 <body onload="initSystem()">
@@ -37,7 +32,8 @@
         <input type="text" id="radar_global" onkeyup="smartRadar()" class="bg-zinc-900 border border-nuke/30 p-2 rounded text-[10px] orbitron text-nuke w-72 outline-none" placeholder="🔍 RADAR NUCLEAR: DNI O APELLIDO...">
     </div>
     <div class="flex gap-2">
-        <label class="bg-blue-600 px-4 py-1 text-[8px] rounded cursor-pointer font-black orbitron text-white uppercase shadow-lg hover:bg-blue-500 transition">MIGRAR JSON <input type="file" class="hidden" onchange="importData(this)"></label>
+        <div class="bg-zinc-800 px-3 py-1 rounded border border-zinc-700 text-[9px] font-black orbitron uppercase italic">Mat: <span id="header_total" class="text-nuke">0</span></div>
+        <label class="bg-blue-600 px-5 py-1 text-[8px] rounded cursor-pointer font-black orbitron text-white uppercase shadow-lg hover:bg-blue-500">MIGRAR JSON <input type="file" class="hidden" onchange="importData(this)"></label>
     </div>
 </header>
 
@@ -53,12 +49,12 @@
     <section id="v1" class="space-y-4">
         <div class="neon-border p-6 bg-zinc-900/30 rounded-lg shadow-2xl">
             <div class="flex gap-2 mb-6">
-                <button onclick="startVoice()" class="flex-1 bg-red-600 py-3 font-black orbitron text-white shadow-lg animate-pulse flex justify-center items-center gap-2 italic uppercase">🎤 Carga Biónica</button>
+                <button onclick="startVoice()" class="flex-1 bg-red-600 py-3 font-black orbitron text-white shadow-lg animate-pulse flex justify-center items-center gap-2 uppercase italic">🎤 Carga Biónica</button>
                 <button onclick="alert('Iniciando Escaneo Biónico...')" class="bg-zinc-800 px-6 font-black orbitron text-nuke border border-nuke uppercase italic">📸 Escaneo</button>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="form_master">
                 <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700 shadow-xl">
-                    <h2 class="text-nuke border-b-2 border-nuke/40 orbitron font-black text-[10px] mb-4 italic uppercase">I. Alumno <span id="label_edad" class="text-white"></span></h2>
+                    <h2 class="text-nuke border-b-2 border-nuke/40 orbitron font-black text-[10px] mb-4 italic uppercase">I. Expediente Alumno <span id="label_edad" class="text-white"></span></h2>
                     <input id="alu_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
                     <div class="grid grid-cols-2 gap-2"><input id="alu_dni" class="input-elite" placeholder="DNI"><input id="alu_nac" class="input-elite" placeholder="NACIONALIDAD"></div>
                     <div class="grid grid-cols-2 gap-2"><input type="date" id="alu_f_nac" onchange="calcEdad()" class="input-elite"><select id="alu_sala" class="input-elite"></select></div>
@@ -95,8 +91,8 @@
             <div id="sala_list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
         </div>
         <div class="bg-red-950/20 p-8 neon-border rounded-xl border-l-8 border-red-600 mt-8">
-            <h2 class="orbitron text-red-500 text-2xl font-black mb-4 uppercase italic">Notificación de Bajas Anual</h2>
-            <div id="bajas_render" class="space-y-2 text-[10px] font-black uppercase italic"></div>
+            <h2 class="orbitron text-red-500 text-2xl font-black mb-4 uppercase italic">Seguimiento de Bajas Anual</h2>
+            <div id="bajas_render" class="space-y-2 text-[10px] font-black italic uppercase"></div>
         </div>
     </section>
 
@@ -104,7 +100,7 @@
         <div class="bg-orange-950/20 p-8 neon-border rounded-xl border-l-8 border-orange-600 shadow-2xl">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="orbitron text-orange-500 text-2xl font-black uppercase italic">Lista de Espera PRO</h2>
-                <button onclick="show(1)" class="bg-orange-600 text-white px-4 py-2 text-[10px] rounded font-black uppercase shadow-lg">📸 Escaneo / Carga Manual</button>
+                <button onclick="saveData('esp')" class="bg-orange-600 text-white px-6 py-2 text-[10px] rounded font-black uppercase shadow-lg">📸 Escaneo / Carga Manual</button>
             </div>
             <div id="espera_render" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </div>
@@ -113,7 +109,7 @@
     <section id="v4" class="hidden">
         <div class="bg-blue-950/20 p-8 neon-border rounded-xl border-l-8 border-pro shadow-2xl">
             <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
-                <h2 class="orbitron text-pro text-3xl font-black uppercase italic">Asistencia Analítica</h2>
+                <h2 class="orbitron text-pro text-3xl font-black uppercase italic">Asistencia Espejo</h2>
                 <label class="bg-zinc-800 p-4 rounded-lg block border-2 border-dashed border-pro text-center cursor-pointer mb-6 uppercase orbitron text-[9px] font-black italic">📸 CARGAR FOTO REGISTRO MANUAL <input type="file" class="hidden" onchange="alert('ANALIZANDO ASISTENCIA... OBTENIENDO PROMEDIOS...')"></label>
                 <select id="asis_sala_select" onchange="renderAsistencia()" class="input-elite !w-80 !mb-0"></select>
                 <div class="bg-pro text-black px-8 py-3 font-black orbitron rounded-lg text-2xl shadow-xl italic">PRESENTE: <span id="promedio_val">0</span>%</div>
@@ -124,11 +120,11 @@
 
     <section id="v5" class="hidden space-y-6">
         <div class="alert-directivo orbitron text-[9px] uppercase font-black">⚠️ ALERTA: Detectados <span id="alert_count">0</span> alumnos con datos incompletos en legajo social.</div>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="supervision_cards"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="supervision_cards"></div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[400px]">
             <div class="bg-zinc-900 p-8 rounded-xl shadow-2xl border border-zinc-800"><canvas id="chart_sala"></canvas></div>
             <div class="bg-zinc-900 p-8 rounded-xl shadow-2xl border border-zinc-800 flex flex-col items-center justify-center">
-                <h4 class="orbitron text-nuke text-xs font-black uppercase mb-4">Promedio Nacionalidad y Trabajo</h4>
+                <h4 class="orbitron text-nuke text-xs font-black uppercase mb-4">Promedio Nacionalidad y Estudios</h4>
                 <div id="social_metrics" class="space-y-4 w-full"></div>
             </div>
         </div>
@@ -159,15 +155,15 @@
             sel.innerHTML = '<option value="">ESTUDIOS COMPLETOS...</option>';
             ["SIN ESTUDIOS", "PRIMARIA COMP.", "SECUNDARIA INC.", "SECUNDARIA COMP.", "TERCIARIA COMP.", "UNIVERSITARIA COMP.", "UNIVERSITARIA INC."].forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
         });
-        const saved = localStorage.getItem('TITANIUM_360_FINAL_AUDIT');
+        const saved = localStorage.getItem('TITANIUM_360_FINAL_MASTER');
         if(saved) { DATA = JSON.parse(saved); }
         sync();
     }
 
     function sync() {
-        localStorage.setItem('TITANIUM_360_FINAL_AUDIT', JSON.stringify(DATA));
+        localStorage.setItem('TITANIUM_360_FINAL_MASTER', JSON.stringify(DATA));
         document.getElementById('header_total').innerText = DATA.mat.length;
-        renderGrid(); renderSupervision(); renderEspera(); renderBajas(); updateChart();
+        renderGrid(); renderSupervision(); updateChart(); renderEspera(); renderBajas();
     }
 
     function importData(input) {
@@ -175,7 +171,7 @@
         reader.onload = (e) => {
             try {
                 const imported = JSON.parse(e.target.result);
-                // NORMALIZADOR ANALÍTICO FORZADO
+                // NORMALIZADOR ANALÍTICO DE ALTO RENDIMIENTO
                 DATA.mat = (imported.mat || []).map(a => {
                     let s = (a.alu_sala || "").toUpperCase();
                     if(s.includes("AMARILLA")) a.alu_sala = s.includes("TT") || s.includes("E") ? "Amarilla-TT" : "Amarilla-TM";
@@ -187,8 +183,7 @@
                     else if(s.includes("AZUL")) a.alu_sala = s.includes("TT") || s.includes("F") ? "Azul-TT" : "Azul-TM";
                     return a;
                 });
-                sync();
-                alert("INGENIERÍA TITANIUM: " + DATA.mat.length + " REGISTROS ACTIVADOS.");
+                sync(); alert("INGENIERÍA TITANIUM: " + DATA.mat.length + " REGISTROS INTEGRADOS.");
             } catch(err) { alert("ERROR DE ESTRUCTURA: Archivo no compatible."); }
         };
         reader.readAsText(input.files[0]);
@@ -248,7 +243,7 @@
         const her = DATA.mat.filter(x => parseInt(x.alu_her) > 0).length;
         document.getElementById('alert_count').innerText = DATA.mat.filter(x => !x.m_tel || !x.m_est).length;
         
-        [{t:'MATRÍCULA', v:DATA.mat.length, cl:'nuke'}, {t:'AUH SI', v:auh, cl:'pro'}, {t:'PARAGUAYOS', v:par, cl:'orange-500'}, {t:'C/ HERMANOS', v:her, cl:'white'}].forEach(k => {
+        [{t:'MATRÍCULA TOTAL', v:DATA.mat.length, cl:'nuke'}, {t:'BENEFICIARIOS AUH', v:auh, cl:'pro'}, {t:'NACIONALIDAD PY', v:par, cl:'orange-500'}, {t:'ALUMNOS C/HERMANOS', v:her, cl:'white'}].forEach(k => {
             c.innerHTML += `<div class="bg-zinc-900 p-6 rounded-lg border-t-2 border-${k.cl} shadow-xl text-center"><p class="orbitron text-[8px] opacity-60 uppercase">${k.t}</p><h4 class="text-4xl font-black text-${k.cl} mt-2 font-black">${k.v}</h4></div>`;
         });
 
@@ -264,17 +259,12 @@
 
     function updateChart() {
         const ctxS = document.getElementById('chart_sala').getContext('2d');
-        if(mainChart) mainChart.destroy();
-        mainChart = new Chart(ctxS, {
+        if(charts.sala) charts.sala.destroy();
+        charts.sala = new Chart(ctxS, {
             type: 'bar',
             data: { labels: SALAS_INST.map(s=>s.seccion), datasets: [{ label: 'MATRÍCULA ACTIVA', data: SALAS_INST.map(s=>DATA.mat.filter(x=>x.alu_sala===s.id).length), backgroundColor: '#dfff00' }] },
             options: { responsive: true, maintainAspectRatio: false }
         });
-    }
-
-    function editAlu(dni) {
-        const alu = DATA.mat.find(x => x.alu_dni === dni) || DATA.esp.find(x => x.alu_dni === dni);
-        if(alu) { Object.keys(alu).forEach(k => { if(document.getElementById(k)) document.getElementById(k).value = alu[k]; }); show(1); calcEdad(); window.scrollTo({top:0, behavior:'smooth'}); }
     }
 
     function calcEdad() {
@@ -284,7 +274,6 @@
             let e = ref.getFullYear() - fecha.getFullYear();
             if (ref < new Date(ref.getFullYear(), fecha.getMonth(), fecha.getDate())) e--;
             document.getElementById('label_edad').innerText = `| EDAD AL 30/6: ${e} AÑOS`;
-            document.getElementById('display_edad').innerText = `EDAD: ${e} AÑOS`;
         }
     }
 
@@ -295,8 +284,23 @@
         if(res) editAlu(res.alu_dni);
     }
 
+    function editAlu(dni) {
+        const alu = DATA.mat.find(x => x.alu_dni === dni) || DATA.esp.find(x => x.alu_dni === dni);
+        if(alu) { Object.keys(alu).forEach(k => { if(document.getElementById(k)) document.getElementById(k).value = alu[k]; }); show(1); calcEdad(); window.scrollTo({top:0, behavior:'smooth'}); }
+    }
+
+    function renderEspera() {
+        const r = document.getElementById('espera_render');
+        r.innerHTML = (DATA.esp || []).map(e => `<div class="bg-black/50 p-4 rounded-xl border border-orange-500/20 flex justify-between items-center italic uppercase font-black"><p class="text-xs text-orange-400">${e.alu_nombre} | DNI: ${e.alu_dni}</p><button onclick="editAlu('${e.alu_dni}')" class="bg-orange-600 text-white px-3 py-1 rounded text-[7px]">GESTIONAR</button></div>`).join('');
+    }
+
+    function renderBajas() {
+        const r = document.getElementById('bajas_render');
+        r.innerHTML = (DATA.bajas || []).map(b => `<div class="bg-red-950/10 p-2 border-l-2 border-red-500 rounded">${b.alu_nombre} - BAJA INSTITUCIONAL</div>`).join('');
+    }
+
     function show(n) { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); document.getElementById('v'+n).classList.remove('hidden'); document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab')); document.getElementById('t'+n).classList.add('active-tab'); }
-    function saveData() { alert("CONSOLIDADO EN NUBE LOCAL."); sync(); }
+    function saveData(type) { alert("REGISTRO CONSOLIDADO."); sync(); }
     function startVoice() { alert("SISTEMA BIÓNICO ESCUCHANDO..."); }
 </script>
 </body>
