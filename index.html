@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITANIUM 360 MASTER | JARDÍN 926 | CONTROL SUPREMO</title>
-    <script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.js"></script>
+    <title>TITANIUM 360 MASTER | JARDÍN 926 | CONTROL ABSOLUTO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -13,7 +13,7 @@
         .orbitron { font-family: 'Orbitron'; }
         .neon-border { border: 1px solid rgba(223, 255, 0, 0.4); box-shadow: 0 0 20px rgba(223, 255, 0, 0.1); }
         .input-elite { background: #000; border: 1px solid #333; padding: 10px; color: var(--nuke); width: 100%; border-radius: 6px; border-left: 4px solid var(--nuke); font-weight: 900; text-transform: uppercase; margin-bottom: 4px; outline: none; }
-        .btn-tab { padding: 16px; opacity: 0.4; transition: 0.3s; border-bottom: 3px solid transparent; font-family: 'Orbitron'; font-size: 8px; flex: 1; font-weight: 900; text-transform: uppercase; white-space: nowrap; color: white; background: none; border-top: none; border-left: none; border-right: none; }
+        .btn-tab { padding: 16px; opacity: 0.4; transition: 0.3s; border-bottom: 3px solid transparent; font-family: 'Orbitron'; font-size: 8px; flex: 1; font-weight: 900; text-transform: uppercase; white-space: nowrap; color: white; background: none; }
         .active-tab { opacity: 1; border-bottom: 4px solid var(--nuke); color: var(--nuke); background: rgba(223, 255, 0, 0.08); }
         .card-sala { cursor: pointer; border-radius: 12px; padding: 18px; text-align: center; background: #0a0c10; border: 1px solid #1a1a1a; transition: 0.4s; position: relative; }
         .card-sala:hover { transform: translateY(-5px); border-color: var(--nuke); box-shadow: 0 5px 20px rgba(223, 255, 0, 0.2); }
@@ -29,11 +29,11 @@
 <header class="p-3 bg-black border-b-2 border-nuke flex justify-between items-center sticky top-0 z-[1000] shadow-2xl">
     <div class="flex items-center gap-4">
         <div class="bg-nuke text-black px-5 py-1 font-black orbitron italic text-xl">TITANIUM 360</div>
-        <input type="text" id="radar_global" onkeyup="smartRadar()" class="bg-zinc-900 border border-nuke/30 p-2 rounded text-[10px] orbitron text-nuke w-72 outline-none" placeholder="🔍 RADAR GLOBAL: DNI O APELLIDO...">
+        <input type="text" id="radar_global" onkeyup="smartRadar()" class="bg-zinc-900 border border-nuke/30 p-2 rounded text-[10px] orbitron text-nuke w-72 outline-none" placeholder="🔍 RADAR NUCLEAR: DNI O NOMBRE...">
     </div>
     <div class="flex gap-2">
-        <div class="bg-zinc-800 px-3 py-1 rounded border border-zinc-700 text-[9px] font-black orbitron text-white flex items-center">MATRÍCULA: <span id="header_total" class="text-nuke ml-1">0</span></div>
-        <label class="bg-blue-600 px-4 py-1 text-[8px] rounded cursor-pointer font-black orbitron text-white uppercase shadow-lg hover:bg-blue-500 transition flex items-center">MIGRAR ARQUIVO JSON <input type="file" class="hidden" onchange="importData(this)"></label>
+        <div class="bg-zinc-800 px-3 py-1 rounded border border-zinc-700 text-[9px] font-black orbitron text-white flex items-center">MATRÍCULA INSTITUCIONAL: <span id="header_total" class="text-nuke ml-1">0</span></div>
+        <label class="bg-blue-600 px-4 py-1 text-[8px] rounded cursor-pointer font-black orbitron text-white uppercase shadow-lg hover:bg-blue-500 transition flex items-center">MIGRAR ARCHIVO JSON <input type="file" class="hidden" onchange="importData(this)"></label>
     </div>
 </header>
 
@@ -49,7 +49,7 @@
     <section id="v1" class="space-y-4">
         <div class="neon-border p-6 bg-zinc-900/30 rounded-lg shadow-2xl">
             <div class="flex gap-2 mb-6">
-                <button onclick="startVoice()" class="flex-1 bg-red-600 py-3 font-black orbitron text-white animate-pulse uppercase italic rounded shadow-lg">🎤 Carga Voz Biónica Activa</button>
+                <button onclick="startVoice()" class="flex-1 bg-red-600 py-3 font-black orbitron text-white animate-pulse uppercase italic rounded shadow-lg">🎤 Carga por Voz Biónica Activa</button>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="form_master">
                 <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700 shadow-xl">
@@ -179,7 +179,7 @@
         reader.onload = (e) => {
             try {
                 const imported = JSON.parse(e.target.result);
-                // LÓGICA DE DETECCIÓN AVANZADA: Mapea el formato con clave "mat" o el array plano
+                // MAESTRO PARSER: Lee directo la raíz de la clave "mat" o el array plano
                 const arrayRaw = imported.mat ? imported.mat : (Array.isArray(imported) ? imported : []);
                 
                 if(arrayRaw.length === 0) {
@@ -401,7 +401,13 @@
         sync(); alert("REGISTRO GUARDADO."); 
     }
     
-    function cloneDom(who) { document.getElementById(who+'_dom').value = document.getElementById('alu_dom').value; }
+    // CORRECCIÓN CLAVE: Resuelve el congelamiento al procesar datos vacíos en celulares
+    function cloneDom(who) { 
+        const targetDom = document.getElementById('alu_dom');
+        if(targetDom && targetDom.value) {
+            document.getElementById(who+'_dom').value = targetDom.value; 
+        }
+    }
     function startVoice() { alert("RECONOCIMIENTO DE VOZ ACTIVO..."); }
 </script>
 </body>
