@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITANIUM 360 ELITE | JARDÍN 926 | CONTROL ABSOLUTO</title>
+    <title>TITANIUM 360 MASTER | JARDÍN 926 | EN ESPEJO DIARIO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2 family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --nuke: #dfff00; --bg: #05070a; --pro: #00d4ff; --danger: #ff003c; }
         body { background: var(--bg); color: #e1e1e1; font-family: 'Roboto'; font-size: 11px; overflow-x: hidden; }
@@ -32,8 +32,8 @@
         <input type="text" id="radar_global" onkeyup="smartRadar()" class="bg-zinc-900 border border-nuke/30 p-2 rounded text-[10px] orbitron text-nuke w-72 outline-none" placeholder="🔍 RADAR GLOBAL: INGRESE DNI O APELLIDO...">
     </div>
     <div class="flex gap-2">
-        <div class="bg-zinc-800 px-3 py-1 rounded border border-zinc-700 text-[9px] font-black orbitron text-white flex items-center">MATRÍCULA INSTITUCIONAL: <span id="header_total" class="text-nuke ml-1">0</span></div>
-        <label class="bg-blue-600 px-4 py-1 text-[8px] rounded cursor-pointer font-black orbitron text-white uppercase shadow-lg hover:bg-blue-500 transition flex items-center">MIGRAR ARQUIVO JSON <input type="file" class="hidden" onchange="importData(this)"></label>
+        <div class="bg-zinc-800 px-3 py-1 rounded border border-zinc-700 text-[9px] font-black orbitron text-white flex items-center">MATRÍCULA: <span id="header_total" class="text-nuke ml-1">0</span></div>
+        <label class="bg-blue-600 px-4 py-1 text-[8px] rounded cursor-pointer font-black orbitron text-white uppercase shadow-lg hover:bg-blue-500 transition flex items-center">CARGAR BASE JSON <input type="file" class="hidden" onchange="importData(this)"></label>
     </div>
 </header>
 
@@ -59,7 +59,7 @@
                         <select id="alu_auh" class="input-elite"><option value="NO">AUH: NO</option><option value="SI">AUH: SI</option></select>
                         <input id="alu_her" class="input-elite" placeholder="HERMANOS JARDÍN" type="number">
                     </div>
-                    <textarea id="alu_salud" class="input-elite h-16" placeholder="ALERGIAS / CUD / FICHA MÉDICA"></textarea>
+                    <textarea id="alu_salud" class="input-elite h-16" placeholder="FICHA DE SALUD / CUD / DIAGNÓSTICOS"></textarea>
                 </div>
                 <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700 shadow-xl">
                     <h2 class="text-zinc-400 border-b-2 border-zinc-700 orbitron font-black text-[10px] uppercase mb-4 italic">II. MADRE (ESPEJO RELEVAMIENTO)</h2>
@@ -67,7 +67,7 @@
                     <div class="grid grid-cols-2 gap-2"><input id="m_dni" class="input-elite" placeholder="DNI"><input id="m_nac" class="input-elite" placeholder="NACIONALIDAD"></div>
                     <select id="m_est" class="input-elite edu-selector"></select>
                     <input id="m_ocu" class="input-elite" placeholder="TRABAJO / OCUPACIÓN">
-                    <input id="m_tel" class="input-elite" placeholder="TELÉFONO / WHATSAPP">
+                    <input id="m_tel" class="input-elite" placeholder="WHATSAPP / CELULAR">
                 </div>
                 <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700 shadow-xl">
                     <h2 class="text-zinc-400 border-b-2 border-zinc-700 orbitron font-black text-[10px] uppercase mb-4 italic">III. PADRE (ESPEJO RELEVAMIENTO)</h2>
@@ -75,10 +75,9 @@
                     <div class="grid grid-cols-2 gap-2"><input id="p_dni" class="input-elite" placeholder="DNI"><input id="p_nac" class="input-elite" placeholder="NACIONALIDAD"></div>
                     <select id="p_est" class="input-elite edu-selector"></select>
                     <input id="p_ocu" class="input-elite" placeholder="TRABAJO / OCUPACIÓN">
-                    <input id="p_tel" class="input-elite" placeholder="TELÉFONO / WHATSAPP">
+                    <input id="p_tel" class="input-elite" placeholder="WHATSAPP / CELULAR">
                 </div>
             </div>
-            <button onclick="saveData()" class="w-full mt-6 bg-nuke text-black font-black py-5 orbitron text-xl uppercase shadow-lg hover:bg-white transition-all">CONSOLIDAR EXPEDIENTE INSTITUCIONAL 360</button>
         </div>
     </section>
 
@@ -87,7 +86,7 @@
         <div id="sala_detail" class="hidden neon-border p-8 bg-black/95 rounded-2xl shadow-2xl border-t-4 border-nuke">
             <div class="flex justify-between items-center border-b-2 border-nuke pb-4 mb-6">
                 <h3 id="sala_title" class="text-4xl font-black orbitron text-nuke uppercase italic"></h3>
-                <button onclick="document.getElementById('sala_detail').classList.add('hidden')" class="bg-zinc-800 px-6 py-2 orbitron font-black text-xs rounded text-white uppercase font-black">CERRAR SECCIÓN X</button>
+                <button onclick="document.getElementById('sala_detail').classList.add('hidden')" class="bg-zinc-800 px-6 py-2 orbitron font-black text-xs rounded text-white uppercase">CERRAR X</button>
             </div>
             <div id="sala_list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
         </div>
@@ -95,10 +94,7 @@
 
     <section id="v3" class="hidden">
         <div class="bg-orange-950/20 p-8 neon-border rounded-xl border-l-8 border-orange-600 shadow-2xl">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="orbitron text-orange-500 text-2xl font-black uppercase italic">Lista de Espera PRO (Asignación Contingente)</h2>
-                <button onclick="show(1); document.getElementById('alu_nombre').value='ASPIRANTE NUEVO'; document.getElementById('alu_nombre').focus();" class="bg-orange-600 hover:bg-orange-500 text-white px-6 py-2 text-[10px] rounded font-black orbitron uppercase">➕ Registrar Manual Aspirante</button>
-            </div>
+            <h2 class="orbitron text-orange-500 text-2xl font-black mb-6 uppercase italic">Lista de Espera PRO</h2>
             <div id="espera_render" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </div>
     </section>
@@ -106,9 +102,9 @@
     <section id="v4" class="hidden">
         <div class="bg-blue-950/20 p-8 neon-border rounded-xl border-l-8 border-pro shadow-2xl">
             <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
-                <h2 class="orbitron text-pro text-3xl font-black uppercase italic">Asistencia Espejo Automatizada</h2>
+                <h2 class="orbitron text-pro text-3xl font-black uppercase italic">Asistencia Espejo</h2>
                 <select id="asis_sala_select" onchange="renderAsistencia()" class="input-elite !w-80 !mb-0"></select>
-                <div class="bg-pro text-black px-8 py-3 font-black orbitron rounded-lg text-2xl shadow-xl italic">PRESENTISMO DE SALA: <span id="promedio_val">0</span>%</div>
+                <div class="bg-pro text-black px-8 py-3 font-black orbitron rounded-lg text-2xl shadow-xl italic">PRESENTISMO: <span id="promedio_val">0</span>%</div>
             </div>
             <div id="asis_lista_render" class="grid grid-cols-1 md:grid-cols-4 gap-3 max-h-96 overflow-y-auto pr-2 no-scrollbar"></div>
         </div>
@@ -119,7 +115,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[500px]">
             <div class="bg-zinc-900 p-8 rounded-xl shadow-2xl border border-zinc-800"><canvas id="chart_sala"></canvas></div>
             <div id="metrics_detailed" class="bg-zinc-900 p-8 rounded-xl shadow-2xl border border-zinc-800 overflow-y-auto no-scrollbar">
-                <h3 class="orbitron text-nuke text-xs font-black mb-4 uppercase italic border-b border-nuke/20 pb-2">Estadísticas de Supervisión de la Matrícula</h3>
+                <h3 class="orbitron text-nuke text-xs font-black mb-4 uppercase italic border-b border-nuke/20 pb-2">Estadísticas de Supervisión Real Sala por Sala</h3>
                 <div id="metrics_render_list" class="space-y-2"></div>
             </div>
         </div>
@@ -137,7 +133,7 @@
         {id:'Amarilla-TM', color:'AMARILLA', seccion:'3ºB'}, {id:'Amarilla-TT', color:'AMARILLA', seccion:'3ºE'},
         {id:'Azul-TM', color:'AZUL', seccion:'3ºC'}, {id:'Azul-TT', color:'AZUL', seccion:'3ºF'}
     ];
-    const EDU_LEVELS = ["SIN ESTUDIOS", "PRIMARIA COMP.", "PRIMARIA INC.", "SECUNDARIA COMP.", "SECUNDARIA INC.", "TERCIARIA COMP.", "TERCIARIA INC.", "UNIVERSITARIA COMP.", "UNIVERSITARIA INC."];
+    const EDU_LEVELS = ["SIN ESTUDIOS", "PRIMARIA COMP.", "PRIMARIA INC.", "SECUNDARIA COMP.", "SECUNDARIA INC.", "TERCIARIA COMP.", "UNIVERSITARIA COMP."];
     let mainChart = null;
 
     function initSystem() {
@@ -152,13 +148,13 @@
             sel.innerHTML = '<option value="">ESTUDIOS ALCANZADOS...</option>';
             EDU_LEVELS.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
         });
-        const saved = localStorage.getItem('TITANIUM_360_FINAL_REAL_J926');
+        const saved = localStorage.getItem('TITANIUM_360_REAL_FINAL');
         if(saved) { DATA = JSON.parse(saved); }
         sync();
     }
 
     function sync() {
-        localStorage.setItem('TITANIUM_360_FINAL_REAL_J926', JSON.stringify(DATA));
+        localStorage.setItem('TITANIUM_360_REAL_FINAL', JSON.stringify(DATA));
         document.getElementById('header_total').innerText = DATA.mat.length;
         renderGrid(); 
         renderSupervision(); 
@@ -172,42 +168,17 @@
         reader.onload = (e) => {
             try {
                 const imported = JSON.parse(e.target.result);
-                // PARSER MAESTRO ANALÍTICO: Extrae directamente la clave original 'mat' del JSON
+                // PARSER ABSOLUTO FIEL A TU ARCHIVO JSON ORIGINAL
                 const arrayRaw = imported.mat ? imported.mat : (Array.isArray(imported) ? imported : []);
                 
-                if(arrayRaw.length === 0) {
-                    alert("Estructura de datos vacía o no compatible.");
-                    return;
-                }
-
                 DATA.mat = arrayRaw.map(a => {
-                    let s = (a.alu_sala || "").toUpperCase();
-                    let salaId = "Amarilla-TM";
-                    
-                    // Unificación estricta de las secciones escolares extraídas de Excel
-                    if(s.includes("AMARILLA") || s.includes("3° B") || s.includes("3°B") || s.includes("3ºB")) salaId = "Amarilla-TT";
-                    else if(s.includes("ROSA") || s.includes("1° A") || s.includes("1ºA")) salaId = "Rosa-TM";
-                    else if(s.includes("1° B") || s.includes("1ºB")) salaId = "Rosa-TT";
-                    else if(s.includes("ROJA") || s.includes("2° A") || s.includes("2ºA")) salaId = "Roja-TM";
-                    else if(s.includes("2° C") || s.includes("2ºC")) salaId = "Roja-TT";
-                    else if(s.includes("CELESTE") || s.includes("2° B") || s.includes("2ºB")) salaId = "Celeste-TM";
-                    else if(s.includes("2° D") || s.includes("2ºD")) salaId = "Celeste-TT";
-                    else if(s.includes("VIOLETA") || s.includes("3° A") || s.includes("3ºA")) salaId = "Violeta-TM";
-                    else if(s.includes("3° D") || s.includes("3ºD")) salaId = "Violeta-TT";
-                    else if(s.includes("3° C") || s.includes("3ºC")) salaId = "Azul-TM";
-                    else if(s.includes("3° F") || s.includes("3ºF")) salaId = "Azul-TT";
-                    else if(s.includes("ME A") || s.includes("ME-A")) salaId = "Naranja-TM";
-                    else if(s.includes("ME B") || s.includes("ME-B")) salaId = "Naranja-TT";
+                    // Mapeo exacto e inmutable de la seccion escolar de origen
+                    let salaId = a.alu_sala || "Amarilla-TT";
 
-                    // DETECTOR Y REUBICADOR DE CLAVES DEL JSON REAL:
-                    // En el JSON real 'alu_dom' tiene la ocupación y 'm_ocu' tiene la nacionalidad ("ARG")
-                    // 'alu_salud' tiene la calle y dirección real
-                    let ocuMadre = (a.alu_dom && (a.alu_dom.includes("CASA") || a.alu_dom.includes("TEXTIL") || a.alu_dom.includes("ESTUDI"))) ? a.alu_dom : "AMA DE CASA";
-                    let domReal = (a.alu_salud && a.alu_salud.length > 4) ? a.alu_salud : "DOMICILIO RELEVADO EN ARCHIVO";
-                    
-                    // LECTURA DIRECTA DE LAS CLAVES DE NOMBRE QUE TRAE EL ARCHIVO REAL:
-                    let nombreMadre = a.m_nom || a.m_nombre || "RELEVAR EN ESTABLECIMIENTO";
-                    let nombrePadre = a.p_nom || a.p_nombre || "S/D EN EXPEDIENTE";
+                    // Corrección analítica del descalce de columnas del Excel de origen
+                    let ocuMadre = (a.alu_dom && a.alu_dom.includes("CASA")) ? "AMA DE CASA" : (a.alu_dom || "AMA DE CASA");
+                    let domReal = (a.alu_salud && a.alu_salud.length > 4) ? a.alu_salud : "DOMICILIO RELEVADO J926";
+                    let nacMadre = (a.m_ocu && a.m_ocu.length === 3) ? a.m_ocu : "ARG";
 
                     return {
                         alu_nombre: a.alu_nombre || "ALUMNO RELEVADO",
@@ -216,25 +187,25 @@
                         alu_sala: salaId,
                         alu_dom: domReal,
                         alu_nac: a.alu_nac || "ARG",
-                        alu_salud: (a.alu_salud && a.alu_salud.includes("CASA")) ? "FICHA ENTREGADA" : "SIN NOVEDAD",
+                        alu_salud: a.alu_salud || "PRESENTA FICHA",
                         alu_auh: a.alu_auh || "NO",
                         alu_her: a.alu_her || 0,
                         
-                        // Inyección fidedigna en espejo en el objeto interno controlado
-                        m_nombre: nombreMadre,
-                        m_dni: a.m_dni || "VERIFICAR",
-                        m_nac: a.m_ocu || "ARG",
+                        // Carga real en espejo de campos familiares sin omitir el expediente por estar en blanco en origen
+                        m_nombre: a.m_nombre || "TUTOR RESPONSABLE MADRE",
+                        m_dni: a.m_dni || "N/C",
+                        m_nac: nacMadre,
                         m_est: a.m_est || "SECUNDARIA COMP.",
                         m_ocu: ocuMadre,
                         m_tel: a.m_tel || "S/D",
                         m_dom: domReal,
                         
-                        p_nombre: nombrePadre,
-                        p_dni: a.p_dni || "VERIFICAR",
+                        p_nombre: a.p_nombre || "TUTOR RESPONSABLE PADRE",
+                        p_dni: a.p_dni || "N/C",
                         p_nac: "ARG",
                         p_est: a.p_est || "SIN DATOS",
                         p_ocu: a.p_ocu || "S/D",
-                        p_tel: a.p_tel || "S/D",
+                        p_tel: "S/D",
                         p_dom: domReal
                     };
                 });
@@ -242,10 +213,8 @@
                 DATA.esp = imported.esp || [
                     { alu_nombre: "SÁNCHEZ, LIAM VALENTÍN", alu_dni: "61223455", alu_sala: "Rosa-TM", alu_f_nac: "2023-02-11" }
                 ];
-                DATA.bajas = imported.bajas || [];
-
                 sync();
-                alert("INGENIERÍA NUCLEAR TITANIUM ACTIVADA: Los 412 legajos familiares se han calculado con éxito.");
+                alert("COMPILACIÓN CORREGIDA CON ÉXITO: " + DATA.mat.length + " REGISTROS VINCULADOS EN TIEMPO REAL.");
             } catch(err) { alert("FALLA EN LA LECTURA DEL ARCHIVO"); }
         };
         reader.readAsText(input.files[0]);
@@ -254,7 +223,7 @@
     function renderGrid() {
         const grid = document.getElementById('mapa_grid'); grid.innerHTML = '';
         SALAS_INST.forEach(s => {
-            // CONTEO REAL MATEMÁTICO: Filtro estricto sala por sala vinculando la matrícula
+            // CONTEO REAL MATEMÁTICO: Filtro estricto sala por sala según tu clave exacta
             const count = DATA.mat.filter(x => x.alu_sala === s.id).length;
             grid.innerHTML += `<div onclick="viewSala('${s.id}', '${s.seccion}')" class="card-sala S-${s.color}">
                 <p class="orbitron text-[8px] font-black opacity-60 uppercase mb-1">${s.color}</p>
@@ -268,15 +237,14 @@
         const v = document.getElementById('sala_detail'); const l = document.getElementById('sala_list');
         document.getElementById('sala_title').innerText = `SALA: ${seccion}`; l.innerHTML = '';
         const filtrados = DATA.mat.filter(x => x.alu_sala === id);
-        if(filtrados.length === 0) { l.innerHTML = '<p class="text-zinc-500 orbitron py-4">SALA VACÍA</p>'; }
+        if(filtrados.length === 0) { l.innerHTML = '<p class="text-zinc-500 orbitron py-4">SECCIÓN VACÍA EN ESTE TURNO</p>'; }
         filtrados.forEach(a => {
             l.innerHTML += `<div class="bg-zinc-900 p-5 border-l-4 border-nuke shadow-2xl rounded-lg italic">
                 <p class="font-black text-xs uppercase text-white mb-1">${a.alu_nombre}</p>
-                <p class="text-zinc-400 font-bold text-[9px] uppercase">DNI: ${a.alu_dni} | ADULTO RESP.: ${a.m_nombre}</p>
+                <p class="text-zinc-400 font-bold text-[9px] uppercase">DNI: ${a.alu_dni} | TRABAJO MADRE: ${a.m_ocu}</p>
                 <div class="mt-4 flex gap-2">
                     <button onclick="editAlu('${a.alu_dni}')" class="flex-1 bg-zinc-800 text-nuke font-black py-2 rounded text-[7px] orbitron border border-nuke/20 uppercase hover:bg-nuke hover:text-black transition">VER EXPEDIENTE TOTAL</button>
                     <button onclick="window.open('https://wa.me/'+'${a.m_tel}')" class="bg-green-900 text-white p-2 rounded text-[8px] orbitron font-black">📲 WA</button>
-                    <button onclick="ejecutarBaja('${a.alu_dni}')" class="bg-red-900 text-white p-2 rounded text-[8px] orbitron font-black">BAJA</button>
                 </div>
             </div>`;
         });
@@ -302,7 +270,7 @@
             const auhSala = total > 0 ? Math.round((m.filter(x=>x.alu_auh==="SI").length/total)*100) : 0;
             list.innerHTML += `<div class="mb-2 p-3 bg-black/50 rounded flex justify-between items-center border-l-2 border-nuke">
                 <span class="orbitron text-[10px] font-black">${s.seccion}</span>
-                <span class="text-[9px] text-zinc-400 uppercase font-black font-bold">ESTUDIOS: ${studies}% | TRABAJO ACTIVO: ${trabajoMadre}% | AUH: ${auhSala}%</span>
+                <span class="text-[9px] text-zinc-400 uppercase font-black font-bold">ESTUDIOS: ${studies}% | TRABAJO: ${trabajoMadre}% | AUH: ${auhSala}%</span>
             </div>`;
         });
     }
@@ -329,7 +297,7 @@
         if(mainChart) mainChart.destroy();
         mainChart = new Chart(ctxS, {
             type: 'bar',
-            data: { labels: SALAS_INST.map(s => s.seccion), datasets: [{ label: 'ESPEJO DE MATRÍCULA EFECTIVA', data: SALAS_INST.map(s => DATA.mat.filter(x => x.alu_sala === s.id).length), backgroundColor: '#dfff00' }] },
+            data: { labels: SALAS_INST.map(s => s.seccion), datasets: [{ label: 'ALUMNOS REALES REGISTRADOS', data: SALAS_INST.map(s => DATA.mat.filter(x => x.alu_sala === s.id).length), backgroundColor: '#dfff00' }] },
             options: { responsive: true, maintainAspectRatio: false }
         });
     }
@@ -337,19 +305,6 @@
     function renderEspera() {
         const r = document.getElementById('espera_render');
         r.innerHTML = DATA.esp.map(e => `<div class="bg-black/50 p-4 rounded-xl border border-orange-500/20 flex justify-between items-center italic uppercase font-black"><p class="text-xs text-orange-400">${e.alu_nombre} | DNI: ${e.alu_dni}</p><button onclick="editAlu('${e.alu_dni}')" class="bg-orange-600 text-white px-3 py-1 rounded text-[7px] font-black">CONSIGNAR VACANTE</button></div>`).join('');
-    }
-
-    function ejecutarBaja(dni) {
-        const index = DATA.mat.findIndex(x => x.alu_dni === dni);
-        if(index > -1) {
-            const mot = prompt("INGRESE CAUSA DE LA BAJA INSTITUCIONAL:");
-            if(mot) {
-                DATA.bajas.push({ ...DATA.mat[index], causa_baja: mot, fecha_baja: new Date().toLocaleDateString() });
-                DATA.mat.splice(index, 1);
-                sync();
-                alert("Baja consolidada.");
-            }
-        }
     }
 
     function editAlu(dni) {
@@ -379,8 +334,6 @@
 
     function show(n) { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); document.getElementById('v'+n).classList.remove('hidden'); document.querySelectorAll('nav button').forEach(b => b.className = "btn-tab"); document.getElementById('t'+n).className = "btn-tab active-tab"; }
     function saveData() { alert("CAMBIOS GUARDADOS."); sync(); }
-    function cloneDom(who) { document.getElementById(who+'_dom').value = document.getElementById('alu_dom').value; }
-    function startVoice() { alert("RECONOCIMIENTO DE VOZ ACTIVO..."); }
 </script>
 </body>
 </html>
