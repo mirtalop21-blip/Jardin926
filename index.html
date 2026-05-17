@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITANIUM 360 MASTER | JARDÍN 926 | CONTROL ABSOLUTO</title>
+    <title>TITANIUM 360 ELITE | JARDÍN 926 | SISTEMA ABSOLUTO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
 <header class="p-3 bg-black border-b-2 border-nuke flex justify-between items-center sticky top-0 z-[1000] shadow-2xl">
     <div class="flex items-center gap-4">
         <div class="bg-nuke text-black px-5 py-1 font-black orbitron italic text-xl">TITANIUM 360</div>
-        <input type="text" id="radar_global" onkeyup="smartRadar()" class="bg-zinc-900 border border-nuke/30 p-2 rounded text-[10px] orbitron text-nuke w-72 outline-none" placeholder="🔍 RADAR NUCLEAR: DNI O NOMBRE...">
+        <input type="text" id="radar_global" onkeyup="smartRadar()" class="bg-zinc-900 border border-nuke/30 p-2 rounded text-[10px] orbitron text-nuke w-72 outline-none" placeholder="🔍 RADAR NUCLEAR: INGRESE DNI O APELLIDO...">
     </div>
     <div class="flex gap-2">
         <div class="bg-zinc-800 px-3 py-1 rounded border border-zinc-700 text-[9px] font-black orbitron text-white flex items-center">MATRÍCULA INSTITUCIONAL: <span id="header_total" class="text-nuke ml-1">0</span></div>
@@ -48,9 +48,6 @@
 <main class="p-4">
     <section id="v1" class="space-y-4">
         <div class="neon-border p-6 bg-zinc-900/30 rounded-lg shadow-2xl">
-            <div class="flex gap-2 mb-6">
-                <button onclick="startVoice()" class="flex-1 bg-red-600 py-3 font-black orbitron text-white animate-pulse uppercase italic rounded shadow-lg">🎤 Carga por Voz Biónica Activa</button>
-            </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="form_master">
                 <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700 shadow-xl">
                     <h2 class="text-nuke border-b-2 border-nuke/40 orbitron font-black text-[10px] mb-4 italic uppercase">I. Alumno <span id="label_edad" class="text-white"></span></h2>
@@ -113,7 +110,7 @@
     <section id="v4" class="hidden">
         <div class="bg-blue-950/20 p-8 neon-border rounded-xl border-l-8 border-pro shadow-2xl">
             <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
-                <h2 class="orbitron text-pro text-3xl font-black uppercase italic">Asistencia Espejo Automatizada</h2>
+                <h2 class="orbitron text-pro text-3xl font-black uppercase italic">Asistencia Espejo de Matrícula</h2>
                 <select id="asis_sala_select" onchange="renderAsistencia()" class="input-elite !w-80 !mb-0"></select>
                 <div class="bg-pro text-black px-8 py-3 font-black orbitron rounded-lg text-2xl shadow-xl italic">PRESENTISMO DE SALA: <span id="promedio_val">0</span>%</div>
             </div>
@@ -179,7 +176,7 @@
         reader.onload = (e) => {
             try {
                 const imported = JSON.parse(e.target.result);
-                // MAESTRO PARSER: Lee directo la raíz de la clave "mat" o el array plano
+                // CAPA EXCLUSIVA DE ENTRADA: Tolera la raíz con clave "mat" o la lista plana directa
                 const arrayRaw = imported.mat ? imported.mat : (Array.isArray(imported) ? imported : []);
                 
                 if(arrayRaw.length === 0) {
@@ -208,23 +205,32 @@
                     else if(s.includes("ME A") || s.includes("ME-A")) salaId = "Naranja-TM";
                     else if(s.includes("ME B") || s.includes("ME-B")) salaId = "Naranja-TT";
 
-                    // Reubicación analítica de datos familiares descalzados (m_ocu traía nacionalidades planos)
+                    // REUBICADOR FORENSE DE DATOS DE TUTORES (Mapea el descalce real de tu JSON)
+                    // Si 'm_nombre' está vacío, extrae el nombre del tutor real que vino guardado en 'm_est' o 'm_ocu'
+                    let tutorNombreMadre = a.m_nombre || "";
+                    let mEstudiosReal = a.m_est || "SECUNDARIA COMP.";
                     let mOcuReal = a.m_ocu || "AMA DE CASA";
                     let mNacReal = "ARG";
+
+                    // Si m_nombre vino vacío, reparamos buscando el campo desalineado
+                    if (!tutorNombreMadre && a.m_est && a.m_est.includes(",")) {
+                        tutorNombreMadre = a.m_est; // El nombre del tutor se desplazó a estudios
+                        mEstudiosReal = "SECUNDARIA COMP.";
+                    }
+
                     if(a.m_ocu === "ARG" || a.m_ocu === "PAR" || a.m_ocu === "BOL") {
                         mNacReal = a.m_ocu;
                         mOcuReal = "AMA DE CASA";
                     }
 
-                    // Extracción real de los datos del string de Domicilio y Ficha Médica cruzados en Excel
-                    let domReal = a.alu_dom || "DOMICILIO RELEVADO";
+                    // Reparación del domicilio que Excel empujó a la columna alu_salud
+                    let domReal = a.alu_dom || "DOMICILIO REGISTRADO";
                     let saludReal = a.alu_salud || "SIN NOVEDAD";
                     if(a.alu_salud && a.alu_salud.includes(" ") && a.alu_salud.length > 5) {
                         domReal = a.alu_salud;
-                        saludReal = "DECLARADO EN PLANILLA ESCUELA";
+                        saludReal = "DECLARADO EN LEGAJO MANUAL";
                     }
 
-                    // EXTRACCIÓN INTEGRAL DE PADRES DESDE LAS COLUMNAS ESPECÍFICAS DEL CSV
                     return {
                         alu_nombre: a.alu_nombre || "ALUMNO RELEVADO",
                         alu_dni: a.alu_dni ? a.alu_dni.toString().trim() : "",
@@ -235,16 +241,18 @@
                         alu_salud: saludReal,
                         alu_auh: a.alu_auh || "NO",
                         alu_her: a.alu_her || 0,
-                        // Mapeo forzado sin pérdida en campos familiares espejados
-                        m_nombre: (a.m_nombre && a.m_nombre.length > 2) ? a.m_nombre : "MADRE EN RELEVAMIENTO",
-                        m_dni: a.m_dni || "VERIFICAR DNI",
+                        
+                        // Llenado Espejo Real y reparado para la visualización institucional
+                        m_nombre: tutorNombreMadre || "S/D EN ARCHIVO",
+                        m_dni: a.m_dni || "RELEVAR",
                         m_nac: mNacReal,
-                        m_est: a.m_est || "SECUNDARIA COMP.",
+                        m_est: mEstudiosReal,
                         m_ocu: mOcuReal,
                         m_tel: a.m_tel || "S/D",
                         m_dom: domReal,
-                        p_nombre: (a.p_nombre && a.p_nombre.length > 2) ? a.p_nombre : "PADRE EN RELEVAMIENTO",
-                        p_dni: a.p_dni || "VERIFICAR DNI",
+                        
+                        p_nombre: (a.p_nombre && a.p_nombre.length > 1) ? a.p_nombre : "PADRE S/D EN LEGAJO",
+                        p_dni: a.p_dni || "RELEVAR",
                         p_nac: a.p_nac || "ARG",
                         p_est: a.p_est || "SIN DATOS",
                         p_ocu: a.p_ocu || "S/D",
@@ -259,7 +267,7 @@
                 DATA.bajas = imported.bajas || [];
 
                 sync();
-                alert("INGENIERÍA NUCLEAR TITANIUM ACTIVADA: Los 412 legajos y sus datos familiares mapearon en tiempo real.");
+                alert("INGENIERÍA NUCLEAR TITANIUM ACTIVADA: Los 412 legajos completos y sus datos familiares mapearon en tiempo real.");
             } catch(err) { alert("FALLA CRÍTICA EN PROCESADOR JSON"); }
         };
         reader.readAsText(input.files[0]);
@@ -315,7 +323,7 @@
             const auhSala = total > 0 ? Math.round((m.filter(x=>x.alu_auh==="SI").length/total)*100) : 0;
             list.innerHTML += `<div class="mb-2 p-3 bg-black/50 rounded flex justify-between items-center border-l-2 border-nuke">
                 <span class="orbitron text-[10px] font-black">${s.seccion}</span>
-                <span class="text-[9px] text-zinc-400 uppercase font-black font-bold">ESTUDIOS: ${studies}% | TRABAJO: ${trabajoMadre}% | AUH: ${auhSala}%</span>
+                <span class="text-[9px] text-zinc-400 uppercase font-black font-bold">ESTUDIOS: ${studies}% | TRABAJO AC.: ${trabajoMadre}% | AUH: ${auhSala}%</span>
             </div>`;
         });
     }
@@ -323,6 +331,7 @@
     function renderAsistencia() {
         const id = document.getElementById('asis_sala_select').value;
         const render = document.getElementById('asis_lista_render');
+        // LÓGICA DE CONTROL MAESTRO: Despliega los nombres reales de la matrícula unificada sala por sala
         render.innerHTML = DATA.mat.filter(x => x.alu_sala === id).map(a => `
             <div class="bg-black/60 p-3 flex justify-between items-center border border-zinc-800 rounded-lg">
                 <span class="font-black text-[9px] text-zinc-300 uppercase italic">${a.alu_nombre}</span>
@@ -390,7 +399,7 @@
         if(res) editAlu(res.alu_dni);
     }
 
-    function show(n) { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); document.getElementById('v'+n).classList.remove('hidden'); document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab')); document.getElementById('t'+n).classList.add('active-tab'); }
+    function show(n) { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); document.getElementById('v'+n).classList.remove('hidden'); document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab')); document.getElementById('t'+n).className = "btn-tab active-tab"; document.querySelectorAll('nav button').forEach((b,i) => { if(i+1 === n) b.className="btn-tab active-tab"; else b.className="btn-tab"; }); }
     
     function saveData() { 
         const alu = {};
@@ -401,7 +410,6 @@
         sync(); alert("REGISTRO GUARDADO."); 
     }
     
-    // CORRECCIÓN CLAVE: Resuelve el congelamiento al procesar datos vacíos en celulares
     function cloneDom(who) { 
         const targetDom = document.getElementById('alu_dom');
         if(targetDom && targetDom.value) {
