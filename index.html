@@ -137,7 +137,6 @@
     const EDU_LEVELS = ["SIN ESTUDIOS", "PRIMARIA COMP.", "PRIMARIA INC.", "SECUNDARIA COMP.", "SECUNDARIA INC.", "TERCIARIA COMP.", "UNIVERSITARIA COMP."];
     let mainChart = null;
 
-    // PADRÓN REAL EXACTO EXTRAÍDO LETRA POR LETRA DE TUS PLANILLAS EXCEL (CSV DE ASISTENCIA)
     const CENSO_MAESTRO_926 = {
         "57697577": { m: "CORIA, MELINA", mdni: "34882115", mtel: "1166523145", p: "CHAVEZ, CARLOS", pdni: "33021454", ocu: "AMA DE CASA", dom: "PIO BAROJA 1845", nac: "ARG", est: "SECUNDARIA COMP." },
         "58175631": { m: "PAREDES, MELISA", mdni: "35412998", mtel: "1132145874", p: "CUBILLAS, JAVIER", pdni: "32415887", ocu: "AMA DE CASA", dom: "GABRIEL MIRO 1240", nac: "ARG", est: "SECUNDARIA COMP." },
@@ -187,27 +186,24 @@
         reader.onload = (e) => {
             try {
                 const imported = JSON.parse(e.target.result);
+                // Corrección de puntero directo: Soporta tanto { "mat": [...] } como matrices directas [...]
                 const arrayRaw = imported.mat ? imported.mat : (Array.isArray(imported) ? imported : []);
                 
                 DATA.mat = arrayRaw.map((a, idx) => {
-                    // Vinculación unificada directa de la sala del JSON sin alterar el texto de origen
                     let salaId = a.alu_sala || "Amarilla-TT";
                     let dniAlumnoStr = a.alu_dni ? a.alu_dni.toString().trim() : "";
 
-                    // CORRECCIÓN AUTOMÁTICA DE CELDAS MOVIDAS POR EXCEL
                     let ocuMadre = (a.alu_dom && a.alu_dom.includes("CASA")) ? "AMA DE CASA" : (a.alu_dom || "AMA DE CASA");
                     let domReal = (a.alu_salud && a.alu_salud.length > 4) ? a.alu_salud : "DOMICILIO RELEVADO J926";
                     let nacMadre = (a.m_ocu && a.m_ocu.length === 3) ? a.m_ocu : "ARG";
                     let estMadre = a.m_est || "SECUNDARIA COMP.";
 
-                    // DECLARACIÓN INICIAL LIMPIA PARA EVITAR LEYENDAS FIJAS O ERRORES
                     let nombreM = "";
                     let nombreP = "";
                     let dniM = "";
                     let dniP = "";
                     let whatsapp = "";
 
-                    // Cruce estricto e infalible con el padrón de Excel inyectado
                     if(CENSO_MAESTRO_926[dniAlumnoStr]) {
                         let ref = CENSO_MAESTRO_926[dniAlumnoStr];
                         nombreM = ref.m;
@@ -220,7 +216,6 @@
                         nacMadre = ref.nac;
                         estMadre = ref.est;
                     } else {
-                        // En caso de no cruzarse con los verificados, extrae los datos limpios por defecto
                         nombreM = a.m_nombre || "RELEVAR NOMINA MADRE";
                         nombreP = a.p_nombre || "RELEVAR NOMINA PADRE";
                         dniM = a.m_dni || "S/D";
