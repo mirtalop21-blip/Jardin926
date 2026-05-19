@@ -41,7 +41,7 @@
     <button onclick="show(2)" id="t2" class="btn-tab">2. Foto Interactiva</button>
     <button onclick="show(3)" id="t3" class="btn-tab text-orange-400">3. Espera Pro</button>
     <button onclick="show(4)" id="t4" class="btn-tab text-blue-400">4. Asistencia & Foto</button>
-    <button onclick="show(5)" id="t5" class="btn-tab text-nuke">5. Superficie Élite</button>
+    <button onclick="show(5)" id="t5" class="btn-tab text-nuke">5. Superficie Élite (Supervisión)</button>
 </nav>
 
 <main class="p-4">
@@ -113,12 +113,11 @@
     </section>
 
     <section id="v5" class="hidden space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="supervision_cards"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="supervision_cards"></div>
     </section>
 </main>
 
 <script>
-    // Inicialización compatible con la estructura raíz de tu JSON estructurado por {"mat": [...]}
     let DATA = JSON.parse(localStorage.getItem('T360_J926_AUDITORIA_FINAL_REVISION')) || { mat: [], esp: [], bajas: [] };
     
     const SALAS_INST = [
@@ -142,8 +141,8 @@
             sSel.innerHTML += opt; asSel.innerHTML += opt;
         });
         document.querySelectorAll('.edu-selector').forEach(sel => {
-            sel.innerHTML = '<option value="">SELECCIONAR ESCOLARIDAD...</option>';
-            EDU_LEVELS.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
+            sel.innerHTML = '<option value="S/D">S/D</option>';
+            EDU_LEVELS.forEach(e => { if(e !== "S/D") sel.innerHTML += `<option value="${e}">${e}</option>`; });
         });
         renderMesesBajas();
         sync();
@@ -155,18 +154,67 @@
         renderGrid(); renderEspera(); renderAsistencia(); renderSupervision();
     }
 
+    // --- MEJORA CRÍTICA: PORCENTAJES DINÁMICOS REALES SALA POR SALA ---
     function renderSupervision() {
         const container = document.getElementById('supervision_cards'); container.innerHTML = '';
         if(!DATA.mat) return;
+        
         SALAS_INST.forEach(s => {
             const list = DATA.mat.filter(x => x.alu_sala === s.id);
-            const total = list.length;
-            const auh = total > 0 ? Math.round((list.filter(x=>x.alu_auh==='SI').length / total) * 100) : 0;
-            const extr = total > 0 ? Math.round((list.filter(x=>x.alu_nac && x.alu_nac!=='ARG').length / total) * 100) : 0;
-            const cEst = total > 0 ? Math.round((list.filter(x=> (x.m_est && x.m_est.includes('COMP.')) || (x.p_est && x.p_est.includes('COMP.'))).length / total) * 100) : 0;
-            const sTra = total > 0 ? Math.round((list.filter(x=>x.m_ocu==='AMA DE CASA' || x.m_ocu==='S/D').length / total) * 100) : 0;
+            const total = list.length; // Denominador Base Real de la Sala (N)
 
-            container.innerHTML += `<div class="bg-zinc-900 border-l-4 border-${s.color} p-4 rounded shadow-2xl S-${s.color}"><h3 class="orbitron text-nuke text-[9px] mb-2 uppercase">${s.seccion} (${s.turno})</h3><div class="space-y-1 text-[8px] font-black uppercase"><div class="flex justify-between border-b border-white/5 pb-1"><span>MATRÍCULA:</span><span class="text-white">${total}</span></div><div class="flex justify-between border-b border-white/5 pb-1"><span>EXTRANJEROS:</span><span class="text-orange-400">${extr}%</span></div><div class="flex justify-between border-b border-white/5 pb-1"><span>ESTUDIOS:</span><span class="text-blue-400">${cEst}% COMP</span></div><div class="flex justify-between border-b border-white/5 pb-1"><span>AUH:</span><span class="text-nuke">${auh}%</span></div><div class="flex justify-between"><span>SOCIAL:</span><span class="text-red-400">${sTra}% INFORMAL/SD</span></div></div></div>`;
+            // Contadores para desglosar porcentajes exactos de escolaridad
+            let m_completo = 0, m_incompleto = 0, m_sd = 0;
+            let p_completo = 0, p_incompleto = 0, p_sd = 0;
+            let auh_si = 0, extranjeros = 0, social_informal = 0;
+
+            list.forEach(x => {
+                // Evaluación AUH
+                if(x.alu_auh === 'SI') auh_si++;
+                // Evaluación Extranjeros
+                if(x.alu_nac && x.alu_nac !== 'ARG') extranjeros++;
+                // Evaluación Social Informal / Ama de Casa
+                if(x.m_ocu === 'AMA DE CASA' || x.m_ocu === 'S/D' || !x.m_ocu) social_informal++;
+
+                // Clasificación Dinámica Escolaridad Madre
+                const estM = x.m_est || "S/D";
+                if(estM.includes("COMP.")) m_completo++;
+                else if(estM.includes("INC.")) m_incompleto++;
+                else m_sd++;
+
+                // Clasificación Dinámica Escolaridad Padre
+                const estP = x.p_est || "S/D";
+                if(estP.includes("COMP.")) p_completo++;
+                else if(estP.includes("INC.")) p_incompleto++;
+                else p_sd++;
+            });
+
+            // Función interna para calcular porcentajes seguros sobre el N real de la sala
+            const pct = (val) => total > 0 ? Math.round((val / total) * 100) : 0;
+
+            container.innerHTML += `
+            <div class="bg-zinc-900 border-l-4 border-${s.color} p-4 rounded shadow-2xl S-${s.color}">
+                <h3 class="orbitron text-nuke text-[11px] mb-2 uppercase font-black">${s.seccion} (${s.turno}) - Real: ${total} Alums</h3>
+                <div class="space-y-2 text-[9px] font-black uppercase">
+                    <div class="flex justify-between border-b border-white/5 pb-1"><span>AUH BENEFICIARIOS:</span><span class="text-nuke">${pct(auh_si)}%</span></div>
+                    <div class="flex justify-between border-b border-white/5 pb-1"><span>EXTRANJEROS SALA:</span><span class="text-orange-400">${pct(extranjeros)}%</span></div>
+                    <div class="flex justify-between border-b border-white/5 pb-1"><span>VULNERABILIDAD SOCIAL:</span><span class="text-red-400">${pct(social_informal)}% INF/SD</span></div>
+                    
+                    <div class="pt-1 border-t border-zinc-800 text-zinc-400 text-[8px]">
+                        <p class="text-white font-bold mb-1">ESCOLARIDAD MADRE:</p>
+                        <div class="flex justify-between"><span>COMPLETA:</span><span>${pct(m_completo)}%</span></div>
+                        <div class="flex justify-between"><span>INCOMPLETA:</span><span>${pct(m_incompleto)}%</span></div>
+                        <div class="flex justify-between"><span>SIN DATOS / SD:</span><span>${pct(m_sd)}%</span></div>
+                    </div>
+
+                    <div class="pt-1 border-t border-zinc-800 text-zinc-400 text-[8px]">
+                        <p class="text-white font-bold mb-1">ESCOLARIDAD PADRE:</p>
+                        <div class="flex justify-between"><span>COMPLETA:</span><span>${pct(p_completo)}%</span></div>
+                        <div class="flex justify-between"><span>INCOMPLETA:</span><span>${pct(p_incompleto)}%</span></div>
+                        <div class="flex justify-between"><span>SIN DATOS / SD:</span><span>${pct(p_sd)}%</span></div>
+                    </div>
+                </div>
+            </div>`;
         });
     }
 
@@ -177,7 +225,8 @@
         DATA.mat.filter(x => x.alu_sala === id).forEach(a => {
             l.innerHTML += `<div class="bg-zinc-900 p-4 border-l-4 border-nuke flex justify-between items-center mb-2 shadow-xl">
                 <div><p class="font-black text-sm uppercase text-white">${a.alu_nombre}</p><p class="opacity-60 italic text-[10px]">DNI: ${a.alu_dni}</p></div>
-                <div class="flex gap-1"><button onclick="editAlu('${a.alu_dni}')" class="bg-nuke text-black font-black px-3 py-2 rounded text-[8px] orbitron uppercase">LEGAJO</button>
+                <div class="flex gap-1">
+                <button onclick="editAlu('${a.alu_dni}')" class="bg-nuke text-black font-black px-3 py-2 rounded text-[8px] orbitron uppercase">LEGAJO</button>
                 <button onclick="processBaja('${a.alu_dni}')" class="bg-red-900 text-white font-black px-3 py-2 rounded text-[8px] orbitron uppercase">BAJA</button>
                 <button onclick="notificarWA('${a.m_tel}', '${a.p_tel}', '${a.alu_nombre}')" class="bg-green-700 text-white font-black px-3 py-2 rounded text-[8px] orbitron uppercase">📲 WA</button></div></div>`;
         });
@@ -207,14 +256,21 @@
         window.open(`https://wa.me/${tel}?text=JARDIN 926: Comunicado institucional sobre el alumno/a ${nombre}.`, '_blank');
     }
 
+    // --- MEJORA CRÍTICA: CORRECCIÓN DE EDICIÓN, REDIRECCIÓN AUTOMÁTICA Y NAVEGACIÓN A PESTAÑA 1 ---
     function editAlu(dni) {
         const alu = DATA.mat.find(x => x.alu_dni === dni) || DATA.esp.find(x => x.alu_dni === dni);
         if(alu) { 
+            // Limpiamos los campos del formulario antes de rellenar
+            document.querySelectorAll('#form_master input, #form_master select, #form_master textarea').forEach(i => i.value = '');
+            
+            // Mapeamos los datos detectados campo por campo en tu formulario master
             Object.keys(alu).forEach(k => { 
                 if(document.getElementById(k)) document.getElementById(k).value = alu[k]; 
             }); 
             calcEdad(); 
-            show(1); 
+            show(1); // Redirecciona instantáneamente a la Pestaña 1 de control
+            document.getElementById('radar').value = alu.alu_dni; // Setea el radar con el DNI editado
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Enfoca visualmente arriba el formulario
         }
     }
 
@@ -231,7 +287,7 @@
             if(!DATA.esp) DATA.esp = [];
             DATA.esp.push(alu);
         }
-        sync(); alert("REGISTRO GUARDADO Y CONSOLIDADO");
+        sync(); alert("REGISTRO GUARDADO Y CONSOLIDADO EN EL NÚCLEO");
     }
 
     function renderEspera() {
@@ -281,6 +337,7 @@
         return e; 
     }
     
+    // --- MEJORA: RADAR INTEGRADO CON REDIRECCIÓN DIRECTA AL LEGAJO ---
     function smartRadar() { 
         const val = document.getElementById('radar').value.toUpperCase(); 
         if(val.length < 3) return; 
@@ -289,19 +346,13 @@
         if(res) { editAlu(res.alu_dni); } 
     }
     
-    // Función de importación crítica reestructurada para procesar {"mat": [...]}
     function importData(input) { 
         const reader = new FileReader(); 
         reader.onload = (e) => { 
             try { 
                 const parsed = JSON.parse(e.target.result); 
-                // Si el JSON viene envuelto en el objeto maestro "mat" lo extraemos correctamente
                 if(parsed && parsed.mat && Array.isArray(parsed.mat)) {
-                    DATA = {
-                        mat: parsed.mat,
-                        esp: parsed.esp || [],
-                        bajas: parsed.bajas || []
-                    };
+                    DATA = { mat: parsed.mat, esp: parsed.esp || [], bajas: parsed.bajas || [] };
                 } else if(Array.isArray(parsed)) {
                     DATA = { mat: parsed, esp: [], bajas: [] };
                 } else {
