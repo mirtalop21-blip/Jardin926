@@ -145,7 +145,6 @@
 <script>
     let DATA = { mat: [], esp: [], bajas: [] };
 
-    // Intentamos levantar datos de localStorage de forma segura
     try {
         const local = localStorage.getItem('T360_J926_AUDITORIA_FINAL_REVISION');
         if (local) {
@@ -194,7 +193,7 @@
         renderGrid(); renderEspera(); renderAsistencia(); renderSupervision(); renderMesesBajas();
     }
 
-    // --- NUEVO IMPORTADOR INTELIGENTE DE DATOS JSON (BLINDADO) ---
+    // --- NUEVO IMPORTADOR CON DOBLE RECONOCIMIENTO INTELIGENTE ---
     function importData(input) {
         if (!input.files || input.files.length === 0) return;
         
@@ -206,44 +205,44 @@
                 let rawEsp = [];
                 let rawBajas = [];
 
-                // 1. Detectar la estructura externa de forma segura sin romper por conversiones masivas
+                // RECONOCIMIENTO DINÁMICO: Evaluamos si viene como objeto estructurado o como lista suelta
                 if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-                    // Buscamos variantes comunes de nombres de propiedades
+                    // Es un JSON estructurado nativo del sistema
                     rawMat = parsed.mat || parsed.MAT || parsed.matricula || parsed.Matricula || [];
                     rawEsp = parsed.esp || parsed.ESP || parsed.espera || parsed.Espera || [];
                     rawBajas = parsed.bajas || parsed.BAJAS || parsed.Bajas || [];
                     
-                    // Si el objeto no tiene propiedades conocidas pero su primer valor es una lista
+                    // Si el objeto no tiene esas propiedades pero contiene una lista suelta en su primer elemento
                     if (rawMat.length === 0 && Object.keys(parsed).length > 0) {
                         const primerValor = Object.values(parsed)[0];
                         if (Array.isArray(primerValor)) rawMat = primerValor;
                     }
                 } else if (Array.isArray(parsed)) {
+                    // COMPATIBILIDAD EXTERNA: Es una lista de alumnos directa convertida de Excel
                     rawMat = parsed;
                 }
 
-                // Si todo está vacío, no operamos
+                // Si tras el análisis todo sigue vacío, damos aviso analítico
                 if (rawMat.length === 0 && rawEsp.length === 0 && rawBajas.length === 0) {
-                    alert("Atención: No se detectaron registros de alumnos válidos en este archivo JSON.");
+                    alert("Atención: No se encontraron registros válidos de alumnos dentro del archivo cargado.");
                     return;
                 }
 
-                // 2. Mapeador Seguro Campo por Campo (Evita errores por tipos u objetos anidados)
+                // Mapeador Blindado
                 const procesarCampos = (listaOrigen) => {
                     if (!Array.isArray(listaOrigen)) return [];
                     return listaOrigen.map(item => {
                         if (!item || typeof item !== 'object') return null;
                         
                         let nuevoRegistro = {};
-                        // Creamos un diccionario temporal con todas las llaves en minúsculas limpias
                         let itemMinusculas = {};
+                        
                         Object.keys(item).forEach(key => {
                             if (item[key] !== undefined && item[key] !== null) {
                                 itemMinusculas[key.toLowerCase().trim()] = item[key];
                             }
                         });
 
-                        // Extraemos uno por uno mapeando contra los IDs del Formulario Maestro
                         const camposFormulario = [
                             'alu_nombre', 'alu_dni', 'alu_nac', 'alu_f_nac', 'alu_sala', 'alu_dom', 'alu_salud', 'alu_auh',
                             'm_nombre', 'm_tel', 'm_est', 'm_ocu', 
@@ -257,47 +256,41 @@
                         });
 
                         return nuevoRegistro;
-                    }).filter(x => x !== null && (x.alu_dni || x.alu_nombre)); // Filtramos registros corruptos o vacíos
+                    }).filter(x => x !== null && (x.alu_dni || x.alu_nombre));
                 };
 
-                // Asignamos los datos limpios a la memoria del sistema
+                // Guardado directo en memoria activa y sincronización
                 DATA.mat = procesarCampos(rawMat);
                 DATA.esp = procesarCampos(rawEsp);
                 DATA.bajas = procesarCampos(rawBajas);
 
                 sync();
-                alert(`¡Procesamiento Biónico Exitoso! Matrícula cargada correctamente: ${DATA.mat.length} alumnos.`);
+                alert(`¡Importación Completa! Se cargaron correctamente ${DATA.mat.length} alumnos en la matrícula institucional.`);
             } catch (err) {
-                console.error("Error crítico de análisis de archivo:", err);
-                alert("Error de estructura en el archivo JSON. Asegurate de que sea un archivo válido.");
+                console.error("Error en el parseo del archivo:", err);
+                alert("Error de lectura: El archivo seleccionado no tiene un formato válido.");
             }
         };
         reader.readAsText(input.files[0]);
     }
 
-    // --- LEGAJO ELECTRÓNICO E INYECCIÓN DINÁMICA DE CAMPOS ---
     function editAlu(dni) {
         const alu = DATA.mat.find(x => x.alu_dni === dni) || DATA.esp.find(x => x.alu_dni === dni);
         if(alu) { 
-            // Limpieza preventiva total del formulario
             document.querySelectorAll('#form_master input, #form_master select, #form_master textarea').forEach(i => i.value = '');
-            
-            // Inyección controlada campo por campo
             Object.keys(alu).forEach(k => { 
                 const el = document.getElementById(k);
                 if(el) el.value = alu[k];
             }); 
-            
             calcEdad(); 
-            show(1); // Redirección automática instantánea a la Pestaña 1
+            show(1);
             document.getElementById('radar').value = alu.alu_dni; 
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Enfoque biónico arriba
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
             alert("ALUMNO NO UBICADO EN LA BASE ACTIVA");
         }
     }
 
-    // --- GUARDAR Y CONSOLIDAR ---
     function saveData(type) {
         const alu = {};
         document.querySelectorAll('#form_master input, #form_master select, #form_master textarea').forEach(i => {
@@ -318,7 +311,6 @@
         sync();
     }
 
-    // --- TERMINAL LISTA DE ESPERA ---
     function renderEspera() {
         const tb = document.getElementById('espera_table'); tb.innerHTML = '';
         if(DATA.esp.length === 0) {
@@ -347,7 +339,6 @@
         }
     }
 
-    // --- FOTO INTERACTIVA ---
     function renderGrid() {
         const grid = document.getElementById('mapa_grid'); grid.innerHTML = '';
         SALAS_INST.forEach(s => {
@@ -377,7 +368,6 @@
         v.classList.remove('hidden'); v.scrollIntoView({behavior:'smooth'});
     }
 
-    // --- BITÁCORA DE BAJAS ---
     function processBaja(dni) {
         const motivo = prompt("CONSIGNAR MOTIVO DE LA BAJA (MUDANZA, PASE, AUSENTISMO):");
         if(!motivo) return alert("OPERACIÓN CANCELADA: SE REQUIERE UN MOTIVO");
@@ -396,7 +386,6 @@
         } else { alert("ERROR OPERATIVO: MES INVÁLIDO O INCOMPLETO"); }
     }
 
-    // --- RELEVAMIENTO DE SUPERVISIÓN CON ALERTAS ---
     function renderSupervision() {
         const container = document.getElementById('supervision_cards'); container.innerHTML = '';
         SALAS_INST.forEach(s => {
@@ -437,7 +426,6 @@
         });
     }
 
-    // --- REPORTE EXCEL (CSV) ---
     function exportToExcel() {
         if(DATA.mat.length === 0) return alert("SIN MATRÍCULA ACTIVA PARA EXPORTAR");
         let csvContent = "data:text/csv;charset=utf-8,";
@@ -461,7 +449,6 @@
         document.body.removeChild(link);
     }
 
-    // --- RADAR INTEGRADO ---
     function smartRadar() { 
         const val = document.getElementById('radar').value.toUpperCase().trim(); 
         if(val.length < 3) return; 
