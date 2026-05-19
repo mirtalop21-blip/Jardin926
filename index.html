@@ -34,7 +34,7 @@
     <div class="flex gap-1 items-center">
         <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 text-[8px] font-black orbitron rounded uppercase transition-all shadow-[0_0_10px_rgba(16,185,129,0.4)]">📊 Reporte Excel</button>
         <label class="bg-blue-600 px-3 py-1 text-[8px] rounded cursor-pointer font-black orbitron uppercase text-white hover:bg-blue-700 transition-all">
-            📥 CARGAR ARRASTRE JSON 
+            📥 IMPORTAR CONFIG / JSON 
             <input type="file" id="json_file_input" class="hidden" onchange="importData(this)">
         </label>
     </div>
@@ -143,11 +143,22 @@
 </main>
 
 <script>
-    // Inicialización y recuperación blindada desde LocalStorage
-    let DATA = JSON.parse(localStorage.getItem('T360_J926_AUDITORIA_FINAL_REVISION')) || { mat: [], esp: [], bajas: [] };
-    if (!DATA.mat) DATA.mat = [];
-    if (!DATA.esp) DATA.esp = [];
-    if (!DATA.bajas) DATA.bajas = [];
+    let DATA = { mat: [], esp: [], bajas: [] };
+
+    // Intentamos levantar datos de localStorage de forma segura
+    try {
+        const local = localStorage.getItem('T360_J926_AUDITORIA_FINAL_REVISION');
+        if (local) {
+            const parsedLocal = JSON.parse(local);
+            if (parsedLocal && typeof parsedLocal === 'object') {
+                DATA.mat = Array.isArray(parsedLocal.mat) ? parsedLocal.mat : [];
+                DATA.esp = Array.isArray(parsedLocal.esp) ? parsedLocal.esp : [];
+                DATA.bajas = Array.isArray(parsedLocal.bajas) ? parsedLocal.bajas : [];
+            }
+        }
+    } catch(e) {
+        console.error("Error leyendo LocalStorage inicial:", e);
+    }
 
     const SALAS_INST = [
         {id:'Rosa-TM', color:'ROSA', turno:'TM', seccion:'1ºA'}, {id:'Rosa-TT', color:'ROSA', turno:'TT', seccion:'1ºB'},
@@ -183,7 +194,7 @@
         renderGrid(); renderEspera(); renderAsistencia(); renderSupervision(); renderMesesBajas();
     }
 
-    // --- LECTURA FLEXIBLE DE ARCHIVO JSON ---
+    // --- NUEVO IMPORTADOR INTELIGENTE DE DATOS JSON (BLINDADO) ---
     function importData(input) {
         if (!input.files || input.files.length === 0) return;
         
@@ -191,71 +202,98 @@
         reader.onload = (e) => {
             try {
                 const parsed = JSON.parse(e.target.result);
-                let incomingMat = [];
-                let incomingEsp = [];
-                let incomingBajas = [];
+                let rawMat = [];
+                let rawEsp = [];
+                let rawBajas = [];
 
-                // Validamos si viene empaquetado en sub-propiedades o si es un arreglo plano directo
+                // 1. Detectar la estructura externa de forma segura sin romper por conversiones masivas
                 if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-                    incomingMat = parsed.mat || parsed.MAT || parsed.matricula || [];
-                    incomingEsp = parsed.esp || parsed.ESP || parsed.espera || [];
-                    incomingBajas = parsed.bajas || parsed.BAJAS || [];
+                    // Buscamos variantes comunes de nombres de propiedades
+                    rawMat = parsed.mat || parsed.MAT || parsed.matricula || parsed.Matricula || [];
+                    rawEsp = parsed.esp || parsed.ESP || parsed.espera || parsed.Espera || [];
+                    rawBajas = parsed.bajas || parsed.BAJAS || parsed.Bajas || [];
                     
-                    // Si el objeto no tiene esas propiedades pero tiene datos planos sueltos
-                    if (incomingMat.length === 0 && Object.keys(parsed).length > 0 && Array.isArray(Object.values(parsed)[0])) {
-                        incomingMat = Object.values(parsed)[0]; 
+                    // Si el objeto no tiene propiedades conocidas pero su primer valor es una lista
+                    if (rawMat.length === 0 && Object.keys(parsed).length > 0) {
+                        const primerValor = Object.values(parsed)[0];
+                        if (Array.isArray(primerValor)) rawMat = primerValor;
                     }
                 } else if (Array.isArray(parsed)) {
-                    incomingMat = parsed;
+                    rawMat = parsed;
                 }
 
-                if (incomingMat.length === 0 && incomingEsp.length === 0) {
-                    alert("No se detectaron registros válidos en el archivo JSON.");
+                // Si todo está vacío, no operamos
+                if (rawMat.length === 0 && rawEsp.length === 0 && rawBajas.length === 0) {
+                    alert("Atención: No se detectaron registros de alumnos válidos en este archivo JSON.");
                     return;
                 }
 
-                // Normalización estructural biónica (fuerza minúsculas en las llaves del JSON entrante)
-                const normalize = (arr) => arr.map(item => {
-                    let standard = {};
-                    Object.keys(item).forEach(k => {
-                        standard[k.toLowerCase()] = String(item[k]).toUpperCase();
-                    });
-                    return standard;
-                });
+                // 2. Mapeador Seguro Campo por Campo (Evita errores por tipos u objetos anidados)
+                const procesarCampos = (listaOrigen) => {
+                    if (!Array.isArray(listaOrigen)) return [];
+                    return listaOrigen.map(item => {
+                        if (!item || typeof item !== 'object') return null;
+                        
+                        let nuevoRegistro = {};
+                        // Creamos un diccionario temporal con todas las llaves en minúsculas limpias
+                        let itemMinusculas = {};
+                        Object.keys(item).forEach(key => {
+                            if (item[key] !== undefined && item[key] !== null) {
+                                itemMinusculas[key.toLowerCase().trim()] = item[key];
+                            }
+                        });
 
-                DATA.mat = normalize(incomingMat);
-                DATA.esp = normalize(incomingEsp);
-                DATA.bajas = normalize(incomingBajas);
+                        // Extraemos uno por uno mapeando contra los IDs del Formulario Maestro
+                        const camposFormulario = [
+                            'alu_nombre', 'alu_dni', 'alu_nac', 'alu_f_nac', 'alu_sala', 'alu_dom', 'alu_salud', 'alu_auh',
+                            'm_nombre', 'm_tel', 'm_est', 'm_ocu', 
+                            'p_nombre', 'p_tel', 'p_est', 'p_ocu',
+                            'motivo_baja', 'mes_baja', 'fecha_baja'
+                        ];
+
+                        camposFormulario.forEach(campo => {
+                            let valor = itemMinusculas[campo];
+                            nuevoRegistro[campo] = valor ? String(valor).toUpperCase().trim() : '';
+                        });
+
+                        return nuevoRegistro;
+                    }).filter(x => x !== null && (x.alu_dni || x.alu_nombre)); // Filtramos registros corruptos o vacíos
+                };
+
+                // Asignamos los datos limpios a la memoria del sistema
+                DATA.mat = procesarCampos(rawMat);
+                DATA.esp = procesarCampos(rawEsp);
+                DATA.bajas = procesarCampos(rawBajas);
 
                 sync();
-                alert(`¡Procesamiento Biónico Exitoso! Matrícula cargada: ${DATA.mat.length} alumnos.`);
+                alert(`¡Procesamiento Biónico Exitoso! Matrícula cargada correctamente: ${DATA.mat.length} alumnos.`);
             } catch (err) {
-                console.error(err);
-                alert("Error crítico de sintaxis en el archivo JSON. Verificá que el archivo no esté corrupto.");
+                console.error("Error crítico de análisis de archivo:", err);
+                alert("Error de estructura en el archivo JSON. Asegurate de que sea un archivo válido.");
             }
         };
         reader.readAsText(input.files[0]);
     }
 
-    // --- APERTURA E INYECCIÓN DE LEGAJO DESDE FOTO INTERACTIVA ---
+    // --- LEGAJO ELECTRÓNICO E INYECCIÓN DINÁMICA DE CAMPOS ---
     function editAlu(dni) {
         const alu = DATA.mat.find(x => x.alu_dni === dni) || DATA.esp.find(x => x.alu_dni === dni);
         if(alu) { 
-            // Limpieza del formulario maestro para evitar colisiones
+            // Limpieza preventiva total del formulario
             document.querySelectorAll('#form_master input, #form_master select, #form_master textarea').forEach(i => i.value = '');
             
-            // Inyección biónica directa campo por campo
+            // Inyección controlada campo por campo
             Object.keys(alu).forEach(k => { 
                 const el = document.getElementById(k);
                 if(el) el.value = alu[k];
             }); 
             
             calcEdad(); 
-            show(1); // Redirección automática a la Pestaña 1
+            show(1); // Redirección automática instantánea a la Pestaña 1
             document.getElementById('radar').value = alu.alu_dni; 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Enfoque biónico arriba
         } else {
-            alert("ALUMNO NO DETECTADO EN LA BASE ACTIVA");
+            alert("ALUMNO NO UBICADO EN LA BASE ACTIVA");
         }
     }
 
@@ -263,7 +301,7 @@
     function saveData(type) {
         const alu = {};
         document.querySelectorAll('#form_master input, #form_master select, #form_master textarea').forEach(i => {
-            alu[i.id] = i.value.toUpperCase();
+            alu[i.id] = i.value.toUpperCase().trim();
         });
         
         if(!alu.alu_dni) return alert("DNI OBLIGATORIO PARA OPERAR EL LEGAJO");
@@ -339,10 +377,10 @@
         v.classList.remove('hidden'); v.scrollIntoView({behavior:'smooth'});
     }
 
-    // --- BAJAS CON CONSIGNACIÓN DE MOTIVO ---
+    // --- BITÁCORA DE BAJAS ---
     function processBaja(dni) {
         const motivo = prompt("CONSIGNAR MOTIVO DE LA BAJA (MUDANZA, PASE, AUSENTISMO):");
-        if(!motivo) return alert("OPERACIÓN CANCELADA: SE REQUIERE CONSIGNAR UN MOTIVO");
+        if(!motivo) return alert("OPERACIÓN CANCELADA: SE REQUIERE UN MOTIVO");
         
         const mes = prompt("MES CORRESPONDIENTE A LA BAJA (MARZO-DICIEMBRE):").toUpperCase();
         if(motivo && MESES.includes(mes)) {
@@ -353,12 +391,12 @@
                 DATA.mat.splice(index, 1);
                 sync();
                 document.getElementById('sala_detail').classList.add('hidden');
-                alert("BAJA REGISTRADA EN LA BITÁCORA INSTITUTIONAL.");
+                alert("BAJA REGISTRADA EN LA BITÁCORA INSTITUCIONAL.");
             }
         } else { alert("ERROR OPERATIVO: MES INVÁLIDO O INCOMPLETO"); }
     }
 
-    // --- TABLERO DE SUPERVISIÓN CON ALERTAS BIÓNICAS ---
+    // --- RELEVAMIENTO DE SUPERVISIÓN CON ALERTAS ---
     function renderSupervision() {
         const container = document.getElementById('supervision_cards'); container.innerHTML = '';
         SALAS_INST.forEach(s => {
@@ -425,7 +463,7 @@
 
     // --- RADAR INTEGRADO ---
     function smartRadar() { 
-        const val = document.getElementById('radar').value.toUpperCase(); 
+        const val = document.getElementById('radar').value.toUpperCase().trim(); 
         if(val.length < 3) return; 
         const res = DATA.mat.find(x => (x.alu_dni && x.alu_dni.includes(val)) || (x.alu_nombre && x.alu_nombre.includes(val))); 
         if(res) editAlu(res.alu_dni);
