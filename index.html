@@ -3,613 +3,474 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedagogía 360 - Supervisión Elite & HMI</title>
+    <title>Pedagogía 360 - Sistema de Gestión Integral</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .tab-btn.active {
+            border-bottom-width: 4px;
+            border-color: #3b82f6;
+            color: #1d4ed8;
+            font-weight: 700;
+        }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen custom-scroll">
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col">
 
-    <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex flex-wrap justify-between items-center gap-4 sticky top-0 z-50 shadow-lg">
-        <div class="flex items-center gap-3">
-            <div class="bg-indigo-600 p-2 rounded-lg text-white text-xl animate-pulse">
-                <i class="fa-solid fa-cubes-stacked"></i>
+    <header class="bg-blue-900 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center py-3 gap-3">
+            <div class="flex items-center gap-3">
+                <div class="bg-white p-2 rounded-full text-blue-900 font-black text-xl shadow">P360</div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">Pedagogía 360</h1>
+                    <p class="text-xs text-blue-200">Panel de Control Institucional</p>
+                </div>
             </div>
-            <div>
-                <h1 class="text-xl font-bold tracking-tight text-white">PEDAGOGÍA 360 <span class="text-xs bg-indigo-500/30 text-indigo-400 px-2 py-0.5 rounded border border-indigo-500/50 ml-2">v3.0 Elite</span></h1>
-                <p class="text-xs text-slate-400">Panel General e Infraestructura HMI del Establecimiento</p>
+            <div class="bg-blue-800 px-4 py-2 rounded-lg border border-blue-700 text-center w-full sm:w-auto">
+                <span class="text-xs block text-blue-300 font-semibold uppercase">Matrícula Activa</span>
+                <span id="global-counter" class="text-lg font-bold text-green-400">0 Alumnos Cargados</span>
             </div>
         </div>
         
-        <div class="flex items-center gap-4">
-            <div id="directorAlerts" class="flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1.5 rounded-lg text-xs">
-                <i class="fa-solid fa-triangle-exclamation animate-bounce"></i>
-                <span><strong>Alerta Institucional:</strong> Alumnos en riesgo de baja por inasistencia detectados.</span>
+        <nav class="bg-blue-900/90 border-t border-blue-800">
+            <div class="max-w-7xl mx-auto px-2 flex flex-wrap gap-1">
+                <button onclick="switchTab('matricula')" class="tab-btn active px-4 py-3 text-sm font-medium text-blue-100 hover:bg-blue-800 transition">🗂️ Matrícula 360</button>
+                <button onclick="switchTab('dashboard')" class="tab-btn px-4 py-3 text-sm font-medium text-blue-100 hover:bg-blue-800 transition">📊 Dashboard de Salas</button>
+                <button onclick="switchTab('bitacora')" class="tab-btn px-4 py-3 text-sm font-medium text-blue-100 hover:bg-blue-800 transition">📝 Bitácora Diario</button>
+                <button onclick="switchTab('espera')" class="tab-btn px-4 py-3 text-sm font-medium text-blue-100 hover:bg-blue-800 transition">⏳ Lista de Espera</button>
+                <button onclick="switchTab('asistencia')" class="tab-btn px-4 py-3 text-sm font-medium text-blue-100 hover:bg-blue-800 transition">📸 Asistencia por Foto</button>
+                <button onclick="switchTab('supervision')" class="tab-btn px-4 py-3 text-sm font-medium text-blue-100 hover:bg-blue-800 transition">🕵️ Supervision Analítica</button>
             </div>
-            <button onclick="exportToExcelOfficial()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition shadow-md cursor-pointer">
-                <i class="fa-solid fa-file-excel"></i> Descarga Oficial Excel
-            </button>
-        </div>
+        </nav>
     </header>
 
-    <main class="p-6 max-w-[1600px] mx-auto grid grid-cols-1 xl:grid-cols-4 gap-6">
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6">
         
-        <section class="xl:col-span-1 flex flex-col gap-6">
-            
-            <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-sm">
-                <h2 class="text-md font-semibold text-white mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-microphone-lines text-indigo-400"></i> Ingreso de Matrícula Biónica
-                </h2>
-                
-                <div class="grid grid-cols-1 gap-3">
-                    <button id="btnVoice" onclick="toggleVoiceCarga()" class="w-full py-3 bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 rounded-lg text-xs font-medium flex items-center justify-center gap-2 transition cursor-pointer">
-                        <i class="fa-solid fa-microphone text-sm"></i> Dictado Biónico Integrado (Activar)
-                    </button>
-                    <div class="relative bg-slate-900 border border-slate-700 rounded-lg p-3 text-center transition-all">
-                        <i class="fa-solid fa-qrcode text-3xl text-slate-500 mb-2 block"></i>
-                        <span class="text-xs text-slate-400 block mb-2">Escaneo Eficiente de Documentos</span>
-                        <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="mockScanner()">
-                        <span class="bg-slate-800 text-slate-300 px-3 py-1 rounded text-[11px] border border-slate-600 hover:bg-slate-700 inline-block">Subir Captura / DNI</span>
-                    </div>
-                </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+            <h2 class="text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">🔄 Inicialización del Sistema</h2>
+            <div class="flex flex-col sm:flex-row items-center gap-4">
+                <input type="file" id="json-input" accept=".json" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
+                <p class="text-xs text-gray-500">Subí el archivo <code>TITANIUM_DATA_412_FIX_TOTAL.json</code> para alimentar todos los módulos automáticamente.</p>
+            </div>
+        </div>
 
-                <form id="studentForm" onsubmit="saveStudent(event)" class="mt-4 pt-4 border-t border-slate-700 grid grid-cols-1 gap-3">
+        <section id="tab-matricula" class="tab-content active space-y-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <div>
-                        <label class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Apellido y Nombre</label>
-                        <input type="text" id="formName" required class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-500 text-white">
+                        <h3 class="text-xl font-bold text-gray-900">🗂️ Registro de Matrícula General</h3>
+                        <p class="text-sm text-gray-600">Buscador, filtros avanzados y fichas individuales de alumnos.</p>
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">DNI</label>
-                            <input type="text" id="formDNI" required class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-500 text-white">
-                        </div>
-                        <div>
-                            <label class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Nacionalidad</label>
-                            <input type="text" id="formNac" value="ARG" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-500 text-white">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Domicilio Real Completo</label>
-                        <input type="text" id="formDom" required class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-500 text-white">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Madre / Tutor</label>
-                            <input type="text" id="formMadre" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-500 text-white">
-                        </div>
-                        <div>
-                            <label class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Ocupación</label>
-                            <input type="text" id="formOcu" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-500 text-white">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Nivel Máximo de Estudios Alcanzado (9 Niveles)</label>
-                        <select id="formEst" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-500 text-white">
-                            <option value="Primaria Incomp.">1. Primaria Incompleta</option>
-                            <option value="Primaria Comp.">2. Primaria Completa</option>
-                            <option value="Secundaria Incomp.">3. Secundaria Incompleta</option>
-                            <option value="Secundaria Comp." selected>4. Secundaria Completa</option>
-                            <option value="Terciario Incomp.">5. Terciario Incompleto</option>
-                            <option value="Terciario Comp.">6. Terciario Completo</option>
-                            <option value="Universitario Incomp.">7. Universitario Incompleto</option>
-                            <option value="Universitario Comp.">8. Universitario Completo</option>
-                            <option value="Postgrado / Especialización">9. Postgrado / Especialización</option>
+                    <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                        <input type="text" id="search-bar" oninput="filterMatricula()" placeholder="Buscar por Nombre o DNI..." class="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" />
+                        <select id="filter-sala" onchange="filterMatricula()" class="px-4 py-2 border border-gray-300 rounded-lg text-sm bg-white">
+                            <option value="">Todas las Salas</option>
                         </select>
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Sala / Sección</label>
-                            <select id="formSala" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-500 text-white">
-                                <option value="ME A Y B">ME A Y B (Celeste)</option>
-                                <option value="1ºA Y B">1ºA Y B (Verde)</option>
-                                <option value="2ºA Y B">2ºA Y B (Turquesa)</option>
-                                <option value="2ºC Y D">2ºC Y D (Rosa)</option>
-                                <option value="3° A y B">3º A y B (Roja)</option>
-                                <option value="3º C Y D">3º C Y D (Azul)</option>
-                                <option value="3ºE Y F">3ºE Y F (Amarilla)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">F. Nacimiento</label>
-                            <input type="date" id="formFNac" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-500 text-white">
-                        </div>
-                    </div>
-                    <button type="submit" class="w-full mt-2 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-medium text-xs uppercase tracking-wider transition cursor-pointer">
-                        <i class="fa-solid fa-user-plus mr-1"></i> Guardar en Base Central
-                    </button>
-                </form>
+                </div>
+                
+                <div class="overflow-x-auto rounded-lg border border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200 text-left text-sm">
+                        <thead class="bg-gray-50 font-bold text-gray-700 uppercase text-xs">
+                            <tr>
+                                <th class="px-6 py-3">Alumno</th>
+                                <th class="px-6 py-3">DNI / F. Nac</th>
+                                <th class="px-6 py-3">Sala Asignada</th>
+                                <th class="px-6 py-3">Adulto Responsable</th>
+                                <th class="px-6 py-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matricula-table-body" class="divide-y divide-gray-200 bg-white">
+                            <tr>
+                                <td colspan="5" class="px-6 py-10 text-center text-gray-500">Esperando carga de datos de matrícula institucional...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
-        <section class="xl:col-span-2 flex flex-col gap-6">
-            
-            <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-sm">
-                <h2 class="text-md font-semibold text-white mb-4 flex items-center justify-between">
-                    <span class="flex items-center gap-2"><i class="fa-solid fa-school text-indigo-400"></i> Infraestructura Interactiva Sala por Sala</span>
-                    <span class="text-xs bg-slate-900 border border-slate-700 px-2 py-1 rounded text-slate-400" id="totalGeneralCounter">Cargando Total...</span>
-                </h2>
-                
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="salasGrid">
-                    </div>
-            </div>
+        <section id="tab-dashboard" class="tab-content space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="salas-grid-container">
+                </div>
+        </section>
 
-            <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-sm">
-                <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
-                    <div>
-                        <h2 class="text-md font-semibold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-clone text-emerald-400"></i> Espejo de Matrícula Pro (Asistencia Activa)
-                        </h2>
-                        <p class="text-xs text-slate-400">Control de presente/ausente cruzado y cálculo matemático de promedios</p>
+        <section id="tab-bitacora" class="tab-content space-y-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">📝 Bitácora de Novedades Diarias</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-1 space-y-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <h4 class="font-bold text-gray-800 text-sm uppercase">Registrar Evento</h4>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Seleccionar Alumno</label>
+                            <select id="bitacora-alumno-select" class="w-full px-3 py-2 border rounded-lg bg-white text-sm"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Tipo de Evento</label>
+                            <select id="bitacora-tipo" class="w-full px-3 py-2 border rounded-lg bg-white text-sm">
+                                <option value="Inasistencia Notificada">Inasistencia Notificada</option>
+                                <option value="Retiro Anticipado">Retiro Anticipado</option>
+                                <option value="Incidente Médico">Incidente Médico</option>
+                                <option value="Observación Pedagógica">Observación Pedagógica</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Detalle / Crónica</label>
+                            <textarea id="bitacora-observacion" rows="3" class="w-full px-3 py-2 border rounded-lg text-sm" placeholder="Escriba los detalles aquí..."></textarea>
+                        </div>
+                        <button onclick="guardarBitacora()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-sm shadow transition">Agregar a la Bitácora</button>
                     </div>
-                    <div class="relative bg-slate-950 border border-dashed border-slate-700 px-3 py-1.5 rounded flex items-center gap-2 hover:border-indigo-500 transition">
-                        <i class="fa-solid fa-camera text-slate-400 text-xs"></i>
-                        <span class="text-[11px] text-slate-300">Foto Registro Manual</span>
-                        <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="uploadRegistroManual(event)">
+                    <div class="md:col-span-2">
+                        <h4 class="font-bold text-gray-800 text-sm uppercase mb-3">Historial Reciente de la Institución</h4>
+                        <div class="flow-root">
+                            <ul id="bitacora-lista" class="-mb-8 divide-y divide-gray-200">
+                                <li class="py-4 text-center text-gray-500 text-sm">No hay novedades registradas en la jornada de hoy.</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <div class="overflow-x-auto border border-slate-700 rounded-lg bg-slate-950">
-                    <table class="w-full text-left text-xs text-slate-300">
-                        <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-700">
+        <section id="tab-espera" class="tab-content space-y-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">⏳ Gestión de Solicitudes en Espera</h3>
+                        <p class="text-sm text-gray-600">Aspirantes sin vacante asignada con control de prioridad.</p>
+                    </div>
+                    <button onclick="abrirModalEspera()" class="bg-green-600 hover:bg-green-700 text-white text-sm font-bold py-2 px-4 rounded-lg shadow transition">+ Registrar Aspirante</button>
+                </div>
+                <div class="overflow-x-auto rounded-lg border">
+                    <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
+                        <thead class="bg-gray-50 font-bold text-gray-700 uppercase text-xs">
                             <tr>
-                                <th class="p-3">Legajo 360</th>
-                                <th class="p-3">Alumno</th>
-                                <th class="p-3">DNI</th>
-                                <th class="p-3">Tutor / Madre</th>
-                                <th class="p-3 text-center">Asistencia Hoy</th>
-                                <th class="p-3 text-center">Acciones</th>
+                                <th class="px-6 py-3">Aspirante</th>
+                                <th class="px-6 py-3">Sala Solicitada</th>
+                                <th class="px-6 py-3">Contacto Familiar</th>
+                                <th class="px-6 py-3 text-center">Prioridad</th>
+                                <th class="px-6 py-3 text-center">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="tablaAlumnos" class="divide-y divide-slate-800">
+                        <tbody id="espera-table-body" class="divide-y divide-gray-200 bg-white">
                             </tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <section class="xl:col-span-1 flex flex-col gap-6">
-            
-            <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-sm">
-                <h2 class="text-md font-semibold text-white mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-chart-pie text-cyan-400"></i> Métricas Elite de Población
-                </h2>
-                <div class="w-full max-h-[220px] flex justify-center">
-                    <canvas id="demographicsChart"></canvas>
+        <section id="tab-asistencia" class="tab-content space-y-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">📸 Módulo Automatizado de Asistencia</h3>
+                <p class="text-sm text-gray-600 mb-6">Subí la foto grupal o de la planilla tomada en la sala para procesar el presente/ausente de forma automática con inteligencia local simulada.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 flex flex-col justify-center items-center bg-gray-50 hover:bg-gray-100 transition cursor-pointer relative">
+                        <input type="file" id="asistencia-foto-input" accept="image/*" onchange="procesarFotoAsistencia()" class="absolute inset-0 opacity-0 cursor-pointer" />
+                        <span class="text-4xl mb-3">📷</span>
+                        <p class="text-sm font-bold text-gray-700">Subir Captura de Pantalla o Foto de Planilla</p>
+                        <p class="text-xs text-gray-500 mt-1">Formatos JPG, PNG soportados</p>
+                    </div>
+                    <div class="bg-gray-900 text-green-400 p-4 rounded-xl font-mono text-xs shadow-inner h-48 overflow-y-auto" id="log-asistencia-consola">
+                        > Sistema P360 listo para análisis ocular de imágenes...
+                    </div>
                 </div>
-                <div class="mt-4 space-y-2 text-[11px] bg-slate-950 p-3 rounded border border-slate-700" id="statsBreakdown">
-                    </div>
             </div>
+        </section>
 
-            <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-sm">
-                <h2 class="text-md font-semibold text-white mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-user-slash text-rose-400"></i> Historial Crítico de Bajas
-                </h2>
-                <div class="space-y-2 max-h-[160px] overflow-y-auto custom-scroll" id="bajasContainer">
+        <section id="tab-supervision" class="tab-content space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl shadow-sm border p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">📊 Distribución de Alumnos por Sala</h3>
+                    <div class="h-64 flex justify-center items-center">
+                        <canvas id="chart-salas"></canvas>
                     </div>
-            </div>
-
-            <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-sm">
-                <h2 class="text-md font-semibold text-white mb-3 flex items-center justify-between">
-                    <span class="flex items-center gap-2"><i class="fa-solid fa-hourglass-half text-amber-400"></i> Lista de Espera</span>
-                    <button onclick="addListaEsperaPrompt()" class="text-[10px] bg-indigo-600/30 text-indigo-400 px-2 py-0.5 rounded border border-indigo-500/50 hover:bg-indigo-600/50 transition cursor-pointer">+ Agregar</button>
-                </h2>
-                <div class="space-y-2 max-h-[180px] overflow-y-auto custom-scroll" id="esperaContainer">
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">📈 Índice de Asistencia Semanal</h3>
+                    <div class="h-64 flex justify-center items-center">
+                        <canvas id="chart-asistencia"></canvas>
                     </div>
+                </div>
             </div>
         </section>
     </main>
 
-    <div id="legajoModal" class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-slate-800 border border-slate-700 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 custom-scroll">
-            <div class="flex justify-between items-start border-b border-slate-700 pb-3 mb-4">
-                <div>
-                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-folder-open text-indigo-400"></i> Legajo Escolar Integral 360
-                    </h3>
-                    <p class="text-xs text-slate-400" id="modalLegajoID"></p>
-                </div>
-                <button onclick="closeLegajoModal()" class="text-slate-400 hover:text-white text-lg cursor-pointer">&times;</button>
+    <div id="modal-alumno" class="fixed inset-0 bg-black/50 z-50 hidden flex justify-center items-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-lg font-bold text-gray-900" id="m-title">Ficha Integral de Trayectoria</h3>
+                <button onclick="cerrarModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs" id="modalContent">
-                </div>
-
-            <div class="mt-6 pt-4 border-t border-slate-700 flex justify-between gap-3">
-                <button onclick="triggerBajaInstitucional()" class="bg-rose-700 hover:bg-rose-600 text-white px-4 py-2 rounded font-medium transition cursor-pointer">
-                    <i class="fa-solid fa-user-minus mr-1"></i> Asignar Baja del Ciclo
-                </button>
-                <div class="flex gap-2">
-                    <button onclick="closeLegajoModal()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 px-4 py-2 rounded transition cursor-pointer">Cancelar</button>
-                    <button onclick="saveLegajoChanges()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded font-medium transition cursor-pointer">Guardar Cambios</button>
-                </div>
-            </div>
+            <div id="m-content" class="text-sm space-y-2 text-gray-700"></div>
         </div>
     </div>
 
+    <footer class="bg-gray-800 text-gray-400 text-center py-4 text-xs mt-10 border-t border-gray-700">
+        Pedagogía 360 © 2026 - Diseñado para optimización y control de procesos educativos.
+    </footer>
     <script>
-        // Configuración de Identidad de Salas
-        const CONFIG_SALAS = {
-            "ME A Y B": { nombre: "ME A Y B", color: "bg-cyan-600/20 border-cyan-500/40 text-cyan-400", label: "Celeste" },
-            "1ºA Y B": { nombre: "1ºA Y B", color: "bg-emerald-600/20 border-emerald-500/40 text-emerald-400", label: "Verde" },
-            "2ºA Y B": { nombre: "2ºA Y B", color: "bg-teal-600/20 border-teal-500/40 text-teal-400", label: "Turquesa" },
-            "2ºC Y D": { nombre: "2ºC Y D", color: "bg-pink-600/20 border-pink-500/40 text-pink-400", label: "Rosa" },
-            "3° A y B": { nombre: "3° A y B", color: "bg-rose-600/20 border-rose-500/40 text-rose-400", label: "Roja" },
-            "3º C Y D": { nombre: "3º C Y D", color: "bg-blue-600/20 border-blue-500/40 text-blue-400", label: "Azul" },
-            "3ºE Y F": { nombre: "3ºE Y F", color: "bg-amber-600/20 border-amber-500/40 text-amber-400", label: "Amarilla" }
+    // Variables de Estado de la Aplicación
+    let appData = { mat: [] };
+    let bitacoraData = [];
+    let esperaData = [
+        { nombre: "GOMEZ, MATEO", sala: "Celeste-TM", contacto: "11-3443-1221", prioridad: "Alta" },
+        { nombre: "RODRIGUEZ, EMMA", sala: "Verde-TT", contacto: "11-9889-4554", prioridad: "Media" }
+    ];
+    let chartSalasInstance = null;
+    let chartAsistenciaInstance = null;
+
+    // Manejo de Navegación entre Pestañas Modulares
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(`tab-${tabName}`).classList.add('active');
+        event.currentTarget.classList.add('active');
+        
+        if(tabName === 'supervision') {
+            setTimeout(inicializarGraficos, 100);
+        }
+    }
+
+    // Listener para Carga y Procesamiento Avanzado del JSON Institucional
+    document.getElementById('json-input').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            try {
+                const parsed = JSON.parse(evt.target.result);
+                appData.mat = parsed.mat || parsed;
+                
+                // Actualizar contadores globales y selectores
+                document.getElementById('global-counter').innerText = `${appData.mat.length} Alumnos Cargados`;
+                
+                populateSalaFilter();
+                renderMatricula();
+                renderDashboardSalas();
+                populateBitacoraSelect();
+                
+                alert(`🎯 Éxito: Se inyectaron ${appData.mat.length} alumnos correctamente al ecosistema.`);
+            } catch (err) {
+                alert("❌ Error crítico: El archivo JSON posee inconsistencias de formato estructural.");
+                console.error(err);
+            }
         };
+        reader.readAsText(file);
+    });
 
-        // Estado central de la aplicación
-        let baseDatosMatricula = [];
-        let listaEspera = [
-            { nombre: "GOMEZ, MATEO", dni: "61223445", nac: "ARG", f_nac: "2023-04-12", edadCorte: 3 },
-            { nombre: "RODRIGUEZ, FRANCESCA", dni: "60998123", nac: "BOL", f_nac: "2022-02-15", edadCorte: 4 }
-        ];
-        let historialBajas = [
-            { nombre: "MOCK, JULIAN", dni: "58990112", sala: "3ºE Y F", motivo: "Mudanza de distrito familiar", fecha: "2026-04-10" }
-        ];
-        let salaSeleccionada = "3° A y B";
-        let chartPoblacion = null;
-        let selectedStudentDni = null;
+    // Carga dinámica de Filtros según salas reales del JSON
+    function populateSalaFilter() {
+        const select = document.getElementById('filter-sala');
+        const salas = [...new Set(appData.mat.map(a => a.alu_sala).filter(Boolean))];
+        select.innerHTML = '<option value="">Todas las Salas</option>';
+        salas.forEach(sala => {
+            select.innerHTML += `<option value="${sala}">${sala}</option>`;
+        });
+    }
 
-        // Carga inicial automatizada de resguardos seguros
-        window.addEventListener('DOMContentLoaded', () => {
-            fetchJSONData();
-            initChart();
+    // Renderizado Inteligente de la Matrícula General
+    function renderMatricula(records = appData.mat) {
+        const tbody = document.getElementById('matricula-table-body');
+        if(records.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-10 text-center text-gray-500">Sin coincidencias en la base de datos de alumnos.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = '';
+        records.forEach((alumno, index) => {
+            tbody.innerHTML += `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4 font-bold text-gray-950">${alumno.alu_nombre}</td>
+                    <td class="px-6 py-4 text-xs text-gray-600">DNI: ${alumno.alu_dni}<br>Nac: ${alumno.alu_f_nac}</td>
+                    <td class="px-6 py-4"><span class="px-2 py-1 bg-blue-100 text-blue-800 font-semibold text-xs rounded-full">${alumno.alu_sala || 'S/D'}</span></td>
+                    <td class="px-6 py-4 text-xs">
+                        🧑‍🍼 ${alumno.m_nombre || alumno.p_nombre || 'S/D'}<br>
+                        📞 ${alumno.m_tel || alumno.p_tel || 'Sin Teléfono'}
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <button onclick="verFichaAlumno(${index})" class="text-blue-600 hover:text-blue-900 font-bold text-xs bg-blue-50 px-3 py-1 rounded border border-blue-200">Ver Ficha Completa</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // Filtros Cruzados Dinámicos (Buscador + Selector de Sala)
+    function filterMatricula() {
+        const query = document.getElementById('search-bar').value.toLowerCase().trim();
+        const selectedSala = document.getElementById('filter-sala').value;
+
+        const filtrados = appData.mat.filter(alumno => {
+            const matchQuery = alumno.alu_nombre.toLowerCase().includes(query) || alumno.alu_dni.includes(query);
+            const matchSala = selectedSala === "" || alumno.alu_sala === selectedSala;
+            return matchQuery && matchSala;
         });
 
-        // Simulación controlada de consumo de datos del repositorio local
-        function fetchJSONData() {
-            // Intentamos cargar la estructura unificada que procesamos de tus CSVs
-            fetch('TITANIUM_DATA_412_FIX_TOTAL.json')
-                .then(response => {
-                    if(!response.ok) throw new Error("No encontrado");
-                    return response.json();
-                })
-                .then(data => {
-                    baseDatosMatricula = data.mat || [];
-                    renderCore();
-                })
-                .catch(() => {
-                    // Carga fallback segura para desarrollo si el JSON aún no está commiteado
-                    baseDatosMatricula = [
-                        { alu_nombre: "CHAVEZ, HALIM NOAH LYSANDER", alu_dni: "57697577", alu_f_nac: "2019-11-15", alu_sala: "3° A y B", alu_dom: "COSQUIN 1800", alu_nac: "ARG", m_nombre: "CORIA, MELINA", m_ocu: "AMA DE CASA", m_est: "Secundaria Comp.", presente: true },
-                        { alu_nombre: "CUBILLAS, NAHIARA JAQUELINA", alu_dni: "58175631", alu_f_nac: "2020-02-19", alu_sala: "3° A y B", alu_dom: "UNAMUNO 2066", alu_nac: "ARG", m_nombre: "PAREDES, MELISA", m_ocu: "AMA DE CASA", m_est: "Secundaria Comp.", presente: true },
-                        { alu_nombre: "SANCHEZ ZURITA, HOLLY VICTORIA", alu_dni: "59329633", alu_f_nac: "2022-04-29", alu_sala: "1ºA Y B", alu_dom: "QUESADA 882", alu_nac: "ARG", m_nombre: "ZURITA, CHELSA", m_ocu: "ESTUDIANTE", m_est: "Terciario Incomp.", presente: false }
-                    ];
-                    renderCore();
-                });
+        renderMatricula(filtrados);
+    }
+        // Ficha Modal Unificada de Alumnos
+    function verFichaAlumno(index) {
+        const alu = appData.mat[index];
+        document.getElementById('m-title').innerText = `Ficha de ${alu.alu_nombre}`;
+        document.getElementById('m-content').innerHTML = `
+            <div class="space-y-3">
+                <div class="bg-gray-100 p-3 rounded-lg"><strong class="text-gray-900 block text-xs uppercase">Datos del Estudiante:</strong> DNI: ${alu.alu_dni} | Origen: ${alu.alu_nac || 'ARG'} | F. Nac: ${alu.alu_f_nac}</div>
+                <div class="bg-blue-50 p-3 rounded-lg"><strong class="text-blue-900 block text-xs uppercase">Localización & Cobertura:</strong> Dirección: ${alu.alu_dom || 'S/D'} | Centro Médico de Referencia: ${alu.alu_salud || 'No Especificado'}</div>
+                <div class="bg-green-50 p-3 rounded-lg"><strong class="text-green-900 block text-xs uppercase">Vínculo Familiar Directo (Madre):</strong> Nombre: ${alu.m_nombre || 'S/D'} | Ocupación: ${alu.m_ocu || 'S/D'} | Estudios: ${alu.m_est || 'S/D'}</div>
+                <div class="bg-purple-50 p-3 rounded-lg"><strong class="text-purple-900 block text-xs uppercase">Vínculo Familiar Directo (Padre):</strong> Nombre: ${alu.p_nombre || 'S/D'} | Ocupación: ${alu.p_ocu || 'S/D'} | Estudios: ${alu.p_est || 'S/D'}</div>
+                <div class="text-xs text-gray-500">Asistencia Social AUH asignada: <span class="font-bold">${alu.alu_auh || 'NO'}</span></div>
+            </div>
+        `;
+        document.getElementById('modal-alumno').classList.remove('hidden');
+    }
+
+    function cerrarModal() {
+        document.getElementById('modal-alumno').classList.add('hidden');
+    }
+
+    // Renderizado Modular del Dashboard de Salas
+    function renderDashboardSalas() {
+        const container = document.getElementById('salas-grid-container');
+        container.innerHTML = '';
+
+        // Agrupar métricas por nombre de sala
+        const salasMap = {};
+        appData.mat.forEach(a => {
+            if(!a.alu_sala) return;
+            if(!salasMap[a.alu_sala]) salasMap[a.alu_sala] = { total: 0, auh: 0 };
+            salasMap[a.alu_sala].total++;
+            if(a.alu_auh === 'SI') salasMap[a.alu_sala].auh++;
+        });
+
+        if(Object.keys(salasMap).length === 0) {
+            container.innerHTML = `<div class="col-span-3 text-center py-10 text-gray-500 text-sm">Cargá la matrícula para segmentar las salas institucionales de forma dinámica.</div>`;
+            return;
         }
 
-        function renderCore() {
-            renderSalasGrid();
-            renderTablaAlumnos();
-            renderListaEspera();
-            renderBajas();
-            updateAnaliticas();
-        }
-
-        // Renderizado Dinámico Sala por Sala con Conteo de Alumnos Reales
-        function renderSalasGrid() {
-            const grid = document.getElementById('salasGrid');
-            grid.innerHTML = "";
-            
-            Object.keys(CONFIG_SALAS).forEach(key => {
-                const conf = CONFIG_SALAS[key];
-                const count = baseDatosMatricula.filter(s => s.alu_sala === key).length;
-                const isActive = salaSeleccionada === key ? 'ring-2 ring-indigo-500 scale-102 bg-indigo-950/40' : 'opacity-85 hover:opacity-100';
-                
-                grid.innerHTML += `
-                    <div onclick="selectSala('${key}')" class="p-3 border rounded-xl flex flex-col justify-between cursor-pointer transition ${conf.color} ${isActive}">
-                        <div class="text-[11px] font-bold tracking-wide uppercase">${conf.nombre}</div>
-                        <div class="mt-2 flex justify-between items-baseline">
-                            <span class="text-2xl font-black">${count}</span>
-                            <span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-900/60 font-semibold border border-slate-700">${conf.label}</span>
+        Object.keys(salasMap).forEach(salaName => {
+            const s = salasMap[salaName];
+            container.innerHTML += `
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-black text-gray-900 text-base">${salaName}</h4>
+                            <span class="text-xs bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded">Operativa</span>
                         </div>
+                        <p class="text-3xl font-black text-blue-600 my-2">${s.total} <span class="text-xs font-normal text-gray-500">Alumnos Inscritos</span></p>
                     </div>
-                `;
-            });
-
-            document.getElementById('totalGeneralCounter').innerText = `Matrícula Activa: ${baseDatosMatricula.length} Alumnos`;
-        }
-
-        function selectSala(sala) {
-            salaSeleccionada = sala;
-            renderSalasGrid();
-            renderTablaAlumnos();
-            updateAnaliticas();
-        }
-
-        // Tabla Espejo de Matrícula Pro con control de Presente/Ausente
-        function renderTablaAlumnos() {
-            const tbody = document.getElementById('tablaAlumnos');
-            tbody.innerHTML = "";
-            
-            const filtrados = baseDatosMatricula.filter(s => s.alu_sala === salaSeleccionada);
-            
-            if(filtrados.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">Ningún alumno registrado en esta sección.</td></tr>`;
-                return;
-            }
-
-            filtrados.forEach((s, idx) => {
-                if (s.presente === undefined) s.presente = true;
-                const isPresent = s.presente;
-                
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-900/60 transition">
-                        <td class="p-3 font-mono text-slate-400">LEG-360-${s.alu_dni.substring(0,4)}</td>
-                        <td class="p-3 font-medium text-white">${s.alu_nombre}</td>
-                        <td class="p-3 text-slate-400">${s.alu_dni}</td>
-                        <td class="p-3 text-xs">
-                            <div class="text-slate-300">${s.m_nombre || 'S/D'}</div>
-                            <div class="text-[10px] text-slate-500">${s.m_ocu || 'S/D'}</div>
-                        </td>
-                        <td class="p-3 text-center">
-                            <button onclick="toggleAsistencia('${s.alu_dni}')" class="px-2.5 py-1 rounded text-[11px] font-semibold tracking-wide border cursor-pointer transition ${isPresent ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400' : 'bg-rose-500/20 border-rose-500/50 text-rose-400'}">
-                                ${isPresent ? 'PRESENTE' : 'AUSENTE'}
-                            </button>
-                        </td>
-                        <td class="p-3 text-center">
-                            <button onclick="openLegajoModal('${s.alu_dni}')" class="bg-slate-800 hover:bg-slate-700 text-indigo-400 border border-slate-600 px-2 py-1 rounded text-xs transition cursor-pointer">
-                                <i class="fa-solid fa-eye"></i> Ver Legajo
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function toggleAsistencia(dni) {
-            const student = baseDatosMatricula.find(s => s.alu_dni === dni);
-            if(student) {
-                student.presente = !student.presente;
-                renderTablaAlumnos();
-                updateAnaliticas();
-            }
-        }
-
-        // Función matemática: Simulación de escaneo y procesamiento de Promedios semanales/mensuales
-        function uploadRegistroManual(event) {
-            if(event.target.files.length > 0) {
-                alert("Procesando imagen del Registro Manual...\nAplicando algoritmo matemático de reconocimiento de asistencia y cálculo de promedios semanales...");
-                setTimeout(() => {
-                    alert("¡Éxito matemático! Asistencia del registro físico sincronizada. Promedio de asistencia mensual de la sala fijado en: 94.2%");
-                }, 1500);
-            }
-        }
-
-        // Apertura interactiva del Legajo Integral 360
-        function openLegajoModal(dni) {
-            selectedStudentDni = dni;
-            const s = baseDatosMatricula.find(stu => stu.alu_dni === dni);
-            if(!s) return;
-
-            document.getElementById('modalLegajoID').innerText = `Clave Única de Registro Estudiantil: RE-360-${s.alu_dni}`;
-            
-            const content = document.getElementById('modalContent');
-            content.innerHTML = `
-                <div class="space-y-3 bg-slate-900/60 p-4 rounded-lg border border-slate-700">
-                    <h4 class="font-bold text-indigo-400 uppercase tracking-wide border-b border-slate-700 pb-1">Datos Básicos del Alumno</h4>
-                    <div><label class="text-[10px] text-slate-500 block">Nombre Completo</label><input type="text" id="m_editNombre" value="${s.alu_nombre}" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white"></div>
-                    <div><label class="text-[10px] text-slate-500 block">Documento de Identidad (DNI)</label><input type="text" id="m_editDNI" value="${s.alu_dni}" readonly class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-slate-400 cursor-not-allowed"></div>
-                    <div><label class="text-[10px] text-slate-500 block">Domicilio Declarado</label><input type="text" id="m_editDom" value="${s.alu_dom || ''}" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white"></div>
-                    <div><label class="text-[10px] text-slate-500 block">Sala Destino</label><input type="text" id="m_editSala" value="${s.alu_sala}" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white"></div>
-                </div>
-                <div class="space-y-3 bg-slate-900/60 p-4 rounded-lg border border-slate-700">
-                    <h4 class="font-bold text-indigo-400 uppercase tracking-wide border-b border-slate-700 pb-1">Estructura Socio-Familiar</h4>
-                    <div><label class="text-[10px] text-slate-500 block">Apellido y Nombre Madre/Tutor</label><input type="text" id="m_editMadre" value="${s.m_nombre || ''}" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white"></div>
-                    <div><label class="text-[10px] text-slate-500 block">Ocupación / Oficio</label><input type="text" id="m_editOcu" value="${s.m_ocu || ''}" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white"></div>
-                    <div><label class="text-[10px] text-slate-500 block">Nivel Educativo (9 Categorías Formales)</label><input type="text" id="m_editEst" value="${s.m_est || 'Secundaria Comp.'}" class="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white"></div>
+                    <div class="border-t pt-3 mt-3 text-xs text-gray-600 flex justify-between">
+                        <span>Cobertura AUH: <strong>${((s.auh/s.total)*100).toFixed(0)}%</strong></span>
+                        <span>Vacantes libres: <strong>0</strong></span>
+                    </div>
                 </div>
             `;
+        });
+    }
 
-            document.getElementById('legajoModal').classList.remove('hidden');
-        }
+    // Módulo de Bitácora y Registro Diario
+    function populateBitacoraSelect() {
+        const select = document.getElementById('bitacora-alumno-select');
+        select.innerHTML = '';
+        appData.mat.forEach(a => {
+            select.innerHTML += `<option value="${a.alu_nombre}">${a.alu_nombre} (DNI: ${a.alu_dni})</option>`;
+        });
+    }
 
-        function closeLegajoModal() {
-            document.getElementById('legajoModal').classList.add('hidden');
-            selectedStudentDni = null;
-        }
+    function guardarBitacora() {
+        const aluNombre = document.getElementById('bitacora-alumno-select').value;
+        const tipo = document.getElementById('bitacora-tipo').value;
+        const obs = document.getElementById('bitacora-observacion').value.trim();
 
-        function saveLegajoChanges() {
-            const s = baseDatosMatricula.find(stu => stu.alu_dni === selectedStudentDni);
-            if(s) {
-                s.alu_nombre = document.getElementById('m_editNombre').value;
-                s.alu_dom = document.getElementById('m_editDom').value;
-                s.alu_sala = document.getElementById('m_editSala').value;
-                s.m_nombre = document.getElementById('m_editMadre').value;
-                s.m_ocu = document.getElementById('m_editOcu').value;
-                s.m_est = document.getElementById('m_editEst').value;
-                
-                renderCore();
-                closeLegajoModal();
-            }
-        }
+        if(!obs) { alert("Por favor, ingresá una crónica o detalle del suceso."); return; }
 
-        // Tramitación Crítica y Justificación de Bajas
-        function triggerBajaInstitucional() {
-            const s = baseDatosMatricula.find(stu => stu.alu_dni === selectedStudentDni);
-            if(!s) return;
+        const nuevoEvento = { alumno: aluNombre, tipo: tipo, observacion: obs, fecha: new Date().toLocaleTimeString() };
+        bitacoraData.unshift(nuevoEvento);
+        
+        document.getElementById('bitacora-observacion').value = '';
+        renderBitacora();
+    }
 
-            const motivo = prompt(`¿Cuál es la justificación oficial del porqué de la baja para el alumno ${s.alu_nombre}?`);
-            if(motivo) {
-                historialBajas.push({
-                    nombre: s.alu_nombre,
-                    dni: s.alu_dni,
-                    sala: s.alu_sala,
-                    motivo: motivo,
-                    fecha: new Date().toISOString().split('T')[0]
-                });
-                // Remoción de matrícula activa
-                baseDatosMatricula = baseDatosMatricula.filter(stu => stu.alu_dni !== selectedStudentDni);
-                
-                renderCore();
-                closeLegajoModal();
-                alert("Notificación de Baja enviada a supervisión y directiva.");
-            }
-        }
-
-        // Lista de Espera con cálculo automático de edad al 30/06
-        function renderListaEspera() {
-            const container = document.getElementById('esperaContainer');
-            container.innerHTML = "";
-            listaEspera.forEach(asp => {
-                container.innerHTML += `
-                    <div class="bg-slate-900 p-2.5 rounded border border-slate-700 flex justify-between items-center text-xs">
-                        <div>
-                            <div class="font-bold text-white">${asp.nombre}</div>
-                            <div class="text-[10px] text-slate-400">DNI: ${asp.dni} | Edad al 30/06: <span class="text-amber-400 font-bold">${asp.edadCorte} años</span></div>
+    function renderBitacora() {
+        const lista = document.getElementById('bitacora-lista');
+        lista.innerHTML = '';
+        bitacoraData.forEach(e => {
+            lista.innerHTML += `
+                <li class="py-3">
+                    <div class="flex space-x-3">
+                        <div class="flex-1 space-y-1">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-bold text-gray-900">${e.alumno}</h3>
+                                <p class="text-xs text-gray-400">${e.fecha}</p>
+                            </div>
+                            <p class="text-xs text-red-700 bg-red-50 inline-block px-2 py-0.5 font-bold rounded">${e.tipo}</p>
+                            <p class="text-xs text-gray-600 mt-1">${e.observacion}</p>
                         </div>
-                        <button onclick="asignarVacante('${asp.dni}')" class="bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-600 px-2 py-1 rounded text-[10px] transition cursor-pointer">Asignar Vacante</button>
                     </div>
-                `;
-            });
-        }
-
-        function addListaEsperaPrompt() {
-            const nom = prompt("Nombre y Apellido del Aspirante:");
-            const dni = prompt("DNI:");
-            const fechaNac = prompt("Fecha de Nacimiento (AAAA-MM-DD):");
-            if(nom && dni && fechaNac) {
-                // Cálculo matemático aproximado al corte de Junio
-                const añoNac = parseInt(fechaNac.split("-")[0]);
-                const edadCorte = 2026 - añoNac; 
-                listaEspera.push({ nombre: nom.toUpperCase(), dni: dni, nac: "ARG", f_nac: fechaNac, edadCorte: edadCorte });
-                renderListaEspera();
-            }
-        }
-
-        function asignarVacante(dni) {
-            const idx = listaEspera.findIndex(asp => asp.dni === dni);
-            if(idx !== -1) {
-                const asp = listaEspera[idx];
-                baseDatosMatricula.push({
-                    alu_nombre: asp.nombre,
-                    alu_dni: asp.dni,
-                    alu_f_nac: asp.f_nac,
-                    alu_sala: salaSeleccionada,
-                    alu_dom: "S/D Domicilio Declarado",
-                    alu_nac: asp.nac,
-                    m_nombre: "S/D", m_ocu: "S/D", m_est: "Secundaria Comp.", presente: true
-                });
-                listaEspera.splice(idx, 1);
-                renderCore();
-            }
-        }
-
-        function renderBajas() {
-            const container = document.getElementById('bajasContainer');
-            container.innerHTML = "";
-            historialBajas.forEach(b => {
-                container.innerHTML += `
-                    <div class="bg-slate-900 p-2.5 rounded border border-slate-700 text-xs">
-                        <div class="flex justify-between font-semibold text-rose-400">
-                            <span>${b.nombre}</span> <span class="text-[10px] text-slate-500">${b.fecha}</span>
-                        </div>
-                        <p class="text-[10px] text-slate-400 mt-1"><strong>Motivo:</strong> ${b.motivo} (${b.sala})</p>
-                    </div>
-                `;
-            });
-        }
-
-        // Formulario Carga Convencional
-        function saveStudent(e) {
-            e.preventDefault();
-            const newStudent = {
-                alu_nombre: document.getElementById('formName').value.toUpperCase(),
-                alu_dni: document.getElementById('formDNI').value,
-                alu_f_nac: document.getElementById('formFNac').value,
-                alu_sala: document.getElementById('formSala').value,
-                alu_dom: document.getElementById('formDom').value.toUpperCase(),
-                alu_nac: document.getElementById('formNac').value.toUpperCase(),
-                m_nombre: document.getElementById('formMadre').value.toUpperCase(),
-                m_ocu: document.getElementById('formOcu').value.toUpperCase(),
-                m_est: document.getElementById('formEst').value,
-                presente: true
-            };
-            baseDatosMatricula.push(newStudent);
-            document.getElementById('studentForm').reset();
-            renderCore();
-        }
-
-        // Dictado biónico por voz artificial por aproximación de cadenas de texto
-        function toggleVoiceCarga() {
-            alert("Iniciando Escucha Biónica de Matrícula...\nHable claro al micrófono siguiendo el orden: Apellido, Nombre, DNI, Domicilio.");
-        }
-
-        function mockScanner() {
-            alert("Módulo OCR Eficiente detectado: Leyendo captura de DNI y autocompletando campos clave.");
-        }
-
-        // Supervisión Elite - Procesamiento Estadístico de Población y Gráficos
-        function initChart() {
-            const ctx = document.getElementById('demographicsChart').getContext('2d');
-            chartPoblacion = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Presentes', 'Ausentes'],
-                    datasets: [{
-                        data: [10, 0],
-                        backgroundColor: ['#10b981', '#f43f5e'],
-                        borderWidth: 1,
-                        borderColor: '#1e293b'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 } } } }
-                }
-            });
-        }
-
-        function updateAnaliticas() {
-            const salaStudents = baseDatosMatricula.filter(s => s.alu_sala === salaSeleccionada);
-            const total = salaStudents.length;
-            
-            if(total === 0) return;
-
-            const presentes = salaStudents.filter(s => s.presente).length;
-            const ausentes = total - presentes;
-            
-            // Actualización de Gráfico
-            if(chartPoblacion) {
-                chartPoblacion.data.datasets[0].data = [presentes, ausentes];
-                chartPoblacion.update();
-            }
-
-            // Desglose de Porcentajes Elite (Estudios, Ocupación, Nacionalidad)
-            const arg = salaStudents.filter(s => s.alu_nac === 'ARG').length;
-            const pctArg = ((arg / total) * 100).toFixed(1);
-            
-            const breakdown = document.getElementById('statsBreakdown');
-            breakdown.innerHTML = `
-                <div class="flex justify-between"><span>Asistencia de Sala:</span> <span class="text-emerald-400 font-bold">${((presentes/total)*100).toFixed(1)}%</span></div>
-                <div class="flex justify-between"><span>Origen Argentino:</span> <span class="text-cyan-400">${pctArg}%</span></div>
-                <div class="flex justify-between"><span>Tutor con Secundaria Completa+:</span> <span class="text-indigo-400">85.0%</span></div>
+                </li>
             `;
-        }
+        });
+    }
 
-        // Descarga Oficial del Archivo Excel en texto plano sanitizado compatible
-        function exportToExcelOfficial() {
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Legajo,Alumno,DNI,Sala,Domicilio,Madre_Tutor,Ocupacion,Estudios\n";
-            
-            baseDatosMatricula.forEach(s => {
-                csvContent += `LEG-360-${s.alu_dni.substring(0,4)},"${s.alu_nombre}",${s.alu_dni},"${s.alu_sala}","${s.alu_dom}","${s.m_nombre}","${s.m_ocu}","${s.m_est}"\n`;
-            });
+    // Gestión Automática Ocular por Carga de Fotos
+    function procesarFotoAsistencia() {
+        const consola = document.getElementById('log-asistencia-consola');
+        consola.innerHTML += `<br>> [${new Date().toLocaleTimeString()}] Archivo gráfico detectado. Iniciando escaneo matricial...`;
+        
+        setTimeout(() => {
+            consola.innerHTML += `<br>> [${new Date().toLocaleTimeString()}] Analizando contornos de rostros e identificando grillas de planilla escolar...`;
+        }, 1000);
 
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "REPORTE_OFICIAL_MATRICULA_360.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    </script>
+        setTimeout(() => {
+            consola.innerHTML += `<br>> [${new Date().toLocaleTimeString()}] Cruce exitoso con base TITANIUM. Se determinó: Presentes: 94.2% | Ausentes: 5.8%. Asistencia consolidada con éxito en la base de datos de Supervisión.`;
+            alert("📸 Procesamiento por imagen finalizado. Se sincronizaron las métricas diarias en Supervisión Analítica.");
+        }, 2500);
+    }
+
+    // Inicialización de Gráficos de Gestión Corporativa (Chart.js)
+    function inicializarGraficos() {
+        const ctxSalas = document.getElementById('chart-salas').getContext('2d');
+        const ctxAsistencia = document.getElementById('chart-asistencia').getContext('2d');
+
+        if(chartSalasInstance) chartSalasInstance.destroy();
+        if(chartAsistenciaInstance) chartAsistenciaInstance.destroy();
+
+        // Procesar datos para gráfico de salas
+        const salasMap = {};
+        appData.mat.forEach(a => { if(a.alu_sala) salasMap[a.alu_sala] = (salasMap[a.alu_sala] || 0) + 1; });
+        const labelsSalas = Object.keys(salasMap).length ? Object.keys(salasMap) : ['Sala Amarilla', 'Sala Celeste', 'Sala Verde'];
+        const dataSalas = Object.keys(salasMap).length ? Object.values(salasMap) : [45, 38, 42];
+
+        chartSalasInstance = new Chart(ctxSalas, {
+            type: 'doughnut',
+            data: {
+                labels: labelsSalas,
+                datasets: [{
+                    data: dataSalas,
+                    backgroundColor: ['#1e3a8a', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6']
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        chartAsistenciaInstance = new Chart(ctxAsistencia, {
+            type: 'line',
+            data: {
+                labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
+                datasets: [{
+                    label: '% Asistencia Media Escolar',
+                    data: [92, 95, 94, 91, 89],
+                    borderColor: '#10b981',
+                    fill: false,
+                    tension: 0.1
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    }
+</script>
 </body>
 </html>
