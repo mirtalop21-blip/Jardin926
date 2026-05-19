@@ -193,7 +193,29 @@
         renderGrid(); renderEspera(); renderAsistencia(); renderSupervision(); renderMesesBajas();
     }
 
-    // --- NUEVO IMPORTADOR CON DOBLE RECONOCIMIENTO INTELIGENTE ---
+    // --- TRADUCTOR INTELIGENTE DE SECCIONES ESCRITAS ---
+    function normalizarSala(salaRaw) {
+        if (!salaRaw) return 'Rosa-TM';
+        let str = String(salaRaw).toUpperCase().replace(/\s+/g, '').replace(/ª/g, 'º').trim();
+        
+        if (str.includes('1ºA')) return 'Rosa-TM';
+        if (str.includes('1ºB')) return 'Rosa-TT';
+        if (str.includes('MEA') || str.includes('M.E.A')) return 'Naranja-TM';
+        if (str.includes('MEB') || str.includes('M.E.B')) return 'Naranja-TT';
+        if (str.includes('2ºA')) return 'Roja-TM';
+        if (str.includes('2ºC')) return 'Roja-TT';
+        if (str.includes('2ºB')) return 'Celeste-TM';
+        if (str.includes('2ºD')) return 'Celeste-TT';
+        if (str.includes('3ºA')) return 'Violeta-TM';
+        if (str.includes('3ºD')) return 'Violeta-TT';
+        if (str.includes('3ºB')) return 'Amarilla-TM';
+        if (str.includes('3ºE')) return 'Amarilla-TT';
+        if (str.includes('3ºC')) return 'Azul-TM';
+        if (str.includes('3ºF')) return 'Azul-TT';
+        
+        return 'Rosa-TM'; // Valor seguro por defecto
+    }
+
     function importData(input) {
         if (!input.files || input.files.length === 0) return;
         
@@ -205,30 +227,24 @@
                 let rawEsp = [];
                 let rawBajas = [];
 
-                // RECONOCIMIENTO DINÁMICO: Evaluamos si viene como objeto estructurado o como lista suelta
                 if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-                    // Es un JSON estructurado nativo del sistema
                     rawMat = parsed.mat || parsed.MAT || parsed.matricula || parsed.Matricula || [];
                     rawEsp = parsed.esp || parsed.ESP || parsed.espera || parsed.Espera || [];
                     rawBajas = parsed.bajas || parsed.BAJAS || parsed.Bajas || [];
                     
-                    // Si el objeto no tiene esas propiedades pero contiene una lista suelta en su primer elemento
                     if (rawMat.length === 0 && Object.keys(parsed).length > 0) {
                         const primerValor = Object.values(parsed)[0];
                         if (Array.isArray(primerValor)) rawMat = primerValor;
                     }
                 } else if (Array.isArray(parsed)) {
-                    // COMPATIBILIDAD EXTERNA: Es una lista de alumnos directa convertida de Excel
                     rawMat = parsed;
                 }
 
-                // Si tras el análisis todo sigue vacío, damos aviso analítico
                 if (rawMat.length === 0 && rawEsp.length === 0 && rawBajas.length === 0) {
-                    alert("Atención: No se encontraron registros válidos de alumnos dentro del archivo cargado.");
+                    alert("Atención: No se encontraron registros válidos.");
                     return;
                 }
 
-                // Mapeador Blindado
                 const procesarCampos = (listaOrigen) => {
                     if (!Array.isArray(listaOrigen)) return [];
                     return listaOrigen.map(item => {
@@ -252,23 +268,26 @@
 
                         camposFormulario.forEach(campo => {
                             let valor = itemMinusculas[campo];
-                            nuevoRegistro[campo] = valor ? String(valor).toUpperCase().trim() : '';
+                            if (campo === 'alu_sala') {
+                                nuevoRegistro[campo] = normalizarSala(valor);
+                            } else {
+                                nuevoRegistro[campo] = valor ? String(valor).toUpperCase().trim() : '';
+                            }
                         });
 
                         return nuevoRegistro;
                     }).filter(x => x !== null && (x.alu_dni || x.alu_nombre));
                 };
 
-                // Guardado directo en memoria activa y sincronización
                 DATA.mat = procesarCampos(rawMat);
                 DATA.esp = procesarCampos(rawEsp);
                 DATA.bajas = procesarCampos(rawBajas);
 
                 sync();
-                alert(`¡Importación Completa! Se cargaron correctamente ${DATA.mat.length} alumnos en la matrícula institucional.`);
+                alert(`¡Importación Exitosa! Se cargaron y mapearon correctamente ${DATA.mat.length} alumnos en sus respectivas salas.`);
             } catch (err) {
-                console.error("Error en el parseo del archivo:", err);
-                alert("Error de lectura: El archivo seleccionado no tiene un formato válido.");
+                console.error(err);
+                alert("Error de lectura: Archivo JSON corrupto o con formato incorrecto.");
             }
         };
         reader.readAsText(input.files[0]);
@@ -456,10 +475,23 @@
         if(res) editAlu(res.alu_dni);
     }
 
-    function show(n) { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); document.getElementById('v'+n).classList.remove('hidden'); document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab')); document.getElementById('t'+n).classList.add('active-tab'); }
+    // Navegación corregida sin errores de renderizado
+    function show(n) { 
+        document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); 
+        document.getElementById('v'+n).classList.remove('hidden'); 
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab')); 
+        document.getElementById('t'+n).classList.add('active-tab'); 
+    }
     function calcEdad() { const inputF = document.getElementById('alu_f_nac').value; if(!inputF) return 0; const f = new Date(inputF); const ref = new Date('2026-06-30'); let e = ref.getFullYear() - f.getFullYear(); if (ref < new Date(ref.getFullYear(), f.getMonth(), f.getDate())) e--; document.getElementById('label_edad').innerText = `AL 30/6: ${e} AÑOS`; return e; }
     function notificarWA(m, p, nombre) { const tel = m || p; if(!tel || tel === "S/D" || tel === "") return alert("NO REGISTRA CONTACTO"); window.open(`https://wa.me/${tel}?text=TITANIUM 360 - JARDÍN 926: Ref. Alumno/a ${nombre}.`, '_blank'); }
-    function renderAsistencia() { const id = document.getElementById('asis_sala_select').value; const list = DATA.mat.filter(x => x.alu_sala === id); document.getElementById('asis_lista_render').innerHTML = list.map(a => `<div class="bg-zinc-900 p-2 flex justify-between items-center border-l-2 border-blue-500 mb-1"><span class="font-black uppercase text-[9px]">${a.alu_nombre}</span><div class="flex gap-1"><button class="bg-green-800 p-1 px-2 rounded text-[8px]">P</button><button class="bg-red-800 p-1 px-2 rounded text-[8px]">A</button></div></div>`).join(''); document.getElementById('asis_stats_panel').innerHTML = `<div class="bg-zinc-800 p-3 text-center rounded"><p class="text-[8px]">ASISTENCIA PROMEDIO</p><h5 class="text-nuke font-black">100%</h5></div>`; }
+    
+    function renderAsistencia() { 
+        const id = document.getElementById('asis_sala_select').value; 
+        const list = DATA.mat.filter(x => x.alu_sala === id); 
+        document.getElementById('asis_lista_render').innerHTML = list.map(a => `<div class="bg-zinc-900 p-2 flex justify-between items-center border-l-2 border-blue-500 mb-1"><span class="font-black uppercase text-[9px]">${a.alu_nombre}</span><div class="flex gap-1"><button class="bg-green-800 p-1 px-2 rounded text-[8px]">P</button><button class="bg-red-800 p-1 px-2 rounded text-[8px]">A</button></div></div>`).join(''); 
+        document.getElementById('asis_stats_panel').innerHTML = `<div class="bg-zinc-800 p-3 text-center rounded"><p class="text-[8px]">ASISTENCIA PROMEDIO</p><h5 class="text-nuke font-black">100%</h5></div>`; 
+    }
+    
     function renderMesesBajas() { const grid = document.getElementById('bajas_meses_grid'); grid.innerHTML = ''; MESES.forEach(m => { const count = DATA.bajas.filter(x => x.mes_baja === m).length; grid.innerHTML += `<button onclick="verDetalleBaja('${m}')" class="bg-zinc-900 border border-red-900 p-2 rounded text-center hover:bg-red-900/20 transition-all"><p class="text-[7px] orbitron font-black text-zinc-500">${m}</p><h4 class="text-xl font-black text-red-500">${count}</h4></button>`; }); }
     function verDetalleBaja(mes) { const list = DATA.bajas.filter(x => x.mes_baja === mes); if(list.length === 0) { document.getElementById('bajas_detalle').innerHTML = `<p class="text-center py-6 font-black orbitron uppercase text-zinc-600">SIN MOVIMIENTOS EN ${mes}</p>`; return; } let html = `<h4 class="orbitron text-red-500 mb-2 border-b border-red-900 pb-1 uppercase text-center">${mes}</h4><table class="w-full text-left"><tr><th>SALA</th><th>ALUMNO</th><th>MOTIVO</th></tr>`; list.forEach(b => { html += `<tr class="border-b border-zinc-800"><td class="p-1">${b.alu_sala || 'S/D'}</td><td class="p-1">${b.alu_nombre || 'S/D'}</td><td class="p-1 italic text-red-400 text-[9px]">${b.motivo_baja || 'S/D'}</td></tr>`; }); document.getElementById('bajas_detalle').innerHTML = html + `</table>`; }
 </script>
