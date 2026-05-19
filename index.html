@@ -31,7 +31,8 @@
         <div class="bg-nuke text-black px-6 py-1 font-black orbitron italic text-xl shadow-[0_0_15px_#dfff00]">TITANIUM 360</div>
         <div class="text-[10px] font-black orbitron text-nuke uppercase">Matrícula Real: <span id="header_total">0</span></div>
     </div>
-    <div class="flex gap-1">
+    <div class="flex gap-1 items-center">
+        <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 text-[8px] font-black orbitron rounded uppercase transition-all shadow-[0_0_10px_rgba(16,185,129,0.4)]">📊 Reporte Excel</button>
         <label class="bg-blue-600 px-3 py-1 text-[7px] rounded cursor-pointer font-black orbitron uppercase text-white">Importar JSON <input type="file" class="hidden" onchange="importData(this)"></label>
     </div>
 </header>
@@ -48,7 +49,7 @@
     <section id="v1" class="space-y-4">
         <div class="neon-border p-6 bg-zinc-900/30 rounded-lg shadow-2xl">
             <div class="flex gap-3 mb-6">
-                <input type="text" id="radar" onkeyup="smartRadar()" class="flex-1 bg-black border-2 border-nuke p-4 text-2xl orbitron font-black text-nuke uppercase shadow-inner" placeholder="BUSCADOR RADAR...">
+                <input type="text" id="radar" onkeyup="smartRadar()" class="flex-1 bg-black border-2 border-nuke p-4 text-2xl orbitron font-black text-nuke uppercase shadow-inner" placeholder="BUSCADOR RADAR (ESCANEÁ NOMBRE O DNI)...">
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="form_master">
@@ -93,8 +94,23 @@
 
     <section id="v3" class="hidden">
         <div class="bg-orange-950/20 p-8 neon-border rounded-xl border-l-8 border-orange-600 shadow-2xl">
-            <h2 class="orbitron text-orange-500 text-2xl font-black mb-6 uppercase flex justify-between tracking-tighter">Terminal Lista de Espera Pro <button onclick="saveData('esp')" class="bg-orange-600 text-white px-4 py-2 text-[10px]">Cargar Aspirante</button></h2>
-            <div class="overflow-x-auto bg-black/40 rounded"><table class="w-full text-left text-[10px]"><thead class="orbitron text-zinc-500 border-b border-orange-900/30 uppercase text-[9px]"><tr><th class="p-2">Aspirante</th><th class="p-2">DNI</th><th class="p-2">Sala</th><th class="p-2">Acción</th></tr></thead><tbody id="espera_table"></tbody></table></div>
+            <h2 class="orbitron text-orange-500 text-2xl font-black mb-6 uppercase flex justify-between tracking-tighter">
+                Terminal Lista de Espera Pro 
+                <button onclick="saveData('esp')" class="bg-orange-600 hover:bg-orange-700 text-white font-black px-5 py-2 text-[10px] orbitron rounded uppercase transition-all">Cargar Desde Formulario Anterior</button>
+            </h2>
+            <div class="overflow-x-auto bg-black/40 rounded">
+                <table class="w-full text-left text-[10px]">
+                    <thead class="orbitron text-zinc-500 border-b border-orange-900/30 uppercase text-[9px]">
+                        <tr>
+                            <th class="p-2">Aspirante</th>
+                            <th class="p-2">DNI</th>
+                            <th class="p-2">Sala Asignada</th>
+                            <th class="p-2">Acción Mecanizada</th>
+                        </tr>
+                    </thead>
+                    <tbody id="espera_table"></tbody>
+                </table>
+            </div>
         </div>
     </section>
 
@@ -113,13 +129,23 @@
     </section>
 
     <section id="v5" class="hidden space-y-6">
+        <div class="bg-zinc-900/80 p-4 rounded border border-zinc-800 flex justify-between items-center">
+            <div class="orbitron text-nuke font-black text-sm uppercase">Tablero de Alertas de Control de Gestión</div>
+            <div class="text-[9px] text-zinc-400 font-bold uppercase">Umbral Crítico Establecido: <span class="text-red-500 font-black">> 40%</span></div>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="supervision_cards"></div>
     </section>
 </main>
 
 <script>
+    // Recuperación biónica automática desde LocalStorage
     let DATA = JSON.parse(localStorage.getItem('T360_J926_AUDITORIA_FINAL_REVISION')) || { mat: [], esp: [], bajas: [] };
     
+    // Si por alguna razón estructural interna faltaban los nodos, los blindamos
+    if (!DATA.mat) DATA.mat = [];
+    if (!DATA.esp) DATA.esp = [];
+    if (!DATA.bajas) DATA.bajas = [];
+
     const SALAS_INST = [
         {id:'Rosa-TM', color:'ROSA', turno:'TM', seccion:'1ºA'}, {id:'Rosa-TT', color:'ROSA', turno:'TT', seccion:'1ºB'},
         {id:'Naranja-TM', color:'NARANJA', turno:'TM', seccion:'ME A'}, {id:'Naranja-TT', color:'NARANJA', turno:'TT', seccion:'ME B'},
@@ -154,219 +180,77 @@
         renderGrid(); renderEspera(); renderAsistencia(); renderSupervision();
     }
 
-    // --- MEJORA CRÍTICA: PORCENTAJES DINÁMICOS REALES SALA POR SALA ---
-    function renderSupervision() {
-        const container = document.getElementById('supervision_cards'); container.innerHTML = '';
-        if(!DATA.mat) return;
-        
-        SALAS_INST.forEach(s => {
-            const list = DATA.mat.filter(x => x.alu_sala === s.id);
-            const total = list.length; // Denominador Base Real de la Sala (N)
-
-            // Contadores para desglosar porcentajes exactos de escolaridad
-            let m_completo = 0, m_incompleto = 0, m_sd = 0;
-            let p_completo = 0, p_incompleto = 0, p_sd = 0;
-            let auh_si = 0, extranjeros = 0, social_informal = 0;
-
-            list.forEach(x => {
-                // Evaluación AUH
-                if(x.alu_auh === 'SI') auh_si++;
-                // Evaluación Extranjeros
-                if(x.alu_nac && x.alu_nac !== 'ARG') extranjeros++;
-                // Evaluación Social Informal / Ama de Casa
-                if(x.m_ocu === 'AMA DE CASA' || x.m_ocu === 'S/D' || !x.m_ocu) social_informal++;
-
-                // Clasificación Dinámica Escolaridad Madre
-                const estM = x.m_est || "S/D";
-                if(estM.includes("COMP.")) m_completo++;
-                else if(estM.includes("INC.")) m_incompleto++;
-                else m_sd++;
-
-                // Clasificación Dinámica Escolaridad Padre
-                const estP = x.p_est || "S/D";
-                if(estP.includes("COMP.")) p_completo++;
-                else if(estP.includes("INC.")) p_incompleto++;
-                else p_sd++;
-            });
-
-            // Función interna para calcular porcentajes seguros sobre el N real de la sala
-            const pct = (val) => total > 0 ? Math.round((val / total) * 100) : 0;
-
-            container.innerHTML += `
-            <div class="bg-zinc-900 border-l-4 border-${s.color} p-4 rounded shadow-2xl S-${s.color}">
-                <h3 class="orbitron text-nuke text-[11px] mb-2 uppercase font-black">${s.seccion} (${s.turno}) - Real: ${total} Alums</h3>
-                <div class="space-y-2 text-[9px] font-black uppercase">
-                    <div class="flex justify-between border-b border-white/5 pb-1"><span>AUH BENEFICIARIOS:</span><span class="text-nuke">${pct(auh_si)}%</span></div>
-                    <div class="flex justify-between border-b border-white/5 pb-1"><span>EXTRANJEROS SALA:</span><span class="text-orange-400">${pct(extranjeros)}%</span></div>
-                    <div class="flex justify-between border-b border-white/5 pb-1"><span>VULNERABILIDAD SOCIAL:</span><span class="text-red-400">${pct(social_informal)}% INF/SD</span></div>
-                    
-                    <div class="pt-1 border-t border-zinc-800 text-zinc-400 text-[8px]">
-                        <p class="text-white font-bold mb-1">ESCOLARIDAD MADRE:</p>
-                        <div class="flex justify-between"><span>COMPLETA:</span><span>${pct(m_completo)}%</span></div>
-                        <div class="flex justify-between"><span>INCOMPLETA:</span><span>${pct(m_incompleto)}%</span></div>
-                        <div class="flex justify-between"><span>SIN DATOS / SD:</span><span>${pct(m_sd)}%</span></div>
-                    </div>
-
-                    <div class="pt-1 border-t border-zinc-800 text-zinc-400 text-[8px]">
-                        <p class="text-white font-bold mb-1">ESCOLARIDAD PADRE:</p>
-                        <div class="flex justify-between"><span>COMPLETA:</span><span>${pct(p_completo)}%</span></div>
-                        <div class="flex justify-between"><span>INCOMPLETA:</span><span>${pct(p_incompleto)}%</span></div>
-                        <div class="flex justify-between"><span>SIN DATOS / SD:</span><span>${pct(p_sd)}%</span></div>
-                    </div>
-                </div>
-            </div>`;
-        });
-    }
-
-    function viewSala(id, seccion) {
-        const v = document.getElementById('sala_detail'); const l = document.getElementById('sala_list');
-        document.getElementById('sala_title').innerText = `SALA: ${seccion}`; l.innerHTML = '';
-        if(!DATA.mat) return;
-        DATA.mat.filter(x => x.alu_sala === id).forEach(a => {
-            l.innerHTML += `<div class="bg-zinc-900 p-4 border-l-4 border-nuke flex justify-between items-center mb-2 shadow-xl">
-                <div><p class="font-black text-sm uppercase text-white">${a.alu_nombre}</p><p class="opacity-60 italic text-[10px]">DNI: ${a.alu_dni}</p></div>
-                <div class="flex gap-1">
-                <button onclick="editAlu('${a.alu_dni}')" class="bg-nuke text-black font-black px-3 py-2 rounded text-[8px] orbitron uppercase">LEGAJO</button>
-                <button onclick="processBaja('${a.alu_dni}')" class="bg-red-900 text-white font-black px-3 py-2 rounded text-[8px] orbitron uppercase">BAJA</button>
-                <button onclick="notificarWA('${a.m_tel}', '${a.p_tel}', '${a.alu_nombre}')" class="bg-green-700 text-white font-black px-3 py-2 rounded text-[8px] orbitron uppercase">📲 WA</button></div></div>`;
-        });
-        v.classList.remove('hidden'); v.scrollIntoView({behavior:'smooth'});
-    }
-
-    function processBaja(dni) {
-        const motivo = prompt("MOTIVO DE LA BAJA (EJ: MUDANZA, PASE):");
-        const mes = prompt("MES DE LA BAJA (MARZO-DICIEMBRE):").toUpperCase();
-        if(motivo && MESES.includes(mes)) {
-            const index = DATA.mat.findIndex(x => x.alu_dni === dni);
-            if(index > -1) {
-                const alu = DATA.mat[index];
-                if(!DATA.bajas) DATA.bajas = [];
-                DATA.bajas.push({...alu, motivo_baja: motivo, mes_baja: mes, fecha_baja: new Date().toLocaleDateString()});
-                DATA.mat.splice(index, 1);
-                sync();
-                document.getElementById('sala_detail').classList.add('hidden');
-                alert("BAJA PROCESADA EXITOSAMENTE.");
-            }
-        } else { alert("MES INVÁLIDO O MOTIVO VACÍO"); }
-    }
-
-    function notificarWA(m, p, nombre) {
-        const tel = m || p;
-        if(!tel || tel === "S/D" || tel === "") return alert("NO HAY TELÉFONO REGISTRADO");
-        window.open(`https://wa.me/${tel}?text=JARDIN 926: Comunicado institucional sobre el alumno/a ${nombre}.`, '_blank');
-    }
-
-    // --- MEJORA CRÍTICA: CORRECCIÓN DE EDICIÓN, REDIRECCIÓN AUTOMÁTICA Y NAVEGACIÓN A PESTAÑA 1 ---
+    // --- ESCANEO BIÓNICO: ENFOCAR, MAPEAR Y LLEVAR A PESTAÑA 1 ---
     function editAlu(dni) {
+        // Buscamos exhaustivamente en matrícula real o lista de espera
         const alu = DATA.mat.find(x => x.alu_dni === dni) || DATA.esp.find(x => x.alu_dni === dni);
         if(alu) { 
-            // Limpiamos los campos del formulario antes de rellenar
+            // Vaciamos el formulario maestro para evitar colisiones
             document.querySelectorAll('#form_master input, #form_master select, #form_master textarea').forEach(i => i.value = '');
             
-            // Mapeamos los datos detectados campo por campo en tu formulario master
+            // Inyección biónica directa campo por campo
             Object.keys(alu).forEach(k => { 
-                if(document.getElementById(k)) document.getElementById(k).value = alu[k]; 
+                const el = document.getElementById(k);
+                if(el) {
+                    el.value = alu[k];
+                }
             }); 
             calcEdad(); 
-            show(1); // Redirecciona instantáneamente a la Pestaña 1 de control
-            document.getElementById('radar').value = alu.alu_dni; // Setea el radar con el DNI editado
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Enfoca visualmente arriba el formulario
+            show(1); // Forzamos redirección inmediata a Pestaña 1
+            document.getElementById('radar').value = alu.alu_dni; 
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll automático biónico al formulario
+        } else {
+            alert("ALUMNO NO DETECTADO EN LA BASE ACTIVA");
         }
     }
 
+    // --- CONSOLIDACIÓN DINÁMICA DE FORMULARIO ---
     function saveData(type) {
         const alu = {};
         document.querySelectorAll('#form_master input, #form_master select, #form_master textarea').forEach(i => alu[i.id] = i.value.toUpperCase());
-        if(!alu.alu_dni) return alert("DNI REQUERIDO");
+        if(!alu.alu_dni) return alert("DNI OBLIGATORIO PARA OPERAR");
         
         if(type === 'mat') {
-            if(!DATA.mat) DATA.mat = [];
             const idx = DATA.mat.findIndex(x => x.alu_dni === alu.alu_dni);
             if(idx > -1) DATA.mat[idx] = alu; else DATA.mat.push(alu);
-        } else {
-            if(!DATA.esp) DATA.esp = [];
-            DATA.esp.push(alu);
+            alert("MATRÍCULA CONSOLIDADA CON ÉXITO");
+        } else if(type === 'esp') {
+            const idx = DATA.esp.findIndex(x => x.alu_dni === alu.alu_dni);
+            if(idx > -1) DATA.esp[idx] = alu; else DATA.esp.push(alu);
+            alert("REGISTRADO EN LISTA DE ESPERA PRO");
         }
-        sync(); alert("REGISTRO GUARDADO Y CONSOLIDADO EN EL NÚCLEO");
+        sync();
     }
 
+    // --- MAPEO DE LISTA DE ESPERA PRO ---
     function renderEspera() {
         const tb = document.getElementById('espera_table'); tb.innerHTML = '';
-        if(!DATA.esp) return;
+        if(!DATA.esp || DATA.esp.length === 0) {
+            tb.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-zinc-600 orbitron">SISTEMA EN ESPERA - SIN ASPIRANTES</td></tr>`;
+            return;
+        }
         DATA.esp.forEach((e, i) => {
-            tb.innerHTML += `<tr class="border-b border-zinc-800 transition text-white"><td class="p-2 font-black uppercase">${e.alu_nombre}</td><td>${e.alu_dni}</td><td>${e.alu_sala}</td><td><button onclick="DATA.mat.push(DATA.esp[i]);DATA.esp.splice(i,1);sync();" class="bg-blue-600 px-3 py-1 font-black text-[8px] rounded uppercase">ADMITIR</button></td></tr>`;
+            tb.innerHTML += `<tr class="border-b border-zinc-800 text-white hover:bg-zinc-900/40">
+                <td class="p-2 font-black uppercase text-orange-400">${e.alu_nombre}</td>
+                <td class="p-2">${e.alu_dni}</td>
+                <td class="p-2">${e.alu_sala}</td>
+                <td class="p-2">
+                    <button onclick="admitirAspirante(${i})" class="bg-blue-600 hover:bg-blue-700 text-white font-black px-3 py-1 font-black text-[8px] rounded uppercase">ADMITIR MATRÍCULA</button>
+                </td>
+            </tr>`;
         });
     }
 
-    function renderAsistencia() {
-        const id = document.getElementById('asis_sala_select').value;
-        if(!DATA.mat) return;
-        const list = DATA.mat.filter(x => x.alu_sala === id);
-        document.getElementById('asis_lista_render').innerHTML = list.map(a => `<div class="bg-zinc-900 p-2 flex justify-between items-center border-l-2 border-blue-500 mb-1"><span class="font-black uppercase text-[9px]">${a.alu_nombre}</span><div class="flex gap-1"><button class="bg-green-800 p-1 px-2 rounded text-[8px]">P</button><button class="bg-red-800 p-1 px-2 rounded text-[8px]">A</button></div></div>`).join('');
-        document.getElementById('asis_stats_panel').innerHTML = `<div class="bg-zinc-800 p-3 text-center rounded"><p class="text-[8px]">PRESENTE PROMEDIO</p><h5 class="text-nuke font-black">100%</h5></div>`;
+    function admitirAspirante(index) {
+        if(DATA.esp[index]) {
+            DATA.mat.push(DATA.esp[index]);
+            DATA.esp.splice(index, 1);
+            sync();
+            alert("ASPIRANTE ADMITIDO DINÁMICAMENTE EN MATRÍCULA REAL");
+        }
     }
 
-    function renderMesesBajas() {
-        const grid = document.getElementById('bajas_meses_grid'); grid.innerHTML = '';
-        MESES.forEach(m => {
-            const count = DATA.bajas ? DATA.bajas.filter(x => x.mes_baja === m).length : 0;
-            grid.innerHTML += `<button onclick="verDetalleBaja('${m}')" class="bg-zinc-900 border border-red-900 p-2 rounded text-center hover:bg-red-900/20 transition-all"><p class="text-[7px] orbitron font-black text-zinc-500">${m}</p><h4 class="text-xl font-black text-red-500">${count}</h4></button>`;
-        });
-    }
-
-    function verDetalleBaja(mes) {
-        const container = document.getElementById('bajas_detalle');
-        if(!DATA.bajas) { container.innerHTML = `<p class="text-center py-6 font-black orbitron uppercase">SIN BAJAS</p>`; return; }
-        const list = DATA.bajas.filter(x => x.mes_baja === mes);
-        if(list.length === 0) { container.innerHTML = `<p class="text-center py-6 font-black orbitron uppercase">SIN BAJAS</p>`; return; }
-        let html = `<h4 class="orbitron text-red-500 mb-2 border-b border-red-900 pb-1 uppercase text-center">${mes}</h4><table class="w-full text-left"><tr><th>SALA</th><th>ALUMNO</th><th>MOTIVO</th></tr>`;
-        list.forEach(b => { html += `<tr class="border-b border-zinc-800"><td class="p-1">${b.alu_sala}</td><td class="p-1">${b.alu_nombre}</td><td class="p-1 italic text-red-400">${b.motivo_baja}</td></tr>`; });
-        container.innerHTML = html + `</table>`;
-    }
-
-    function show(n) { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); document.getElementById('v'+n).classList.remove('hidden'); document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab')); document.getElementById('t'+n).classList.add('active-tab'); }
-    
-    function calcEdad() { 
-        const inputF = document.getElementById('alu_f_nac').value;
-        if(!inputF) return 0;
-        const f = new Date(inputF); 
-        const ref = new Date('2026-06-30'); 
-        let e = ref.getFullYear() - f.getFullYear(); 
-        if (ref < new Date(ref.getFullYear(), f.getMonth(), f.getDate())) e--; 
-        document.getElementById('label_edad').innerText = `AL 30/6: ${e} AÑOS`; 
-        return e; 
-    }
-    
-    // --- MEJORA: RADAR INTEGRADO CON REDIRECCIÓN DIRECTA AL LEGAJO ---
-    function smartRadar() { 
-        const val = document.getElementById('radar').value.toUpperCase(); 
-        if(val.length < 3) return; 
-        if(!DATA.mat) return;
-        const res = DATA.mat.find(x => x.alu_dni === val || x.alu_nombre.includes(val)); 
-        if(res) { editAlu(res.alu_dni); } 
-    }
-    
-    function importData(input) { 
-        const reader = new FileReader(); 
-        reader.onload = (e) => { 
-            try { 
-                const parsed = JSON.parse(e.target.result); 
-                if(parsed && parsed.mat && Array.isArray(parsed.mat)) {
-                    DATA = { mat: parsed.mat, esp: parsed.esp || [], bajas: parsed.bajas || [] };
-                } else if(Array.isArray(parsed)) {
-                    DATA = { mat: parsed, esp: [], bajas: [] };
-                } else {
-                    DATA = parsed;
-                }
-                sync(); 
-                alert("AUDITORÍA DE DATOS CARGADA EN SISTEMA (" + DATA.mat.length + " ALUMNOS CONSOLIDADOS)"); 
-            } catch(err) { 
-                alert("ERROR EN LA LECTURA DEL ARCHIVO JSON."); 
-            } 
-        }; 
-        reader.readAsText(input.files[0]); 
-    }
-    
+    // --- RENDERS DE FOTO INTERACTIVA Y DETALLES DE SALA ---
     function renderGrid() {
         const grid = document.getElementById('mapa_grid'); grid.innerHTML = '';
         SALAS_INST.forEach(s => {
@@ -374,6 +258,131 @@
             grid.innerHTML += `<div onclick="viewSala('${s.id}', '${s.seccion}')" class="card-sala S-${s.color}"><p class="orbitron text-[8px] font-black opacity-60">${s.turno}</p><p class="font-black text-[10px] uppercase">${s.color}</p><h4 class="text-3xl font-black text-nuke">${cant}</h4><p class="text-[9px] font-bold text-zinc-500">${s.seccion}</p></div>`;
         });
     }
+
+    function viewSala(id, seccion) {
+        const v = document.getElementById('sala_detail'); const l = document.getElementById('sala_list');
+        document.getElementById('sala_title').innerText = `SALA: ${seccion}`; l.innerHTML = '';
+        const filtered = DATA.mat.filter(x => x.alu_sala === id);
+        if(filtered.length === 0) {
+            l.innerHTML = `<p class="col-span-full text-center py-4 font-black orbitron text-zinc-600">SALA VACÍA</p>`;
+        } else {
+            filtered.forEach(a => {
+                l.innerHTML += `<div class="bg-zinc-900 p-4 border-l-4 border-nuke flex justify-between items-center mb-2 shadow-xl rounded">
+                    <div><p class="font-black text-sm uppercase text-white">${a.alu_nombre}</p><p class="opacity-60 italic text-[10px]">DNI: ${a.alu_dni}</p></div>
+                    <div class="flex gap-1">
+                        <button onclick="editAlu('${a.alu_dni}')" class="bg-nuke text-black font-black px-3 py-2 rounded text-[8px] orbitron uppercase">LEGAJO</button>
+                        <button onclick="processBaja('${a.alu_dni}')" class="bg-red-900 text-white font-black px-3 py-2 rounded text-[8px] orbitron uppercase">BAJA</button>
+                        <button onclick="notificarWA('${a.m_tel}', '${a.p_tel}', '${a.alu_nombre}')" class="bg-green-700 text-white font-black px-3 py-2 rounded text-[8px] orbitron uppercase">📲 WA</button>
+                    </div>
+                </div>`;
+            });
+        }
+        v.classList.remove('hidden'); v.scrollIntoView({behavior:'smooth'});
+    }
+
+    // --- PROCESAMIENTO BIÓNICO DE BAJAS CON MOTIVO ---
+    function processBaja(dni) {
+        const motivo = prompt("CONSIGNAR MOTIVO DE LA BAJA (MUDANZA, PASE, AUSENTISMO, ETC):");
+        const mes = prompt("MES CORRESPONDIENTE A LA BAJA (MARZO-DICIEMBRE):").toUpperCase();
+        if(motivo && MESES.includes(mes)) {
+            const index = DATA.mat.findIndex(x => x.alu_dni === dni);
+            if(index > -1) {
+                const alu = DATA.mat[index];
+                DATA.bajas.push({...alu, motivo_baja: motivo, mes_baja: mes, fecha_baja: new Date().toLocaleDateString()});
+                DATA.mat.splice(index, 1);
+                sync();
+                document.getElementById('sala_detail').classList.add('hidden');
+                alert("BAJA GRABADA EN BITÁCORA DE SUPERVISIÓN INSTITUCIONAL.");
+            }
+        } else { alert("ERROR OPERATIVO: MES INVÁLIDO O MOTIVO INCOMPLETO"); }
+    }
+
+    // --- RELEVAMIENTO DE SUPERVISIÓN CON ALERTAS DE CONTROL ---
+    function renderSupervision() {
+        const container = document.getElementById('supervision_cards'); container.innerHTML = '';
+        if(!DATA.mat) return;
+        
+        SALAS_INST.forEach(s => {
+            const list = DATA.mat.filter(x => x.alu_sala === s.id);
+            const total = list.length; // N Real Sala
+
+            let auh_si = 0, extranjeros = 0, informal = 0;
+            let m_comp = 0, p_comp = 0;
+
+            list.forEach(x => {
+                if(x.alu_auh === 'SI') auh_si++;
+                if(x.alu_nac && x.alu_nac !== 'ARG') extranjeros++;
+                if(x.m_ocu === 'AMA DE CASA' || x.m_ocu === 'S/D' || !x.m_ocu) informal++;
+                if(x.m_est && x.m_est.includes('COMP.')) m_comp++;
+                if(x.p_est && x.p_est.includes('COMP.')) p_comp++;
+            });
+
+            const pct = (val) => total > 0 ? Math.round((val / total) * 100) : 0;
+            
+            const pAuh = pct(auh_si);
+            const pExt = pct(extranjeros);
+            const pInf = pct(informal);
+
+            // Alertas visuales dinámicas basadas en los umbrales de vulnerabilidad
+            const alertClass = pInf > 40 ? 'border-red-600 bg-red-950/20 shadow-[0_0_15px_rgba(220,38,38,0.3)]' : 'border-white/10 bg-zinc-900';
+
+            container.innerHTML += `
+            <div class="${alertClass} border p-4 rounded S-${s.color}">
+                <div class="flex justify-between items-center border-b border-white/10 pb-2 mb-2">
+                    <h3 class="orbitron text-nuke text-[10px] uppercase font-black">${s.seccion} (${s.turno})</h3>
+                    <span class="bg-black text-white px-2 py-0.5 rounded font-black text-[9px]">N: ${total}</span>
+                </div>
+                <div class="space-y-1.5 text-[9px] font-black uppercase">
+                    <div class="flex justify-between"><span>EXTRANJEROS:</span><span class="text-orange-400">${pExt}%</span></div>
+                    <div class="flex justify-between"><span>AUH COBERTURA:</span><span class="text-nuke">${pAuh}%</span></div>
+                    <div class="flex justify-between"><span>VULNERABILIDAD SOCIAL:</span><span class="${pInf > 40 ? 'text-red-500 font-extrabold shadow-sm' : 'text-zinc-300'}">${pInf}% INF/SD</span></div>
+                    <div class="flex justify-between border-t border-zinc-800 pt-1 text-zinc-400 text-[8px]"><span>MADRES ESTUDIOS COMP:</span><span class="text-blue-400">${pct(m_comp)}%</span></div>
+                    <div class="flex justify-between text-zinc-400 text-[8px]"><span>PADRES ESTUDIOS COMP:</span><span class="text-cyan-400">${pct(p_comp)}%</span></div>
+                </div>
+                ${pInf > 40 ? '<div class="mt-2 text-center text-[7px] text-red-500 font-black orbitron tracking-widest animate-pulse">⚠️ ALERTA: VULNERABILIDAD ELEVADA</div>' : ''}
+            </div>`;
+        });
+    }
+
+    // --- INTEGRACIÓN EXCEL REPORTE DE EXPORTACIÓN ---
+    function exportToExcel() {
+        if(!DATA.mat || DATA.mat.length === 0) return alert("SIN MATRÍCULA ACTIVA PARA EXPORTAR");
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "APELLIDO Y NOMBRE,DNI,SALA,NACIONALIDAD,AUH,MADRE,TEL MADRE,ESTUDIOS MADRE,OCUPACION MADRE,PADRE,TEL PADRE,ESTUDIOS PADRE,OCUPACION PADRE\r\n";
+        
+        DATA.mat.forEach(x => {
+            let row = [
+                `"${x.alu_nombre || ''}"`, `"${x.alu_dni || ''}"`, `"${x.alu_sala || ''}"`, `"${x.alu_nac || ''}"`, `"${x.alu_auh || ''}"`,
+                `"${x.m_nombre || ''}"`, `"${x.m_tel || ''}"`, `"${x.m_est || ''}"`, `"${x.m_ocu || ''}"`,
+                `"${x.p_nombre || ''}"`, `"${x.p_tel || ''}"`, `"${x.p_est || ''}"`, `"${x.p_ocu || ''}"`
+            ].join(",");
+            csvContent += row + "\r\n";
+        });
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `REPORTE_SUPERVISION_TITANIUM_360_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // --- BUSCADOR RADAR REESTRUCTURADO ---
+    function smartRadar() { 
+        const val = document.getElementById('radar').value.toUpperCase(); 
+        if(val.length < 3) return; 
+        const res = DATA.mat.find(x => x.alu_dni.includes(val) || x.alu_nombre.includes(val)); 
+        if(res) { editAlu(res.alu_dni); } 
+    }
+
+    function show(n) { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); document.getElementById('v'+n).classList.remove('hidden'); document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab')); document.getElementById('t'+n).classList.add('active-tab'); }
+    function calcEdad() { const inputF = document.getElementById('alu_f_nac').value; if(!inputF) return 0; const f = new Date(inputF); const ref = new Date('2026-06-30'); let e = ref.getFullYear() - f.getFullYear(); if (ref < new Date(ref.getFullYear(), f.getMonth(), f.getDate())) e--; document.getElementById('label_edad').innerText = `AL 30/6: ${e} AÑOS`; return e; }
+    function notificarWA(m, p, nombre) { const tel = m || p; if(!tel || tel === "S/D" || tel === "") return alert("NO REGISTRA CONTACTO"); window.open(`https://wa.me/${tel}?text=TITANIUM 360 - COMUNICADO JARDÍN 926: Ref. Alumno/a ${nombre}.`, '_blank'); }
+    function renderAsistencia() { const id = document.getElementById('asis_sala_select').value; const list = DATA.mat.filter(x => x.alu_sala === id); document.getElementById('asis_lista_render').innerHTML = list.map(a => `<div class="bg-zinc-900 p-2 flex justify-between items-center border-l-2 border-blue-500 mb-1"><span class="font-black uppercase text-[9px]">${a.alu_nombre}</span><div class="flex gap-1"><button class="bg-green-800 p-1 px-2 rounded text-[8px]">P</button><button class="bg-red-800 p-1 px-2 rounded text-[8px]">A</button></div></div>`).join(''); document.getElementById('asis_stats_panel').innerHTML = `<div class="bg-zinc-800 p-3 text-center rounded"><p class="text-[8px]">PRESENTE PROMEDIO</p><h5 class="text-nuke font-black">100%</h5></div>`; }
+    function renderMesesBajas() { const grid = document.getElementById('bajas_meses_grid'); grid.innerHTML = ''; MESES.forEach(m => { const count = DATA.bajas ? DATA.bajas.filter(x => x.mes_baja === m).length : 0; grid.innerHTML += `<button onclick="verDetalleBaja('${m}')" class="bg-zinc-900 border border-red-900 p-2 rounded text-center hover:bg-red-900/20 transition-all"><p class="text-[7px] orbitron font-black text-zinc-500">${m}</p><h4 class="text-xl font-black text-red-500">${count}</h4></button>`; }); }
+    function verDetalleBaja(mes) { const container = document.getElementById('bajas_collapse'); const list = DATA.bajas.filter(x => x.mes_baja === mes); if(list.length === 0) { document.getElementById('bajas_detalle').innerHTML = `<p class="text-center py-6 font-black orbitron uppercase text-zinc-600">SIN MOVIMIENTOS EN ${mes}</p>`; return; } let html = `<h4 class="orbitron text-red-500 mb-2 border-b border-red-900 pb-1 uppercase text-center">${mes}</h4><table class="w-full text-left"><tr><th>SALA</th><th>ALUMNO</th><th>MOTIVO CONSIGNADO</th></tr>`; list.forEach(b => { html += `<tr class="border-b border-zinc-800"><td class="p-1">${b.alu_sala}</td><td class="p-1">${b.alu_nombre}</td><td class="p-1 italic text-red-400 text-[9px]">${b.motivo_baja}</td></tr>`; }); document.getElementById('bajas_detalle').innerHTML = html + `</table>`; }
+    function importData(input) { const reader = new FileReader(); reader.onload = (e) => { try { const parsed = JSON.parse(e.target.result); if(parsed && parsed.mat) { DATA = { mat: parsed.mat || [], esp: parsed.esp || [], bajas: parsed.bajas || [] }; } else { DATA = { mat: Array.isArray(parsed) ? parsed : [], esp: [], bajas: [] }; } sync(); alert("SISTEMA BIÓNICO ACTUALIZADO"); } catch(err) { alert("ERROR JSON"); } }; reader.readAsText(input.files[0]); }
 </script>
 </body>
 </html>
