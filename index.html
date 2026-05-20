@@ -5,7 +5,7 @@
 
 let DATA = { mat: [], esp: [], bajas: [], asistencia: [] };
 
-// --- 1. MOTOR DE PERSISTENCIA Y CARGA ---
+// 1. MOTOR DE PERSISTENCIA Y CARGA
 function sync() {
     localStorage.setItem('T360_DB_FINAL', JSON.stringify(DATA));
     renderSupervision();
@@ -19,31 +19,31 @@ function importData(input) {
             DATA.mat = Array.isArray(raw) ? raw : (raw.mat || []);
             sync();
             alert("BASE DE DATOS TITANIUM 360 CARGADA CON ÉXITO.");
-        } catch (err) { 
-            alert("Error de formato JSON. Verifica la estructura del archivo."); 
+        } catch (err) {
+            alert("Error de formato JSON: " + err.message);
         }
     };
     reader.readAsText(input.files[0]);
 }
 
-// --- 2. LEGAJO 360 & RADAR ---
+// 2. LEGAJO 360 Y RADAR
 function smartRadar() {
     const val = document.getElementById('radar').value.toUpperCase();
     const res = DATA.mat.find(a => (a.alu_nombre || "").toUpperCase().includes(val) || (a.alu_dni || "") === val);
-    if(res) {
+    if (res) {
         Object.keys(res).forEach(k => {
             const el = document.getElementById(k);
-            if(el) el.value = res[k];
+            if (el) el.value = res[k];
         });
         show(1);
     }
 }
 
-// --- 3. SUPERVISIÓN ÉLITE (Cálculos Matemáticos) ---
+// 3. SUPERVISIÓN ÉLITE (Cálculos Matemáticos)
 function renderSupervision() {
     const total = DATA.mat.length;
     if (total === 0) return;
-    
+
     const stats = {
         ninos: DATA.mat.filter(a => (a.sexo || "M").toUpperCase() === 'M').length,
         ninas: DATA.mat.filter(a => (a.sexo || "M").toUpperCase() === 'F').length,
@@ -51,31 +51,46 @@ function renderSupervision() {
         auh: DATA.mat.filter(a => (a.alu_auh || "NO").toUpperCase() === 'SI').length,
         cud: DATA.mat.filter(a => (a.cud || "NO").toUpperCase() === 'SI').length
     };
-    
-    document.getElementById('header_total').innerText = total;
+
+    if (document.getElementById('header_total')) {
+        document.getElementById('header_total').innerText = total;
+    }
     console.log("Supervisión Élite Actualizada:", stats);
 }
 
-// --- 4. BITÁCORA DE BAJAS ---
+// 4. BITÁCORA DE BAJAS
 function registrarBaja(dni, motivo) {
     const idx = DATA.mat.findIndex(x => (x.alu_dni || "") === dni);
-    if(idx > -1) {
-        DATA.bajas.push({...DATA.mat[idx], motivo, fecha: new Date().toLocaleDateString()});
+    if (idx > -1) {
+        DATA.bajas.push({ ...DATA.mat[idx], motivo, fecha: new Date().toLocaleDateString() });
         DATA.mat.splice(idx, 1);
         sync();
     }
 }
 
-// --- 5. NAVEGACIÓN ---
-function show(tab) {
-    document.querySelectorAll('main > section').forEach((s, i) => s.classList.toggle('hidden', i !== (tab - 1)));
+// 5. VOZ BIÓNICA
+const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+recognition.lang = 'es-ES';
+function iniciarCargaVoz() {
+    recognition.start();
+    recognition.onresult = (e) => {
+        const transcript = e.results[0][0].transcript.toUpperCase();
+        console.log("Comando biónico:", transcript);
+    };
 }
 
-// --- 6. INICIALIZACIÓN ---
+// 6. NAVEGACIÓN DE PESTAÑAS
+function show(tab) {
+    document.querySelectorAll('main > section').forEach((s, i) => {
+        s.classList.toggle('hidden', i !== (tab - 1));
+    });
+}
+
+// 7. INICIALIZACIÓN AUTOMÁTICA
 window.onload = () => {
     const saved = localStorage.getItem('T360_DB_FINAL');
-    if(saved) { 
-        DATA = JSON.parse(saved); 
-        renderSupervision(); 
+    if (saved) {
+        DATA = JSON.parse(saved);
+        renderSupervision();
     }
 };
