@@ -1,96 +1,111 @@
-/**
- * TITANIUM 360 - SISTEMA INTEGRAL DE GESTIÓN (AUDITORÍA J926)
- * CÓDIGO MAESTRO COMPLETO - GITHUB REPO
- */
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>TITANIUM 360 | AUDITORÍA J926</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --nuke: #dfff00; --bg: #05070a; }
+        body { background: var(--bg); color: #e1e1e1; font-family: monospace; font-size: 12px; }
+        .input-elite { background: #000; border: 1px solid #444; padding: 8px; color: var(--nuke); width: 100%; }
+        .btn-tab { padding: 10px; cursor: pointer; border: 1px solid #333; }
+        .active-tab { background: var(--nuke); color: #000; font-weight: bold; }
+    </style>
+</head>
+<body class="p-4" onload="initSystem()">
 
-let DATA = { mat: [], esp: [], bajas: [], asistencia: [] };
+    <header class="mb-6 border-b border-nuke pb-4">
+        <h1 class="text-nuke text-2xl font-black italic">TITANIUM 360</h1>
+        <div class="flex gap-4">
+            <span>TOTAL MATRÍCULA: <span id="header_total">0</span></span>
+            <input type="file" onchange="importData(this)" class="text-[10px]">
+        </div>
+    </header>
 
-// 1. MOTOR DE PERSISTENCIA Y CARGA
-function sync() {
-    localStorage.setItem('T360_DB_FINAL', JSON.stringify(DATA));
-    renderSupervision();
-}
+    <nav class="flex gap-2 mb-6">
+        <button onclick="show(1)" class="btn-tab active-tab">1. LEGAJO 360</button>
+        <button onclick="show(2)" class="btn-tab">2. BAJAS/BITÁCORA</button>
+        <button onclick="show(3)" class="btn-tab">3. SUPERVISIÓN ÉLITE</button>
+        <button onclick="show(4)" class="btn-tab">4. ASISTENCIA</button>
+    </nav>
 
-function importData(input) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        try {
-            const raw = JSON.parse(e.target.result);
-            DATA.mat = Array.isArray(raw) ? raw : (raw.mat || []);
-            sync();
-            alert("BASE DE DATOS TITANIUM 360 CARGADA CON ÉXITO.");
-        } catch (err) {
-            alert("Error de formato JSON: " + err.message);
+    <main>
+        <section id="v1">
+            <input type="text" id="radar" onkeyup="smartRadar()" class="input-elite mb-4" placeholder="RADAR: ESCANEAR DNI O NOMBRE...">
+            <div class="grid grid-cols-2 gap-4">
+                <input id="alu_nombre" class="input-elite" placeholder="NOMBRE">
+                <input id="alu_dni" class="input-elite" placeholder="DNI">
+                <input id="m_nombre" class="input-elite" placeholder="MADRE">
+                <input id="p_nombre" class="input-elite" placeholder="PADRE">
+            </div>
+        </section>
+
+        <section id="v2" class="hidden">
+            <h2 class="text-red-500 font-bold mb-4">BITÁCORA DE BAJAS</h2>
+            <div id="bajas_lista"></div>
+        </section>
+
+        <section id="v3" class="hidden">
+            <h2 class="text-nuke font-bold mb-4">SUPERVISIÓN ÉLITE (CÁLCULOS MATEMÁTICOS)</h2>
+            <div id="stats_panel" class="grid grid-cols-2 gap-4 p-4 border border-nuke"></div>
+        </section>
+
+        <section id="v4" class="hidden">
+            <h2 class="text-blue-500 font-bold mb-4">MOTOR DE ASISTENCIA</h2>
+            <div id="asistencia_panel"></div>
+        </section>
+    </main>
+
+    <script>
+        let DATA = { mat: [], bajas: [], asistencia: [] };
+
+        function initSystem() {
+            const saved = localStorage.getItem('T360_DB_MAESTRO');
+            if (saved) { DATA = JSON.parse(saved); renderSupervision(); }
         }
-    };
-    reader.readAsText(input.files[0]);
-}
 
-// 2. LEGAJO 360 Y RADAR
-function smartRadar() {
-    const val = document.getElementById('radar').value.toUpperCase();
-    const res = DATA.mat.find(a => (a.alu_nombre || "").toUpperCase().includes(val) || (a.alu_dni || "") === val);
-    if (res) {
-        Object.keys(res).forEach(k => {
-            const el = document.getElementById(k);
-            if (el) el.value = res[k];
-        });
-        show(1);
-    }
-}
+        function sync() {
+            localStorage.setItem('T360_DB_MAESTRO', JSON.stringify(DATA));
+            renderSupervision();
+        }
 
-// 3. SUPERVISIÓN ÉLITE (Cálculos Matemáticos)
-function renderSupervision() {
-    const total = DATA.mat.length;
-    if (total === 0) return;
+        function importData(input) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                DATA.mat = JSON.parse(e.target.result);
+                sync();
+                alert("DATOS CARGADOS CON ÉXITO.");
+            };
+            reader.readAsText(input.files[0]);
+        }
 
-    const stats = {
-        ninos: DATA.mat.filter(a => (a.sexo || "M").toUpperCase() === 'M').length,
-        ninas: DATA.mat.filter(a => (a.sexo || "M").toUpperCase() === 'F').length,
-        arg: DATA.mat.filter(a => (a.alu_nac || "ARG").toUpperCase() === 'ARG').length,
-        auh: DATA.mat.filter(a => (a.alu_auh || "NO").toUpperCase() === 'SI').length,
-        cud: DATA.mat.filter(a => (a.cud || "NO").toUpperCase() === 'SI').length
-    };
+        function smartRadar() {
+            const val = document.getElementById('radar').value.toUpperCase();
+            const res = DATA.mat.find(a => (a.alu_nombre || "").includes(val) || (a.alu_dni || "") === val);
+            if (res) {
+                Object.keys(res).forEach(k => { if(document.getElementById(k)) document.getElementById(k).value = res[k]; });
+            }
+        }
 
-    if (document.getElementById('header_total')) {
-        document.getElementById('header_total').innerText = total;
-    }
-    console.log("Supervisión Élite Actualizada:", stats);
-}
+        function renderSupervision() {
+            const total = DATA.mat.length;
+            document.getElementById('header_total').innerText = total;
+            const stats = {
+                varones: DATA.mat.filter(a => (a.sexo || "M") === 'M').length,
+                mujeres: DATA.mat.filter(a => (a.sexo || "M") === 'F').length,
+                arg: DATA.mat.filter(a => (a.alu_nac || "ARG") === 'ARG').length
+            };
+            document.getElementById('stats_panel').innerHTML = `
+                <div>VARONES: ${stats.varones}</div>
+                <div>MUJERES: ${stats.mujeres}</div>
+                <div>ARGENTINOS: ${stats.arg}</div>
+            `;
+        }
 
-// 4. BITÁCORA DE BAJAS
-function registrarBaja(dni, motivo) {
-    const idx = DATA.mat.findIndex(x => (x.alu_dni || "") === dni);
-    if (idx > -1) {
-        DATA.bajas.push({ ...DATA.mat[idx], motivo, fecha: new Date().toLocaleDateString() });
-        DATA.mat.splice(idx, 1);
-        sync();
-    }
-}
-
-// 5. VOZ BIÓNICA
-const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-recognition.lang = 'es-ES';
-function iniciarCargaVoz() {
-    recognition.start();
-    recognition.onresult = (e) => {
-        const transcript = e.results[0][0].transcript.toUpperCase();
-        console.log("Comando biónico:", transcript);
-    };
-}
-
-// 6. NAVEGACIÓN DE PESTAÑAS
-function show(tab) {
-    document.querySelectorAll('main > section').forEach((s, i) => {
-        s.classList.toggle('hidden', i !== (tab - 1));
-    });
-}
-
-// 7. INICIALIZACIÓN AUTOMÁTICA
-window.onload = () => {
-    const saved = localStorage.getItem('T360_DB_FINAL');
-    if (saved) {
-        DATA = JSON.parse(saved);
-        renderSupervision();
-    }
-};
+        function show(tab) {
+            document.querySelectorAll('main > section').forEach((s, i) => s.classList.toggle('hidden', i !== (tab - 1)));
+            document.querySelectorAll('.btn-tab').forEach((b, i) => b.classList.toggle('active-tab', i === (tab - 1)));
+        }
+    </script>
+</body>
+</html>
