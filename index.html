@@ -3,612 +3,469 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITANIUM 360 | AUDITORÍA COMPLETA J926</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>Pedagogía 360 - Gestión de Matrícula</title>
     <style>
-        :root { --nuke: #dfff00; --bg: #05070a; }
-        body { background: var(--bg); color: #e1e1e1; font-family: 'Roboto'; overflow-x: hidden; font-size: 11px; }
-        .orbitron { font-family: 'Orbitron'; }
-        .font-black { font-weight: 900 !important; }
-        .neon-border { border: 1px solid rgba(223, 255, 0, 0.4); box-shadow: 0 0 20px rgba(223, 255, 0, 0.15); }
-        .input-elite { background: #000; border: 1px solid #444; padding: 10px; color: var(--nuke); width: 100%; border-radius: 6px; border-left: 4px solid var(--nuke); font-weight: 900; text-transform: uppercase; font-size: 11px; margin-bottom: 4px; }
-        .btn-tab { padding: 14px; opacity: 0.4; transition: 0.3s; border-bottom: 3px solid transparent; font-family: 'Orbitron'; font-size: 8px; flex: 1; font-weight: 900; text-transform: uppercase; white-space: nowrap; }
-        .active-tab { opacity: 1; border-bottom: 4px solid var(--nuke); color: var(--nuke); background: rgba(223, 255, 0, 0.08); }
-        .card-sala { cursor: pointer; transition: 0.3s; border-radius: 10px; padding: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.1); background: #111; position: relative; }
-        .S-ROSA { border-top: 6px solid #ff69b4; } .S-ROJA { border-top: 6px solid #ff0000; }
-        .S-NARANJA { border-top: 6px solid #ffa500; } .S-CELESTE { border-top: 6px solid #00d4ff; }
-        .S-VIOLETA { border-top: 6px solid #8a2be2; } .S-AMARILLA { border-top: 6px solid #ffff00; }
-        .S-AZUL { border-top: 6px solid #0000ff; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --success-hover: #059669;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --warning: #f59e0b;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #4b5563;
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* --- ENCABEZADO --- */
+        header {
+            background: var(--card-bg);
+            padding: 20px 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        header p {
+            margin: 4px 0 0 0;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .stats-badge {
+            background: #e0e7ff;
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* --- SECCIÓN FORMULARIO --- */
+        .form-section {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-section h2 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 18px;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background var 0.2s;
+            align-self: flex-end;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-hover);
+        }
+
+        /* --- SECCIÓN BÚSQUEDA Y FILTROS --- */
+        .controls-section {
+            background: var(--card-bg);
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-select {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 150px;
+        }
+
+        /* --- TABLA DE DATOS --- */
+        .table-container {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f9fafb;
+            color: var(--text-main);
+            padding: 14px 16px;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        tr:hover {
+            background-color: #f9fafb;
+        }
+
+        /* --- BOTONES DE ACCIÓN --- */
+        .btn-action {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            margin-right: 4px;
+        }
+
+        .btn-edit {
+            background-color: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .btn-edit:hover {
+            background-color: #bae6fd;
+        }
+
+        .btn-delete {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .btn-delete:hover {
+            background-color: #fecaca;
+        }
     </style>
 </head>
-<body onload="initSystem()">
+<body>
 
-<header class="p-3 bg-black border-b-2 border-nuke flex justify-between items-center sticky top-0 z-[1000]">
-    <div class="flex items-center gap-4">
-        <div class="bg-nuke text-black px-6 py-1 font-black orbitron italic text-xl shadow-[0_0_15px_#dfff00]">TITANIUM 360</div>
-        <div class="text-[10px] font-black orbitron text-nuke uppercase">Matrícula General Real: <span id="header_total">0</span></div>
-    </div>
-    <div class="flex gap-2 items-center">
-        <div class="bg-zinc-900 px-2 py-1 rounded border border-zinc-700 flex items-center gap-1">
-            <span class="text-[8px] orbitron text-red-500 font-bold">ALERTA DIR:</span>
-            <input type="text" id="tel_directivo" class="bg-black text-nuke font-black text-[9px] px-1 w-24 rounded border border-zinc-600" placeholder="TEL DIRECTIVO" value="541100000000">
-        </div>
-        <label class="bg-blue-600 px-3 py-1.5 text-[9px] rounded cursor-pointer font-black orbitron uppercase text-white hover:bg-blue-700 transition-all">
-            📥 IMPORTAR ARCHIVO JSON (CARGA MATRÍCULA)
-            <input type="file" id="json_file_input" class="hidden" onchange="importData(this)">
-        </label>
-    </div>
-</header>
-
-<nav class="flex overflow-x-auto bg-zinc-900 sticky top-[58px] z-[999] border-b border-white/10 no-scrollbar shadow-2xl">
-    <button onclick="show(1)" id="t1" class="btn-tab active-tab">1. Formato Interactivo Eficiente</button>
-    <button onclick="show(2)" id="t2" class="btn-tab">2. Pantalla Interactiva (Salas)</button>
-    <button onclick="show(3)" id="t3" class="btn-tab text-orange-400">3. Terminal Lista Espera</button>
-    <button onclick="show(4)" id="t4" class="btn-tab text-blue-400">4. Asistencia Espejo & Foto</button>
-    <button onclick="show(5)" id="t5" class="btn-tab text-nuke">5. Relevamiento Supervisión Élite</button>
-</nav>
-
-<main class="p-4">
-    <section id="v1" class="space-y-4">
-        <div class="neon-border p-6 bg-zinc-900/30 rounded-lg shadow-2xl">
-            <div class="flex gap-3 mb-6">
-                <input type="text" id="radar" onkeyup="smartRadar()" class="flex-1 bg-black border-2 border-nuke p-4 text-2xl orbitron font-black text-nuke uppercase shadow-inner shadow-nuke/10" placeholder="BUSCADOR RADAR ELECTRÓNICO (INGRESE NOMBRE O DNI)...">
+    <div class="container">
+        <header>
+            <div>
+                <h1 id="institucion-nombre">Sistema de Gestión Escolar</h1>
+                <p>Panel Avanzado de Control de Alumnado</p>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="form_master">
-                <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700 shadow-xl">
-                    <h2 class="text-nuke border-b-2 border-nuke/40 orbitron font-black text-[10px] flex justify-between mb-4">I. LEGAJO ALUMNO <span id="label_edad" class="text-white"></span></h2>
-                    <input id="alu_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
-                    <div class="grid grid-cols-2 gap-2"><input id="alu_dni" class="input-elite" placeholder="DNI"><input id="alu_nac" class="input-elite" placeholder="NACIONALIDAD"></div>
-                    <div class="grid grid-cols-2 gap-2"><input type="date" id="alu_f_nac" onchange="calcEdad()" class="input-elite"><select id="alu_sala" class="input-elite"></select></div>
-                    <input id="alu_dom" class="input-elite" placeholder="DOMICILIO REAL">
-                    <textarea id="alu_salud" class="input-elite h-16" placeholder="OBSERVACIONES MÉDICAS / CUD / DOCUMENTACIÓN EXTRA"></textarea>
-                    <div class="grid grid-cols-2 gap-2">
-                        <select id="alu_auh" class="input-elite"><option value="NO">AUH: NO</option><option value="SI">SI</option></select>
-                        <select id="alu_cud" class="input-elite"><option value="NO">CUD: NO</option><option value="SI">SI</option></select>
+            <div class="stats-badge" id="total-alumnos-contador">Cargando matrícula...</div>
+        </header>
+
+        <div class="form-section">
+            <h2 id="form-titulo">Registrar Nuevo Alumno</h2>
+            <form id="alumno-form" onsubmit="guardarFormulario(event)">
+                <input type="hidden" id="form-modo" value="crear">
+                <input type="hidden" id="dni-original" value="">
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="input-nombre">Nombre Completo</label>
+                        <input type="text" id="input-nombre" required placeholder="Ej: PÉREZ JUAN">
+                    </div>
+                    <div class="form-group">
+                        <label for="input-dni">DNI</label>
+                        <input type="text" id="input-dni" required placeholder="Solo números">
+                    </div>
+                    <div class="form-group">
+                        <label for="input-sala">Sala / Curso</label>
+                        <select id="input-sala" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="3ºA">3ºA</option>
+                            <option value="4ºA">4ºA</option>
+                            <option value="5ºA">5ºA</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="input-domicilio">Domicilio</label>
+                        <input type="text" id="input-domicilio" placeholder="Ej: Calle Falsa 123">
+                    </div>
+                    <div class="form-group" style="justify-content: flex-end;">
+                        <button type="submit" class="btn-submit" id="btn-form-action">Añadir Alumno</button>
                     </div>
                 </div>
-                <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700 shadow-xl">
-                    <h2 class="text-zinc-400 border-b-2 border-zinc-700 orbitron font-black text-[10px] uppercase mb-4 italic">II. DATOS DE LA MADRE / TUTOR</h2>
-                    <input id="m_nombre" class="input-elite" placeholder="NOMBRE COMPLETO MADRE">
-                    <input id="m_tel" class="input-elite" placeholder="TELÉFONO DE ALERTA (WHATSAPP)">
-                    <select id="m_est" class="input-elite edu-selector"></select>
-                    <input id="m_ocu" class="input-elite" placeholder="OCUPACIÓN RELEVADA">
-                </div>
-                <div class="space-y-2 bg-black/50 p-5 rounded-lg border border-zinc-700 shadow-xl">
-                    <h2 class="text-zinc-400 border-b-2 border-zinc-700 orbitron font-black text-[10px] uppercase mb-4 italic">III. DATOS DEL PADRE</h2>
-                    <input id="p_nombre" class="input-elite" placeholder="NOMBRE COMPLETO PADRE">
-                    <input id="p_tel" class="input-elite" placeholder="TELÉFONO VÍNCULO AUXILIAR">
-                    <select id="p_est" class="input-elite edu-selector"></select>
-                    <input id="p_ocu" class="input-elite" placeholder="TRABAJO RELEVADO">
-                </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <button onclick="saveData('mat')" class="bg-nuke text-black font-black py-4 orbitron text-lg uppercase shadow-lg transition-all hover:scale-[1.01]">CONSOLIDAR Y GUARDAR MATRÍCULA REAL</button>
-                <button onclick="saveData('esp')" class="bg-orange-600 text-white font-black py-4 orbitron text-lg uppercase shadow-lg transition-all hover:scale-[1.01]">ENVIAR A LISTA DE ESPERA ACTIVADA</button>
-            </div>
-        </div>
-    </section>
-
-    <section id="v2" class="hidden">
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8" id="mapa_grid"></div>
-        <div id="sala_detail" class="hidden neon-border p-6 bg-black/95 rounded-2xl shadow-2xl border-t-4 border-nuke">
-            <div class="flex justify-between items-center border-b-2 border-nuke pb-3 mb-6 uppercase">
-                <h3 id="sala_title" class="text-2xl font-black orbitron text-nuke"></h3>
-                <button onclick="document.getElementById('sala_detail').classList.add('hidden')" class="bg-zinc-800 px-4 py-1.5 orbitron font-black text-[10px] rounded hover:bg-zinc-700">CERRAR X</button>
-            </div>
-            <div class="overflow-x-auto bg-zinc-900/50 rounded-xl p-2">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b border-zinc-700 orbitron text-zinc-400 text-[9px] uppercase">
-                            <th class="p-2">Alumno</th>
-                            <th class="p-2">DNI</th>
-                            <th class="p-2">Ficha / Teléfonos</th>
-                            <th class="p-2 text-center">Acciones Operativas (Pestaña 1 / Alertas / Gestión)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="sala_list_table_body" class="text-white"></tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-
-    <section id="v3" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="bg-zinc-950 p-6 neon-border rounded-xl border-t-4 border-orange-500 space-y-4">
-            <h3 class="orbitron font-black text-orange-400 text-sm border-b border-zinc-800 pb-2">🎛️ INGRESO AUTOMATIZADO</h3>
-            <div>
-                <label class="text-[9px] text-zinc-400 font-bold uppercase block mb-1">🎙️ CARGA BIÓNICA POR VOZ</label>
-                <button onclick="triggerVoice()" class="w-full bg-gradient-to-r from-orange-600 to-amber-500 p-3 rounded font-black orbitron text-white text-[10px] hover:opacity-90">ACTIVAR CAPTURA POR VOZ</button>
-            </div>
-            <div class="border-t border-zinc-800 pt-3">
-                <label class="text-[9px] text-zinc-400 font-bold uppercase block mb-1">📷 ESCANEAR DNI TARJETA</label>
-                <div class="bg-black border border-dashed border-orange-500/50 p-4 text-center rounded cursor-pointer hover:bg-orange-950/10" onclick="triggerScan()">
-                    <span class="text-orange-500 font-black orbitron text-[9px] block">🔴 INICIAR LECTOR ÓPTICO</span>
-                </div>
-            </div>
-        </div>
-        <div class="bg-orange-950/10 p-6 neon-border rounded-xl border-l-8 border-orange-600 shadow-2xl lg:col-span-2">
-            <h2 class="orbitron text-orange-500 text-lg font-black mb-4 uppercase">ASPIRANTES EN LISTA DE ESPERA</h2>
-            <div class="overflow-x-auto bg-black/40 rounded">
-                <table class="w-full text-left text-[10px]">
-                    <thead class="orbitron text-zinc-500 border-b border-orange-900/30 uppercase text-[9px]">
-                        <tr>
-                            <th class="p-2">Aspirante</th>
-                            <th class="p-2">DNI</th>
-                            <th class="p-2">Sala Solicitada</th>
-                            <th class="p-2">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="espera_table"></tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-
-    <section id="v4" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div class="bg-blue-950/20 p-6 neon-border rounded-xl border-l-8 border-blue-600 space-y-4">
-            <div class="flex justify-between items-center border-b border-blue-900/50 pb-2">
-                <h2 class="orbitron text-blue-400 text-base font-black uppercase">Asistencia Espejo Sala por Sala</h2>
-                <label class="bg-blue-600 hover:bg-blue-700 text-white font-black px-3 py-1 text-[8px] orbitron rounded cursor-pointer uppercase">
-                    📷 Subir Foto Registro Manual
-                    <input type="file" class="hidden" accept="image/*" onchange="processAsistenciaFoto()">
-                </label>
-            </div>
-            <select id="asis_sala_select" onchange="renderAsistencia()" class="input-elite"></select>
-            <div id="asis_lista_render" class="space-y-1 max-h-72 overflow-y-auto pr-2 no-scrollbar"></div>
-            
-            <div class="grid grid-cols-2 gap-4 border-t border-blue-900/40 pt-4">
-                <div class="bg-black/60 p-3 rounded border border-zinc-800 text-center">
-                    <p class="text-[8px] text-zinc-400 font-bold orbitron">PORCENTAJE PRESENTES</p>
-                    <h4 id="pct_presentes" class="text-2xl font-black text-green-400 mt-1">0%</h4>
-                </div>
-                <div class="bg-black/60 p-3 rounded border border-zinc-800 text-center">
-                    <p class="text-[8px] text-zinc-400 font-bold orbitron">PORCENTAJE AUSENTES</p>
-                    <h4 id="pct_ausentes" class="text-2xl font-black text-red-500 mt-1">0%</h4>
-                </div>
-            </div>
-            <div id="wa_box" class="bg-black/80 p-3 text-center border border-zinc-800 rounded text-zinc-500 italic text-[10px]">
-                Seleccione 'A' (Ausente) en un alumno para armar la alerta real de notificación.
-            </div>
-        </div>
-        
-        <div class="bg-red-950/20 p-6 neon-border rounded-xl border-l-8 border-red-600">
-            <h2 class="orbitron text-red-500 text-base font-black mb-4 uppercase text-center tracking-tighter">Historial Institucional de Bajas</h2>
-            <div class="grid grid-cols-5 gap-2 mb-4" id="bajas_meses_grid"></div>
-            <div id="bajas_detalle" class="bg-black/50 p-4 rounded text-[10px] min-h-[150px] overflow-y-auto max-h-60 no-scrollbar"></div>
-        </div>
-    </section>
-
-    <section id="v5" class="hidden space-y-6">
-        <div class="neon-border p-6 bg-zinc-950 rounded-xl">
-            <h2 class="orbitron text-nuke text-base font-black uppercase mb-4 tracking-tight border-b border-nuke/30 pb-2 flex justify-between">
-                <span>📸 FOTO INSTITUCIONAL DE MATRÍCULA COMPLETA</span>
-                <span class="text-zinc-400 text-xs" id="global_total_lbl">Total General: 0 Alumnos</span>
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-black/50 p-4 rounded border border-zinc-800">
-                    <h3 class="orbitron text-blue-400 font-bold mb-3 text-[10px] uppercase">Distribución por Género Real</h3>
-                    <div class="space-y-2" id="global_genero_render"></div>
-                </div>
-                <div class="bg-black/50 p-4 rounded border border-zinc-800">
-                    <h3 class="orbitron text-orange-400 font-bold mb-3 text-[10px] uppercase">Distribución por Origen Real</h3>
-                    <div class="space-y-2 max-h-36 overflow-y-auto pr-1 no-scrollbar" id="global_nac_render"></div>
-                </div>
-                <div class="bg-black/50 p-4 rounded border border-zinc-800">
-                    <h3 class="orbitron text-red-400 font-bold mb-3 text-[10px] uppercase">Alertas Críticas de Matrícula</h3>
-                    <div class="space-y-2" id="global_criticos_render"></div>
-                </div>
-            </div>
+            </form>
         </div>
 
-        <div class="bg-zinc-900 p-4 rounded border border-zinc-800 flex justify-between items-center">
-            <div class="orbitron text-nuke font-black text-sm uppercase">Ficha Métrica Analítica por Sala (Supervisión)</div>
-            <div class="text-[9px] text-zinc-400 font-bold uppercase">Límite Social Crítico: <span class="text-red-500 font-black">> 40%</span></div>
+        <div class="controls-section">
+            <input type="text" id="buscar-input" class="search-input" placeholder="Buscar por nombre o DNI..." oninput="filtrarAlumnos()">
+            <select id="filtar-sala-select" class="filter-select" onchange="filtrarAlumnos()">
+                <option value="TODAS">Todas las Salas</option>
+                <option value="3ºA">Sala 3ºA</option>
+                <option value="4ºA">Sala 4ºA</option>
+                <option value="5ºA">Sala 5ºA</option>
+            </select>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="supervision_cards"></div>
-    </section>
-</main>
 
-<script>
-    let DATA = { mat: [], esp: [], bajas: [] };
-    let ASISTENCIA_MEMORIA = {};
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre Completo</th>
+                        <th>DNI</th>
+                        <th>Sala / Curso</th>
+                        <th>Domicilio</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-alumnos-cuerpo">
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 30px;">Cargando registros escolares desde la base de datos JSON...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    const SALAS_INST = [
-        {id:'Rosa-TM', color:'ROSA', turno:'TM', seccion:'1ºA'}, {id:'Rosa-TT', color:'ROSA', turno:'TT', seccion:'1ºB'},
-        {id:'Naranja-TM', color:'NARANJA', turno:'TM', seccion:'ME A'}, {id:'Naranja-TT', color:'NARANJA', turno:'TT', seccion:'ME B'},
-        {id:'Roja-TM', color:'ROJA', turno:'TM', seccion:'2ºA'}, {id:'Roja-TT', color:'ROJA', turno:'TT', seccion:'2ºC'},
-        {id:'Celeste-TM', color:'CELESTE', turno:'TM', seccion:'2ºB'}, {id:'Celeste-TT', color:'CELESTE', turno:'TT', seccion:'2ºD'},
-        {id:'Violeta-TM', color:'VIOLETA', turno:'TM', seccion:'3ºA'}, {id:'Violeta-TT', color:'VIOLETA', turno:'TT', seccion:'3ºD'},
-        {id:'Amarilla-TM', color:'AMARILLA', turno:'TM', seccion:'3ºB'}, {id:'Amarilla-TT', color:'AMARILLA', turno:'TT', seccion:'3ºE'},
-        {id:'Azul-TM', color:'AZUL', turno:'TM', seccion:'3ºC'}, {id:'Azul-TT', color:'AZUL', turno:'TT', seccion:'3ºF'}
-    ];
-    const MESES = ["MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
-    const EDU_LEVELS = ["S/D", "SIN ESTUDIOS", "PRIMARIA COMP.", "PRIMARIA INC.", "SECUNDARIA COMP.", "SECUNDARIA INC.", "TERCIARIA COMP.", "TERCIARIA INC.", "UNIVERSITARIO COMP.", "UNIVERSITARIO INC."];
+    <script>
+        // Array global en memoria para manejar las búsquedas, ediciones y filtros sin perder datos
+        let listaAlumnosGlobal = [];
 
-    function initSystem() {
-        try {
-            const local = localStorage.getItem('T360_J926_AUDITORIA_FINAL_REVISION_ELITE');
-            if (local) {
-                const parsedLocal = JSON.parse(local);
-                if (parsedLocal && typeof parsedLocal === 'object') {
-                    DATA.mat = Array.isArray(parsedLocal.mat) ? parsedLocal.mat : [];
-                    DATA.esp = Array.isArray(parsedLocal.esp) ? parsedLocal.esp : [];
-                    DATA.bajas = Array.isArray(parsedLocal.bajas) ? parsedLocal.bajas : [];
-                }
-            }
-        } catch(e) { console.error("Error leyendo LocalStorage:", e); }
-
-        const sSel = document.getElementById('alu_sala');
-        const asSel = document.getElementById('asis_sala_select');
-        sSel.innerHTML = ''; asSel.innerHTML = '';
-        SALAS_INST.forEach(s => {
-            const opt = `<option value="${s.id}">${s.seccion} (${s.turno}) - ${s.color}</option>`;
-            sSel.innerHTML += opt; asSel.innerHTML += opt;
+        document.addEventListener('DOMContentLoaded', () => {
+            inicializarSistema();
         });
 
-        document.querySelectorAll('.edu-selector').forEach(sel => {
-            sel.innerHTML = '<option value="S/D">S/D (SIN DECLARAR)</option>';
-            EDU_LEVELS.forEach(e => { if(e !== "S/D") sel.innerHTML += `<option value="${e}">${e}</option>`; });
-        });
-
-        sync();
-    }
-
-    function sync() {
-        localStorage.setItem('T360_J926_AUDITORIA_FINAL_REVISION_ELITE', JSON.stringify(DATA));
-        document.getElementById('header_total').innerText = DATA.mat.length;
-        renderGrid(); renderEspera(); renderAsistencia(); renderSupervision(); renderMesesBajas(); renderFotoInstitucional();
-    }
-
-    function normalizarSala(salaRaw) {
-        if (!salaRaw) return 'Rosa-TM';
-        let str = String(salaRaw).toUpperCase().replace(/\s+/g, '').replace(/ª/g, 'º').replace(/°/g, 'º').trim();
-        if (str.includes('1ºA') || str === '1A') return 'Rosa-TM';
-        if (str.includes('1ºB') || str === '1B') return 'Rosa-TT';
-        if (str.includes('MEA') || str.includes('M.E.A')) return 'Naranja-TM'; 
-        if (str.includes('MEB') || str.includes('M.E.B')) return 'Naranja-TT';
-        if (str.includes('2ºA') || str === '2A') return 'Roja-TM';
-        if (str.includes('2ºC') || str === '2C') return 'Roja-TT';
-        if (str.includes('2ºB') || str === '2B') return 'Celeste-TM';
-        if (str.includes('2ºD') || str === '2D') return 'Celeste-TT';
-        if (str.includes('3ºA') || str === '3A') return 'Violeta-TM';
-        if (str.includes('3ºB') || str === '3B') return 'Amarilla-TM';
-        if (str.includes('3ºC') || str === '3C') return 'Azul-TM';
-        if (str.includes('3ºD') || str === '3D') return 'Violeta-TT';
-        if (str.includes('3ºE') || str === '3E') return 'Amarilla-TT';
-        if (str.includes('3ºF') || str === '3F') return 'Azul-TT';
-        return 'Rosa-TM';
-    }
-
-    function importData(input) {
-        if (!input.files || input.files.length === 0) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const parsed = JSON.parse(e.target.result);
-                let rawMat = parsed.mat || parsed.MAT || parsed.matricula || [];
-                if (rawMat.length === 0 && Array.isArray(parsed)) rawMat = parsed;
-
-                const procesarCampos = (listaOrigen) => {
-                    if (!Array.isArray(listaOrigen)) return [];
-                    return listaOrigen.map(item => {
-                        if (!item || typeof item !== 'object') return null;
-                        let nuevoRegistro = {};
-                        let itemMinusculas = {};
-                        Object.keys(item).forEach(key => { itemMinusculas[key.toLowerCase().trim()] = item[key]; });
-
-                        const camposFormulario = [
-                            'alu_nombre', 'alu_dni', 'alu_nac', 'alu_f_nac', 'alu_sala', 'alu_dom', 'alu_salud', 'alu_auh', 'alu_cud',
-                            'm_nombre', 'm_tel', 'm_est', 'm_ocu', 'p_nombre', 'p_tel', 'p_est', 'p_ocu', 'sexo',
-                            'motivo_baja', 'mes_baja', 'fecha_baja'
-                        ];
-
-                        camposFormulario.forEach(campo => {
-                            let valor = itemMinusculas[campo];
-                            if (campo === 'alu_sala') { 
-                                nuevoRegistro[campo] = normalizarSala(valor); 
-                            } else { 
-                                nuevoRegistro[campo] = valor !== undefined && valor !== null ? String(valor).toUpperCase().trim() : ''; 
-                            }
-                        });
-                        return nuevoRegistro;
-                    }).filter(x => x !== null && (x.alu_dni || x.alu_nombre));
-                };
-
-                DATA.mat = procesarCampos(rawMat);
-                DATA.esp = procesarCampos(parsed.esp || parsed.ESP || []);
-                DATA.bajas = procesarCampos(parsed.bajas || parsed.BAJAS || []);
-                sync();
-                alert(`¡Éxito! Se cargó una matrícula de ${DATA.mat.length} alumnos reales.`);
-            } catch (err) { alert("Error de lectura en archivo JSON."); }
-        };
-        reader.readAsText(input.files[0]);
-    }
-
-    function smartRadar() {
-        const val = document.getElementById('radar').value.toUpperCase().trim();
-        if(!val) return;
-        const alu = DATA.mat.find(x => x.alu_dni === val || (x.alu_nombre && x.alu_nombre.toUpperCase().includes(val)));
-        if(alu) {
-            Object.keys(alu).forEach(k => {
-                const el = document.getElementById(k);
-                if(el) el.value = alu[k];
-            });
-            calcEdad();
+        // 1. Cargar datos del archivo JSON
+        function inicializarSistema() {
+            fetch('MATRICULA_389_FINAL_DEFINITIVA.json')
+                .then(response => {
+                    if (!response.ok) throw new Error('Error de lectura: ' + response.statusText);
+                    return response.json();
+                })
+                .then(data => {
+                    if(data.institucion) document.getElementById('institucion-nombre').textContent = data.institucion;
+                    
+                    // Guardamos la lista interna en nuestra variable global
+                    listaAlumnosGlobal = data.mat || [];
+                    
+                    actualizarTabla(listaAlumnosGlobal);
+                })
+                .catch(error => {
+                    console.error('Error general:', error);
+                    document.getElementById('tabla-alumnos-cuerpo').innerHTML = `
+                        <tr><td colspan="5" style="color:var(--danger); text-align:center; font-weight:bold; padding:20px;">
+                            Error al enlazar 'MATRICULA_389_FINAL_DEFINITIVA.json'. Verifica la ubicación del archivo.
+                        </td></tr>`;
+                });
         }
-    }
 
-    function editAlu(dni) {
-        const alu = DATA.mat.find(x => x.alu_dni === dni) || DATA.esp.find(x => x.alu_dni === dni);
-        if(alu) { 
-            document.querySelectorAll('#form_master input, #form_master select, #form_master textarea').forEach(i => i.value = '');
-            Object.keys(alu).forEach(k => { 
-                const el = document.getElementById(k);
-                if(el) el.value = alu[k];
-            }); 
-            calcEdad(); 
-            show(1); 
-            document.getElementById('radar').value = alu.alu_dni; 
+        // 2. Renderizar la tabla con cualquier lista provista (filtrada o completa)
+        function actualizarTabla(alumnos) {
+            const tablaCuerpo = document.getElementById('tabla-alumnos-cuerpo');
+            tablaCuerpo.innerHTML = '';
+
+            document.getElementById('total-alumnos-contador').textContent = `Total Matriculados: ${alumnos.length}`;
+
+            if(alumnos.length === 0) {
+                tablaCuerpo.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px;">No se encontraron registros coincidentes.</td></tr>`;
+                return;
+            }
+
+            alumnos.forEach(alumno => {
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td><strong>${alumno.alu_nombre}</strong></td>
+                    <td>${alumno.alu_dni}</td>
+                    <td><span style="background:#f3f4f6; padding:4px 8px; border-radius:4px;">${alumno.alu_sala}</span></td>
+                    <td>${alumno.alu_dom && alumno.alu_dom !== 'S/D' ? alumno.alu_dom : '<em>Sin Dirección</em>'}</td>
+                    <td>
+                        <button class="btn-action btn-edit" onclick="cargarParaEditar('${alumno.alu_dni}')">Editar</button>
+                        <button class="btn-action btn-delete" onclick="eliminarAlumno('${alumno.alu_dni}')">Eliminar</button>
+                    </td>
+                `;
+                tablaCuerpo.appendChild(fila);
+            });
+        }
+
+        // 3. Motor de Filtro y Búsqueda combinados
+        function filtrarAlumnos() {
+            const terminoBusqueda = document.getElementById('buscar-input').value.toLowerCase().trim();
+            const salaSeleccionada = document.getElementById('filtar-sala-select').value;
+
+            const listaFiltrada = listaAlumnosGlobal.filter(alumno => {
+                const coincideNombre = alumno.alu_nombre.toLowerCase().includes(terminoBusqueda);
+                const coincideDNI = alumno.alu_dni.includes(terminoBusqueda);
+                const coincideSala = (salaSeleccionada === 'TODAS' || alumno.alu_sala === salaSeleccionada);
+
+                return (coincideNombre || coincideDNI) && coincideSala;
+            });
+
+            actualizarTabla(listaFiltrada);
+        }
+
+        // 4. Función del botón "Editar": Pasa los datos de la fila de vuelta al formulario
+        function cargarParaEditar(dni) {
+            const alumno = listaAlumnosGlobal.find(a => a.alu_dni === dni);
+            if(!alumno) return;
+
+            document.getElementById('input-nombre').value = alumno.alu_nombre;
+            document.getElementById('input-dni').value = alumno.alu_dni;
+            document.getElementById('input-sala').value = alumno.alu_sala;
+            document.getElementById('input-domicilio').value = alumno.alu_dom !== 'S/D' ? alumno.alu_dom : '';
+
+            // Cambiamos el comportamiento del formulario a Modo Edición
+            document.getElementById('form-modo').value = 'editar';
+            document.getElementById('dni-original').value = alumno.alu_dni;
+            document.getElementById('form-titulo').textContent = 'Modificar Datos de Alumno';
+            document.getElementById('btn-form-action').textContent = 'Guardar Cambios';
+            document.getElementById('btn-form-action').style.background = 'var(--success)';
+            
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-    }
 
-    function actionRedirect(dni, actionType) {
-        if (actionType === 'notificar') {
-            const alu = DATA.mat.find(x => x.alu_dni === dni);
-            if (alu) {
-                const tel = alu.m_tel || alu.p_tel || '';
-                activateAlert(tel, alu.alu_nombre);
+        // 5. Procesar envío del formulario (Creación o Edición)
+        function guardarFormulario(event) {
+            event.preventDefault();
+
+            const nombre = document.getElementById('input-nombre').value.toUpperCase().trim();
+            const dni = document.getElementById('input-dni').value.trim();
+            const sala = document.getElementById('input-sala').value;
+            const domicilio = document.getElementById('input-domicilio').value.trim() || 'S/D';
+            
+            const modo = document.getElementById('form-modo').value;
+
+            if(modo === 'editar') {
+                const dniOriginal = document.getElementById('dni-original').value;
+                const index = listaAlumnosGlobal.findIndex(a => a.alu_dni === dniOriginal);
+                
+                if(index !== -1) {
+                    listaAlumnosGlobal[index] = {
+                        ...listaAlumnosGlobal[index],
+                        alu_nombre: nombre,
+                        alu_dni: dni,
+                        alu_sala: sala,
+                        alu_dom: domicilio
+                    };
+                }
+                alert('Registro de alumno actualizado con éxito de forma local.');
+            } else {
+                // Modo Crear
+                // Validar si ya existe el DNI
+                if(listaAlumnosGlobal.some(a => a.alu_dni === dni)) {
+                    alert('Error: Ya existe un alumno registrado con ese número de DNI.');
+                    return;
+                }
+
+                const nuevoAlumno = {
+                    alu_nombre: nombre,
+                    alu_dni: dni,
+                    alu_sala: sala,
+                    alu_dom: domicilio,
+                    alu_f_nac: "2020-01-01", // Valores por defecto para mantener consistencia estructural
+                    alu_nac: "ARG",
+                    sexo: "M"
+                };
+
+                listaAlumnosGlobal.unshift(nuevoAlumno); // Lo insertamos al inicio de la lista
+                alert('Alumno agregado con éxito a la lista de matrícula.');
             }
-        } else if (actionType === 'baja') {
-            processBaja(dni);
-        } else {
-            editAlu(dni);
-        }
-    }
 
-    function activateAlert(telefono, nombre) {
-        if(!telefono || telefono === 'SIN TELÉFONO') return alert("No hay teléfono de alerta registrado.");
-        const directivo = document.getElementById('tel_directivo').value || '541100000000';
-        const msg = encodeURIComponent(`TITANIUM 360 | ALERTA INSTITUCIONAL: Se requiere comunicación urgente con tutor de ${nombre}.`);
-        window.open(`https://wa.me/${telefono}?text=${msg}`, '_blank');
-    }
-
-    function processBaja(dni) {
-        const idx = DATA.mat.findIndex(x => x.alu_dni === dni);
-        if(idx > -1) {
-            const alu = DATA.mat[idx];
-            const motivo = prompt("INGRESE EL MOTIVO OPERATIVO DE LA BAJA:", "PASAPORTE / MIGRACIÓN");
-            if(!motivo) return;
-            const fechaActual = new Date();
-            alu.motivo_baja = motivo.toUpperCase();
-            alu.fecha_baja = fechaActual.toLocaleDateString();
-            alu.mes_baja = MESES[fechaActual.getMonth() === 0 || fechaActual.getMonth() === 1 ? 0 : fechaActual.getMonth() - 2]; 
-            
-            DATA.bajas.push(alu);
-            DATA.mat.splice(idx, 1);
-            sync();
-            document.getElementById('sala_detail').classList.add('hidden');
-            alert("BAJA REGISTRADA CORRECTAMENTE EN LA BITÁCORA HISTÓRICA.");
-        }
-    }
-
-    function saveData(type) {
-        const alu = {};
-        document.querySelectorAll('#form_master input, #form_master select, #form_master textarea').forEach(i => {
-            alu[i.id] = i.value.toUpperCase().trim();
-        });
-        if(!alu.alu_dni) return alert("EL DNI ES REQUISITO EXCLUSIVO");
-        
-        const original = DATA.mat.find(x => x.alu_dni === alu.alu_dni) || DATA.esp.find(x => x.alu_dni === alu.alu_dni);
-        alu['sexo'] = (original && original.sexo) ? original.sexo : 'M';
-
-        if(type === 'mat') {
-            const idx = DATA.mat.findIndex(x => x.alu_dni === alu.alu_dni);
-            if(idx > -1) DATA.mat[idx] = alu; else DATA.mat.push(alu);
-        } else {
-            const idx = DATA.esp.findIndex(x => x.alu_dni === alu.alu_dni);
-            if(idx > -1) DATA.esp[idx] = alu; else DATA.esp.push(alu);
-        }
-        sync();
-        alert("LEGAJO CONSOLIDADO EN SISTEMA");
-    }
-
-    function calcEdad() {
-        const f = document.getElementById('alu_f_nac').value;
-        if(!f) return;
-        const b = new Date(f); const n = new Date();
-        let edad = n.getFullYear() - b.getFullYear();
-        if (n.getMonth() < b.getMonth() || (n.getMonth() === b.getMonth() && n.getDate() < b.getDate())) edad--;
-        document.getElementById('label_edad').innerText = `[EDAD: ${edad} AÑOS]`;
-    }
-
-    function viewSala(id, seccion) {
-        const v = document.getElementById('sala_detail'); 
-        const tbody = document.getElementById('sala_list_table_body');
-        document.getElementById('sala_title').innerText = `PANTALLA INTERACTIVA DE GESTIÓN: ${seccion}`; 
-        tbody.innerHTML = '';
-        v.classList.remove('hidden');
-        
-        const filtered = DATA.mat.filter(x => x.alu_sala === id);
-        if(filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 font-black orbitron text-zinc-600">SIN REGISTROS ACTIVOS</td></tr>`;
-        } else {
-            filtered.forEach(a => {
-                const telContacto = a.m_tel || a.p_tel || 'SIN TELÉFONO';
-                tbody.innerHTML += `
-                <tr class="border-b border-zinc-800 hover:bg-zinc-900/60 transition-all text-[11px]">
-                    <td class="p-2 font-black uppercase text-nuke">${a.alu_nombre}</td>
-                    <td class="p-2 font-bold">${a.alu_dni}</td>
-                    <td class="p-2 text-zinc-400">📱 Tel: ${telContacto} <br><span class="text-[9px] italic text-zinc-500">${a.alu_dom || 'S/D'}</span></td>
-                    <td class="p-2 text-center">
-                        <div class="flex justify-center gap-1">
-                            <button onclick="actionRedirect('${a.alu_dni}', 'ver')" class="bg-nuke text-black font-black px-2 py-1 rounded text-[8px] orbitron uppercase">VER</button>
-                            <button onclick="actionRedirect('${a.alu_dni}', 'notificar')" class="bg-green-600 text-white font-black px-2 py-1 rounded text-[8px] orbitron uppercase">ALERTAR WA</button>
-                            <button onclick="actionRedirect('${a.alu_dni}', 'baja')" class="bg-red-700 text-white font-black px-2 py-1 rounded text-[8px] orbitron uppercase">BAJA</button>
-                        </div>
-                    </td>
-                </tr>`;
-            });
-        }
-    }
-
-    function renderGrid() {
-        const grid = document.getElementById('mapa_grid'); grid.innerHTML = '';
-        SALAS_INST.forEach(s => {
-            const cant = DATA.mat.filter(x => x.alu_sala === s.id).length;
-            grid.innerHTML += `<div onclick="viewSala('${s.id}', '${s.seccion}')" class="card-sala S-${s.color}"><p class="orbitron text-[8px] font-black opacity-60">${s.turno}</p><p class="font-black text-[10px] uppercase">${s.color}</p><h4 class="text-3xl font-black text-nuke">${cant}</h4><p class="text-[9px] font-bold text-zinc-500">${s.seccion}</p></div>`;
-        });
-    }
-
-    function renderEspera() {
-        const tb = document.getElementById('espera_table'); tb.innerHTML = '';
-        if(DATA.esp.length === 0) {
-            tb.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-zinc-600 orbitron">SISTEMA EN ESPERA - SIN ASPIRANTES</td></tr>`;
-            return;
-        }
-        DATA.esp.forEach((e, i) => {
-            tb.innerHTML += `<tr class="border-b border-zinc-800 text-white hover:bg-zinc-900/40">
-                <td class="p-2 font-black text-orange-400 uppercase">${e.alu_nombre || 'S/D'}</td>
-                <td class="p-2">${e.alu_dni || 'S/D'}</td>
-                <td class="p-2">${e.alu_sala || 'S/D'}</td>
-                <td class="p-2"><button onclick="admitirAspirante(${i})" class="bg-blue-600 text-white font-black px-2 py-0.5 text-[8px] rounded uppercase">ADMITIR</button></td>
-            </tr>`;
-        });
-    }
-
-    function admitirAspirante(index) {
-        if(DATA.esp[index]) {
-            DATA.mat.push(DATA.esp[index]);
-            DATA.esp.splice(index, 1);
-            sync();
-        }
-    }
-
-    function renderAsistencia() {
-        const salaSelected = document.getElementById('asis_sala_select').value;
-        const container = document.getElementById('asis_lista_render'); container.innerHTML = '';
-        const filtered = DATA.mat.filter(x => x.alu_sala === salaSelected);
-        
-        if(filtered.length === 0) {
-            container.innerHTML = `<p class="text-zinc-600 text-center py-4">SIN ALUMNOS EN ESTA SALA</p>`;
-            return;
+            // Restaurar el formulario a su estado original
+            resetearFormulario();
+            filtrarAlumnos(); // Refrescar la tabla con los cambios aplicados
         }
 
-        filtered.forEach(a => {
-            if(!ASISTENCIA_MEMORIA[a.alu_dni]) ASISTENCIA_MEMORIA[a.alu_dni] = 'P';
-            const estado = ASISTENCIA_MEMORIA[a.alu_dni];
-            const bgClass = estado === 'P' ? 'bg-green-950/40 border-green-500' : 'bg-red-950/40 border-red-500';
-            
-            container.innerHTML += `
-            <div class="flex justify-between items-center p-2 border rounded ${bgClass} mb-1">
-                <span class="font-bold uppercase">${a.alu_nombre}</span>
-                <div class="flex gap-1">
-                    <button onclick="setAsis('${a.alu_dni}', 'P')" class="px-2 py-0.5 rounded text-[9px] font-black ${estado==='P'?'bg-green-500 text-black':'bg-zinc-800'}">P</button>
-                    <button onclick="setAsis('${a.alu_dni}', 'A')" class="px-2 py-0.5 rounded text-[9px] font-black ${estado==='A'?'bg-red-500 text-black':'bg-zinc-800'}">A</button>
-                </div>
-            </div>`;
-        });
-        calcPorcentajesAsistencia(filtered);
-    }
-
-    function setAsis(dni, estado) {
-        ASISTENCIA_MEMORIA[dni] = estado;
-        renderAsistencia();
-    }
-
-    function calcPorcentajesAsistencia(listaSala) {
-        let presentes = 0, ausentes = 0;
-        listaSala.forEach(a => {
-            if(ASISTENCIA_MEMORIA[a.alu_dni] === 'A') ausentes++; else presentes++;
-        });
-        const total = listaSala.length;
-        document.getElementById('pct_presentes').innerText = total > 0 ? `${((presentes/total)*100).toFixed(0)}%` : '0%';
-        document.getElementById('pct_ausentes').innerText = total > 0 ? `${((ausentes/total)*100).toFixed(0)}%` : '0%';
-    }
-
-    function renderMesesBajas() {
-        const grid = document.getElementById('bajas_meses_grid'); grid.innerHTML = '';
-        MESES.forEach(m => {
-            const count = DATA.bajas.filter(b => b.mes_baja === m).length;
-            grid.innerHTML += `<button onclick="viewDetalleBajas('${m}')" class="bg-black border border-zinc-800 p-2 text-center rounded hover:border-red-500"><p class="text-[8px] text-zinc-500">${m}</p><h5 class="text-base text-red-500 font-black">${count}</h5></button>`;
-        });
-    }
-
-    function viewDetalleBajas(mes) {
-        const box = document.getElementById('bajas_detalle'); box.innerHTML = `<h4 class="text-red-500 font-black mb-2">BAJAS DEL MES DE ${mes}:</h4>`;
-        const filtered = DATA.bajas.filter(b => b.mes_baja === mes);
-        if(filtered.length === 0) {
-            box.innerHTML += `<p class="text-zinc-600">SIN REGISTROS DE BAJAS EN ESTE PERÍODO.</p>`;
-            return;
+        // 6. Función para eliminar alumnos de la lista local
+        function eliminarAlumno(dni) {
+            if (confirm('¿Está completamente seguro de que desea remover este alumno del sistema de gestión?')) {
+                listaAlumnosGlobal = listaAlumnosGlobal.filter(a => a.alu_dni !== dni);
+                filtrarAlumnos(); // Refrescar la tabla
+            }
         }
-        filtered.forEach(b => {
-            box.innerHTML += `<div class="border-b border-zinc-900 py-1 font-mono text-[10px]">❌ <b>${b.alu_nombre}</b> (${b.alu_dni}) - MOTIVO: ${b.motivo_baja || 'SIN CONFIGURAR'} - FECHA: ${b.fecha_baja || 'S/D'}</div>`;
-        });
-    }
 
-    function renderFotoInstitucional() {
-        const total = DATA.mat.length;
-        document.getElementById('global_total_lbl').innerText = `Total General Exacto: ${total} Alumnos`;
-        let varones = 0, mujeres = 0, sinDni = 0, conCud = 0;
-        let nacs = { 'ARGENTINA': 0, 'PARAGUAY': 0, 'BOLIVIA': 0, 'PERU': 0, 'OTROS': 0 };
-
-        DATA.mat.forEach(x => {
-            let s = x.sexo ? x.sexo.toUpperCase().trim() : 'M';
-            if(s === 'M') varones++; else mujeres++;
-            let n = x.alu_nac ? x.alu_nac.toUpperCase().trim() : 'ARGENTINA';
-            if(n.includes('ARG')) nacs['ARGENTINA']++;
-            else if(n.includes('PAR')) nacs['PARAGUAY']++;
-            else if(n.includes('BOL')) nacs['BOLIVIA']++;
-            else if(n.includes('PER')) nacs['PERU']++;
-            else nacs['OTROS']++;
-            if(!x.alu_dni || x.alu_dni.length < 6) sinDni++;
-            if(x.alu_cud === 'SI') conCud++;
-        });
-
-        const pct = (v) => total > 0 ? ((v / total) * 100).toFixed(1) : "0.0";
-        document.getElementById('global_genero_render').innerHTML = `<div>👦 VARONES: ${varones} (${pct(varones)}%)</div><div class="mt-1">👧 MUJERES: ${mujeres} (${pct(mujeres)}%)</div>`;
-        let nHtml = ''; Object.entries(nacs).forEach(([k,v]) => { nHtml += `<div class="flex justify-between text-[10px]"><span>${k}:</span><span class="text-orange-400 font-bold">${v} (${pct(v)}%)</span></div>`; });
-        document.getElementById('global_nac_render').innerHTML = nHtml;
-        document.getElementById('global_criticos_render').innerHTML = `<div class="text-amber-400">⚠️ CON CERTIFICADO CUD: ${conCud}</div><div class="text-red-500 mt-1">🚫 SIN DNI / TRÁMITE: ${sinDni}</div>`;
-    }
-
-    function renderSupervision() {
-        const container = document.getElementById('supervision_cards'); container.innerHTML = '';
-        SALAS_INST.forEach(s => {
-            const alumnosSala = DATA.mat.filter(x => x.alu_sala === s.id);
-            const total = alumnosSala.length;
-            const conAuh = alumnosSala.filter(x => x.alu_auh === 'SI').length;
-            const pctAuh = total > 0 ? ((conAuh / total) * 100) : 0;
-            const alertaClase = pctAuh > 40 ? 'border-red-600 bg-red-950/10' : 'border-zinc-800 bg-black/40';
-
-            container.innerHTML += `
-            <div class="p-4 border rounded-xl ${alertaClase} transition-all">
-                <div class="flex justify-between border-b border-zinc-800 pb-2 mb-2">
-                    <span class="orbitron font-black text-nuke">${s.seccion} - ${s.color}</span>
-                    <span class="text-zinc-500 font-bold text-[10px]">${s.turno}</span>
-                </div>
-                <div class="space-y-1 text-[10px]">
-                    <div class="flex justify-between"><span>MATRÍCULA ACTIVA:</span><span class="font-black">${total} ALUM.</span></div>
-                    <div class="flex justify-between"><span>COBERTURA AUH:</span><span class="font-black text-orange-400">${conAuh} ESTRAT.</span></div>
-                    <div class="flex justify-between border-t border-zinc-800/60 pt-1 mt-1"><span>ÍNDICE SOCIAL CRÍTICO:</span><span class="font-black ${pctAuh>40?'text-red-500':'text-green-400'}">${pctAuh.toFixed(1)}%</span></div>
-                </div>
-            </div>`;
-        });
-    }
-
-    function triggerVoice() { alert("Instancia de escucha biónica en línea. Hable al micrófono..."); }
-    function triggerScan() { alert("Iniciando escáner óptico de DNI vía cámara de control..."); }
-    function processAsistenciaFoto() { alert("Foto cargada con éxito. Procesando mapeo facial de asistencia..."); }
-
-    function show(tab) {
-        for(let i=1; i<=5; i++) {
-            document.getElementById(`v${i}`).classList.toggle('hidden', i !== tab);
-            document.getElementById(`t${i}`).classList.toggle('active-tab', i === tab);
+        function resetearFormulario() {
+            document.getElementById('alumno-form').reset();
+            document.getElementById('form-modo').value = 'crear';
+            document.getElementById('dni-original').value = '';
+            document.getElementById('form-titulo').textContent = 'Registrar Nuevo Alumno';
+            document.getElementById('btn-form-action').textContent = 'Añadir Alumno';
+            document.getElementById('btn-form-action').style.background = 'var(--primary)';
         }
-    }
-</script>
+    </script>
 </body>
 </html>
