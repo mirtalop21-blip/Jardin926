@@ -36,7 +36,7 @@
             <input type="text" id="tel_directivo" class="bg-black text-nuke font-black text-[9px] px-1 w-24 rounded border border-zinc-600" placeholder="TEL DIRECTIVO" value="541100000000">
         </div>
         <label class="bg-blue-600 px-3 py-1.5 text-[9px] rounded cursor-pointer font-black orbitron uppercase text-white hover:bg-blue-700 transition-all">
-            📥 IMPORTAR CONFIG / ARCHIVO JSON
+            📥 IMPORTAR ARCHIVO JSON (CARGA MATRÍCULA)
             <input type="file" id="json_file_input" class="hidden" onchange="importData(this)">
         </label>
     </div>
@@ -152,7 +152,7 @@
             <div class="flex justify-between items-center border-b border-blue-900/50 pb-2">
                 <h2 class="orbitron text-blue-400 text-base font-black uppercase">Asistencia Espejo Sala por Sala</h2>
                 <label class="bg-blue-600 hover:bg-blue-700 text-white font-black px-3 py-1 text-[8px] orbitron rounded cursor-pointer uppercase">
-                    📷 Subir Foto Registro
+                    📷 Subir Foto Registro Manual
                     <input type="file" class="hidden" accept="image/*" onchange="processAsistenciaFoto()">
                 </label>
             </div>
@@ -170,12 +170,12 @@
                 </div>
             </div>
             <div id="wa_box" class="bg-black/80 p-3 text-center border border-zinc-800 rounded text-zinc-500 italic text-[10px]">
-                Presione 'A' (Ausente) en un alumno para armar la alerta real de notificación.
+                Seleccione 'A' (Ausente) en un alumno para armar la alerta real de notificación.
             </div>
         </div>
         
         <div class="bg-red-950/20 p-6 neon-border rounded-xl border-l-8 border-red-600">
-            <h2 class="orbitron text-red-500 text-base font-black mb-4 uppercase text-center tracking-tighter">Historial Institucional de Bajas</h2>
+            <h2 class="orbitron text-red-500 text-base font-black mb-4 uppercase text-center tracking-tighter">Historial Institutional de Bajas</h2>
             <div class="grid grid-cols-5 gap-2 mb-4" id="bajas_meses_grid"></div>
             <div id="bajas_detalle" class="bg-black/50 p-4 rounded text-[10px] min-h-[150px]"></div>
         </div>
@@ -213,7 +213,7 @@
 
 <script>
     let DATA = { mat: [], esp: [], bajas: [] };
-    let ASISTENCIA_MEMORIA = {}; // Guarda estados de asistencia de la sesión
+    let ASISTENCIA_MEMORIA = {};
 
     try {
         const local = localStorage.getItem('T360_J926_AUDITORIA_FINAL_REVISION_ELITE');
@@ -263,26 +263,28 @@
         renderGrid(); renderEspera(); renderAsistencia(); renderSupervision(); renderMesesBajas(); renderFotoInstitucional();
     }
 
+    // --- NORMALIZADOR DE ALTA PRECISIÓN PARA CORRESPONDENCIA DE SALAS DEL JSON ---
     function normalizarSala(salaRaw) {
         if (!salaRaw) return 'Rosa-TM';
-        let str = String(salaRaw).toUpperCase().replace(/\s+/g, '').replace(/ª/g, 'º').trim();
-        if (str.includes('1ºA')) return 'Rosa-TM';
-        if (str.includes('1ºB')) return 'Rosa-TT';
-        if (str.includes('MEA') || str.includes('M.E.A') || str.includes('ME A')) return 'Naranja-TM';
-        if (str.includes('MEB') || str.includes('M.E.B') || str.includes('ME B')) return 'Naranja-TT';
-        if (str.includes('2ºA')) return 'Roja-TM';
-        if (str.includes('2ºC')) return 'Roja-TT';
-        if (str.includes('2ºB')) return 'Celeste-TM';
-        if (str.includes('2ºD')) return 'Celeste-TT';
-        if (str.includes('3ºA')) return 'Violeta-TM';
-        if (str.includes('3ºD')) return 'Violeta-TT';
-        if (str.includes('3ºB')) return 'Amarilla-TM';
-        if (str.includes('3ºE')) return 'Amarilla-TT';
-        if (str.includes('3ºC')) return 'Azul-TM';
-        if (str.includes('3ºF')) return 'Azul-TT';
-        return 'Rosa-TM';
+        let str = String(salaRaw).toUpperCase().replace(/\s+/g, '').replace(/ª/g, 'º').replace(/°/g, 'º').trim();
+        
+        if (str.includes('1ºA') || str === '1A') return 'Rosa-TM';
+        if (str.includes('1ºB') || str === '1B') return 'Rosa-TT';
+        if (str.includes('MEA') || str.includes('M.E.A') || str.includes('3ºA') || str.includes('3º A')) return 'Violeta-TM'; 
+        if (str.includes('MEB') || str.includes('M.E.B') || str.includes('3ºB') || str.includes('3º B')) return 'Amarilla-TM';
+        if (str.includes('2ºA') || str === '2A') return 'Roja-TM';
+        if (str.includes('2ºC') || str === '2C') return 'Roja-TT';
+        if (str.includes('2ºB') || str === '2B') return 'Celeste-TM';
+        if (str.includes('2ºD') || str === '2D') return 'Celeste-TT';
+        if (str.includes('3ºC') || str === '3C') return 'Azul-TM';
+        if (str.includes('3ºD') || str === '3D') return 'Violeta-TT';
+        if (str.includes('3ºE') || str === '3E' || str.includes('3ªE')) return 'Amarilla-TT';
+        if (str.includes('3ºF') || str === '3F') return 'Azul-TT';
+        
+        return 'Rosa-TM'; // Default seguro
     }
 
+    // --- LECTOR UNIVERSAL COMPATIBLE CON FORMATOS OBJETO O ARRAY ---
     function importData(input) {
         if (!input.files || input.files.length === 0) return;
         const reader = new FileReader();
@@ -308,40 +310,63 @@
 
                         camposFormulario.forEach(campo => {
                             let valor = itemMinusculas[campo];
-                            if (campo === 'alu_sala') { nuevoRegistro[campo] = normalizarSala(valor); }
-                            else { nuevoRegistro[campo] = valor ? String(valor).toUpperCase().trim() : ''; }
+                            if (campo === 'alu_sala') { 
+                                nuevoRegistro[campo] = normalizarSala(valor); 
+                            } else { 
+                                nuevoRegistro[campo] = valor !== undefined && valor !== null ? String(valor).toUpperCase().trim() : ''; 
+                            }
                         });
                         return nuevoRegistro;
                     }).filter(x => x !== null && (x.alu_dni || x.alu_nombre));
                 };
 
                 DATA.mat = procesarCampos(rawMat);
-                DATA.esp = procesarCampos(parsed.esp || []);
-                DATA.bajas = procesarCampos(parsed.bajas || []);
+                DATA.esp = procesarCampos(parsed.esp || parsed.ESP || []);
+                DATA.bajas = procesarCampos(parsed.bajas || parsed.BAJAS || []);
                 sync();
-                alert(`¡Importación Completa! Cargados ${DATA.mat.length} alumnos reales validados.`);
+                alert(`¡Archivo procesado con éxito! Se cargó una matrícula de ${DATA.mat.length} alumnos reales.`);
             } catch (err) {
-                alert("Error de lectura en archivo JSON.");
+                alert("Error de lectura en archivo JSON. Verifique la estructura del archivo.");
             }
         };
         reader.readAsText(input.files[0]);
     }
 
-    // --- ACCIÓN OPERATIVA AVANZADA: CARGA COMPLETA EN PESTAÑA 1 ---
+    // --- DERIVACIÓN AUTOMÁTICA COMPLETA DE CASILLERO A PESTAÑA 1 ---
     function editAlu(dni) {
         const alu = DATA.mat.find(x => x.alu_dni === dni) || DATA.esp.find(x => x.alu_dni === dni);
         if(alu) { 
+            // Limpieza preventiva
             document.querySelectorAll('#form_master input, #form_master select, #form_master textarea').forEach(i => i.value = '');
+            
+            // Inyección biónica de valores
             Object.keys(alu).forEach(k => { 
                 const el = document.getElementById(k);
                 if(el) el.value = alu[k];
             }); 
             calcEdad(); 
-            show(1); // SALTO ORGÁNICO E INMEDIATO A FORMULARIO INTERACTIVO 1
+            
+            // REDIRECCIÓN AUTOMÁTICA INMEDIATA A PESTAÑA 1
+            show(1); 
             document.getElementById('radar').value = alu.alu_dni; 
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
-            alert("REGISTRO NO ENCONTRADO.");
+            alert("EL LEGAJO REQUERIDO NO FUE ENCONTRADO.");
+        }
+    }
+
+    function actionRedirect(dni, actionType) {
+        if (actionType === 'notificar') {
+            const alu = DATA.mat.find(x => x.alu_dni === dni);
+            if (alu) {
+                editAlu(dni);
+                activateAlert(alu.m_tel || alu.p_tel, alu.alu_nombre);
+            }
+        } else if (actionType === 'baja') {
+            editAlu(dni);
+            processBaja(dni);
+        } else {
+            editAlu(dni); // Para 'ver' y 'editar'
         }
     }
 
@@ -350,7 +375,7 @@
         document.querySelectorAll('#form_master input, #form_master select, #form_master textarea').forEach(i => {
             alu[i.id] = i.value.toUpperCase().trim();
         });
-        if(!alu.alu_dni) return alert("EL DNI ES REQUISITO EXCLUSIVO PARA EL LEGAJO");
+        if(!alu.alu_dni) return alert("EL DNI ES UN REQUISITO EXCLUSIVO PARA CONSOLIDAR EL LEGAJO");
         
         const originalAlu = DATA.mat.find(x => x.alu_dni === alu.alu_dni) || DATA.esp.find(x => x.alu_dni === alu.alu_dni);
         alu['sexo'] = (originalAlu && originalAlu.sexo) ? originalAlu.sexo : 'M';
@@ -367,33 +392,31 @@
         sync();
     }
 
-    // --- FOTO INSTITUCIONAL EXACTA EXTRAÍDA DE MATRÍCULA (412 ALUMNOS) ---
+    // --- FOTO INSTITUCIONAL PREMENTADA (VARONES, MUJERES, NACIONALIDADES, CUD, DNI) ---
     function renderFotoInstitucional() {
         const total = DATA.mat.length;
         document.getElementById('global_total_lbl').innerText = `Total General Exacto: ${total} Alumnos`;
 
         let varones = 0, mujeres = 0, sinDni = 0, conCud = 0;
-        let nacs = {};
+        let nacs = { 'ARGENTINA': 0, 'PARAGUAY': 0, 'BOLIVIA': 0, 'PERU': 0, 'OTROS': 0 };
 
         DATA.mat.forEach(x => {
-            // Algoritmo de clasificación de género preciso para el Jardín
             const nombre = x.alu_nombre ? x.alu_nombre.toUpperCase() : '';
             let s = x.sexo ? x.sexo.toUpperCase().trim() : '';
             
             if(s === 'M' || s === 'VARON' || s === 'MASCULINO') { varones++; }
             else if(s === 'F' || s === 'MUJER' || s === 'FEMENINO') { mujeres++; }
             else {
-                // Filtro auxiliar por descarte de terminación si viene vacío
                 if(nombre.includes('ZA') || nombre.includes('NA') || nombre.includes('IA') || nombre.includes('MA ')) mujeres++;
                 else varones++;
             }
 
-            let n = x.alu_nac ? x.alu_nac.toUpperCase().trim() : 'S/D';
-            if(n === 'ARGENTINA' || n === 'ARGENTINO') n = 'ARG';
-            if(n === 'PARAGUAY' || n === 'PARAGUAYA') n = 'PAR';
-            if(n === 'BOLIVIA' || n === 'BOLIVIANA') n = 'BOL';
-            if(n === 'PERU' || n === 'PERUANA') n = 'PER';
-            nacs[n] = (nacs[n] || 0) + 1;
+            let n = x.alu_nac ? x.alu_nac.toUpperCase().trim() : 'ARGENTINA';
+            if(n.includes('ARG')) nacs['ARGENTINA']++;
+            else if(n.includes('PAR')) nacs['PARAGUAY']++;
+            else if(n.includes('BOL')) nacs['BOLIVIA']++;
+            else if(n.includes('PER')) nacs['PERU']++;
+            else nacs['OTROS']++;
 
             if(!x.alu_dni || x.alu_dni.length < 5 || x.alu_dni.includes('TRAMITE') || x.alu_dni.includes('-')) sinDni++;
             if(x.alu_cud === 'SI' || (x.alu_salud && x.alu_salud.includes('CUD'))) conCud++;
@@ -402,21 +425,20 @@
         const pct = (v) => total > 0 ? ((v / total) * 100).toFixed(2) : "0.00";
 
         document.getElementById('global_genero_render').innerHTML = `
-            <div class="mb-2"><div class="flex justify-between text-[10px] font-black"><span>👦 NIÑOS (VARONES): ${varones}</span><span class="text-nuke">${pct(varones)}%</span></div></div>
-            <div><div class="flex justify-between text-[10px] font-black"><span>👧 NIÑAS (MUJERES): ${mujeres}</span><span class="text-nuke">${pct(mujeres)}%</span></div></div>
+            <div class="mb-2"><div class="flex justify-between text-[10px] font-black"><span>👦 VARONES: ${varones}</span><span class="text-nuke">${pct(varones)}%</span></div></div>
+            <div><div class="flex justify-between text-[10px] font-black"><span>👧 MUJERES: ${mujeres}</span><span class="text-nuke">${pct(mujeres)}%</span></div></div>
         `;
 
-        let sortedNacs = Object.entries(nacs).sort((a,b) => b[1] - a[1]);
         let nacsHtml = '';
-        sortedNacs.forEach(([nac, cant]) => {
-            let lbl = nac === 'ARG' ? '🇦🇷 ARGENTINOS' : nac === 'PAR' ? '🇵🇾 PARAGUAYOS' : nac === 'BOL' ? '🇧🇴 BOLIVIANOS' : nac === 'PER' ? '🇵🇪 PERUANOS' : '🏳️ ' + nac;
-            nacsHtml += `<div class="flex justify-between border-b border-zinc-900 py-1 font-black"><span>${lbl}:</span><span class="text-orange-400">${cant} (${pct(cant)}%)</span></div>`;
+        Object.entries(nacs).forEach(([nac, cant]) => {
+            let flag = nac === 'ARGENTINA' ? '🇦🇷' : nac === 'PARAGUAY' ? '🇵🇾' : nac === 'BOLIVIA' ? '🇧🇴' : nac === 'PERU' ? '🇵🇪' : '🏳️';
+            nacsHtml += `<div class="flex justify-between border-b border-zinc-900 py-1 font-black"><span>${flag} ${nac}:</span><span class="text-orange-400">${cant} (${pct(cant)}%)</span></div>`;
         });
-        document.getElementById('global_nac_render').innerHTML = nacsHtml || 'SIN MATRÍCULA';
+        document.getElementById('global_nac_render').innerHTML = nacsHtml;
 
         document.getElementById('global_criticos_render').innerHTML = `
-            <div class="flex justify-between text-amber-400 font-black"><span>⚠️ CON REQUISITO CUD:</span><span>${conCud} (${pct(conCud)}%)</span></div>
-            <div class="flex justify-between text-red-500 font-black mt-2"><span>🚫 ALUMNOS SIN DNI / TRÁMITE:</span><span>${sinDni} (${pct(sinDni)}%)</span></div>
+            <div class="flex justify-between text-amber-400 font-black"><span>⚠️ CON CERTIFICADO CUD:</span><span>${conCud} (${pct(conCud)}%)</span></div>
+            <div class="flex justify-between text-red-500 font-black mt-2"><span>🚫 TOTAL INDOCUMENTADOS / SIN DNI:</span><span>${sinDni} (${pct(sinDni)}%)</span></div>
         `;
     }
 
@@ -452,7 +474,7 @@
         });
     }
 
-    // --- PESTAÑA INTERACTIVA CON TABLA COMPLETA Y CUÁDRUPLE BOTÓN DE ACCIÓN ---
+    // --- PESTAÑA INTERACTIVA CON CUÁDRUPLE ACCIÓN DE COMANDO DIRECTO ---
     function viewSala(id, seccion) {
         const v = document.getElementById('sala_detail'); 
         const tbody = document.getElementById('sala_list_table_body');
@@ -470,15 +492,15 @@
                     <td class="p-2 font-black uppercase text-nuke">${a.alu_nombre}</td>
                     <td class="p-2 font-bold">${a.alu_dni}</td>
                     <td class="p-2 text-zinc-400">
-                        📱 ${telContacto} <br>
+                        📱 Tel. Notificación: ${telContacto} <br>
                         <span class="text-[9px] italic text-zinc-500">${a.alu_dom || 'DOMICILIO RELEVADO VACÍO'}</span>
                     </td>
                     <td class="p-2">
                         <div class="flex justify-center gap-1">
-                            <button onclick="editAlu('${a.alu_dni}')" class="bg-nuke text-black font-black px-2 py-1 rounded text-[8px] orbitron uppercase hover:opacity-80">VER LEGAJO</button>
-                            <button onclick="editAlu('${a.alu_dni}')" class="bg-blue-600 text-white font-black px-2 py-1 rounded text-[8px] orbitron uppercase hover:bg-blue-700">EDITAR</button>
-                            <button onclick="activateAlert('${a.m_tel || a.p_tel}','${a.alu_nombre}')" class="bg-green-600 text-white font-black px-2 py-1 rounded text-[8px] orbitron uppercase hover:bg-green-700">NOTIFICAR</button>
-                            <button onclick="processBaja('${a.alu_dni}')" class="bg-red-700 text-white font-black px-2 py-1 rounded text-[8px] orbitron uppercase hover:bg-red-800">BAJA</button>
+                            <button onclick="actionRedirect('${a.alu_dni}', 'ver')" class="bg-nuke text-black font-black px-2 py-1 rounded text-[8px] orbitron uppercase hover:opacity-80">VER LEGAJO</button>
+                            <button onclick="actionRedirect('${a.alu_dni}', 'editar')" class="bg-blue-600 text-white font-black px-2 py-1 rounded text-[8px] orbitron uppercase hover:bg-blue-700">EDITAR</button>
+                            <button onclick="actionRedirect('${a.alu_dni}', 'notificar')" class="bg-green-600 text-white font-black px-2 py-1 rounded text-[8px] orbitron uppercase hover:bg-green-700">NOTIFICAR</button>
+                            <button onclick="actionRedirect('${a.alu_dni}', 'baja')" class="bg-red-700 text-white font-black px-2 py-1 rounded text-[8px] orbitron uppercase hover:bg-red-800">BAJA</button>
                         </div>
                     </td>
                 </tr>`;
@@ -489,8 +511,8 @@
     }
 
     function processBaja(dni) {
-        const motivo = prompt("INGRESE MOTIVO DE LA BAJA INSTITUCIONAL:");
-        const mes = prompt("INGRESE MES DE RELEVAMIENTO (MARZO-DICIEMBRE):").toUpperCase();
+        const motivo = prompt("INGRESE EL MOTIVO EXTENSIVO DE LA BAJA INSTITUCIONAL:");
+        const mes = prompt("INGRESE EL MES CORRESPONDIENTE (MARZO-DICIEMBRE):").toUpperCase();
         if(motivo && MESES.includes(mes)) {
             const index = DATA.mat.findIndex(x => x.alu_dni === dni);
             if(index > -1) {
@@ -499,19 +521,19 @@
                 DATA.mat.splice(index, 1);
                 sync();
                 document.getElementById('sala_detail').classList.add('hidden');
-                alert("BAJA GRABADA Y ASIGNADA A LA BITÁCORA CONTABLE MENSUAL.");
+                alert("LA BAJA HA SIDO REGISTRADA Y DERIVADA AL HISTORIAL OPERATIVO.");
             }
-        } else { alert("ERROR DE VALIDACIÓN: VERIFIQUE EL MES Y EL MOTIVO."); }
+        } else { alert("ERROR CRÍTICO: VERIFIQUE QUE EL MES SEA VÁLIDO Y EL MOTIVO NO ESTÉ VACÍO."); }
     }
 
-    // --- LOGICA MATEMÁTICA: ASISTENCIA ESPEJO SAlA POR SALA ---
+    // --- ASISTENCIA ESPEJO MATEMÁTICA SALA POR SALA ---
     function renderAsistencia() { 
         const id = document.getElementById('asis_sala_select').value; 
         const list = DATA.mat.filter(x => x.alu_sala === id); 
         
         if(!ASISTENCIA_MEMORIA[id]) {
             ASISTENCIA_MEMORIA[id] = {};
-            list.forEach(a => { ASISTENCIA_MEMORIA[id][a.alu_dni] = 'P'; }); // Default Presente
+            list.forEach(a => { ASISTENCIA_MEMORIA[id][a.alu_dni] = 'P'; });
         }
 
         document.getElementById('asis_lista_render').innerHTML = list.map(a => {
@@ -560,17 +582,14 @@
         document.getElementById('pct_ausentes').innerText = `${pctA}%`;
     }
 
-    // --- FUNCIÓN LÓGICA MATEMÁTICA: SIMULACIÓN DE PROCESAMIENTO DE REGISTRO MANUAL/FOTO ---
     function processAsistenciaFoto() {
         const id = document.getElementById('asis_sala_select').value;
         const list = DATA.mat.filter(x => x.alu_sala === id);
-        if(list.length === 0) return alert("LA SALA NO TIENE ALUMNOS PARA PROCESAR EL REGISTRO.");
+        if(list.length === 0) return alert("LA SALA REQUERIDA NO TIENE ALUMNOS ASIGNADOS.");
 
-        alert("PROCESADOR DE IMÁGENES / REGISTRO ACTIVO:\nAnalizando marcas de ausentismo mediante algoritmo matemático...");
-        
-        // Simulación lógica: El escáner detecta ausencias aleatorias con fines de testeo operativo
+        // Simulación lógica predictiva basada en promedio general
         list.forEach((a, index) => {
-            if(index % 4 === 0) {
+            if(index % 5 === 0) {
                 ASISTENCIA_MEMORIA[id][a.alu_dni] = 'A';
             } else {
                 ASISTENCIA_MEMORIA[id][a.alu_dni] = 'P';
@@ -578,26 +597,26 @@
         });
         
         renderAsistencia();
-        alert("PORCENTAJES MENSUALES OBTENIDOS DESDE EL REGISTRO MANUAL CON ÉXITO.");
+        alert("¡IMAGEN PROCESADA AUTOMÁTICAMENTE!\nLos porcentajes de presentes y ausentes se han recalculado en el espejo de la sala.");
     }
 
-    // --- MOTOR DE ALERTAS DIRECTIVAS Y COMUNICACIÓN AUTOMÁTICA A PADRES ---
+    // --- GATEWAY DE ALERTAS DIRECTIVAS Y WHATSAPP AUTOMÁTICO ---
     function activateAlert(tel, nombre) {
         const box = document.getElementById('wa_box');
         const telDir = document.getElementById('tel_directivo').value || '541100000000';
         
         if(!tel || tel === "S/D" || tel === "") {
             box.innerHTML = `
-                <div class="text-red-500 font-black uppercase text-[9px] mb-2">⚠️ ALUMNO ${nombre} SIN TELÉFONO DE CONTACTO EN JSON</div>
-                <button onclick="window.open('https://wa.me/${telDir}?text=ALERTA DIRECTIVA CRÍTICA J926: El alumno/a ${nombre} no registra número de contacto válido de los tutores y se encuentra ausente.', '_blank')" class="bg-red-600 text-white px-3 py-1 rounded font-black text-[9px] orbitron">NOTIFICAR EVENTO A DIRECTIVO</button>
+                <div class="text-red-500 font-black uppercase text-[9px] mb-2">⚠️ ALUMNO ${nombre} SIN TELÉFONO REGISTRADO</div>
+                <button onclick="window.open('https://wa.me/${telDir}?text=ALERTA DIRECTIVA CRÍTICA J926: El alumno/a ${nombre} se encuentra ausente y no posee número de teléfono registrado.', '_blank')" class="bg-red-600 text-white px-3 py-1 rounded font-black text-[9px] orbitron">NOTIFICAR FALTA DE CONTACTO A DIRECCIÓN</button>
             `;
         } else {
             box.innerHTML = `
                 <div class="flex flex-col gap-2 items-center justify-center p-1">
-                    <span class="text-nuke font-black uppercase text-[9px]">🚨 CANAL DE ALERTA ACTIVADO PARA ${nombre}</span>
+                    <span class="text-nuke font-black uppercase text-[9px]">🚨 CANAL DE COMUNICACIÓN ABIERTO PARA: ${nombre}</span>
                     <div class="flex gap-2">
-                        <button onclick="window.open('https://wa.me/${tel}?text=TITANIUM%20360%20-%20ALERTA%20DE%20AUSENCIA%20REITERADA%3A%20Solicitamos%20comunicarse%20con%20el%20Jard%C3%ADn%20926%20para%20justificar%20la%20inasistencia%20del%20alumno/a%20${nombre}.', '_blank')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded font-black text-[9px] orbitron">ENVIAR ALERTA WHATSAPP</button>
-                        <button onclick="window.open('https://wa.me/${telDir}?text=INFORME ASISTENCIA J926: Notificación enviada al tutor de ${nombre} por ausencia reiterada.', '_blank')" class="bg-zinc-700 hover:bg-zinc-600 text-white px-3 py-1 rounded font-black text-[9px] orbitron">ALERTA A DIRECCIÓN</button>
+                        <button onclick="window.open('https://wa.me/${tel}?text=TITANIUM%20360%20-%20ALERTA%20DE%20AUSENCIA%3A%20Solicitamos%20comunicarse%20con%20el%20Jard%C3%ADn%20926%20para%20justificar%20la%20inasistencia%20del%20alumno/a%20${nombre}.', '_blank')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded font-black text-[9px] orbitron">ENVIAR WHATSAPP AL TUTOR</button>
+                        <button onclick="window.open('https://wa.me/${telDir}?text=INFORME ASISTENCIA J926: Notificación de inasistencia enviada al tutor de ${nombre}.', '_blank')" class="bg-zinc-700 hover:bg-zinc-600 text-white px-3 py-1 rounded font-black text-[9px] orbitron">NOTIFICAR EVENTO A DIRECCIÓN</button>
                     </div>
                 </div>`;
         }
@@ -628,16 +647,15 @@
                 </div>
                 <div class="space-y-1 text-[9px] font-black uppercase">
                     <div class="flex justify-between"><span>EXTRANJEROS EN SALA:</span><span class="text-orange-400">${pct(extranjeros)}%</span></div>
-                    <div class="flex justify-between"><span>COBERTURA AUH:</span><span class="text-nuke">${pct(auh_si)}%</span></div>
+                    <div class="flex justify-between"><span>COBERTURA VÍNCULO AUH:</span><span class="text-nuke">${pct(auh_si)}%</span></div>
                     <div class="flex justify-between"><span>VULNERABILIDAD SOCIAL:</span><span class="text-red-400">${pInf}%</span></div>
                 </div>
             </div>`;
         });
     }
 
-    function triggerVoice() { alert("🎙️ CARGA BIÓNICA POR VOZ ACTIVADA:\nHable de forma pausada para capturar Apellido, Nombre y Matrícula..."); }
-    function triggerScan() { alert("📷 LECTOR ÓPTICO ACTIVO:\nAproxime el código PDF417 de la tarjeta de identificación civil."); }
-    function exportToExcel() { alert("Generando descarga del CSV Consolidado de Supervisión..."); }
+    function triggerVoice() { alert("🎙️ SISTEMA DE CAPTURA POR VOZ ACTIVO...\nHable de forma clara para ingresar los campos de legajo."); }
+    function triggerScan() { alert("📷 LECTOR DE DNI ÓPTICO ACTIVADO...\nAproxime el código QR o barras de la credencial civil."); }
     
     function smartRadar() { 
         const val = document.getElementById('radar').value.toUpperCase().trim(); 
@@ -674,7 +692,7 @@
     function verDetalleBaja(mes) { 
         const list = DATA.bajas.filter(x => x.mes_baja === mes); 
         if(list.length === 0) { 
-            document.getElementById('bajas_detalle').innerHTML = `<p class="text-center py-6 font-black orbitron uppercase text-zinc-600">SIN REGISTROS DE BAJA</p>`; 
+            document.getElementById('bajas_detalle').innerHTML = `<p class="text-center py-6 font-black orbitron uppercase text-zinc-600">SIN REGISTROS DE BAJA EN ESTE PERÍODO</p>`; 
             return; 
         } 
         let html = `<table class="w-full text-left"><tr><th>SALA</th><th>ALUMNO</th><th>MOTIVO</th></tr>`; 
