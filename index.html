@@ -9,8 +9,6 @@ let DATA = { mat: [], esp: [], bajas: [], asistencia: [] };
 function sync() {
     localStorage.setItem('T360_DB_FINAL', JSON.stringify(DATA));
     renderSupervision();
-    renderEspera();
-    renderAsistencia();
 }
 
 function importData(input) {
@@ -21,7 +19,9 @@ function importData(input) {
             DATA.mat = Array.isArray(raw) ? raw : (raw.mat || []);
             sync();
             alert("BASE DE DATOS TITANIUM 360 CARGADA CON ÉXITO.");
-        } catch (err) { alert("Error de formato JSON."); }
+        } catch (err) { 
+            alert("Error de formato JSON. Verifica la estructura del archivo."); 
+        }
     };
     reader.readAsText(input.files[0]);
 }
@@ -29,7 +29,7 @@ function importData(input) {
 // --- 2. LEGAJO 360 & RADAR ---
 function smartRadar() {
     const val = document.getElementById('radar').value.toUpperCase();
-    const res = DATA.mat.find(a => a.alu_nombre.includes(val) || a.alu_dni === val);
+    const res = DATA.mat.find(a => (a.alu_nombre || "").toUpperCase().includes(val) || (a.alu_dni || "") === val);
     if(res) {
         Object.keys(res).forEach(k => {
             const el = document.getElementById(k);
@@ -45,30 +45,20 @@ function renderSupervision() {
     if (total === 0) return;
     
     const stats = {
-        ninos: DATA.mat.filter(a => a.sexo === 'M').length,
-        ninas: DATA.mat.filter(a => a.sexo === 'F').length,
-        arg: DATA.mat.filter(a => a.alu_nac === 'ARG').length,
-        par: DATA.mat.filter(a => a.alu_nac === 'PAR').length,
-        bol: DATA.mat.filter(a => a.alu_nac === 'BOL').length,
-        per: DATA.mat.filter(a => a.alu_nac === 'PER').length,
-        auh: DATA.mat.filter(a => a.alu_auh === 'SI').length,
-        cud: DATA.mat.filter(a => a.cud === 'SI').length
+        ninos: DATA.mat.filter(a => (a.sexo || "M").toUpperCase() === 'M').length,
+        ninas: DATA.mat.filter(a => (a.sexo || "M").toUpperCase() === 'F').length,
+        arg: DATA.mat.filter(a => (a.alu_nac || "ARG").toUpperCase() === 'ARG').length,
+        auh: DATA.mat.filter(a => (a.alu_auh || "NO").toUpperCase() === 'SI').length,
+        cud: DATA.mat.filter(a => (a.cud || "NO").toUpperCase() === 'SI').length
     };
     
-    // Renderizado en DOM (ID's necesarios)
     document.getElementById('header_total').innerText = total;
     console.log("Supervisión Élite Actualizada:", stats);
 }
 
-// --- 4. LISTA DE ESPERA PRO ---
-function registrarEspera(alu) {
-    DATA.esp.push({...alu, fecha: new Date().toLocaleDateString()});
-    sync();
-}
-
-// --- 5. BITÁCORA DE BAJAS ---
+// --- 4. BITÁCORA DE BAJAS ---
 function registrarBaja(dni, motivo) {
-    const idx = DATA.mat.findIndex(x => x.alu_dni === dni);
+    const idx = DATA.mat.findIndex(x => (x.alu_dni || "") === dni);
     if(idx > -1) {
         DATA.bajas.push({...DATA.mat[idx], motivo, fecha: new Date().toLocaleDateString()});
         DATA.mat.splice(idx, 1);
@@ -76,25 +66,16 @@ function registrarBaja(dni, motivo) {
     }
 }
 
-// --- 6. VOZ BIÓNICA ---
-const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-recognition.lang = 'es-ES';
-function iniciarCargaVoz() {
-    recognition.start();
-    recognition.onresult = (e) => { 
-        const transcript = e.results[0][0].transcript.toUpperCase();
-        console.log("Comando voz:", transcript);
-        // Implementación de lógica de comandos: ej "Buscar DNI..."
-    };
-}
-
-// --- 7. NAVEGACIÓN ---
+// --- 5. NAVEGACIÓN ---
 function show(tab) {
     document.querySelectorAll('main > section').forEach((s, i) => s.classList.toggle('hidden', i !== (tab - 1)));
-    document.querySelectorAll('.btn-tab').forEach((b, i) => b.classList.toggle('active-tab', i === (tab - 1)));
 }
 
+// --- 6. INICIALIZACIÓN ---
 window.onload = () => {
     const saved = localStorage.getItem('T360_DB_FINAL');
-    if(saved) { DATA = JSON.parse(saved); renderSupervision(); }
+    if(saved) { 
+        DATA = JSON.parse(saved); 
+        renderSupervision(); 
+    }
 };
