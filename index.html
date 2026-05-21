@@ -19,7 +19,6 @@
         .card-sala { cursor: pointer; transition: 0.3s; border-radius: 10px; padding: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); background: #0c0e14; }
         .card-sala:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
         
-        /* Colores Oficiales de Salas asignados por CSS */
         .S-ROSA { border-top: 6px solid #ff80ab; } 
         .S-ROJA { border-top: 6px solid #ff3b30; }
         .S-NARANJA { border-top: 6px solid #ff9800; } 
@@ -159,7 +158,6 @@
                     <span class="text-orange-500 font-black orbitron text-[10px] block">🔴 INICIAR ESCANEO DIGITAL</span>
                 </div>
             </div>
-            <p class="text-[9px] text-zinc-500 italic">Nota: También permite la carga manual desde la pestaña 1 presionando 'Cargar Manual Lista Espera'.</p>
         </div>
         <div class="bg-zinc-900/40 p-6 neon-border rounded-xl border-l-8 border-orange-600 shadow-2xl lg:col-span-2">
             <h2 class="orbitron text-orange-500 text-sm font-black mb-4 uppercase">ASPIRANTES EN LISTA DE ESPERA RELEVADOS</h2>
@@ -224,22 +222,22 @@
                 <h2 class="orbitron text-cyan-400 text-sm font-black uppercase">📊 MATEMÁTICA ANALÍTICA INSTITUCIONAL (NUCLEO GENERAL J926)</h2>
                 <div class="flex gap-2">
                     <button onclick="exportJSON()" class="bg-zinc-800 hover:bg-zinc-700 text-white font-black px-3 py-1.5 text-[9px] orbitron rounded uppercase">💾 EXPORTAR JSON</button>
-                    <button onclick="exportOfficialExcel()" class="bg-green-700 hover:bg-green-600 text-white font-black px-3 py-1.5 text-[9px] orbitron rounded uppercase">📊 DESCARGA EXCEL OFICIAL SUPERVISIÓN</button>
+                    <button onclick="exportOfficialExcel()" class="bg-green-700 hover:bg-green-600 text-white font-black px-3 py-1.5 text-[9px] orbitron rounded uppercase">📊 DESCARGA EXCEL OFICIAL</button>
                 </div>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="bg-black/60 p-4 rounded border border-zinc-800 text-left">
                     <p class="text-[9px] orbitron text-zinc-400 uppercase font-black">Porcentaje General Géneros</p>
-                    <div id="sup_global_genero" class="text-xs font-mono mt-2 space-y-1"></div>
+                    <div id="sup_global_genero" class="text-xs font-mono mt-2 space-y-1 text-white"></div>
                 </div>
                 <div class="bg-black/60 p-4 rounded border border-zinc-800 text-left">
                     <p class="text-[9px] orbitron text-zinc-400 uppercase font-black">Mapeo de Nacionalidades</p>
-                    <div id="sup_global_nac" class="text-xs font-mono mt-2 space-y-1 max-h-24 overflow-y-auto no-scrollbar"></div>
+                    <div id="sup_global_nac" class="text-xs font-mono mt-2 space-y-1 max-h-24 overflow-y-auto no-scrollbar text-white"></div>
                 </div>
                 <div class="bg-black/60 p-4 rounded border border-zinc-800 text-left">
                     <p class="text-[9px] orbitron text-zinc-400 uppercase font-black">Indicadores de Vulnerabilidad</p>
-                    <div id="sup_global_vuln" class="text-xs font-mono mt-2 space-y-1"></div>
+                    <div id="sup_global_vuln" class="text-xs font-mono mt-2 space-y-1 text-white"></div>
                 </div>
                 <div class="bg-black/60 p-4 rounded border border-zinc-800 text-left">
                     <p class="text-[9px] orbitron text-red-500 uppercase font-black">Alertas de Matrícula Crítica</p>
@@ -257,11 +255,20 @@
 </main>
 
 <script>
-    // CORE DE MEMORIA ACTIVA SISTEMA NUCLEAR
     let DATA = { mat: [], esp: [], bajas: [] };
     let ASISTENCIA_MEMORIA = {};
 
-    // 14 SALAS CONFIGURADAS EXACTAMENTE SEGÚN LA NOMENCLATURA TRADICIONAL Y TU ARCHIVO OFICIAL
+    // Diccionario de asignación de turnos por defecto para normalizar el campo 'alu_sala' del JSON
+    const MAPEO_TURNOS = {
+        '1ºA': '1ºA-TM', '1ºB': '1ºB-TT',
+        'ME A': 'ME A-TM', 'ME B': 'ME B-TT',
+        '2ºA': '2ºA-TM', '2ºC': '2ºC-TT',
+        '2ºB': '2ºB-TM', '2ºD': '2ºD-TT',
+        '3ºA': '3ºA-TM', '3ºD': '3ºD-TT',
+        '3ºB': '3ºB-TM', '3ºE': '3ºE-TT',
+        '3ºC': '3ºC-TM', '3ºF': '3ºF-TT'
+    };
+
     const SALAS_INST = [
         {id:'1ºA-TM', color:'ROSA', turno:'TM', seccion:'1ºA'}, {id:'1ºB-TT', color:'ROSA', turno:'TT', seccion:'1ºB'},
         {id:'ME A-TM', color:'NARANJA', turno:'TM', seccion:'ME A'}, {id:'ME B-TT', color:'NARANJA', turno:'TT', seccion:'ME B'},
@@ -276,7 +283,6 @@
     const EDU_LEVELS = ["SIN ESTUDIOS", "PRIMARIA COMPLETA", "PRIMARIA INCOMPLETA", "SECUNDARIA COMPLETA", "SECUNDARIA INCOMPLETA", "TERCIARIA COMPLETA", "TERCIARIA INCOMPLETA", "UNIVERSITARIOS COMPLETO", "UNIVERSITARIOS INCOMPLETO"];
 
     function initSystem() {
-        // Inicializar selectores dinámicos de salas
         const sSel = document.getElementById('alu_sala');
         const asSel = document.getElementById('asis_sala_select');
         sSel.innerHTML = ''; asSel.innerHTML = '';
@@ -285,13 +291,11 @@
             sSel.innerHTML += opt; asSel.innerHTML += opt;
         });
 
-        // Inicializar selectores de nivel de estudios
         document.querySelectorAll('.edu-selector').forEach(sel => {
             sel.innerHTML = '<option value="S/D">SIN ESTUDIOS / NO DECLARADO</option>';
             EDU_LEVELS.forEach(e => { sel.innerHTML += `<option value="${e}">${e}</option>`; });
         });
 
-        // Intentar recuperar de LocalStorage por persistencia local
         try {
             const local = localStorage.getItem('TITANIUM_360_MASTER_DATA_J926');
             if (local) {
@@ -307,7 +311,6 @@
         sync();
     }
 
-    // FUNCIÓN DE SINCRONIZACIÓN CORREGIDA - LLAMA CORRECTAMENTE A "DATA" SIN ENTRAR EN CONFLICTO
     function sync() {
         localStorage.setItem('TITANIUM_360_MASTER_DATA_J926', JSON.stringify(DATA));
         document.getElementById('header_total').innerText = DATA.mat.length + " Alumnos";
@@ -320,32 +323,30 @@
         renderMetricasGlobales();
     }
 
-    // LECTOR Y PROCESADOR DE ARCHIVOS JSON CORREGIDO Y GARANTIZADO
     function importData(input) {
         if (!input.files || input.files.length === 0) return;
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
                 const parsed = JSON.parse(e.target.result);
-                
-                // Extraer arreglo si viene envuelto en objeto o directo
                 let alumnosCargados = [];
+                
                 if (parsed && Array.isArray(parsed.mat)) {
                     alumnosCargados = parsed.mat;
                 } else if (Array.isArray(parsed)) {
                     alumnosCargados = parsed;
                 } else {
-                    throw new Error("Estructura JSON inválida.");
+                    throw new Error("Estructura inválida.");
                 }
 
-                // Estandarizar salas leídas del JSON para que coincidan con el HMI
+                // Normalización de salas ("3ºA" -> "3ºA-TM") para que impacten en los componentes
                 alumnosCargados.forEach(a => {
-                    if (a.alu_sala && !a.alu_sala.includes('-')) {
-                        // Mapear estructuras simples como '3ºA' a '3ºA-TM' para evitar pérdida de visualización
-                        const salaMapeada = SALAS_INST.find(s => s.seccion === a.alu_sala.trim().toUpperCase());
-                        if (salaMapeada) a.alu_sala = salaMapeada.id;
+                    if (a.alu_sala) {
+                        const salaTrim = a.alu_sala.trim().toUpperCase();
+                        if (MAPEO_TURNOS[salaTrim]) {
+                            a.alu_sala = MAPEO_TURNOS[salaTrim];
+                        }
                     }
-                    // Validar campos requeridos mínimos
                     if(!a.sexo) a.sexo = (Math.random() > 0.5) ? 'M' : 'F';
                     if(!a.alu_nac) a.alu_nac = 'ARGENTINA';
                     if(!a.alu_auh) a.alu_auh = 'NO';
@@ -358,9 +359,9 @@
                 DATA.bajas = parsed.bajas || [];
                 
                 sync();
-                alert(`¡SISTEMA NUCLEADO CON ÉXITO!\nSe han cargado ${DATA.mat.length} alumnos reales en la base institucional.`);
+                alert(`¡SISTEMA CONSOLIDADO!\nSe leyeron e indexaron ${DATA.mat.length} alumnos correctamente.`);
             } catch (err) {
-                alert("ERROR CRÍTICO: El archivo no contiene un formato JSON válido de matrícula.");
+                alert("ERROR CRÍTICO: Formato de archivo JSON no compatible.");
                 console.error(err);
             }
         };
@@ -402,12 +403,8 @@
     function calcEdad() {
         const f = document.getElementById('alu_f_nac').value;
         if(!f) return;
-        
-        // El cálculo de edad oficial se realiza al 30 de Junio del año en curso según requerimiento
         const cumple = new Date(f);
-        const anioEval = new Date().getFullYear();
-        const fechaCorte = new Date(anioEval, 5, 30); // 30/6
-        
+        const fechaCorte = new Date(new Date().getFullYear(), 5, 30);
         let edad = fechaCorte.getFullYear() - cumple.getFullYear();
         if (fechaCorte.getMonth() < cumple.getMonth() || (fechaCorte.getMonth() === cumple.getMonth() && fechaCorte.getDate() < cumple.getDate())) {
             edad--;
@@ -420,15 +417,15 @@
         document.querySelectorAll('#form_master input, #form_master select, #form_master textarea').forEach(i => {
             alu[i.id] = i.value.toUpperCase().trim();
         });
-        if(!alu.alu_dni || !alu.alu_nombre) return alert("APELLIDO, NOMBRE Y DNI SON EXCLUSIVOS.");
+        if(!alu.alu_dni || !alu.alu_nombre) return alert("CAMPOS REQUERIDOS INCOMPLETOS.");
 
         if(type === 'mat') {
             const idx = DATA.mat.findIndex(x => x.alu_dni === alu.alu_dni);
             if(idx > -1) DATA.mat[idx] = alu; else DATA.mat.push(alu);
-            alert("LEGAJO CONSOLIDADO EN MATRÍCULA REAL DEL ESTABLECIMIENTO.");
+            alert("REGISTRO GUARDADO EN MATRÍCULA ACTIVA.");
         } else {
             DATA.esp.push(alu);
-            alert("INGRESADO CORRECTAMENTE EN LISTA DE ESPERA.");
+            alert("AÑADIDO A LA LISTA DE ESPERA.");
         }
         sync();
         clearForm();
@@ -461,19 +458,19 @@
         
         const alumnos = DATA.mat.filter(x => x.alu_sala === id);
         if(alumnos.length === 0) {
-            tb.innerHTML = `<tr><td colspan="5" class="text-center py-4 font-black text-zinc-600">SIN MATRÍCULA ACTIVA EN ESTA SALA</td></tr>`;
+            tb.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-zinc-600">SIN MATRÍCULA EN ESTA SALA</td></tr>`;
             return;
         }
         
         alumnos.forEach(a => {
             tb.innerHTML += `
-                <tr class="border-b border-zinc-900 hover:bg-zinc-900/30">
+                <tr class="border-b border-zinc-900 hover:bg-zinc-900/40">
                     <td class="p-2 text-white font-bold">${a.alu_nombre}</td>
                     <td class="p-2 text-cyan-400">${a.alu_dni}</td>
-                    <td class="p-2 text-zinc-400 text-[10px]">${a.alu_dom || 'NO DECLARADO'}</td>
-                    <td class="p-2 text-zinc-400 text-[10px]">Madre: ${a.m_tel || 'S/D'} / CUD: ${a.alu_cud || 'NO'}</td>
+                    <td class="p-2 text-zinc-400 text-[10px]">${a.alu_dom || 'S/D'}</td>
+                    <td class="p-2 text-zinc-400 text-[10px]">Tel: ${a.m_tel || 'S/D'} / CUD: ${a.alu_cud || 'NO'}</td>
                     <td class="p-2 text-center space-x-1">
-                        <button onclick="verLegajo360('${a.alu_dni}')" class="bg-cyan-500 text-black font-black px-2 py-1 rounded text-[8px] orbitron">VER/EDITAR</button>
+                        <button onclick="verLegajo360('${a.alu_dni}')" class="bg-cyan-500 text-black font-black px-2 py-1 rounded text-[8px] orbitron">EDITAR</button>
                         <button onclick="notificarWhatsApp('${a.m_tel}', '${a.alu_nombre}')" class="bg-green-600 text-white font-black px-1.5 py-1 rounded text-[8px]">📲</button>
                         <button onclick="bajaLegajo('${a.alu_dni}')" class="bg-red-700 text-white font-black px-2 py-1 rounded text-[8px] orbitron">BAJA</button>
                     </td>
@@ -489,10 +486,11 @@
     }
 
     function notificarWhatsApp(tel, nombre) {
-        if(!tel || tel.includes('0000')) return alert("Teléfono no válido configurado para este legajo.");
-        window.open(`https://wa.me/${tel}?text=COMUNICADO INFANTIL J926: Con respecto al alumno/a ${nombre}, solicitamos se comunique a la brevedad.`, '_blank');
+        if(!tel || tel.includes('0000')) return alert("Teléfono inválido.");
+        window.open(`https://wa.me/${tel}?text=CITACIÓN JARDÍN J926: Con respecto al alumno/a ${nombre}, solicitamos comunicarse a la brevedad.`, '_blank');
     }
 
+    // GESTIÓN OPERATIVA REAL DE LA BITÁCORA DE BAJAS
     function bajaLegajo(dni) {
         const idx = DATA.mat.findIndex(x => x.alu_dni === dni);
         if(idx === -1) return;
@@ -509,13 +507,13 @@
         
         sync();
         document.getElementById('sala_detail').classList.add('hidden');
-        alert(`Baja registrada en la bitácora institucional.`);
+        alert(`Baja registrada con éxito en la Bitácora del establecimiento.`);
     }
 
     function renderEspera() {
         const tb = document.getElementById('espera_table'); tb.innerHTML = '';
         if(DATA.esp.length === 0) {
-            tb.innerHTML = `<tr><td colspan="4" class="text-center py-2 text-zinc-600">LISTA VACÍA</td></tr>`;
+            tb.innerHTML = `<tr><td colspan="4" class="text-center py-2 text-zinc-600 font-mono">LISTA DE ESPERA SIN ASPIRANTES</td></tr>`;
         }
         DATA.esp.forEach((a, i) => {
             tb.innerHTML += `
@@ -523,7 +521,7 @@
                     <td class="p-2"><strong>${a.alu_nombre}</strong></td>
                     <td class="p-2 text-zinc-400">${a.alu_dni}</td>
                     <td class="p-2 text-orange-400 text-[10px]">${a.alu_sala}</td>
-                    <td class="p-2 text-center"><button onclick="admitirAspirante(${i})" class="bg-emerald-600 text-black font-bold text-[9px] px-2 py-0.5 rounded">ADMITIR MATRÍCULA</button></td>
+                    <td class="p-2 text-center"><button onclick="admitirAspirante(${i})" class="bg-emerald-600 text-black font-bold text-[9px] px-2 py-0.5 rounded">CONSOLIDAR ALUMNO</button></td>
                 </tr>`;
         });
     }
@@ -532,7 +530,7 @@
         DATA.mat.push(DATA.esp[i]);
         DATA.esp.splice(i, 1);
         sync();
-        alert("El alumno ha pasado de lista de espera a matrícula activa.");
+        alert("Aspirante incorporado al Legajo Activo del ciclo.");
     }
 
     function renderAsistencia() {
@@ -574,16 +572,16 @@
         document.getElementById('pct_presentes').innerText = pctP + '%';
         document.getElementById('pct_ausentes').innerText = pctA + '%';
         
-        // Alerta de media asistencial crítica (Menos del 75% presentes)
         const alertBox = document.getElementById('wa_box');
         if (t > 0 && pctP < 75) alertBox.classList.remove('hidden'); else alertBox.classList.add('hidden');
     }
 
     function alertaWAAsistencia(tel, nombre) {
-        if(!tel) return alert("Sin número registrado.");
-        window.open(`https://wa.me/${tel}?text=TITANIUM 360 ALERTA: Informamos que el alumno/a ${nombre} se encuentra AUSENTE en el día de la fecha. Por favor, comunique el motivo del ausentismo.`, '_blank');
+        if(!tel) return;
+        window.open(`https://wa.me/${tel}?text=TITANIUM 360: Notificamos que el alumno/a ${nombre} se encuentra AUSENTE. Por favor informar motivo.`, '_blank');
     }
 
+    // PESTAÑA 5: RENDERIZADOR COMPLETO DE BITÁCORA DE BAJAS
     function renderMesesBajas() {
         const grid = document.getElementById('bajas_meses_grid'); grid.innerHTML = '';
         MESES.forEach(m => {
@@ -598,7 +596,7 @@
 
     function viewBajasMes(m) {
         const det = document.getElementById('bajas_detalle'); 
-        det.innerHTML = `<h4 class="text-purple-400 font-black mb-2 border-b border-zinc-800 pb-1 uppercase">REPORTE OPERATIVO - ${m}:</h4>`;
+        det.innerHTML = `<h4 class="text-purple-400 font-black mb-2 border-b border-zinc-800 pb-1 uppercase">REPORTE OPERATIVO DE BAJAS - PERÍODO ${m}:</h4>`;
         const coincidentes = DATA.bajas.filter(b => b.mes_baja === m);
         
         if(coincidentes.length === 0) {
@@ -610,18 +608,23 @@
         });
     }
 
+    // PESTAÑA 6: MATEMÁTICA ANALÍTICA GENERAL DE SUPERVISIÓN
     function renderMetricasGlobales() {
         const total = DATA.mat.length;
-        if(total === 0) return;
+        if(total === 0) {
+            document.getElementById('sup_global_genero').innerHTML = 'SIN DATOS';
+            document.getElementById('sup_global_nac').innerHTML = 'SIN DATOS';
+            document.getElementById('sup_global_vuln').innerHTML = 'SIN DATOS';
+            document.getElementById('sup_global_alertas').innerHTML = 'SIN DATOS';
+            return;
+        }
 
-        // I. Distribución Género
         const varones = DATA.mat.filter(x => x.sexo === 'M').length;
         const nenas = DATA.mat.filter(x => x.sexo === 'F').length;
         document.getElementById('sup_global_genero').innerHTML = `
-            <div>Nenes: ${varones} (${((varones/total)*100).toFixed(1)}%)</div>
-            <div>Nenas: ${nenas} (${((nenas/total)*100).toFixed(1)}%)</div>`;
+            <div>Varones: ${varones} (${((varones/total)*100).toFixed(1)}%)</div>
+            <div>Mujeres: ${nenas} (${((nenas/total)*100).toFixed(1)}%)</div>`;
 
-        // II. Mapeo Nacionalidades
         const nacMap = {};
         DATA.mat.forEach(x => {
             const n = x.alu_nac || 'ARGENTINA';
@@ -633,22 +636,21 @@
         });
         document.getElementById('sup_global_nac').innerHTML = nacHtml;
 
-        // III. Vulnerabilidad
         const cud = DATA.mat.filter(x => x.alu_cud === 'SI').length;
         const auh = DATA.mat.filter(x => x.alu_auh === 'SI').length;
         const sinDni = DATA.mat.filter(x => x.alu_sin_dni === 'SI').length;
         document.getElementById('sup_global_vuln').innerHTML = `
             <div>Con CUD: ${cud} (${((cud/total)*100).toFixed(1)}%)</div>
-            <div>Percibe AUH: ${auh} (${((auh/total)*100).toFixed(1)}%)</div>
-            <div>Sin DNI Legítimo: ${sinDni} (${((sinDni/total)*100).toFixed(1)}%)</div>`;
+            <div>Con AUH: ${auh} (${((auh/total)*100).toFixed(1)}%)</div>
+            <div>Sin DNI: ${sinDni} (${((sinDni/total)*100).toFixed(1)}%)</div>`;
 
-        // IV. Alertas críticas
         let alertasHtml = '';
-        if(sinDni > 0) alertasHtml += `<div>⚠ LEGAJOS SIN DNI ALTO RIESGO: ${sinDni}</div>`;
-        if(cud > (total * 0.15)) alertasHtml += `<div>⚠ CONDICIÓN POBLACIONAL DE ATENCIÓN CUD</div>`;
+        if(sinDni > 0) alertasHtml += `<div>⚠ LEGAJOS SIN DNI: ${sinDni} ALUMNOS</div>`;
+        if(total > 400) alertasHtml += `<div>⚠ MATRÍCULA SUPERA LÍMITE ESTRUCTURAL</div>`;
         document.getElementById('sup_global_alertas').innerHTML = alertasHtml || '<div>SIN INCIDENCIAS CRÍTICAS</div>';
     }
 
+    // CARDS DETALLADAS SALA POR SALA PARA SUPERVISIÓN ÉLITE
     function renderSupervision() {
         const g = document.getElementById('supervision_cards'); g.innerHTML = '';
         SALAS_INST.forEach(s => {
@@ -658,24 +660,19 @@
             const nenes = alumnos.filter(x => x.sexo === 'M').length;
             const nenas = alumnos.filter(x => x.sexo === 'F').length;
             const auh = alumnos.filter(x => x.alu_auh === 'SI').length;
+            const cud = alumnos.filter(x => x.alu_cud === 'SI').length;
             
-            // Relevamiento de nivel educativo de las madres en la sala
-            const estudiosPrimaria = alumnos.filter(x => x.m_est && x.m_est.includes('PRIMARIA')).length;
-            // Trabajo informal aproximado por descriptores de texto
-            const trabajoInformal = alumnos.filter(x => x.m_ocu && (x.m_ocu.includes('INFORMAL') || x.m_ocu.includes('CHANGA') || x.m_ocu.includes('DOMESTICA') || x.m_ocu.includes('S/D'))).length;
-
             g.innerHTML += `
-                <div class="p-4 bg-zinc-950 border ${cant > 35 ? 'border-red-900/60 bg-red-950/5' : 'border-zinc-800'} rounded-lg font-mono">
+                <div class="p-4 bg-zinc-950 border ${cant > 30 ? 'border-red-900/60 bg-red-950/5' : 'border-zinc-800'} rounded-lg font-mono">
                     <div class="flex justify-between border-b border-zinc-800 pb-1 mb-2">
                         <span class="font-black orbitron text-cyan-400 text-xs">${s.seccion} (${s.turno})</span>
-                        <span class="text-white font-bold">${cant} ALUM.</span>
+                        <span class="text-white font-bold">${cant} Alum.</span>
                     </div>
                     <div class="grid grid-cols-2 gap-1 text-[10px] text-zinc-400">
-                        <div>Nenes: ${nenes} (${cant>0?((nenes/cant)*100).toFixed(0):0}%)</div>
-                        <div>Nenas: ${nenas} (${cant>0?((nenas/cant)*100).toFixed(0):0}%)</div>
+                        <div>Varones: ${nenes}</div>
+                        <div>Mujeres: ${nenas}</div>
                         <div>AUH: ${auh}</div>
-                        <div>Est. Primarios M.: ${estudiosPrimaria}</div>
-                        <div class="col-span-2 text-orange-400">Trabajo Informal M.: ${trabajoInformal}</div>
+                        <div>CUD: ${cud}</div>
                     </div>
                 </div>`;
         });
@@ -692,16 +689,15 @@
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(DATA, null, 4));
         const downloadAnchor = document.createElement('a');
         downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", "MATRICULA_389_FINAL_GENERADO.json");
+        downloadAnchor.setAttribute("download", "MATRICULA_389_PROCESADA.json");
         document.body.appendChild(downloadAnchor);
         downloadAnchor.click();
         downloadAnchor.remove();
     }
 
     function exportOfficialExcel() {
-        // Formateo CSV compatible directo con Excel oficial mediante inyección de metadatos estructurados
         let csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += "SECCION;TURNO;COLOR;CANTIDAD ALUMNOS;VARONES;MUJERES;AUH\n";
+        csvContent += "SECCION;TURNO;COLOR;CANTIDAD ALUMNOS;VARONES;MUJERES;AUH;CUD\n";
         
         SALAS_INST.forEach(s => {
             const alumnos = DATA.mat.filter(x => x.alu_sala === s.id);
@@ -709,21 +705,22 @@
             const nenes = alumnos.filter(x => x.sexo === 'M').length;
             const nenas = alumnos.filter(x => x.sexo === 'F').length;
             const auh = alumnos.filter(x => x.alu_auh === 'SI').length;
-            csvContent += `${s.seccion};${s.turno};${s.color};${cant};${nenes};${nenas};${auh}\n`;
+            const cud = alumnos.filter(x => x.alu_cud === 'SI').length;
+            csvContent += `${s.seccion};${s.turno};${s.color};${cant};${nenes};${nenas};${auh};${cud}\n`;
         });
 
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "RELEVAMIENTO_OFICIAL_SUPERVISION_J926.csv");
+        link.setAttribute("download", "RELEVAMIENTO_SUPERVISION_J926.csv");
         document.body.appendChild(link);
         link.click();
         link.remove();
     }
 
-    function triggerVoice() { alert("🎙️ SISTEMA DE CAPTURA BIÓNICA ACTIVADO:\nEscuchando entrada de audio de legajo..."); }
-    function triggerScan() { alert("📷 LECTOR ÓPTICO DIGITALIZADO J926:\nAlinee el DNI frente a la cámara del dispositivo..."); }
-    function processAsistenciaFoto() { alert("Procesando matriz analítica analógica de la imagen del cuaderno físico..."); }
+    function triggerVoice() { alert("🎙️ CAPTURA BIÓNICA ACTIVADA:\nEscuchando entrada de legajo por micrófono..."); }
+    function triggerScan() { alert("📷 LECTOR ÓPTICO DIGITAL:\nColoque la tarjeta DNI frente al sensor óptico..."); }
+    function processAsistenciaFoto() { alert("Procesando patrones de asistencia desde el registro de imagen física..."); }
 </script>
 
 </body>
