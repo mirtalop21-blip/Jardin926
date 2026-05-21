@@ -258,7 +258,6 @@
     let DATA = { mat: [], esp: [], bajas: [] };
     let ASISTENCIA_MEMORIA = {};
 
-    // Mapeo predictivo flexible si el string no contiene el Turno incorporado
     const MAPEO_TURNOS = {
         '1ºA': '1ºA-TM', '1ºB': '1ºB-TT',
         'ME A': 'ME A-TM', 'ME B': 'ME B-TT',
@@ -336,25 +335,22 @@
                 } else if (Array.isArray(parsed)) {
                     alumnosCargados = parsed;
                 } else if (parsed && typeof parsed === 'object') {
-                    // Si viene encapsulado de otra forma externa
                     alumnosCargados = parsed.alumnos || parsed.data || [];
                 }
 
                 if (alumnosCargados.length === 0) {
-                    throw new Error("No se encontraron registros de alumnos legibles en la raíz 'mat' o array base.");
+                    throw new Error("Formato inválido.");
                 }
 
-                // Normalización inteligente exhaustiva campo por campo
                 alumnosCargados.forEach(a => {
                     if (a.alu_sala) {
                         let salaTrim = a.alu_sala.trim().toUpperCase();
-                        // Remover guiones o espacios extras si los hubiere
                         salaTrim = salaTrim.replace("-TM", "").replace("-TT", "").trim();
                         if (MAPEO_TURNOS[salaTrim]) {
                             a.alu_sala = MAPEO_TURNOS[salaTrim];
                         }
                     } else {
-                        a.alu_sala = "1ºA-TM"; // Fallback de contingencia estructural
+                        a.alu_sala = "1ºA-TM";
                     }
                     if(!a.sexo) a.sexo = (Math.random() > 0.5) ? 'M' : 'F';
                     if(!a.alu_nac) a.alu_nac = 'ARGENTINA';
@@ -367,11 +363,10 @@
                 DATA.esp = parsed.esp || [];
                 DATA.bajas = parsed.bajas || [];
                 
-                // Forzar sincronización e impacto en layouts
                 sync();
                 alert(`¡CONSOLIDACIÓN ÉLITE EXITOSA!\nSe indexaron e interpretaron ${DATA.mat.length} alumnos reales en el núcleo analítico.`);
             } catch (err) {
-                alert("ERROR DE LECTURA DE MATRÍCULA: Compruebe la validez del archivo .json estructurado.");
+                alert("ERROR DE LECTURA DE MATRÍCULA: Compruebe la validez del archivo .json.");
                 console.error(err);
             }
         };
@@ -497,7 +492,7 @@
 
     function notificarWhatsApp(tel, nombre) {
         if(!tel || tel.includes('0000')) return alert("Teléfono no parametrizado.");
-        window.open//wa.me/${tel}?text=CITACIÓN JARDÍN J926: Con respecto al alumno/a ${nombre}, solicitamos comunicarse a la brevedad.`, '_blank');
+        window.open(`https://wa.me/${tel}?text=CITACIÓN JARDÍN J926: Con respecto al alumno/a ${nombre}, solicitamos comunicarse.`, '_blank');
     }
 
     function bajaLegajo(dni) {
@@ -724,9 +719,9 @@
         link.remove();
     }
 
-    function triggerVoice() { alert("🎙️ CAPTURA BIÓNICA ACTIVADA:\nEscuchando entrada de legajo por micrófono..."); }
-    function triggerScan() { alert("📷 LECTOR ÓPTICO DIGITAL:\nColoque la tarjeta DNI frente al sensor óptico..."); }
-    function processAsistenciaFoto() { alert("Procesando patrones de asistencia desde el registro de imagen física..."); }
+    function triggerVoice() { alert("🎙️ Captura de voz de legajos..."); }
+    function triggerScan() { alert("📷 Lector óptico digital..."); }
+    function processAsistenciaFoto() { alert("Procesando patrones de asistencia..."); }
 </script>
 
 </body>
