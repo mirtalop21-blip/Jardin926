@@ -258,7 +258,7 @@
     let DATA = { mat: [], esp: [], bajas: [] };
     let ASISTENCIA_MEMORIA = {};
 
-    // Diccionario de asignación de turnos por defecto para normalizar el campo 'alu_sala' del JSON
+    // Mapeo predictivo flexible si el string no contiene el Turno incorporado
     const MAPEO_TURNOS = {
         '1ºA': '1ºA-TM', '1ºB': '1ºB-TT',
         'ME A': 'ME A-TM', 'ME B': 'ME B-TT',
@@ -335,17 +335,26 @@
                     alumnosCargados = parsed.mat;
                 } else if (Array.isArray(parsed)) {
                     alumnosCargados = parsed;
-                } else {
-                    throw new Error("Estructura inválida.");
+                } else if (parsed && typeof parsed === 'object') {
+                    // Si viene encapsulado de otra forma externa
+                    alumnosCargados = parsed.alumnos || parsed.data || [];
                 }
 
-                // Normalización de salas ("3ºA" -> "3ºA-TM") para que impacten en los componentes
+                if (alumnosCargados.length === 0) {
+                    throw new Error("No se encontraron registros de alumnos legibles en la raíz 'mat' o array base.");
+                }
+
+                // Normalización inteligente exhaustiva campo por campo
                 alumnosCargados.forEach(a => {
                     if (a.alu_sala) {
-                        const salaTrim = a.alu_sala.trim().toUpperCase();
+                        let salaTrim = a.alu_sala.trim().toUpperCase();
+                        // Remover guiones o espacios extras si los hubiere
+                        salaTrim = salaTrim.replace("-TM", "").replace("-TT", "").trim();
                         if (MAPEO_TURNOS[salaTrim]) {
                             a.alu_sala = MAPEO_TURNOS[salaTrim];
                         }
+                    } else {
+                        a.alu_sala = "1ºA-TM"; // Fallback de contingencia estructural
                     }
                     if(!a.sexo) a.sexo = (Math.random() > 0.5) ? 'M' : 'F';
                     if(!a.alu_nac) a.alu_nac = 'ARGENTINA';
@@ -358,10 +367,11 @@
                 DATA.esp = parsed.esp || [];
                 DATA.bajas = parsed.bajas || [];
                 
+                // Forzar sincronización e impacto en layouts
                 sync();
-                alert(`¡SISTEMA CONSOLIDADO!\nSe leyeron e indexaron ${DATA.mat.length} alumnos correctamente.`);
+                alert(`¡CONSOLIDACIÓN ÉLITE EXITOSA!\nSe indexaron e interpretaron ${DATA.mat.length} alumnos reales en el núcleo analítico.`);
             } catch (err) {
-                alert("ERROR CRÍTICO: Formato de archivo JSON no compatible.");
+                alert("ERROR DE LECTURA DE MATRÍCULA: Compruebe la validez del archivo .json estructurado.");
                 console.error(err);
             }
         };
@@ -486,11 +496,10 @@
     }
 
     function notificarWhatsApp(tel, nombre) {
-        if(!tel || tel.includes('0000')) return alert("Teléfono inválido.");
-        window.open(`https://wa.me/${tel}?text=CITACIÓN JARDÍN J926: Con respecto al alumno/a ${nombre}, solicitamos comunicarse a la brevedad.`, '_blank');
+        if(!tel || tel.includes('0000')) return alert("Teléfono no parametrizado.");
+        window.open//wa.me/${tel}?text=CITACIÓN JARDÍN J926: Con respecto al alumno/a ${nombre}, solicitamos comunicarse a la brevedad.`, '_blank');
     }
 
-    // GESTIÓN OPERATIVA REAL DE LA BITÁCORA DE BAJAS
     function bajaLegajo(dni) {
         const idx = DATA.mat.findIndex(x => x.alu_dni === dni);
         if(idx === -1) return;
@@ -507,7 +516,7 @@
         
         sync();
         document.getElementById('sala_detail').classList.add('hidden');
-        alert(`Baja registrada con éxito en la Bitácora del establecimiento.`);
+        alert(`Baja registrada con éxito en la Bitácora de Gestión.`);
     }
 
     function renderEspera() {
@@ -530,7 +539,7 @@
         DATA.mat.push(DATA.esp[i]);
         DATA.esp.splice(i, 1);
         sync();
-        alert("Aspirante incorporado al Legajo Activo del ciclo.");
+        alert("Aspirante incorporado al Legajo Activo.");
     }
 
     function renderAsistencia() {
@@ -578,10 +587,9 @@
 
     function alertaWAAsistencia(tel, nombre) {
         if(!tel) return;
-        window.open(`https://wa.me/${tel}?text=TITANIUM 360: Notificamos que el alumno/a ${nombre} se encuentra AUSENTE. Por favor informar motivo.`, '_blank');
+        window.open(`https://wa.me/${tel}?text=TITANIUM 360: Notificamos que el alumno/a ${nombre} se encuentra AUSENTE.`, '_blank');
     }
 
-    // PESTAÑA 5: RENDERIZADOR COMPLETO DE BITÁCORA DE BAJAS
     function renderMesesBajas() {
         const grid = document.getElementById('bajas_meses_grid'); grid.innerHTML = '';
         MESES.forEach(m => {
@@ -608,14 +616,13 @@
         });
     }
 
-    // PESTAÑA 6: MATEMÁTICA ANALÍTICA GENERAL DE SUPERVISIÓN
     function renderMetricasGlobales() {
         const total = DATA.mat.length;
         if(total === 0) {
-            document.getElementById('sup_global_genero').innerHTML = 'SIN DATOS';
-            document.getElementById('sup_global_nac').innerHTML = 'SIN DATOS';
-            document.getElementById('sup_global_vuln').innerHTML = 'SIN DATOS';
-            document.getElementById('sup_global_alertas').innerHTML = 'SIN DATOS';
+            document.getElementById('sup_global_genero').innerHTML = 'SIN DATA';
+            document.getElementById('sup_global_nac').innerHTML = 'SIN DATA';
+            document.getElementById('sup_global_vuln').innerHTML = 'SIN DATA';
+            document.getElementById('sup_global_alertas').innerHTML = 'SIN DATA';
             return;
         }
 
@@ -646,11 +653,10 @@
 
         let alertasHtml = '';
         if(sinDni > 0) alertasHtml += `<div>⚠ LEGAJOS SIN DNI: ${sinDni} ALUMNOS</div>`;
-        if(total > 400) alertasHtml += `<div>⚠ MATRÍCULA SUPERA LÍMITE ESTRUCTURAL</div>`;
+        if(total > 400) alertasHtml += `<div>⚠ MATRÍCULA EXCESIVA DETECTADA</div>`;
         document.getElementById('sup_global_alertas').innerHTML = alertasHtml || '<div>SIN INCIDENCIAS CRÍTICAS</div>';
     }
 
-    // CARDS DETALLADAS SALA POR SALA PARA SUPERVISIÓN ÉLITE
     function renderSupervision() {
         const g = document.getElementById('supervision_cards'); g.innerHTML = '';
         SALAS_INST.forEach(s => {
