@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedagogía 360 - Gestión de Matrícula</title>
+    <title>Pedagogía 360 - Gestión Avanzada de Matrícula</title>
     <style>
         :root {
             --primary: #4f46e5;
@@ -12,7 +12,6 @@
             --success-hover: #059669;
             --danger: #ef4444;
             --danger-hover: #dc2626;
-            --warning: #f59e0b;
             --bg-color: #f3f4f6;
             --card-bg: #ffffff;
             --text-main: #1f2937;
@@ -25,38 +24,31 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 20px;
+            padding: 15px;
         }
 
         .container {
-            max-width: 1300px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
         /* --- ENCABEZADO --- */
         header {
             background: var(--card-bg);
-            padding: 20px 24px;
+            padding: 16px 24px;
             border-radius: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 24px;
-            color: var(--primary);
-        }
-
-        header p {
-            margin: 4px 0 0 0;
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
+        header h1 { margin: 0; font-size: 22px; color: var(--primary); }
+        header p { margin: 4px 0 0 0; color: var(--text-muted); font-size: 13px; }
+        
         .stats-badge {
             background: #e0e7ff;
             color: var(--primary);
@@ -66,104 +58,83 @@
             font-size: 14px;
         }
 
-        /* --- SECCIÓN FORMULARIO --- */
+        /* --- FORMULARIO ESTRUCTURADO --- */
         .form-section {
             background: var(--card-bg);
-            padding: 24px;
+            padding: 20px;
             border-radius: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
 
         .form-section h2 {
-            margin-top: 0;
-            margin-bottom: 16px;
-            font-size: 18px;
-            color: var(--text-main);
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 8px;
+            margin: 0 0 16px 0;
+            font-size: 16px;
+            color: var(--primary);
+            border-bottom: 2px solid #eef2f6;
+            padding-bottom: 6px;
+        }
+
+        .fieldset-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin: 12px 0 8px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #f8fafc;
+            padding: 4px 8px;
+            border-radius: 4px;
         }
 
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 14px;
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 6px;
-            color: var(--text-muted);
-        }
-
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-size: 12px; font-weight: 500; margin-bottom: 4px; color: var(--text-muted); }
+        
         .form-group input, .form-group select {
-            padding: 10px;
+            padding: 8px 12px;
             border: 1px solid var(--border);
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 13px;
             outline: none;
-            transition: border-color 0.2s;
         }
-
-        .form-group input:focus, .form-group select:focus {
-            border-color: var(--primary);
-        }
+        .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
 
         .btn-submit {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 24px;
             border-radius: 6px;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            transition: background var 0.2s;
-            align-self: flex-end;
+            transition: background 0.2s;
+            width: 100%;
+            margin-top: 10px;
         }
 
-        .btn-submit:hover {
-            background: var(--primary-hover);
-        }
-
-        /* --- SECCIÓN BÚSQUEDA Y FILTROS --- */
+        /* --- BÚSQUEDA --- */
         .controls-section {
             background: var(--card-bg);
-            padding: 16px 24px;
+            padding: 14px 20px;
             border-radius: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             margin-bottom: 20px;
             display: flex;
-            gap: 16px;
+            gap: 12px;
             align-items: center;
-            flex-wrap: wrap;
         }
+        .search-input { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+        .filter-select { padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; min-width: 140px; }
 
-        .search-input {
-            flex: 1;
-            min-width: 250px;
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .filter-select {
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 14px;
-            min-width: 150px;
-        }
-
-        /* --- TABLA DE DATOS --- */
+        /* --- TABLA --- */
         .table-container {
             background: var(--card-bg);
             border-radius: 12px;
@@ -171,59 +142,17 @@
             overflow-x: auto;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 14px;
-        }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; min-width: 1100px; }
+        th { background-color: #f8fafc; color: var(--text-main); padding: 12px 14px; font-weight: 600; border-bottom: 2px solid var(--border); }
+        td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text-muted); vertical-align: top; }
+        tr:hover { background-color: #f8fafc; }
 
-        th {
-            background-color: #f9fafb;
-            color: var(--text-main);
-            padding: 14px 16px;
-            font-weight: 600;
-            border-bottom: 2px solid var(--border);
-        }
+        .tag-sala { background: #eef2f6; color: #334155; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+        .info-block { font-size: 11px; line-height: 1.4; margin-top: 2px; color: #64748b; }
 
-        td {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border);
-            color: var(--text-muted);
-        }
-
-        tr:hover {
-            background-color: #f9fafb;
-        }
-
-        /* --- BOTONES DE ACCIÓN --- */
-        .btn-action {
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            border: none;
-            margin-right: 4px;
-        }
-
-        .btn-edit {
-            background-color: #e0f2fe;
-            color: #0369a1;
-        }
-
-        .btn-edit:hover {
-            background-color: #bae6fd;
-        }
-
-        .btn-delete {
-            background-color: #fee2e2;
-            color: #b91c1c;
-        }
-
-        .btn-delete:hover {
-            background-color: #fecaca;
-        }
+        .btn-action { padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; border: none; margin-bottom: 4px; display: inline-block; }
+        .btn-edit { background-color: #e0f2fe; color: #0369a1; }
+        .btn-delete { background-color: #fee2e2; color: #b91c1c; }
     </style>
 </head>
 <body>
@@ -231,51 +160,118 @@
     <div class="container">
         <header>
             <div>
-                <h1 id="institucion-nombre">Sistema de Gestión Escolar</h1>
-                <p>Panel Avanzado de Control de Alumnado</p>
+                <h1 id="institucion-nombre">Cargando Institución...</h1>
+                <p>Plataforma de Control Homologada - Registro de Matrículas</p>
             </div>
-            <div class="stats-badge" id="total-alumnos-contador">Cargando matrícula...</div>
+            <div class="stats-badge" id="total-alumnos-contador">Procesando...</div>
         </header>
 
         <div class="form-section">
-            <h2 id="form-titulo">Registrar Nuevo Alumno</h2>
+            <h2 id="form-titulo">Inscripción / Modificación de Matrícula</h2>
             <form id="alumno-form" onsubmit="guardarFormulario(event)">
                 <input type="hidden" id="form-modo" value="crear">
                 <input type="hidden" id="dni-original" value="">
 
+                <div class="fieldset-title">1. Datos Personales del Alumno/a</div>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="input-nombre">Nombre Completo</label>
-                        <input type="text" id="input-nombre" required placeholder="Ej: PÉREZ JUAN">
+                        <label>Nombre Completo</label>
+                        <input type="text" id="input-nombre" required placeholder="APELLIDO NOMBRE">
                     </div>
                     <div class="form-group">
-                        <label for="input-dni">DNI</label>
+                        <label>DNI</label>
                         <input type="text" id="input-dni" required placeholder="Solo números">
                     </div>
                     <div class="form-group">
-                        <label for="input-sala">Sala / Curso</label>
+                        <label>Fecha de Nacimiento</label>
+                        <input type="date" id="input-f-nac" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Sala / Curso</label>
                         <select id="input-sala" required>
                             <option value="">Seleccionar...</option>
-                            <option value="3ºA">3ºA</option>
-                            <option value="4ºA">4ºA</option>
-                            <option value="5ºA">5ºA</option>
+                            <option value="3ºA">Sala 3ºA</option>
+                            <option value="4ºA">Sala 4ºA</option>
+                            <option value="5ºA">Sala 5ºA</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="input-domicilio">Domicilio</label>
-                        <input type="text" id="input-domicilio" placeholder="Ej: Calle Falsa 123">
-                    </div>
-                    <div class="form-group" style="justify-content: flex-end;">
-                        <button type="submit" class="btn-submit" id="btn-form-action">Añadir Alumno</button>
+                        <label>Sexo</label>
+                        <select id="input-sexo" required>
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                        </select>
                     </div>
                 </div>
+
+                <div class="form-grid">
+                    <div class="form-size-2" style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; width: 100%; grid-column: span 3;">
+                        <div class="form-group">
+                            <label>Domicilio Completo</label>
+                            <input type="text" id="input-domicilio" required placeholder="Calle, Número, Barrio">
+                        </div>
+                        <div class="form-group">
+                            <label>Nacionalidad</label>
+                            <input type="text" id="input-nac" value="ARG">
+                        </div>
+                        <div class="form-group">
+                            <label>¿Cobra AUH?</label>
+                            <select id="input-auh">
+                                <option value="SI">SI</option>
+                                <option value="NO">NO</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fieldset-title">2. Datos de la Madre / Tutora</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Nombre de la Madre</label>
+                        <input type="text" id="input-m-nombre" required placeholder="Nombre completo">
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono Madre</label>
+                        <input type="text" id="input-m-tel" required placeholder="Ej: 11...">
+                    </div>
+                    <div class="form-group">
+                        <label>Ocupación</label>
+                        <input type="text" id="input-m-ocu" placeholder="Trabajo u oficio">
+                    </div>
+                    <div class="form-group">
+                        <label>Nivel de Estudios</label>
+                        <input type="text" id="input-m-est" placeholder="Ej: Secundaria Comp.">
+                    </div>
+                </div>
+
+                <div class="fieldset-title">3. Datos del Padre / Tutor</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Nombre del Padre</label>
+                        <input type="text" id="input-p-nombre" value="S/D">
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono Padre</label>
+                        <input type="text" id="input-p-tel" value="S/D">
+                    </div>
+                    <div class="form-group">
+                        <label>Ocupación</label>
+                        <input type="text" id="input-p-ocu" value="S/D">
+                    </div>
+                    <div class="form-group">
+                        <label>Nivel de Estudios</label>
+                        <input type="text" id="input-p-est" value="S/D">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btn-form-action">Registrar Matrícula de Alumno</button>
             </form>
         </div>
 
         <div class="controls-section">
-            <input type="text" id="buscar-input" class="search-input" placeholder="Buscar por nombre o DNI..." oninput="filtrarAlumnos()">
+            <input type="text" id="buscar-input" class="search-input" placeholder="Buscar rápidamente por Apellido, Nombre o DNI..." oninput="filtrarAlumnos()">
             <select id="filtar-sala-select" class="filter-select" onchange="filtrarAlumnos()">
-                <option value="TODAS">Todas las Salas</option>
+                <option value="TODAS">Ver Todas las Salas</option>
                 <option value="3ºA">Sala 3ºA</option>
                 <option value="4ºA">Sala 4ºA</option>
                 <option value="5ºA">Sala 5ºA</option>
@@ -286,185 +282,219 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Nombre Completo</th>
-                        <th>DNI</th>
-                        <th>Sala / Curso</th>
-                        <th>Domicilio</th>
+                        <th>Datos del Alumno</th>
+                        <th>Sala</th>
+                        <th>Domicilio / Nac. / AUH</th>
+                        <th>Información de la Madre</th>
+                        <th>Información del Padre</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tabla-alumnos-cuerpo">
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding: 30px;">Cargando registros escolares desde la base de datos JSON...</td>
-                    </tr>
+                    <tr><td colspan="6" style="text-align: center; padding: 20px;">Estableciendo conexión con el archivo JSON...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
     <script>
-        // Array global en memoria para manejar las búsquedas, ediciones y filtros sin perder datos
+        // Almacenamiento dinámico de la base de datos en memoria
         let listaAlumnosGlobal = [];
 
+        // FUNCIÓN 1: Evento de arranque del navegador
         document.addEventListener('DOMContentLoaded', () => {
-            inicializarSistema();
+            inicializarMatricula();
         });
 
-        // 1. Cargar datos del archivo JSON
-        function inicializarSistema() {
+        // FUNCIÓN 2: Consumo y lectura del archivo JSON origen
+        function inicializarMatricula() {
             fetch('MATRICULA_389_FINAL_DEFINITIVA.json')
                 .then(response => {
-                    if (!response.ok) throw new Error('Error de lectura: ' + response.statusText);
+                    if (!response.ok) throw new Error('Error al leer base JSON: ' + response.statusText);
                     return response.json();
                 })
                 .then(data => {
                     if(data.institucion) document.getElementById('institucion-nombre').textContent = data.institucion;
                     
-                    // Guardamos la lista interna en nuestra variable global
+                    // CORRECCIÓN ESTRUCTURAL: Acceso directo a la propiedad "mat"
                     listaAlumnosGlobal = data.mat || [];
-                    
                     actualizarTabla(listaAlumnosGlobal);
                 })
                 .catch(error => {
-                    console.error('Error general:', error);
+                    console.error('Error:', error);
                     document.getElementById('tabla-alumnos-cuerpo').innerHTML = `
-                        <tr><td colspan="5" style="color:var(--danger); text-align:center; font-weight:bold; padding:20px;">
-                            Error al enlazar 'MATRICULA_389_FINAL_DEFINITIVA.json'. Verifica la ubicación del archivo.
+                        <tr><td colspan="6" style="color:var(--danger); text-align:center; font-weight:bold; padding:20px;">
+                            Error Crítico: El archivo 'MATRICULA_389_FINAL_DEFINITIVA.json' no se localiza en la raíz o tiene errores de sintaxis.
                         </td></tr>`;
                 });
         }
 
-        // 2. Renderizar la tabla con cualquier lista provista (filtrada o completa)
+        // FUNCIÓN 3: Renderizado e inyección de filas en la tabla HTML
         function actualizarTabla(alumnos) {
             const tablaCuerpo = document.getElementById('tabla-alumnos-cuerpo');
             tablaCuerpo.innerHTML = '';
 
-            document.getElementById('total-alumnos-contador').textContent = `Total Matriculados: ${alumnos.length}`;
+            document.getElementById('total-alumnos-contador').textContent = `Total Alumnos: ${alumnos.length}`;
 
             if(alumnos.length === 0) {
-                tablaCuerpo.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px;">No se encontraron registros coincidentes.</td></tr>`;
+                tablaCuerpo.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px;">Ningún alumno coincide con los filtros establecidos.</td></tr>`;
                 return;
             }
 
             alumnos.forEach(alumno => {
                 const fila = document.createElement('tr');
                 fila.innerHTML = `
-                    <td><strong>${alumno.alu_nombre}</strong></td>
-                    <td>${alumno.alu_dni}</td>
-                    <td><span style="background:#f3f4f6; padding:4px 8px; border-radius:4px;">${alumno.alu_sala}</span></td>
-                    <td>${alumno.alu_dom && alumno.alu_dom !== 'S/D' ? alumno.alu_dom : '<em>Sin Dirección</em>'}</td>
+                    <td>
+                        <strong style="color:var(--text-main); font-size:13px;">${alumno.alu_nombre}</strong>
+                        <div class="info-block">DNI: <strong>${alumno.alu_dni}</strong></div>
+                        <div class="info-block">F. Nac: ${alumno.alu_f_nac} | Sexo: ${alumno.sexo}</div>
+                    </td>
+                    <td><span class="tag-sala">${alumno.alu_sala}</span></td>
+                    <td>
+                        <div>${alumno.alu_dom}</div>
+                        <div class="info-block">Nac: ${alumno.alu_nac} | AUH: <strong>${alumno.alu_auh}</strong></div>
+                    </td>
+                    <td>
+                        <strong>${alumno.m_nombre}</strong>
+                        <div class="info-block">Tel: ${alumno.m_tel}</div>
+                        <div class="info-block">Ocu: ${alumno.m_ocu} | Est: ${alumno.m_est}</div>
+                    </td>
+                    <td>
+                        <strong>${alumno.p_nombre}</strong>
+                        <div class="info-block">Tel: ${alumno.p_tel}</div>
+                        <div class="info-block">Ocu: ${alumno.p_ocu} | Est: ${alumno.p_est}</div>
+                    </td>
                     <td>
                         <button class="btn-action btn-edit" onclick="cargarParaEditar('${alumno.alu_dni}')">Editar</button>
-                        <button class="btn-action btn-delete" onclick="eliminarAlumno('${alumno.alu_dni}')">Eliminar</button>
+                        <button class="btn-action btn-delete" onclick="eliminarAlumno('${alumno.alu_dni}')">Borrar</button>
                     </td>
                 `;
                 tablaCuerpo.appendChild(fila);
             });
         }
 
-        // 3. Motor de Filtro y Búsqueda combinados
+        // FUNCIÓN 4: Algoritmo de filtrado reactivo (Buscador y Selector de Salas)
         function filtrarAlumnos() {
-            const terminoBusqueda = document.getElementById('buscar-input').value.toLowerCase().trim();
-            const salaSeleccionada = document.getElementById('filtar-sala-select').value;
+            const busqueda = document.getElementById('buscar-input').value.toLowerCase().trim();
+            const salaFiltro = document.getElementById('filtar-sala-select').value;
 
-            const listaFiltrada = listaAlumnosGlobal.filter(alumno => {
-                const coincideNombre = alumno.alu_nombre.toLowerCase().includes(terminoBusqueda);
-                const coincideDNI = alumno.alu_dni.includes(terminoBusqueda);
-                const coincideSala = (salaSeleccionada === 'TODAS' || alumno.alu_sala === salaSeleccionada);
+            const filtrados = listaAlumnosGlobal.filter(alumno => {
+                const matchNombre = alumno.alu_nombre.toLowerCase().includes(busqueda);
+                const matchDni = alumno.alu_dni.includes(busqueda);
+                const matchSala = (salaFiltro === 'TODAS' || alumno.alu_sala === salaFiltro);
 
-                return (coincideNombre || coincideDNI) && coincideSala;
+                return (matchNombre || matchDni) && matchSala;
             });
 
-            actualizarTabla(listaFiltrada);
+            actualizarTabla(filtrados);
         }
 
-        // 4. Función del botón "Editar": Pasa los datos de la fila de vuelta al formulario
+        // FUNCIÓN 5: Carga selectiva de datos de la fila al formulario superior (Modo Edición)
         function cargarParaEditar(dni) {
             const alumno = listaAlumnosGlobal.find(a => a.alu_dni === dni);
             if(!alumno) return;
 
+            // Mapeo completo al Formulario
             document.getElementById('input-nombre').value = alumno.alu_nombre;
             document.getElementById('input-dni').value = alumno.alu_dni;
+            document.getElementById('input-f-nac').value = alumno.alu_f_nac;
             document.getElementById('input-sala').value = alumno.alu_sala;
-            document.getElementById('input-domicilio').value = alumno.alu_dom !== 'S/D' ? alumno.alu_dom : '';
+            document.getElementById('input-sexo').value = alumno.sexo;
+            document.getElementById('input-domicilio').value = alumno.alu_dom;
+            document.getElementById('input-nac').value = alumno.alu_nac;
+            document.getElementById('input-auh').value = alumno.alu_auh;
 
-            // Cambiamos el comportamiento del formulario a Modo Edición
+            // Datos de los padres
+            document.getElementById('input-m-nombre').value = alumno.m_nombre;
+            document.getElementById('input-m-tel').value = alumno.m_tel;
+            document.getElementById('input-m-ocu').value = alumno.m_ocu;
+            document.getElementById('input-m-est').value = alumno.m_est;
+
+            document.getElementById('input-p-nombre').value = alumno.p_nombre;
+            document.getElementById('input-p-tel').value = alumno.p_tel;
+            document.getElementById('input-p-ocu').value = alumno.p_ocu;
+            document.getElementById('input-p-est').value = alumno.p_est;
+
+            // Configuración del estado visual del formulario
             document.getElementById('form-modo').value = 'editar';
             document.getElementById('dni-original').value = alumno.alu_dni;
-            document.getElementById('form-titulo').textContent = 'Modificar Datos de Alumno';
-            document.getElementById('btn-form-action').textContent = 'Guardar Cambios';
+            document.getElementById('form-titulo').textContent = 'Modificando Ficha de Registro de: ' + alumno.alu_nombre;
+            document.getElementById('btn-form-action').textContent = 'Confirmar y Guardar Cambios';
             document.getElementById('btn-form-action').style.background = 'var(--success)';
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 5. Procesar envío del formulario (Creación o Edición)
+        // FUNCIÓN 6: Procesador del Formulario (Alta Nueva o Actualización)
         function guardarFormulario(event) {
             event.preventDefault();
 
-            const nombre = document.getElementById('input-nombre').value.toUpperCase().trim();
-            const dni = document.getElementById('input-dni').value.trim();
-            const sala = document.getElementById('input-sala').value;
-            const domicilio = document.getElementById('input-domicilio').value.trim() || 'S/D';
-            
+            // Construimos el objeto respetando de manera idéntica los nombres del JSON original
+            const alumnoEstructura = {
+                alu_nombre: document.getElementById('input-nombre').value.toUpperCase().trim(),
+                alu_dni: document.getElementById('input-dni').value.trim(),
+                alu_f_nac: document.getElementById('input-f-nac').value,
+                alu_sala: document.getElementById('input-sala').value,
+                sexo: document.getElementById('input-sexo').value,
+                alu_dom: document.getElementById('input-domicilio').value.toUpperCase().trim(),
+                alu_nac: document.getElementById('input-nac').value.toUpperCase().trim(),
+                alu_auh: document.getElementById('input-auh').value,
+                m_nombre: document.getElementById('input-m-nombre').value.toUpperCase().trim(),
+                m_tel: document.getElementById('input-m-tel').value.trim(),
+                m_ocu: document.getElementById('input-m-ocu').value.toUpperCase().trim() || 'S/D',
+                m_est: document.getElementById('input-m-est').value.toUpperCase().trim() || 'S/D',
+                p_nombre: document.getElementById('input-p-nombre').value.toUpperCase().trim() || 'S/D',
+                p_tel: document.getElementById('input-p-tel').value.trim() || 'S/D',
+                p_ocu: document.getElementById('input-p-ocu').value.toUpperCase().trim() || 'S/D',
+                p_est: document.getElementById('input-p-est').value.toUpperCase().trim() || 'S/D'
+            };
+
             const modo = document.getElementById('form-modo').value;
 
             if(modo === 'editar') {
                 const dniOriginal = document.getElementById('dni-original').value;
                 const index = listaAlumnosGlobal.findIndex(a => a.alu_dni === dniOriginal);
-                
                 if(index !== -1) {
-                    listaAlumnosGlobal[index] = {
-                        ...listaAlumnosGlobal[index],
-                        alu_nombre: nombre,
-                        alu_dni: dni,
-                        alu_sala: sala,
-                        alu_dom: domicilio
-                    };
+                    listaAlumnosGlobal[index] = alumnoEstructura;
                 }
-                alert('Registro de alumno actualizado con éxito de forma local.');
+                alert('Ficha escolar actualizada correctamente de manera local.');
             } else {
-                // Modo Crear
-                // Validar si ya existe el DNI
-                if(listaAlumnosGlobal.some(a => a.alu_dni === dni)) {
-                    alert('Error: Ya existe un alumno registrado con ese número de DNI.');
+                // Validación para no duplicar llaves DNI
+                if(listaAlumnosGlobal.some(a => a.alu_dni === alumnoEstructura.alu_dni)) {
+                    alert('Operación cancelada: El DNI ingresado ya se encuentra asignado a otro estudiante.');
                     return;
                 }
-
-                const nuevoAlumno = {
-                    alu_nombre: nombre,
-                    alu_dni: dni,
-                    alu_sala: sala,
-                    alu_dom: domicilio,
-                    alu_f_nac: "2020-01-01", // Valores por defecto para mantener consistencia estructural
-                    alu_nac: "ARG",
-                    sexo: "M"
-                };
-
-                listaAlumnosGlobal.unshift(nuevoAlumno); // Lo insertamos al inicio de la lista
-                alert('Alumno agregado con éxito a la lista de matrícula.');
+                listaAlumnosGlobal.unshift(alumnoEstructura);
+                alert('Nueva matrícula integrada con éxito.');
             }
 
-            // Restaurar el formulario a su estado original
             resetearFormulario();
-            filtrarAlumnos(); // Refrescar la tabla con los cambios aplicados
+            filtrarAlumnos();
         }
 
-        // 6. Función para eliminar alumnos de la lista local
+        // FUNCIÓN 7: Remoción lógica/física del estudiante de la memoria activa
         function eliminarAlumno(dni) {
-            if (confirm('¿Está completamente seguro de que desea remover este alumno del sistema de gestión?')) {
+            if (confirm('¿Desea dar de baja este registro de la lista de visualización activa?')) {
                 listaAlumnosGlobal = listaAlumnosGlobal.filter(a => a.alu_dni !== dni);
-                filtrarAlumnos(); // Refrescar la tabla
+                filtrarAlumnos();
             }
         }
 
+        // FUNCIÓN 8: Blanqueo y restauración de parámetros estándar del formulario
         function resetearFormulario() {
             document.getElementById('alumno-form').reset();
             document.getElementById('form-modo').value = 'crear';
             document.getElementById('dni-original').value = '';
-            document.getElementById('form-titulo').textContent = 'Registrar Nuevo Alumno';
-            document.getElementById('btn-form-action').textContent = 'Añadir Alumno';
+            document.getElementById('form-titulo').textContent = 'Inscripción / Modificación de Matrícula';
+            document.getElementById('btn-form-action').textContent = 'Registrar Matrícula de Alumno';
             document.getElementById('btn-form-action').style.background = 'var(--primary)';
+            
+            // Valores por defecto requeridos
+            document.getElementById('input-p-nombre').value = 'S/D';
+            document.getElementById('input-p-tel').value = 'S/D';
+            document.getElementById('input-p-ocu').value = 'S/D';
+            document.getElementById('input-p-est').value = 'S/D';
+            document.getElementById('input-nac').value = 'ARG';
         }
     </script>
 </body>
