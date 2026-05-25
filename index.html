@@ -4,42 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TITANIUM 360 | AUDITORÍA COMPLETA J926</title>
+    <!-- Bibliotecas Nucleares: Bootstrap, Tesseract (OCR), SheetJS (Excel) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --dark-bg: #121212; --panel-bg: #1e1e1e; --tech-blue: #00e5ff; --bionic-green: #00e676; --alert-red: #ff1744; }
-        body { background-color: var(--dark-bg); color: #e0e0e0; font-family: 'Courier New', monospace; font-size: 11px; }
+        :root { --main-dark: #121212; --panel-dark: #1e1e1e; --tech-blue: #00e5ff; --bionic-green: #00e676; --alert-red: #ff3d00; }
+        body { background-color: var(--main-dark); color: #e1e1e1; font-family: 'Segoe UI', Roboto, sans-serif; font-size: 11px; overflow-x: hidden; }
+        .font-black { font-weight: 900 !important; }
+        .bionic-text { font-family: 'Courier New', monospace; font-weight: bold; color: var(--bionic-green); text-transform: uppercase; }
         
-        /* Navbar & Tabs Biónicos */
-        .navbar { background-color: #000; border-bottom: 2px solid var(--tech-blue); box-shadow: 0 0 15px rgba(0,229,255,0.4); }
-        .nav-tabs { border: none; margin-bottom: 20px; gap: 2px; }
-        .nav-link { background-color: #1a1a1a; color: #a1a1a1; border: none; padding: 10px 15px; border-radius: 0; font-weight: 900; text-transform: uppercase; font-size: 10px; transition: 0.2s; flex: 1; text-align: center; white-space: nowrap; }
+        /* Navbar & Tabs */
+        .navbar { background-color: #000; border-bottom: 2px solid var(--tech-blue); box-shadow: 0 0 20px rgba(0, 229, 255, 0.4); }
+        .nav-tabs { border: none; margin-bottom: 20px; gap: 1px; }
+        .nav-link { background-color: #1a1a1a; color: #a1a1a1; border: none; padding: 10px 15px; border-radius: 0; text-transform: uppercase; font-size: 10px; font-weight: 900; transition: 0.2s; flex: 1; text-align: center; white-space: nowrap; }
         .nav-link:hover { color: #fff; background-color: #2a2a2a; }
-        .nav-link.active { background-color: var(--panel-bg); color: var(--tech-blue); border-bottom: 3px solid var(--tech-blue); opacity: 1; }
+        .nav-link.active { background-color: var(--panel-dark); color: var(--tech-blue); border-bottom: 4px solid var(--tech-blue); opacity: 1; }
         .orange-tab { color: #ff9800 !important; } .blue-tab { color: #2196f3 !important; } .purple-tab { color: #9c27b0 !important; } .yellow-tab { color: #ffeb3b !important; }
         
-        /* Dashboard 14 Secciones */
+        /* Dashboard 14 Tarjetas */
         .grid-salas { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 20px; }
-        @media (max-width: 1200px) { .grid-salas { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 992px) { .grid-salas { grid-template-columns: repeat(4, 1fr); } }
         @media (max-width: 768px) { .grid-salas { grid-template-columns: repeat(2, 1fr); } }
         
-        .sala-card { background: var(--panel-bg); padding: 15px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.05); }
+        .sala-card { background: var(--panel-dark); padding: 15px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.05); }
         .sala-card:hover { transform: translateY(-3px); box-shadow: 0 5px 25px rgba(0, 229, 255, 0.2); }
         
-        /* Colores Oficiales */
+        /* Paleta Oficial de Colores */
         .S-ROSA { border-top: 5px solid #ff80ab; } .S-ROJA { border-top: 5px solid #ff3b30; } .S-NARANJA { border-top: 5px solid #ff9800; }
         .S-CELESTE { border-top: 5px solid #00e5ff; } .S-VIOLETA { border-top: 5px solid #8e24aa; } .S-AMARILLA { border-top: 5px solid #ffd600; }
         .S-AZUL { border-top: 5px solid #007bff; }
         
         /* Módulos */
-        .module-pane { display: none; background: var(--panel-bg); padding: 25px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.08); position: relative; }
+        .module-pane { display: none; background: var(--panel-dark); padding: 25px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.08); position: relative; }
         .module-pane.active { display: block; }
         
         /* Inputs Pro */
-        .form-control-pro { background-color: #000; border: 1px solid #333; color: #fff; padding: 10px; font-weight: 700; text-transform: uppercase; border-left: 4px solid var(--tech-blue); border-radius: 6px; font-size: 10px; margin-bottom: 5px; }
+        .form-control-pro { background-color: #000; border: 1px solid #333; color: #fff; padding: 10px; font-weight: bold; text-transform: uppercase; border-left: 4px solid var(--tech-blue); border-radius: 6px; font-size: 10px; margin-bottom: 5px; }
         .form-control-pro:focus { border-color: var(--tech-blue); color: #fff; outline: none; background: #0c0c0c; }
-        .btn-bionic-voz { background-color: var(--bionic-green); color: #000; font-weight: 700; font-size: 10px; text-transform: uppercase; border: none; padding: 6px 12px; border-radius: 6px; display: flex; align-items: center; gap: 6px; }
+        .btn-bionic-voz { background-color: var(--bionic-green); color: #000; font-weight: bold; font-size: 10px; text-transform: uppercase; border: none; padding: 6px 12px; border-radius: 6px; display: flex; align-items: center; gap: 6px; }
         
         /* Asistencia OCR */
         #ocr_resultado_container { margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.5); border-radius: 8px; border: 1px dashed rgba(255,255,255,0.1); }
@@ -49,23 +53,25 @@
 <body onload="initSystem()">
 
 <nav class="navbar navbar-dark sticky-top">
-    <div class="container-fluid">
+    <div class="container-fluid px-4">
         <div class="d-flex align-items-center gap-3">
             <span class="navbar-brand mb-0 h1 font-black" style="color: var(--tech-blue);">TITANIUM 360</span>
-            <span class="text-white opacity-50 text-uppercase" style="font-size: 11px; font-weight: 900;">Auditoría Complete J926</span>
-            <span class="text-white opacity-70" style="font-size: 14px; font-weight: 700;">Mtr Act: <span id="header_total_alumnos">0</span></span>
+            <span class="text-white opacity-50 text-uppercase font-black" style="font-size: 12px;">Auditoría J926</span>
+            <span class="bionic-text" style="font-size: 14px;">Mtr Act: <span id="header_total_alumnos">0</span></span>
         </div>
         <div class="d-flex align-items-center gap-2">
             <div class="bg-black p-2 rounded d-flex align-items-center gap-1">
-                <span class="text-danger font-black text-uppercase" style="font-size: 8px;">Alerta Dir:</span>
+                <span class="text-danger font-black text-uppercase" style="font-size: 9px;">Alerta Dir:</span>
                 <span class="text-white font-black" id="alerta_dir_tel">541100000000</span>
             </div>
-            <button class="btn btn-outline-info text-uppercase" style="font-size: 9px; font-weight: 900;" onclick="exportarXLSX_Oficial()">📥 Exportar Supervisión</button>
+            <button class="btn btn-outline-info text-uppercase font-black" style="font-size: 9px;" onclick="importarJSON()">📥 Importar JSON</button>
+            <button class="btn btn-outline-success text-uppercase font-black" style="font-size: 9px;" onclick="exportarXLSX_Oficial()">📥 Exportar Supervisión</button>
         </div>
     </div>
 </nav>
 
-<div class="container-fluid mt-3 px-4">
+<div class="container-fluid mt-1 px-4">
+    <!-- Pestañas de Navegación -->
     <ul class="nav nav-tabs" id="nav_main_tabs">
         <li class="nav-item"><a class="nav-link active" onclick="mostrarPane('tab-dashboard')">Dashboard 14 Salas</a></li>
         <li class="nav-item"><a class="nav-link orange-tab" onclick="mostrarPane('tab-legajos')">1. Radar 360 & Legajo</a></li>
@@ -74,10 +80,12 @@
         <li class="nav-item"><a class="nav-link yellow-tab" onclick="mostrarPane('tab-supervision')">6. Supervisión Élite</a></li>
     </ul>
 
+    <!-- Contenido de Pestañas -->
     <div id="tab-dashboard" class="module-pane active">
         <h4 class="text-white mb-3 text-uppercase font-black" style="font-size: 13px;">Fotografía Poblacional Interactiva (Tiempo Real)</h4>
         <div id="grid_14_salas" class="grid-salas">
-            </div>
+            <!-- Inyección dinámica de las 14 tarjetas de colores -->
+        </div>
     </div>
 
     <div id="tab-legajos" class="module-pane">
@@ -91,6 +99,7 @@
                 <div id="radar_result_container"></div>
             </div>
             <div class="col-md-8">
+                <!-- Formulario de Legajo Completo -->
                 <div class="p-3 bg-black rounded" id="legajo_360_form">
                     <h5 class="text-info font-black border-b pb-2 mb-3">DATOS ALUMNO <span class="text-white text-uppercase" id="form_calc_edad"></span></h5>
                     <input id="alu_nombre" class="form-control-pro" placeholder="APELLIDO Y NOMBRE">
@@ -98,7 +107,8 @@
                         <input id="alu_dni" class="form-control-pro" placeholder="DNI">
                         <input id="alu_nac" class="form-control-pro" placeholder="NACIONALIDAD">
                     </div>
-                    </div>
+                    <!-- Lógica espejo de padres, CUD, etc... -->
+                </div>
             </div>
         </div>
     </div>
@@ -122,7 +132,8 @@
     <div id="tab-bajas" class="module-pane">
         <div class="row">
             <div class="col-md-5 mes-grid" id="bajas_mes_select">
-                </div>
+                <!-- Botones Mes a Mes -->
+            </div>
             <div class="col-md-7">
                 <h4 class="text-white font-black" style="font-size: 13px;">Bitácora de Bajas Críticas J926</h4>
                 <div id="bitacora_detalle">Selecciona un mes.</div>
@@ -132,7 +143,8 @@
 
     <div id="tab-supervision" class="module-pane">
         <div class="row g-3" id="supervision_elite_stats">
-            </div>
+            <!-- Paneles Analíticos Globales -->
+        </div>
         <button class="btn btn-danger mt-3 font-black text-uppercase" style="font-size: 11px;" onclick="abrirAlertaDirectiva()">🚨 Alerta Directiva J926</button>
     </div>
 </div>
