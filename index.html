@@ -4,24 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TITANIUM 360 | AUDITORÍA COMPLETA J926</title>
-    <!-- Bibliotecas Nucleares: Bootstrap, Tesseract (OCR), SheetJS (Excel) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root { --main-dark: #121212; --panel-dark: #1e1e1e; --tech-blue: #00e5ff; --bionic-green: #00e676; --alert-red: #ff3d00; }
-        body { background-color: var(--main-dark); color: #e1e1e1; font-family: 'Segoe UI', Roboto, sans-serif; font-size: 11px; overflow-x: hidden; }
+        body { background-color: var(--main-dark); color: #e1e1e1; font-family: 'Courier New', monospace; font-size: 11px; overflow-x: hidden; }
         .font-black { font-weight: 900 !important; }
         .bionic-text { font-family: 'Courier New', monospace; font-weight: bold; color: var(--bionic-green); text-transform: uppercase; }
         
-        /* Navbar & Tabs */
+        /* Navbar & Tabs Biónicos */
         .navbar { background-color: #000; border-bottom: 2px solid var(--tech-blue); box-shadow: 0 0 20px rgba(0, 229, 255, 0.4); }
         .nav-tabs { border: none; margin-bottom: 20px; gap: 1px; }
-        .nav-link { background-color: #1a1a1a; color: #a1a1a1; border: none; padding: 10px 15px; border-radius: 0; text-transform: uppercase; font-size: 10px; font-weight: 900; transition: 0.2s; flex: 1; text-align: center; white-space: nowrap; }
+        .nav-link { background-color: #1a1a1a; color: #a1a1a1; border: none; padding: 10px 15px; border-radius: 0; text-transform: uppercase; font-size: 10px; font-weight: 900; transition: 0.2s; flex: 1; text-align: center; white-space: nowrap; cursor: pointer; }
         .nav-link:hover { color: #fff; background-color: #2a2a2a; }
         .nav-link.active { background-color: var(--panel-dark); color: var(--tech-blue); border-bottom: 4px solid var(--tech-blue); opacity: 1; }
-        .orange-tab { color: #ff9800 !important; } .blue-tab { color: #2196f3 !important; } .purple-tab { color: #9c27b0 !important; } .yellow-tab { color: #ffeb3b !important; }
+        .orange-tab { color: #ff9800 !important; } .blue-tab { color: #2196f3 !important; } .purple-tab { color: #9c27b0 !important; } .yellow-tab { color: #ffeb3b !important; } .red-tab { color: #f44336 !important; }
         
         /* Dashboard 14 Tarjetas */
         .grid-salas { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 20px; }
@@ -31,32 +30,54 @@
         .sala-card { background: var(--panel-dark); padding: 15px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.05); }
         .sala-card:hover { transform: translateY(-3px); box-shadow: 0 5px 25px rgba(0, 229, 255, 0.2); }
         
-        /* Paleta Oficial de Colores */
+        /* Paleta Oficial de Colores Salas */
         .S-ROSA { border-top: 5px solid #ff80ab; } .S-ROJA { border-top: 5px solid #ff3b30; } .S-NARANJA { border-top: 5px solid #ff9800; }
         .S-CELESTE { border-top: 5px solid #00e5ff; } .S-VIOLETA { border-top: 5px solid #8e24aa; } .S-AMARILLA { border-top: 5px solid #ffd600; }
         .S-AZUL { border-top: 5px solid #007bff; }
         
-        /* Módulos */
+        /* Módulos SPA */
         .module-pane { display: none; background: var(--panel-dark); padding: 25px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.08); position: relative; }
         .module-pane.active { display: block; }
         
-        /* Inputs Pro */
+        /* Inputs Pro & Botones */
         .form-control-pro { background-color: #000; border: 1px solid #333; color: #fff; padding: 10px; font-weight: bold; text-transform: uppercase; border-left: 4px solid var(--tech-blue); border-radius: 6px; font-size: 10px; margin-bottom: 5px; }
         .form-control-pro:focus { border-color: var(--tech-blue); color: #fff; outline: none; background: #0c0c0c; }
-        .btn-bionic-voz { background-color: var(--bionic-green); color: #000; font-weight: bold; font-size: 10px; text-transform: uppercase; border: none; padding: 6px 12px; border-radius: 6px; display: flex; align-items: center; gap: 6px; }
+        .btn-bionic { font-weight: bold; font-size: 10px; text-transform: uppercase; border: none; padding: 6px 12px; border-radius: 6px; display: flex; align-items: center; gap: 6px; }
+        .btn-voz { background-color: var(--bionic-green); color: #000; }
+        .btn-radar { background-color: var(--tech-blue); color: #000; }
         
-        /* Asistencia OCR */
-        #ocr_resultado_container { margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.5); border-radius: 8px; border: 1px dashed rgba(255,255,255,0.1); }
+        /* Tabla Legajos */
+        #radar_result_container { max-height: 400px; overflow-y: auto; margin-top: 10px; }
+        .table-legajos { width: 100%; border-collapse: separate; border-spacing: 0 5px; }
+        .table-legajos tr { background-color: rgba(255,255,255,0.03); cursor: pointer; transition: 0.1s; }
+        .table-legajos tr:hover { background-color: rgba(0, 229, 255, 0.1); }
+        .table-legajos td { padding: 8px; font-family: 'Courier New', monospace; color: #fff; }
+        
+        /* Matriz Educación Padres */
+        .educacion-matrix { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; font-size: 9px; margin-bottom: 5px; }
+        .ed-cell { background: #111; padding: 4px; text-align: center; border-radius: 4px; border: 1px solid #333; }
+        .ed-cell.complete { background: rgba(0, 230, 118, 0.2); border-color: var(--bionic-green); color: var(--bionic-green); }
+        
+        /* Bajas Mes Grid */
+        .mes-bajas-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 10px; margin-top: 15px; }
+        .mes-baja-card { background: #000; border: 1px solid #333; color: var(--tech-blue); text-align: center; padding: 10px; border-radius: 8px; cursor: pointer; text-transform: uppercase; font-size: 10px; font-weight: bold; }
+        .mes-baja-card:hover { background-color: var(--panel-dark); }
         
     </style>
 </head>
 <body onload="initSystem()">
 
+<div style="position: fixed; top: 0; right: 0; display: flex; gap: 5px; padding: 5px; z-index: 2000;">
+    <div style="width: 12px; height: 12px; background: #555; border-radius: 50%; cursor: pointer;"></div>
+    <div style="width: 12px; height: 12px; background: #555; border-radius: 50%; cursor: pointer;"></div>
+    <div style="width: 12px; height: 12px; background: #ff3d00; border-radius: 50%; cursor: pointer;" onclick="window.close()"></div>
+</div>
+
 <nav class="navbar navbar-dark sticky-top">
     <div class="container-fluid px-4">
         <div class="d-flex align-items-center gap-3">
             <span class="navbar-brand mb-0 h1 font-black" style="color: var(--tech-blue);">TITANIUM 360</span>
-            <span class="text-white opacity-50 text-uppercase font-black" style="font-size: 12px;">Auditoría J926</span>
+            <span class="text-white opacity-50 text-uppercase font-black" style="font-size: 12px;">Auditoría Complete J926</span>
             <span class="bionic-text" style="font-size: 14px;">Mtr Act: <span id="header_total_alumnos">0</span></span>
         </div>
         <div class="d-flex align-items-center gap-2">
@@ -64,105 +85,167 @@
                 <span class="text-danger font-black text-uppercase" style="font-size: 9px;">Alerta Dir:</span>
                 <span class="text-white font-black" id="alerta_dir_tel">541100000000</span>
             </div>
-            <button class="btn btn-outline-info text-uppercase font-black" style="font-size: 9px;" onclick="importarJSON()">📥 Importar JSON</button>
-            <button class="btn btn-outline-success text-uppercase font-black" style="font-size: 9px;" onclick="exportarXLSX_Oficial()">📥 Exportar Supervisión</button>
+            <input type="file" id="import_json_input" class="hidden" accept=".json" onchange="handleJSONLoad(event)">
+            <button class="btn btn-outline-info text-uppercase font-black" style="font-size: 9px;" onclick="document.getElementById('import_json_input').click()">📥 Importar JSON (Matrícula)</button>
+            <button class="btn btn-outline-success text-uppercase font-black" style="font-size: 9px;" onclick="exportarExcelOficial()">📥 Exportar Supervisión Excel</button>
         </div>
     </div>
 </nav>
 
 <div class="container-fluid mt-1 px-4">
-    <!-- Pestañas de Navegación -->
     <ul class="nav nav-tabs" id="nav_main_tabs">
-        <li class="nav-item"><a class="nav-link active" onclick="mostrarPane('tab-dashboard')">Dashboard 14 Salas</a></li>
+        <li class="nav-item"><a class="nav-link active" onclick="mostrarPane('tab-dashboard')">Dashboard Institucional</a></li>
         <li class="nav-item"><a class="nav-link orange-tab" onclick="mostrarPane('tab-legajos')">1. Radar 360 & Legajo</a></li>
+        <li class="nav-item"><a class="nav-link purple-tab" onclick="mostrarPane('tab-lista-espera')">3. Lista Espera Pro</a></li>
         <li class="nav-item"><a class="nav-link blue-tab" onclick="mostrarPane('tab-asistencia')">4. Asistencia Espejo & OCR</a></li>
-        <li class="nav-item"><a class="nav-link purple-tab" onclick="mostrarPane('tab-bajas')">5. Bitácora de Bajas</a></li>
+        <li class="nav-item"><a class="nav-link red-tab" onclick="mostrarPane('tab-bajas')">5. Bitácora de Bajas</a></li>
         <li class="nav-item"><a class="nav-link yellow-tab" onclick="mostrarPane('tab-supervision')">6. Supervisión Élite</a></li>
     </ul>
 
-    <!-- Contenido de Pestañas -->
     <div id="tab-dashboard" class="module-pane active">
         <h4 class="text-white mb-3 text-uppercase font-black" style="font-size: 13px;">Fotografía Poblacional Interactiva (Tiempo Real)</h4>
         <div id="grid_14_salas" class="grid-salas">
-            <!-- Inyección dinámica de las 14 tarjetas de colores -->
-        </div>
+            </div>
     </div>
 
     <div id="tab-legajos" class="module-pane">
         <div class="d-flex justify-between items-center mb-4">
             <h4 class="text-white text-uppercase font-black" style="font-size: 13px;">Radar de Búsqueda & Ficha Individual 360</h4>
-            <button class="btn-bionic-voz" onclick="iniciarReconocimientoVoz()"><i class="bi bi-mic-fill"></i> Comando Voz Biónica</button>
+            <div class="d-flex gap-2">
+                <button class="btn-bionic btn-voz" onclick="iniciarReconocimientoVoz()"><i class="bi bi-mic-fill"></i> Comando Voz</button>
+                <button class="btn-bionic btn-radar" onclick="iniciarEscaneoDNI()"><i class="bi bi-qr-code-scan"></i> Escanear</button>
+            </div>
         </div>
         <div class="row">
             <div class="col-md-4">
-                <input type="text" id="radar_filtro" class="form-control-pro w-100" placeholder="🔍 Radar: DNI, Nombre, Sala..." onkeyup="radarFiltroDinamico()">
-                <div id="radar_result_container"></div>
+                <input type="text" id="radar_filtro" class="form-control-pro w-100" placeholder="🔍 Radar: DNI, Apellido, Sala..." onkeyup="radarFiltroDinamico()">
+                <div id="radar_result_container">
+                    <table class="table-legajos"><tbody id="radar_result_body"></tbody></table>
+                </div>
             </div>
             <div class="col-md-8">
-                <!-- Formulario de Legajo Completo -->
                 <div class="p-3 bg-black rounded" id="legajo_360_form">
-                    <h5 class="text-info font-black border-b pb-2 mb-3">DATOS ALUMNO <span class="text-white text-uppercase" id="form_calc_edad"></span></h5>
-                    <input id="alu_nombre" class="form-control-pro" placeholder="APELLIDO Y NOMBRE">
-                    <div class="grid grid-cols-2 gap-2">
-                        <input id="alu_dni" class="form-control-pro" placeholder="DNI">
-                        <input id="alu_nac" class="form-control-pro" placeholder="NACIONALIDAD">
+                    <div id="legajo_360_empty" class="text-center p-5 opacity-50">Selecciona un alumno del Radar.</div>
+                    <div id="legajo_360_content" class="hidden">
+                        <div class="d-flex justify-between border-b pb-2 mb-3">
+                            <h5 class="text-info font-black text-uppercase" style="font-size: 12px;">DATOS ALUMNO <span class="text-white text-uppercase font-black" id="form_calc_edad"></span></h5>
+                            <div class="d-flex gap-1">
+                                <button class="btn btn-sm btn-outline-light" onclick="editarLegajo()">EDITAR</button>
+                                <button class="btn btn-sm btn-outline-success" onclick="guardarLegajo()">GUARDAR</button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="darBajaAlumno()"><i class="bi bi-x-circle-fill"></i> BAJA</button>
+                            </div>
+                        </div>
+                        <input id="alu_nombre" class="form-control-pro w-100" placeholder="APELLIDO Y NOMBRE" disabled>
+                        <div class="row g-2">
+                            <div class="col-md-4"><input id="alu_dni" class="form-control-pro w-100" placeholder="DNI" disabled></div>
+                            <div class="col-md-4"><input id="alu_nac" class="form-control-pro w-100" placeholder="NACIONALIDAD" disabled></div>
+                            <div class="col-md-4"><input id="alu_dob" class="form-control-pro w-100" placeholder="FECHA NAC" disabled></div>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md-6"><input id="alu_domicilio" class="form-control-pro w-100" placeholder="DOMICILIO" disabled></div>
+                            <div class="col-md-3"><input id="alu_tel" class="form-control-pro w-100" placeholder="TELÉFONO" disabled></div>
+                            <div class="col-md-3"><input id="alu_sala_id" class="form-control-pro w-100" placeholder="SALA" disabled></div>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-6"><input id="alu_hermanos_jardin" class="form-control-pro w-100" placeholder="HERMANOS EN JARDÍN" disabled></div>
+                            <div class="col-md-6"><input id="alu_ficha_salud" class="form-control-pro w-100" placeholder="FICHA SALUD (CUD/ENF)" disabled></div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6 border-r pr-3">
+                                <h6 class="orange-tab font-black text-uppercase" style="font-size: 11px;">DATOS MADRE / ADULTO 1</h6>
+                                <input id="m_nombre" class="form-control-pro w-100" placeholder="NOMBRE MADRE" disabled>
+                                <div class="row g-2">
+                                    <div class="col-md-6"><input id="m_dni" class="form-control-pro w-100" placeholder="DNI" disabled></div>
+                                    <div class="col-md-6"><input id="m_nac" class="form-control-pro w-100" placeholder="NACIONALIDAD" disabled></div>
+                                </div>
+                                <input id="m_ocupacion" class="form-control-pro w-100" placeholder="OCUPACIÓN" disabled>
+                                <p class="text-uppercase font-black mb-1" style="font-size: 8px; color: var(--tech-blue);">Estudios:</p>
+                                <div class="educacion-matrix" id="m_educacion_matrix">
+                                    <div class="ed-cell m-pri" data-ed="pri">PRI</div><div class="ed-cell m-sec" data-ed="sec">SEC</div><div class="ed-cell m-ter" data-ed="ter">TER</div>
+                                    <div class="ed-cell m-uni" data-ed="uni">UNI</div><div class="ed-cell m-sin" data-ed="sin">SIN EST.</div>
+                                </div>
+                                <div class="row g-2 mt-2">
+                                    <div class="col-md-6"><input id="m_domicilio" class="form-control-pro w-100" placeholder="DOMICILIO" disabled></div>
+                                    <div class="col-md-6"><input id="m_tel" class="form-control-pro w-100" placeholder="TEL" disabled></div>
+                                </div>
+                                <div class="d-flex gap-2 mt-1 align-items-center">
+                                    <input id="m_auh" class="form-control-pro w-50" placeholder="AUH (SI/NO)" disabled>
+                                    <button class="btn btn-sm btn-outline-info w-50" onclick="notificarAdulto('m')">NOTIFICAR (M)</button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="blue-tab font-black text-uppercase" style="font-size: 11px;">DATOS PADRE / ADULTO 2</h6>
+                                <input id="p_nombre" class="form-control-pro w-100" placeholder="NOMBRE PADRE" disabled>
+                                <div class="row g-2">
+                                    <div class="col-md-6"><input id="p_dni" class="form-control-pro w-100" placeholder="DNI" disabled></div>
+                                    <div class="col-md-6"><input id="p_nac" class="form-control-pro w-100" placeholder="NACIONALIDAD" disabled></div>
+                                </div>
+                                <input id="p_ocupacion" class="form-control-pro w-100" placeholder="OCUPACIÓN" disabled>
+                                <p class="text-uppercase font-black mb-1" style="font-size: 8px; color: var(--tech-blue);">Estudios:</p>
+                                <div class="educacion-matrix" id="p_educacion_matrix">
+                                    <div class="ed-cell p-pri" data-ed="pri">PRI</div><div class="ed-cell p-sec" data-ed="sec">SEC</div><div class="ed-cell p-ter" data-ed="ter">TER</div>
+                                    <div class="ed-cell p-uni" data-ed="uni">UNI</div><div class="ed-cell p-sin" data-ed="sin">SIN EST.</div>
+                                </div>
+                                <div class="row g-2 mt-2">
+                                    <div class="col-md-6"><input id="p_domicilio" class="form-control-pro w-100" placeholder="DOMICILIO (MISMA/OTRO)" disabled></div>
+                                    <div class="col-md-6"><input id="p_tel" class="form-control-pro w-100" placeholder="TEL" disabled></div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-info w-100 mt-1" onclick="notificarAdulto('p')">NOTIFICAR (P)</button>
+                            </div>
+                        </div>
                     </div>
-                    <!-- Lógica espejo de padres, CUD, etc... -->
                 </div>
             </div>
         </div>
     </div>
 
+    <div id="tab-lista-espera" class="module-pane">
+        <h4 class="purple-tab font-black text-uppercase" style="font-size: 13px;">Lista de Espera Pro J926</h4>
+        </div>
+
     <div id="tab-asistencia" class="module-pane">
         <div class="row">
             <div class="col-md-6">
-                <h4 class="text-white font-black" style="font-size: 13px;">📷 Subir Foto Registro Manual</h4>
+                <h4 class="blue-tab font-black" style="font-size: 13px;">📷 Carga Biónica Asistencia (OCR)</h4>
                 <input type="file" id="up_asistencia" class="form-control-pro mb-3" onchange="procesarOCR_Asistencia()">
                 <div class="bg-black p-3 rounded" id="ocr_resultado_container">
-                    <p class="text-success font-black">Cálculo de Presentes/Ausentes...</p>
+                    <p class="bionic-text">Cálculo de Presentes/Ausentes...</p>
                 </div>
             </div>
             <div class="col-md-6">
-                <h4 class="text-white font-black" style="font-size: 13px;">Métricas Media Mensual</h4>
+                <h4 class="text-white font-black" style="font-size: 13px;">Métricas Media Mensual J926</h4>
                 <div id="asistencia_media_container"></div>
             </div>
         </div>
     </div>
 
     <div id="tab-bajas" class="module-pane">
-        <div class="row">
-            <div class="col-md-5 mes-grid" id="bajas_mes_select">
-                <!-- Botones Mes a Mes -->
+        <h4 class="red-tab font-black text-uppercase" style="font-size: 13px;">Bitácora de Seguimiento de Bajas Anual J926</h4>
+        <div class="mes-bajas-grid" id="bajas_mes_select">
             </div>
-            <div class="col-md-7">
-                <h4 class="text-white font-black" style="font-size: 13px;">Bitácora de Bajas Críticas J926</h4>
-                <div id="bitacora_detalle">Selecciona un mes.</div>
-            </div>
+        <div id="bitacora_detalle" class="mt-4 bg-black p-3 rounded hidden">
+            <h5 class="text-white font-black" id="baja_mes_titulo">Mes</h5>
+            <div id="bitacora_sala_by_sala"></div>
         </div>
     </div>
 
     <div id="tab-supervision" class="module-pane">
         <div class="row g-3" id="supervision_elite_stats">
-            <!-- Paneles Analíticos Globales -->
-        </div>
+            </div>
         <button class="btn btn-danger mt-3 font-black text-uppercase" style="font-size: 11px;" onclick="abrirAlertaDirectiva()">🚨 Alerta Directiva J926</button>
     </div>
 </div>
 
 <script>
     // --- NÚCLEO DEL MOTOR DE DATOS (J926) ---
-    // En GitHub, este array se llenará cargando el archivo MATRICULA_389_FINAL_DEFINITIVA.json
+    // HEART_BEAT: Carga real del JSON MATRICULA_389_FINAL_DEFINITIVA.json
     let j926_db = []; 
     let bajas_db = [];
+    let espera_db = [];
+    let selectedAlumnoDNI = null;
 
-    // Mapeo predictivo flexible de las 14 salas (color y turno)
-    const MAPEO_TURNOS = {
-        '1ºA': '1ºA-TM', '1ºB': '1ºB-TT', 'ME A': 'ME A-TM', 'ME B': 'ME B-TT',
-        '2ºA': '2ºA-TM', '2ºC': '2ºC-TT', '2ºB': '2ºB-TM', '2ºD': '2ºD-TT',
-        '3ºA': '3ºA-TM', '3ºD': '3ºD-TT', '3ºB': '3ºB-TM', '3ºE': '3ºE-TT',
-        '3ºC': '3ºC-TM', '3ºF': '3ºF-TT'
-    };
-
+    // Paleta de Colores y Turnos (Predictivo Flexible)
     const SALAS = [
         {id:'1ºA-TM', c:'ROSA', t:'TM', s:'1ºA'}, {id:'1ºB-TT', c:'ROSA', t:'TT', s:'1ºB'},
         {id:'ME A-TM', c:'NARANJA', t:'TM', s:'ME A'}, {id:'ME B-TT', c:'NARANJA', t:'TT', s:'ME B'},
@@ -177,101 +260,167 @@
 
     function initSystem() {
         console.log("TITANIUM 360 Iniciado para Jardín J926");
-        // Reemplazar la simulación por la carga de tu JSON
-        simularCargaDatos(); 
+        // No hay simulación, esperamos la carga del JSON
+        renderBajasGrid();
+    }
+
+    // --- FUNCIÓN NUCLEA: CARGA JSON REAL ---
+    function handleJSONLoad(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                // Mapeo predictivo flexible del archivo de 389 alumnos
+                j926_db = data.mat || data; 
+                if (j926_db.length > 0) {
+                    poblarSistemaConDatosReales();
+                    alert(`✅ TITANIUM 360: Matrícula J926 importada con éxito. Total: ${j926_db.length} legajos activos.`);
+                }
+            } catch (err) { alert("❌ Error: Archivo JSON corrupto o formato incorrecto."); console.error(err); }
+        };
+        reader.readAsText(file);
+    }
+
+    function poblarSistemaConDatosReales() {
+        // Actualizar Cabecera y Radar
+        document.getElementById('header_total_alumnos').innerText = j926_db.length;
+        radarFiltroDinamico();
+        
+        // Regenerar Módulos Analíticos
         renderGridSalas();
         generarStatsSupervision();
+        
+        // Mover a Dashboard por defecto
+        mostrarPane('tab-dashboard');
     }
 
-    function simularCargaDatos() {
-        // En producción GitHub, usar fetch() para cargar tu JSON real
-        j926_db = Array.from({length: 389}, (_, i) => ({
-            alu_dni: 45000000 + i,
-            alu_nombre: "ALUMNO " + i,
-            sexo: Math.random() > 0.5 ? 'M' : 'F',
-            alu_sala: SALAS[Math.floor(Math.random() * 14)].id,
-            alu_nac: Math.random() > 0.3 ? 'ARGENTINO' : 'PARAGUAYO',
-            alu_auh: Math.random() > 0.2 ? 'SI' : 'NO'
-        }));
-    }
-
-    // --- FUNCIÓN OPERATIVA: DASHBOARD (FOTO POBLACIONAL) ---
+    // --- MÓDULO DASHBOARD 14 TARJETAS INTERACTIVAS ---
     function renderGridSalas() {
         const grid = document.getElementById('grid_14_salas');
         grid.innerHTML = '';
         SALAS.forEach(sala => {
-            const arr = j926_db.filter(a => a.alu_sala === sala.id);
-            const varones = arr.filter(a => a.sexo === 'M').length;
-            const mujeres = arr.length - varones;
+            const arr = j926_db.filter(a => a.alu_sala_id === sala.id);
             grid.innerHTML += `
                 <div class="sala-card S-${sala.c}" onclick="abrirLegajosPorSala('${sala.id}')">
                     <p class="text-uppercase font-black" style="font-size: 8px;">${sala.t}</p>
                     <p class="text-white font-black text-uppercase" style="font-size: 10px;">${sala.c}</p>
                     <h2 class="text-white bionic-text" style="font-size: 24px;">${arr.length}</h2>
-                    <p class="nene-femenino" style="font-size: 8px;">V: ${varones} | M: ${mujeres}</p>
                     <p class="text-uppercase font-black" style="font-size: 9px;">${sala.s}</p>
                 </div>
             `;
         });
     }
 
-    // --- FUNCIÓN BIÓNICA: OCR ASISTENCIA ---
-    async function procesarOCR_Asistencia() {
-        const input = document.getElementById('up_asistencia');
-        const container = document.getElementById('ocr_resultado_container');
-        container.innerHTML = '<span class="bionic-text">Analizando Registro Analógico...</span>';
+    // --- MÓDULO RADAR 360 & LEGAJO COMPLETO (PESTAÑA 1) ---
+    function abrirLegajosPorSala(salaId) {
+        mostrarPane('tab-legajos');
+        document.getElementById('radar_filtro').value = salaId;
+        radarFiltroDinamico();
+    }
+
+    function radarFiltroDinamico() {
+        const q = document.getElementById('radar_filtro').value.toUpperCase();
+        const results = j926_db.filter(a => a.alu_nombre.includes(q) || a.alu_dni.toString().includes(q) || a.alu_sala_id.includes(q)).slice(0, 50);
         
-        try {
-            const { data: { text } } = await Tesseract.recognize(input.files[0], 'spa');
-            // Lógica matemática para contar Presentes (P) y Ausentes (A)
-            const pCount = (text.match(/p/gi) || []).length;
-            const aCount = (text.match(/a/gi) || []).length;
-            const total = pCount + aCount;
-            const promedio = total > 0 ? ((pCount / total) * 100).toFixed(1) : 0;
-            
-            container.innerHTML = `
-                <h5 class="text-success font-black border-b pb-2 mb-3">REGISTRO J926 DETECTADO</h5>
-                <p>Presentes: ${pCount} | Ausentes: ${aCount}</p>
-                <h3 class="bionic-text" style="font-size: 24px;">ASISTENCIA: ${promedio}% MEDIA</h3>
-            `;
-        } catch (error) { console.error("OCR Falló:", error); container.innerHTML = '<span class="text-danger">Error en Escaneo.</span>'; }
+        const body = document.getElementById('radar_result_body');
+        body.innerHTML = results.map(a => `<tr onclick="cargarLegajoCompleto(${a.alu_dni})"><td>${a.alu_nombre}</td><td>${a.alu_dni}</td><td>${a.alu_sala_id}</td></tr>`).join('');
     }
 
-    // --- FUNCIÓN ANALÍTICA: SUPERVISIÓN ELITE ---
-    function generarStatsSupervision() {
-        const s = document.getElementById('supervision_elite_stats');
-        const total = j926_db.length;
-        if (total === 0) return;
-
-        const arg = j926_db.filter(a => a.alu_nac.includes('ARG')).length;
-        const par = j926_db.filter(a => a.alu_nac.includes('PAR')).length;
-        const auh = j926_db.filter(a => a.alu_auh === 'SI').length;
+    function cargarLegajoCompleto(dni) {
+        selectedAlumnoDNI = dni;
+        const alu = j926_db.find(a => a.alu_dni === dni);
+        if (!alu) return;
         
-        s.innerHTML = `
-            <div class="col-md-3"><div class="bg-black p-3 rounded">Nac ARG: ${((arg/total)*100).toFixed(1)}%</div></div>
-            <div class="col-md-3"><div class="bg-black p-3 rounded">Nac PAR: ${((par/total)*100).toFixed(1)}%</div></div>
-            <div class="col-md-3"><div class="bg-black p-3 rounded">Vulnerabilidad AUH: ${((auh/total)*100).toFixed(1)}%</div></div>
-            <div class="col-md-3"><div class="bg-black p-3 rounded críticas-baja">DNI Incompleto: 0</div></div>
-        `;
+        document.getElementById('legajo_360_empty').classList.add('hidden');
+        document.getElementById('legajo_360_content').classList.remove('hidden');
+        
+        // Pobar Datos Alumno
+        document.getElementById('alu_nombre').value = alu.alu_nombre;
+        document.getElementById('alu_dni').value = alu.alu_dni;
+        document.getElementById('alu_nac').value = alu.alu_nac;
+        document.getElementById('alu_dob').value = alu.alu_fecha_nacimiento;
+        document.getElementById('alu_domicilio').value = alu.alu_domicilio;
+        document.getElementById('alu_tel').value = alu.alu_telefono_contacto;
+        document.getElementById('alu_sala_id').value = alu.alu_sala_id;
+        document.getElementById('alu_hermanos_jardin').value = alu.total_hermanos_jardin || '0';
+        document.getElementById('alu_ficha_salud').value = alu.cud_enfermedad_nombre || 'S/N';
+        
+        // Lógica Matemática: Edad al 30/6
+        document.getElementById('form_calc_edad').innerText = alu.edad_al_30_6 ? `[${alu.edad_al_30_6} AÑOS CALC]` : '[NO CALC]';
+
+        // Poblar Madre / Adulto 1 (Mirror Data)
+        document.getElementById('m_nombre').value = alu.m_nombre || '';
+        document.getElementById('m_dni').value = alu.m_dni || '';
+        document.getElementById('m_nac').value = alu.m_nacionalidad || '';
+        document.getElementById('m_ocupacion').value = alu.m_ocupacion_laboral || '';
+        document.getElementById('m_domicilio').value = alu.m_domicilio_mismo_alu || alu.alu_domicilio || '';
+        document.getElementById('m_tel').value = alu.m_telefono || alu.alu_telefono_contacto || '';
+        document.getElementById('m_auh').value = alu.m_auh_cobro || 'NO';
+        
+        // Matriz Educación Madre
+        actualizarMatrizEducacion('m', alu.m_estudios_completos, alu.m_estudios_incompletos);
+
+        // Poblar Padre / Adulto 2 (Mirror Logic)
+        document.getElementById('p_nombre').value = alu.p_nombre || '';
+        document.getElementById('p_dni').value = alu.p_dni || '';
+        document.getElementById('p_nac').value = alu.p_nacionalidad || '';
+        document.getElementById('p_ocupacion').value = alu.p_ocupacion_laboral || '';
+        document.getElementById('p_domicilio').value = alu.p_domicilio_mismo_alu || alu.alu_domicilio || '';
+        document.getElementById('p_tel').value = alu.p_telefono || alu.alu_telefono_contacto || '';
+
+        // Matriz Educación Padre
+        actualizarMatrizEducacion('p', alu.p_estudios_completos, alu.p_estudios_incompletos);
     }
 
-    // --- FUNCIÓN DE EXPORTACIÓN: XLSX OFICIAL ---
-    function exportarXLSX_Oficial() {
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.json_to_sheet(j926_db);
-        XLSX.utils.book_append_sheet(wb, ws, "Jardin_926_Supervision");
-        XLSX.writeFile(wb, "RELEVAMIENTO_SUPERVISION_J926.xlsx");
+    function actualizarMatrizEducacion(prefix, complete, incomplete) {
+        document.querySelectorAll(`#${prefix}_educacion_matrix .ed-cell`).forEach(c => c.classList.remove('complete', 'incomplete'));
+        if (!complete && !incomplete) { document.querySelector(`#${prefix}_educacion_matrix .${prefix}-sin`).classList.add('complete'); return; }
+        
+        if (complete) {
+            const arr = complete.toLowerCase().split(',');
+            arr.forEach(e => {
+                const cell = document.querySelector(`#${prefix}_educacion_matrix .${prefix}-${e.trim()}`);
+                if(cell) cell.classList.add('complete');
+            });
+        }
     }
 
-    // --- GESTIÓN DE INTERFAZ (Tabs, Radar) ---
+    // --- MÓDULO BAJAS ANUAL sala-by-sala ---
+    function renderBajasGrid() {
+        const grid = document.getElementById('bajas_mes_select');
+        grid.innerHTML = MESES.map(m => `<div class="mes-baja-card" onclick="verDetalleBajaMes('${m}')">${m}</div>`).join('');
+    }
+
+    function verDetalleBajaMes(mes) {
+        document.getElementById('bitacora_detalle').classList.remove('hidden');
+        document.getElementById('baja_mes_titulo').innerText = `Detalle de Bajas: ${mes} J926`;
+        
+        const arr = bajas_db.filter(b => b.baja_mes === mes);
+        const container = document.getElementById('bitacora_sala_by_sala');
+        if (arr.length === 0) { container.innerHTML = `<p class="criticas-baja opacity-50 p-3">No se registran bajas en ${mes}.</p>`; return; }
+        // Renderizar tabla...
+    }
+
+    // --- GESTIÓN DE INTERFAZ (Tabs, Biónica) ---
     function mostrarPane(id) {
         document.querySelectorAll('.module-pane').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        event.target.classList.add('active');
+        if (event.target.classList.contains('nav-link')) event.target.classList.add('active');
     }
 
-    initSystem();
+    // --- MÓDULO EXPORTACIÓN XLSX OFICIAL ---
+    function exportarExcelOficial() {
+        if (j926_db.length === 0) { alert("❌ Error: No hay matrícula cargada."); return; }
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(j926_db);
+        XLSX.utils.book_append_sheet(wb, ws, "Jardin_926_Matricula");
+        XLSX.writeFile(wb, "RELEVAMIENTO_OFICIAL_SUPERVISION_J926.xlsx");
+    }
+
 </script>
 </body>
 </html>
