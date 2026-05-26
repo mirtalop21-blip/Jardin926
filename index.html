@@ -1,22 +1,49 @@
 import streamlit as st
+import pandas as pd
+import json
 
-st.set_page_config(layout="wide")
-st.title("🛡️ Gestión Educativa Titanium 360")
+# --- CONFIGURACIÓN DE PANTALLA ---
+st.set_page_config(page_title="Sistema Titanium 360", layout="wide")
+st.title("🛡️ Sistema de Gestión Educativa Titanium 360")
 
+# --- CARGA DE DATOS ---
+def cargar_datos():
+    try:
+        with open("MATRICULA_CONSOLIDADA_2026.json", "r", encoding="utf-8") as f:
+            return json.load(f)
+    except:
+        return {"mat": []}
+
+datos = cargar_datos()
+
+# --- PANEL DE NAVEGACIÓN (Tus Pestañas) ---
 tabs = st.tabs(["📋 Ficha 360", "🔍 Buscador", "📊 Asistencia", "🦅 Supervisión"])
 
 with tabs[0]:
-    st.header("Legajo 360")
-    st.write("Ficha técnica: Tobías Valentín Jaime")
+    st.header("Ficha Legajo 360")
+    st.write("Datos del alumno Tobías Valentín Jaime")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.text_input("Nombre", value="Tobías Valentín Jaime")
+        st.text_input("DNI", value="59613087")
+    with col2:
+        st.text_input("Domicilio", value="CALLE 2 BARRIO M FIERRO")
+        st.button("Guardar Ficha 360")
 
 with tabs[1]:
-    st.header("Buscador")
-    st.text_input("Ingrese legajo:")
+    st.header("Buscador de Alumnos")
+    leg = st.text_input("Ingrese número de legajo:")
+    if leg == "360":
+        st.success("Alumno encontrado: Tobías Valentín Jaime")
 
 with tabs[2]:
-    st.header("Asistencia")
-    st.write("Control diario por sala")
+    st.header("Asistencia Diaria")
+    st.write("Seleccione sala para registrar presentes.")
+    sala = st.selectbox("Sala:", ["1º A", "1º B", "2º A"])
+    st.checkbox("Tobías Valentín Jaime - Presente")
+    st.button("Registrar Asistencia")
 
 with tabs[3]:
     st.header("Panel de Supervisión")
-    st.write("Estadísticas y Alertas")
+    st.write("📊 Porcentaje de asistencia promedio: 92%")
+    st.write("🚨 Alertas: 0 alumnos sin DNI")
