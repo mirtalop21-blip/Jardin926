@@ -1,61 +1,22 @@
 import streamlit as st
-import pandas as pd
-import json
 
-st.set_page_config(page_title="Sistema Titanium 360", layout="wide")
-
+st.set_page_config(layout="wide")
 st.title("🛡️ Gestión Educativa Titanium 360")
 
 tabs = st.tabs(["📋 Ficha 360", "🔍 Buscador", "📊 Asistencia", "🦅 Supervisión"])
 
 with tabs[0]:
     st.header("Legajo 360")
-    st.write("Datos del alumno Tobías Valentín Jaime.")
+    st.write("Ficha técnica: Tobías Valentín Jaime")
 
 with tabs[1]:
     st.header("Buscador")
-    st.text_input("Ingrese número de legajo")
+    st.text_input("Ingrese legajo:")
 
 with tabs[2]:
     st.header("Asistencia")
-    st.write("Control diario de alumnos.")
+    st.write("Control diario por sala")
 
 with tabs[3]:
     st.header("Panel de Supervisión")
-    st.write("Estadísticas generales.")
-
-tabs = st.tabs(["📋 Ficha 360", "🔍 Buscador", "📊 Asistencia", "🦅 Supervisión"])
-
-with tabs[0]:@st.cache_data
-def cargar_datos():
-    # Carga tu archivo JSON aquí
-    with open("MATRICULA_CONSOLIDADA_2026.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
-    return data
-
-datos = cargar_datos()
-    st.header("Legajo 360")
-    st.write("Ficha técnica completa del alumno Tobías Valentín Jaime.")
-    st.text_input("Nombre del Padre
-# --- LÓGICA DE DATOS ---
-def obtener_alumno(legajo):
-    # Simulamos que buscamos el alumno 360
-    if legajo == "360":
-        return {"nombre": "JAIME, TOBIAS VALENTIN", "dni": "59613087", "domicilio": "CALLE 2 BARRIO M FIERRO"}
-    return None
-
-# --- PESTAÑAS FUNCIONALES ---
-with tabs[0]:
-    st.subheader("Ficha Legajo 360")
-    alumno = obtener_alumno("360")
-    st.write(f"**Nombre:** {alumno['nombre']}")
-    st.write(f"**DNI:** {alumno['dni']}")
-    st.text_input("Domicilio", value=alumno['domicilio'])
-    st.button("Guardar Ficha 360")
-
-with tabs[1]:
-    st.subheader("Buscador de Alumnos")
-    busqueda = st.text_input("Ingrese Legajo:")
-    if busqueda == "360":
-        st.success("Alumno encontrado: Tobías Valentín Jaime")
-    
+    st.write("Estadísticas y Alertas")
