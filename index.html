@@ -1,43 +1,40 @@
 import streamlit as st
+import json
 
-# Configuración de página
-st.set_page_config(page_title="Sistema Titanium 360", layout="wide")
+st.set_page_config(layout="wide")
 st.title("🛡️ Gestión Educativa Titanium 360")
 
-# Base de datos simulada (para que no necesites archivos externos)
-alumnos_db = {
-    "360": {
-        "nombre": "JAIME, TOBIAS VALENTIN",
-        "dni": "59613087",
-        "domicilio": "CALLE 2 BARRIO M FIERRO",
-        "sala": "1º A"
-    }
+# --- DATOS INTEGRADOS (No requiere archivos externos) ---
+datos_alumnos = {
+    "mat": [
+        {"legajo": "360", "nombre": "JAIME, TOBIAS VALENTIN", "dni": "59613087", "sala": "1º A"},
+        {"legajo": "361", "nombre": "PEREZ, JUAN", "dni": "99999999", "sala": "1º B"}
+    ]
 }
 
-# --- ESTRUCTURA DE PESTAÑAS ---
+# --- INTERFAZ ---
 tabs = st.tabs(["📋 Ficha 360", "🔍 Buscador", "📊 Asistencia", "🦅 Supervisión"])
 
 with tabs[0]:
-    st.header("Legajo 360")
-    st.write("Ficha técnica:")
-    alumno = alumnos_db["360"]
-    st.info(f"**Nombre:** {alumno['nombre']}\n\n**DNI:** {alumno['dni']}\n\n**Sala:** {alumno['sala']}")
+    st.header("Ficha Legajo 360")
+    st.write(f"**Alumno:** {datos_alumnos['mat'][0]['nombre']}")
+    st.write(f"**DNI:** {datos_alumnos['mat'][0]['dni']}")
 
 with tabs[1]:
     st.header("Buscador")
-    busqueda = st.text_input("Ingrese legajo (ejemplo: 360):")
-    if busqueda == "360":
-        st.success(f"Encontrado: {alumnos_db['360']['nombre']}")
-    elif busqueda != "":
-        st.error("Legajo no encontrado.")
+    legajo_buscado = st.text_input("Ingrese legajo (360 o 361):")
+    if legajo_buscado:
+        encontrado = next((a for a in datos_alumnos['mat'] if a['legajo'] == legajo_buscado), None)
+        if encontrado:
+            st.success(f"Encontrado: {encontrado['nombre']}")
+        else:
+            st.error("No encontrado")
 
 with tabs[2]:
     st.header("Asistencia")
-    st.write("Control diario por sala.")
-    st.checkbox("Tobías Valentín Jaime - Presente")
-    st.button("Guardar Asistencia")
+    st.write("Registro de asistencia para la sala 1º A")
+    st.checkbox(f"{datos_alumnos['mat'][0]['nombre']} - Presente")
 
 with tabs[3]:
-    st.header("Panel de Supervisión")
-    st.write("Estado: Sistema Operativo")
-    st.metric("Total Alumnos", 1)
+    st.header("Supervisión")
+    st.write("Sistema operativo - Datos cargados internamente.")
