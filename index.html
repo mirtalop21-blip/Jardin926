@@ -2,94 +2,116 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TITANIUM 360 ELITE | JARDÍN 926</title>
+    <title>TITANIUM 360 ELITE | GESTIÓN INTEGRAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --nuke: #dfff00; --bg: #05070a; }
-        body { background: var(--bg); color: #e1e1e1; font-family: monospace; }
-        .input-elite { background: #000; border: 1px solid #333; padding: 8px; color: var(--nuke); width: 100%; }
+        body { background: var(--bg); color: #e1e1e1; font-family: monospace; font-size: 11px; }
+        .input-elite { background: #000; border: 1px solid #444; padding: 8px; color: var(--nuke); width: 100%; text-transform: uppercase; }
+        .tab-btn { padding: 10px; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 900; }
         .active-tab { border-bottom: 3px solid var(--nuke); color: var(--nuke); }
     </style>
 </head>
 <body class="p-4">
-    <header class="mb-6 border-b border-nuke pb-4">
-        <h1 class="text-xl font-black text-nuke italic">TITANIUM 360 ELITE | JARDÍN 926</h1>
-        <div class="flex gap-4 text-[10px]">
-            <button onclick="exportarExcel()" class="bg-green-800 px-2 py-1">EXPORTAR EXCEL</button>
-            <input type="file" onchange="importarJSON(event)" class="text-[8px]">
+    <header class="border-b border-nuke pb-4 mb-4 flex justify-between items-center">
+        <div>
+            <h1 class="text-nuke font-black italic text-lg">TITANIUM 360 ELITE</h1>
+            <p class="text-[9px] text-zinc-500">AUDITORÍA TOTAL - JARDÍN 926</p>
         </div>
+        <input type="file" onchange="importarJSON(event)" class="text-[9px] bg-zinc-800 p-2 rounded">
     </header>
 
-    <nav class="flex gap-4 mb-6 border-b border-zinc-800 pb-2 text-[10px] uppercase font-black">
-        <button onclick="show('v1')" id="t1" class="active-tab">1. Legajo 360</button>
-        <button onclick="show('v2')" id="t2">2. Salas</button>
-        <button onclick="show('v3')" id="t3">3. Espera</button>
-        <button onclick="show('v4')" id="t4">4. Asistencia</button>
-        <button onclick="show('v5')" id="t5">5. Supervisión</button>
+    <nav class="flex gap-2 overflow-x-auto border-b border-zinc-800 mb-6 uppercase font-black text-[9px]">
+        <button onclick="show('v1')" class="tab-btn active-tab" id="t1">Legajo 360</button>
+        <button onclick="show('v5')" class="tab-btn" id="t5">Supervisión Elite</button>
+        <button onclick="show('v6')" class="tab-btn" id="t6">Bitácora Bajas</button>
+        <button onclick="show('v4')" class="tab-btn" id="t4">Asistencia</button>
     </nav>
 
-    <section id="v1" class="p-4 bg-zinc-900 rounded">
-        <input type="text" id="radar" onkeyup="buscarRadar()" class="input-elite mb-4" placeholder="RADAR BUSCADOR (DNI / APELLIDO)...">
+    <section id="v1" class="bg-zinc-900 p-6 rounded">
+        <input id="radar" onkeyup="buscarRadar()" class="input-elite mb-6" placeholder="🔍 RADAR: DNI O NOMBRE...">
         <div class="grid grid-cols-2 gap-4">
-            <input id="alu_nombre" class="input-elite" placeholder="Nombre Apellido">
+            <input id="alu_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
             <input id="alu_dni" class="input-elite" placeholder="DNI">
             <input id="alu_f_nac" type="date" class="input-elite">
-            <input id="alu_dom" class="input-elite" placeholder="Domicilio">
-            <select id="alu_sala" class="input-elite">
-                <option value="Rosa">SALA ROSA</option><option value="Naranja">SALA NARANJA</option>
-            </select>
+            <select id="alu_sala" class="input-elite"><option value="3ºA">3ºA</option></select>
         </div>
-        <button onclick="guardar()" class="mt-4 bg-nuke text-black font-black w-full py-3">CONSOLIDAR LEGAJO 360</button>
-    </section>
-
-    <section id="v2" class="hidden">
-        <div id="grid_salas" class="grid grid-cols-2 gap-4"></div>
-    </section>
-
-    <section id="v3" class="hidden"><table id="tabla_espera" class="w-full"></table></section>
-
-    <section id="v4" class="hidden">
-        <div id="asis_panel"></div>
-        <button onclick="calcularPromedios()" class="bg-blue-600 p-2 mt-4 text-[10px]">CALCULAR PROMEDIOS</button>
+        <button onclick="guardarLegajo()" class="mt-4 w-full bg-nuke text-black font-black py-3 uppercase">Guardar Legajo</button>
+        <button onclick="darBaja()" class="mt-2 w-full bg-red-900 text-white font-black py-2 uppercase">Dar de Baja</button>
     </section>
 
     <section id="v5" class="hidden">
-        <canvas id="chart_supervision"></canvas>
-        <div id="stats_elite" class="mt-4 text-[10px] grid grid-cols-2 gap-2"></div>
+        <div id="stats_panel" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"></div>
+        <button onclick="exportarExcel()" class="bg-blue-700 text-white px-4 py-2 font-bold text-xs uppercase">Descargar Excel Auditoría</button>
+    </section>
+
+    <section id="v6" class="hidden bg-zinc-900 p-6 rounded">
+        <h2 class="text-red-500 font-black mb-4">BITÁCORA DE BAJAS</h2>
+        <div id="lista_bajas" class="space-y-2"></div>
     </section>
 
     <script>
-        let DATA = JSON.parse(localStorage.getItem('T360_DB')) || { mat: [], esp: [], bajas: [] };
+        let DATA = { mat: [], bajas: [] };
 
         function show(v) {
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.getElementById(v).classList.remove('hidden');
         }
 
-        function guardar() {
-            const alu = { 
-                alu_nombre: document.getElementById('alu_nombre').value,
-                alu_dni: document.getElementById('alu_dni').value,
-                alu_sala: document.getElementById('alu_sala').value
+        function importarJSON(e) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const json = JSON.parse(ev.target.result);
+                DATA.mat = json.mat;
+                renderSupervision();
+                renderBajas();
+                alert("Base de datos cargada con éxito.");
             };
-            DATA.mat.push(alu);
-            localStorage.setItem('T360_DB', JSON.stringify(DATA));
-            alert("Legajo guardado en base local.");
-        }
-
-        function exportarExcel() {
-            let csv = "NOMBRE,DNI,SALA\n";
-            DATA.mat.forEach(a => csv += `${a.alu_nombre},${a.alu_dni},${a.alu_sala}\n`);
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = "Supervision_Elite_926.csv"; a.click();
+            reader.readAsText(e.target.files[0]);
         }
 
         function buscarRadar() {
-            const query = document.getElementById('radar').value;
-            const alu = DATA.mat.find(x => x.alu_dni === query);
-            if(alu) { alert("Encontrado: " + alu.alu_nombre); }
+            const q = document.getElementById('radar').value.toUpperCase();
+            const alu = DATA.mat.find(x => x.alu_dni === q || x.alu_nombre.includes(q));
+            if(alu) {
+                document.getElementById('alu_nombre').value = alu.alu_nombre;
+                document.getElementById('alu_dni').value = alu.alu_dni;
+            }
+        }
+
+        function darBaja() {
+            const dni = document.getElementById('alu_dni').value;
+            const motivo = prompt("MOTIVO DE BAJA:");
+            if(motivo) {
+                const idx = DATA.mat.findIndex(x => x.alu_dni === dni);
+                if(idx > -1) {
+                    const alu = DATA.mat.splice(idx, 1)[0];
+                    DATA.bajas.push({ ...alu, motivo, mes: new Date().toLocaleDateString() });
+                    renderBajas();
+                    alert("Baja registrada.");
+                }
+            }
+        }
+
+        function renderBajas() {
+            const list = document.getElementById('lista_bajas');
+            list.innerHTML = DATA.bajas.map(b => `<div class="p-2 bg-black border-l-4 border-red-500 text-[10px]">${b.alu_nombre} | BAJA: ${b.motivo}</div>`).join('');
+        }
+
+        function renderSupervision() {
+            const total = DATA.mat.length;
+            const arg = DATA.mat.filter(x => x.alu_nac === 'ARG').length;
+            document.getElementById('stats_panel').innerHTML = `
+                <div class="card-stats">MATRÍCULA<br><span class="text-xl text-nuke">${total}</span></div>
+                <div class="card-stats">ARGENTINOS<br><span class="text-xl">${arg}</span></div>
+            `;
+        }
+
+        function exportarExcel() {
+            let csv = "NOMBRE,DNI,MOTIVO\n" + DATA.bajas.map(b => `${b.alu_nombre},${b.alu_dni},${b.motivo}`).join('\n');
+            const a = document.createElement('a');
+            a.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+            a.download = "Auditoria_Titanium.csv"; a.click();
         }
     </script>
 </body>
