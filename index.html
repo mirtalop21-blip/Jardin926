@@ -1,13 +1,96 @@
-import streamlit as st
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>TITANIUM 360 ELITE | JARDÍN 926</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --nuke: #dfff00; --bg: #05070a; }
+        body { background: var(--bg); color: #e1e1e1; font-family: monospace; }
+        .input-elite { background: #000; border: 1px solid #333; padding: 8px; color: var(--nuke); width: 100%; }
+        .active-tab { border-bottom: 3px solid var(--nuke); color: var(--nuke); }
+    </style>
+</head>
+<body class="p-4">
+    <header class="mb-6 border-b border-nuke pb-4">
+        <h1 class="text-xl font-black text-nuke italic">TITANIUM 360 ELITE | JARDÍN 926</h1>
+        <div class="flex gap-4 text-[10px]">
+            <button onclick="exportarExcel()" class="bg-green-800 px-2 py-1">EXPORTAR EXCEL</button>
+            <input type="file" onchange="importarJSON(event)" class="text-[8px]">
+        </div>
+    </header>
 
-st.title("🛡️ Sistema Titanium 360")
-st.write("¡El sistema está en línea!")
+    <nav class="flex gap-4 mb-6 border-b border-zinc-800 pb-2 text-[10px] uppercase font-black">
+        <button onclick="show('v1')" id="t1" class="active-tab">1. Legajo 360</button>
+        <button onclick="show('v2')" id="t2">2. Salas</button>
+        <button onclick="show('v3')" id="t3">3. Espera</button>
+        <button onclick="show('v4')" id="t4">4. Asistencia</button>
+        <button onclick="show('v5')" id="t5">5. Supervisión</button>
+    </nav>
 
-# Datos internos para evitar errores de búsqueda de archivos
-tabs = st.tabs(["Ficha", "Buscador"])
+    <section id="v1" class="p-4 bg-zinc-900 rounded">
+        <input type="text" id="radar" onkeyup="buscarRadar()" class="input-elite mb-4" placeholder="RADAR BUSCADOR (DNI / APELLIDO)...">
+        <div class="grid grid-cols-2 gap-4">
+            <input id="alu_nombre" class="input-elite" placeholder="Nombre Apellido">
+            <input id="alu_dni" class="input-elite" placeholder="DNI">
+            <input id="alu_f_nac" type="date" class="input-elite">
+            <input id="alu_dom" class="input-elite" placeholder="Domicilio">
+            <select id="alu_sala" class="input-elite">
+                <option value="Rosa">SALA ROSA</option><option value="Naranja">SALA NARANJA</option>
+            </select>
+        </div>
+        <button onclick="guardar()" class="mt-4 bg-nuke text-black font-black w-full py-3">CONSOLIDAR LEGAJO 360</button>
+    </section>
 
-with tabs[0]:
-    st.write("Datos cargados correctamente en memoria.")
-    
-with tabs[1]:
-    st.text_input("Buscador de legajos:")
+    <section id="v2" class="hidden">
+        <div id="grid_salas" class="grid grid-cols-2 gap-4"></div>
+    </section>
+
+    <section id="v3" class="hidden"><table id="tabla_espera" class="w-full"></table></section>
+
+    <section id="v4" class="hidden">
+        <div id="asis_panel"></div>
+        <button onclick="calcularPromedios()" class="bg-blue-600 p-2 mt-4 text-[10px]">CALCULAR PROMEDIOS</button>
+    </section>
+
+    <section id="v5" class="hidden">
+        <canvas id="chart_supervision"></canvas>
+        <div id="stats_elite" class="mt-4 text-[10px] grid grid-cols-2 gap-2"></div>
+    </section>
+
+    <script>
+        let DATA = JSON.parse(localStorage.getItem('T360_DB')) || { mat: [], esp: [], bajas: [] };
+
+        function show(v) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(v).classList.remove('hidden');
+        }
+
+        function guardar() {
+            const alu = { 
+                alu_nombre: document.getElementById('alu_nombre').value,
+                alu_dni: document.getElementById('alu_dni').value,
+                alu_sala: document.getElementById('alu_sala').value
+            };
+            DATA.mat.push(alu);
+            localStorage.setItem('T360_DB', JSON.stringify(DATA));
+            alert("Legajo guardado en base local.");
+        }
+
+        function exportarExcel() {
+            let csv = "NOMBRE,DNI,SALA\n";
+            DATA.mat.forEach(a => csv += `${a.alu_nombre},${a.alu_dni},${a.alu_sala}\n`);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = "Supervision_Elite_926.csv"; a.click();
+        }
+
+        function buscarRadar() {
+            const query = document.getElementById('radar').value;
+            const alu = DATA.mat.find(x => x.alu_dni === query);
+            if(alu) { alert("Encontrado: " + alu.alu_nombre); }
+        }
+    </script>
+</body>
+</html>
