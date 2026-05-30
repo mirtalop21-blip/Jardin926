@@ -2,13 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TITANIUM 360 ELITE | OPERATIVO</title>
+    <title>TITANIUM 360 ELITE | OPERATIVO INTEGRAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-lime-400 font-mono p-2 text-[11px]">
-    <header class="border-b border-lime-400 mb-2">
-        <h1 class="text-lg font-black">TITANIUM 360 ELITE</h1>
-        <input type="file" onchange="cargar(event)" class="text-[9px] w-full">
+<body class="bg-black text-lime-400 font-mono p-2 text-[10px]">
+
+    <header class="border-b border-lime-400 pb-1 mb-2">
+        <h1 class="text-lg font-black italic">TITANIUM 360 ELITE</h1>
+        <input type="file" id="file" onchange="cargar(event)" class="text-[8px] w-full">
     </header>
 
     <nav class="flex gap-1 mb-2">
@@ -17,18 +18,21 @@
         <button onclick="tab('v5')" class="border p-1">5. SUPERVISIÓN</button>
     </nav>
 
+    <!-- VISTA 1: RADAR Y LEGAJO 360 -->
     <div id="v1" class="tab block">
         <input id="q" onkeyup="buscar()" class="w-full bg-black border p-1" placeholder="RADAR: DNI/NOMBRE...">
         <div id="visor" class="h-64 overflow-y-auto mt-1 border border-zinc-800 p-2"></div>
     </div>
 
+    <!-- VISTA 2: SALAS INTERACTIVAS -->
     <div id="v2" class="tab hidden">
         <div id="salas_grid" class="grid grid-cols-2 gap-1"></div>
     </div>
 
+    <!-- VISTA 5: SUPERVISIÓN Y EXPORTACIÓN -->
     <div id="v5" class="tab hidden">
-        <div id="stats" class="p-2 border mb-2"></div>
-        <button onclick="exportar()" class="w-full bg-lime-400 text-black font-bold p-1">📥 DESCARGAR EXCEL OFICIAL</button>
+        <div id="stats" class="p-2 border mb-2 text-[9px]"></div>
+        <button onclick="exportar()" class="w-full bg-lime-400 text-black font-bold p-2">📥 DESCARGAR EXCEL OFICIAL</button>
     </div>
 
     <script>
@@ -42,7 +46,8 @@
         function cargar(e) {
             const r = new FileReader();
             r.onload = (ev) => {
-                DATA = JSON.parse(ev.target.result).mat;
+                const raw = JSON.parse(ev.target.result);
+                DATA = raw.mat; 
                 renderSalas();
                 renderStats();
             };
@@ -50,18 +55,17 @@
         }
 
         function renderSalas() {
-            const salas = ["3ºA", "3ºB", "4ºA", "4ºB"]; // Ajustar según tu JSON
+            const salas = [...new Set(DATA.map(a => a.alu_sala))];
             document.getElementById('salas_grid').innerHTML = salas.map(s => `
-                <div class="border p-2 cursor-pointer hover:bg-zinc-900" onclick="filtrarSala('${s}')">
+                <div class="border p-2 cursor-pointer hover:bg-zinc-900" onclick="filtrar('${s}')">
                     SALA ${s}<br>${DATA.filter(a=>a.alu_sala==s).length} ALUMNOS
                 </div>
             `).join('');
         }
 
-        function filtrarSala(sala) {
+        function filtrar(sala) {
             tab('v1');
-            const res = DATA.filter(a => a.alu_sala === sala);
-            renderVisor(res);
+            renderVisor(DATA.filter(a => a.alu_sala === sala));
         }
 
         function renderVisor(lista) {
@@ -75,26 +79,31 @@
         function verLegajo(dni) {
             const a = DATA.find(x => x.alu_dni == dni);
             alert(`--- FICHA DE LEGAJO 360 ---\n
-Alumno: ${a.alu_nombre}\n
-Nacimiento: ${a.alu_f_nac}\n
-Madre: ${a.m_nombre} | Tel: ${a.m_tel}\n
-Estudios Madre: ${a.m_est}\n
-AUH: ${a.alu_auh}\n
-Domicilio: ${a.alu_dom}`);
+Alumno: ${a.alu_nombre} | Sala: ${a.alu_sala}\n
+Madre: ${a.m_nombre} | Estudios: ${a.m_est}\n
+Domicilio: ${a.alu_dom} | AUH: ${a.alu_auh}\n
+Ficha Salud: [CARGADA EN SISTEMA]`);
         }
 
         function renderStats() {
             const tot = DATA.length;
             const arg = DATA.filter(a => a.alu_nac == 'ARG').length;
-            document.getElementById('stats').innerHTML = `TOTAL MATRÍCULA: ${tot}<br>TOTAL ARGENTINOS: ${arg}`;
+            const auh = DATA.filter(a => a.alu_auh == 'SI').length;
+            document.getElementById('stats').innerHTML = `TOTAL: ${tot} | ARG: ${arg} | AUH: ${auh}`;
         }
 
         function exportar() {
-            let csv = "NOMBRE,DNI,SALA,MADRE\n" + DATA.map(a => `${a.alu_nombre},${a.alu_dni},${a.alu_sala},${a.m_nombre}`).join('\n');
+            let csv = "NOMBRE,DNI,SALA,MADRE,ESTUDIOS_MADRE,AUH\n" + DATA.map(a => 
+                `${a.alu_nombre},${a.alu_dni},${a.alu_sala},${a.m_nombre},${a.m_est},${a.alu_auh}`).join('\n');
             const blob = new Blob([csv], {type: 'text/csv'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url; a.download = 'SUPERVISION_TITANIUM.csv'; a.click();
+            a.href = url; a.download = 'SUPERVISION_TITANIUM_360.csv'; a.click();
+        }
+
+        function buscar() {
+            const q = document.getElementById('q').value.toUpperCase();
+            renderVisor(DATA.filter(a => a.alu_dni.includes(q) || a.alu_nombre.includes(q)));
         }
     </script>
 </body>
