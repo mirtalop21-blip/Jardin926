@@ -2,96 +2,73 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TITANIUM 360 ELITE | GESTIÓN TOTAL</title>
+    <title>TITANIUM 360 ELITE | GESTIÓN REAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
-    <style>
-        :root { --nuke: #dfff00; --bg: #05070a; }
-        body { background: var(--bg); color: #e1e1e1; font-family: monospace; }
-        .input-elite { background: #000; border: 1px solid #444; padding: 8px; color: var(--nuke); width: 100%; text-transform: uppercase; }
-        .panel { display: none; }
-        .active { display: block; }
-    </style>
 </head>
-<body class="p-4">
+<body class="bg-black text-lime-400 font-mono p-4">
 
-    <header class="border-b border-nuke mb-6 pb-4">
-        <h1 class="text-nuke text-xl font-black italic">TITANIUM 360 ELITE - AUDITORÍA 926</h1>
-        <input type="file" id="fileInput" onchange="iniciarSistema(event)" class="text-[9px] mt-2 bg-zinc-800 p-1">
+    <header class="border-b border-lime-400 pb-4">
+        <h1 class="text-xl font-black">TITANIUM 360 ELITE - SISTEMA OPERATIVO</h1>
+        <input type="file" onchange="cargarDatos(event)" class="mt-2 p-1 bg-zinc-900 border border-lime-400 text-[10px]">
     </header>
 
-    <nav class="flex gap-4 mb-6 uppercase text-[10px] font-black">
-        <button onclick="show('v1')" class="active">LEGAJO 360</button>
-        <button onclick="show('v5')">SUPERVISIÓN ÉLITE</button>
-        <button onclick="show('v6')">BITÁCORA/ASISTENCIA</button>
-    </nav>
+    <div id="stats" class="grid grid-cols-4 gap-2 my-4 text-[10px]"></div>
 
-    <section id="v1" class="panel active bg-zinc-900 p-6 rounded">
-        <input id="radar" onkeyup="buscar()" class="input-elite mb-6" placeholder="🔍 BUSCADOR RADAR: NOMBRE O DNI...">
-        <div id="ficha_render" class="grid grid-cols-2 gap-4 text-[10px]"></div>
-    </section>
+    <input id="radar" onkeyup="buscarAlumno()" class="w-full bg-black border border-lime-400 p-2 uppercase" placeholder="🔍 BUSCADOR RADAR (DNI O NOMBRE)...">
 
-    <section id="v5" class="panel bg-zinc-900 p-6 rounded">
-        <h2 class="text-nuke font-black mb-4">MÉTRICAS POBLACIONALES</h2>
-        <div id="metricas" class="grid grid-cols-3 gap-4"></div>
-    </section>
-
-    <section id="v6" class="panel bg-zinc-900 p-6 rounded">
-        <h2 class="text-nuke font-black mb-4">OCR: ESCÁNER DE PLANILLAS</h2>
-        <input type="file" onchange="leerPlanilla(event)">
-        <div id="resultado_ocr" class="mt-4 border border-zinc-700 p-2 text-[9px]"></div>
-    </section>
+    <div id="visor" class="mt-4 p-4 border border-zinc-800 h-64 overflow-y-auto"></div>
 
     <script>
-        let DB = { mat: [], bajas: [] };
+        let MATRICULA = [];
 
-        function show(v) {
-            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-            document.getElementById(v).classList.add('active');
-        }
-
-        // 1. CARGA Y PROCESAMIENTO
-        function iniciarSistema(e) {
+        function cargarDatos(e) {
             const reader = new FileReader();
             reader.onload = (ev) => {
-                DB.mat = JSON.parse(ev.target.result).mat;
-                renderMetricas();
-                alert("Base de datos 389 alumnos sincronizada.");
+                const data = JSON.parse(ev.target.result);
+                MATRICULA = data.mat;
+                procesarEstadisticas();
+                renderVisor(MATRICULA);
             };
             reader.readAsText(e.target.files[0]);
         }
 
-        // 2. BUSCADOR RADAR
-        function buscar() {
-            const q = document.getElementById('radar').value.toUpperCase();
-            const alu = DB.mat.find(x => x.alu_dni.includes(q) || x.alu_nombre.includes(q));
-            if(alu) {
-                document.getElementById('ficha_render').innerHTML = `
-                    <div class="p-4 border border-nuke">
-                        <p class="text-nuke font-bold">${alu.alu_nombre}</p>
-                        <p>DNI: ${alu.alu_dni}</p>
-                        <p>MADRE: ${alu.m_nombre} | EST: ${alu.m_est}</p>
-                        <p>AUH: ${alu.alu_auh}</p>
-                    </div>`;
-            }
-        }
-
-        // 3. MOTOR ESTADÍSTICO SUPERVISIÓN ÉLITE
-        function renderMetricas() {
-            const total = DB.mat.length;
-            const arg = DB.mat.filter(a => a.alu_nac === 'ARG').length;
-            const cud = DB.mat.filter(a => a.alu_cud === 'SI').length;
-            document.getElementById('metricas').innerHTML = `
-                <div class="p-4 bg-black">MATRÍCULA<br><span class="text-xl text-nuke">${total}</span></div>
-                <div class="p-4 bg-black">ARGENTINOS<br><span class="text-xl">${((arg/total)*100).toFixed(1)}%</span></div>
-                <div class="p-4 bg-black">CON CUD<br><span class="text-xl text-red-500">${cud}</span></div>
+        function procesarEstadisticas() {
+            const total = MATRICULA.length;
+            const arg = MATRICULA.filter(a => a.alu_nac === 'ARG').length;
+            const par = MATRICULA.filter(a => a.alu_nac === 'PAR').length;
+            const auh = MATRICULA.filter(a => a.alu_auh === 'SI').length;
+            
+            document.getElementById('stats').innerHTML = `
+                <div class="border p-2">TOTAL: ${total}</div>
+                <div class="border p-2">ARG: ${arg}</div>
+                <div class="border p-2">PAR: ${par}</div>
+                <div class="border p-2">AUH: ${auh}</div>
             `;
         }
 
-        // 4. MOTOR OCR (LEER PLANILLAS)
-        async function leerPlanilla(e) {
-            const result = await Tesseract.recognize(e.target.files[0], 'spa');
-            document.getElementById('resultado_ocr').innerText = "DATA DETECTADA: " + result.data.text;
+        function buscarAlumno() {
+            const q = document.getElementById('radar').value.toUpperCase();
+            const res = MATRICULA.filter(a => a.alu_dni.includes(q) || a.alu_nombre.includes(q));
+            renderVisor(res);
+        }
+
+        function renderVisor(lista) {
+            document.getElementById('visor').innerHTML = lista.map(a => `
+                <div class="border-b border-zinc-800 p-2 hover:bg-zinc-900 cursor-pointer" onclick="verLegajo('${a.alu_dni}')">
+                    ${a.alu_nombre} | DNI: ${a.alu_dni} | SALA: ${a.alu_sala}
+                </div>
+            `).join('');
+        }
+
+        function verLegajo(dni) {
+            const a = MATRICULA.find(x => x.alu_dni === dni);
+            alert(`LEGAJO 360 COMPLETO:
+Nombre: ${a.alu_nombre}
+DNI: ${a.alu_dni}
+Madre: ${a.m_nombre}
+Estudios Madre: ${a.m_est}
+Domicilio: ${a.alu_dom}
+AUH: ${a.alu_auh}`);
         }
     </script>
 </body>
