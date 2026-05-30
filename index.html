@@ -2,94 +2,98 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TITANIUM 360 | GESTIÓN REAL</title>
+    <title>TITANIUM 360 PRO | AUDITORÍA TOTAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-black text-lime-400 p-2 font-mono text-[10px]">
     <header class="border-b border-lime-400 pb-2 mb-2">
-        <h1 class="font-black text-lg">TITANIUM 360 - MOTOR OPERATIVO</h1>
-        <input type="file" onchange="cargar(event)" class="w-full">
+        <h1 class="font-black text-lg">TITANIUM 360 PRO | SISTEMA INSTITUCIONAL</h1>
+        <input type="file" onchange="iniciarProcesamiento(event)" class="w-full bg-zinc-900 mt-1">
     </header>
 
-    <div class="grid grid-cols-3 gap-1 mb-2">
-        <button onclick="tab('V1')" class="border p-1">LEGAJOS</button>
-        <button onclick="tab('V2')" class="border p-1">SALAS</button>
-        <button onclick="tab('V5')" class="border p-1">STATS</button>
+    <div class="grid grid-cols-3 gap-1 mb-4">
+        <button onclick="mostrar('LEGAJOS')" class="border p-1 bg-zinc-900">1. LEGAJOS</button>
+        <button onclick="mostrar('SALAS')" class="border p-1 bg-zinc-900">2. SALAS</button>
+        <button onclick="mostrar('STATS')" class="border p-1 bg-zinc-900">3. STATS</button>
     </div>
 
-    <div id="V1" class="tab block">
-        <input id="q" onkeyup="buscar()" class="w-full bg-black border p-1" placeholder="RADAR: DNI/NOMBRE...">
-        <div id="visor" class="h-64 overflow-y-auto mt-2"></div>
+    <div id="LEGAJOS" class="panel block">
+        <input id="q" onkeyup="filtrarRadar()" class="w-full bg-black border border-lime-400 p-1 mb-2" placeholder="RADAR: DNI O APELLIDO...">
+        <div id="lista_alumnos" class="h-96 overflow-y-auto"></div>
     </div>
 
-    <div id="V2" class="tab hidden grid grid-cols-2 gap-1" id="salas_grid"></div>
+    <div id="SALAS" class="panel hidden">
+        <div id="grid_salas" class="grid grid-cols-2 gap-2"></div>
+    </div>
 
-    <div id="V5" class="tab hidden p-2 border" id="stats"></div>
+    <div id="STATS" class="panel hidden">
+        <div id="resumen_stats" class="border p-2 space-y-2"></div>
+        <button onclick="exportarExcel()" class="mt-4 w-full bg-lime-400 text-black font-black p-2">📥 DESCARGAR EXCEL OFICIAL</button>
+    </div>
 
     <script>
         let DATA = [];
 
-        function tab(id) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.add('hidden'));
+        function mostrar(id) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         }
 
-        function cargar(e) {
+        function iniciarProcesamiento(e) {
             const r = new FileReader();
             r.onload = (ev) => {
-                DATA = JSON.parse(ev.target.result).mat;
-                renderizarTodo();
+                const raw = JSON.parse(ev.target.result);
+                DATA = raw.mat;
+                alert("SISTEMA CARGADO: " + DATA.length + " REGISTROS PROCESADOS.");
+                renderizarSalas();
+                renderizarStats();
+                filtrarRadar();
             };
             r.readAsText(e.target.files[0]);
         }
 
-        function renderizarTodo() {
-            // Render Salas Real
+        function renderizarSalas() {
             const salas = [...new Set(DATA.map(a => a.alu_sala))];
-            document.getElementById('V2').innerHTML = salas.map(s => `
-                <div class="border p-2 cursor-pointer hover:bg-zinc-900" onclick="filtrar('${s}')">
-                    SALA ${s}: ${DATA.filter(a=>a.alu_sala==s).length}
+            document.getElementById('grid_salas').innerHTML = salas.map(s => `
+                <div class="border p-4 cursor-pointer hover:bg-zinc-800" onclick="alert('Sala ${s}: ${DATA.filter(a=>a.alu_sala==s).length} alumnos')">
+                    <span class="text-xl font-black">${s}</span><br>
+                    TOTAL: ${DATA.filter(a=>a.alu_sala==s).length}
                 </div>
             `).join('');
+        }
 
-            // Estadísticas Reales
+        function renderizarStats() {
             const tot = DATA.length;
-            const arg = DATA.filter(a => a.alu_nac == 'ARG').length;
-            document.getElementById('stats').innerHTML = `
-                MATRÍCULA TOTAL: ${tot}<br>
-                ARGENTINOS: ${arg} (${((arg/tot)*100).toFixed(1)}%)<br>
-                AUH: ${DATA.filter(a => a.alu_auh == 'SI').length}
+            const arg = DATA.filter(a => a.alu_nac === 'ARG').length;
+            document.getElementById('resumen_stats').innerHTML = `
+                <div>TOTAL MATRÍCULA: ${tot}</div>
+                <div>ARGENTINOS: ${arg} (${((arg/tot)*100).toFixed(1)}%)</div>
+                <div>AUH: ${DATA.filter(a => a.alu_auh === 'SI').length}</div>
             `;
         }
 
-        function filtrar(sala) {
-            tab('V1');
-            renderVisor(DATA.filter(a => a.alu_sala === sala));
-        }
-
-        function renderVisor(lista) {
-            document.getElementById('visor').innerHTML = lista.map(a => `
-                <div class="border-b p-1 cursor-pointer" onclick="verFicha('${a.alu_dni}')">
-                    ${a.alu_nombre} | DNI: ${a.alu_dni}
+        function filtrarRadar() {
+            const q = document.getElementById('q').value.toUpperCase();
+            const res = DATA.filter(a => a.alu_dni.toString().includes(q) || a.alu_nombre.toUpperCase().includes(q));
+            document.getElementById('lista_alumnos').innerHTML = res.map(a => `
+                <div class="border-b border-zinc-800 p-2 cursor-pointer" onclick="verLegajo('${a.alu_dni}')">
+                    ${a.alu_nombre} | SALA: ${a.alu_sala}
                 </div>
             `).join('');
         }
 
-        function verFicha(dni) {
+        function verLegajo(dni) {
             const a = DATA.find(x => x.alu_dni == dni);
-            alert(`--- LEGAJO 360 REAL ---\n
-Alumno: ${a.alu_nombre}\n
-Sala: ${a.alu_sala}\n
-Madre: ${a.m_nombre} | Tel: ${a.m_tel}\n
-Ocupación Madre: ${a.m_ocu}\n
-Estudios Madre: ${a.m_est}\n
-AUH: ${a.alu_auh}\n
-Domicilio: ${a.alu_dom}`);
+            alert(`--- LEGAJO 360 REAL ---\nAlumno: ${a.alu_nombre}\nMadre: ${a.m_nombre}\nTel: ${a.m_tel}\nDomicilio: ${a.alu_dom}\nAUH: ${a.alu_auh}`);
         }
 
-        function buscar() {
-            const q = document.getElementById('q').value.toUpperCase();
-            renderVisor(DATA.filter(a => a.alu_dni.includes(q) || a.alu_nombre.includes(q)));
+        function exportarExcel() {
+            let csv = "NOMBRE,DNI,SALA,MADRE,TEL\n" + DATA.map(a => `${a.alu_nombre},${a.alu_dni},${a.alu_sala},${a.m_nombre},${a.m_tel}`).join('\n');
+            const blob = new Blob([csv], {type: 'text/csv'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = "AUDITORIA_OFICIAL.csv";
+            a.click();
         }
     </script>
 </body>
