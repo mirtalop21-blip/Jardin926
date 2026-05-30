@@ -2,91 +2,99 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TITANIUM 360 ELITE | AUDITORÍA TOTAL</title>
+    <title>TITANIUM 360 ELITE | OPERATIVO</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-black text-lime-400 font-mono p-4">
-    <header class="border-b border-lime-400 pb-2 mb-4">
-        <h1 class="text-lime-400 font-black text-lg">TITANIUM 360 ELITE - AUDITORÍA INTEGRAL</h1>
-        <input type="file" onchange="procesarArchivo(event)" class="text-[9px] mt-2">
+<body class="bg-black text-lime-400 font-mono p-2 text-[11px]">
+    <header class="border-b border-lime-400 mb-2">
+        <h1 class="text-lg font-black">TITANIUM 360 ELITE</h1>
+        <input type="file" onchange="cargar(event)" class="text-[9px] w-full">
     </header>
 
-    <nav class="flex gap-2 text-[10px] font-bold mb-4 uppercase overflow-x-auto">
-        <button onclick="show('v1')" class="border p-1">1. Legajo</button>
-        <button onclick="show('v2')" class="border p-1">2. Salas/Bajas</button>
-        <button onclick="show('v3')" class="border p-1">3. Espera</button>
-        <button onclick="show('v4')" class="border p-1">4. Asistencia</button>
-        <button onclick="show('v5')" class="border p-1">5. Supervisión</button>
+    <nav class="flex gap-1 mb-2">
+        <button onclick="tab('v1')" class="border p-1">1. LEGAJOS</button>
+        <button onclick="tab('v2')" class="border p-1">2. SALAS</button>
+        <button onclick="tab('v5')" class="border p-1">5. SUPERVISIÓN</button>
     </nav>
 
-    <div id="v1" class="tab block"><input id="q" onkeyup="buscar()" class="w-full bg-black border p-2 mb-2" placeholder="RADAR: NOMBRE O DNI..."> <div id="visor"></div></div>
-    
-    <div id="v2" class="tab hidden"><div id="bitacora_container"></div></div>
-    
-    <div id="v3" class="tab hidden"><h2 class="font-bold">LISTA DE ESPERA</h2><input id="new_espera" class="w-full bg-black border p-2" placeholder="CARGAR NUEVO ASPIRANTE..."></div>
-    
-    <div id="v4" class="tab hidden"><h2 class="font-bold">ASISTENCIA MENSUAL</h2><div id="asis_stats"></div></div>
-    
+    <div id="v1" class="tab block">
+        <input id="q" onkeyup="buscar()" class="w-full bg-black border p-1" placeholder="RADAR: DNI/NOMBRE...">
+        <div id="visor" class="h-64 overflow-y-auto mt-1 border border-zinc-800 p-2"></div>
+    </div>
+
+    <div id="v2" class="tab hidden">
+        <div id="salas_grid" class="grid grid-cols-2 gap-1"></div>
+    </div>
+
     <div id="v5" class="tab hidden">
-        <div id="supervision_stats" class="grid grid-cols-2 gap-2 text-[10px]"></div>
-        <canvas id="grafico" class="mt-4 bg-zinc-900"></canvas>
-        <button onclick="exportarExcel()" class="mt-4 w-full bg-lime-400 text-black font-black p-2">📥 DESCARGAR EXCEL OFICIAL</button>
+        <div id="stats" class="p-2 border mb-2"></div>
+        <button onclick="exportar()" class="w-full bg-lime-400 text-black font-bold p-1">📥 DESCARGAR EXCEL OFICIAL</button>
     </div>
 
     <script>
         let DATA = [];
 
-        function show(id) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.add('hidden', 'tab'));
+        function tab(id) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         }
 
-        function procesarArchivo(e) {
+        function cargar(e) {
             const r = new FileReader();
             r.onload = (ev) => {
                 DATA = JSON.parse(ev.target.result).mat;
-                renderSupervision();
+                renderSalas();
+                renderStats();
             };
             r.readAsText(e.target.files[0]);
         }
 
-        function renderSupervision() {
-            const tot = DATA.length;
-            const arg = DATA.filter(a => a.alu_nac === 'ARG').length;
-            const par = DATA.filter(a => a.alu_nac === 'PAR').length;
-            const cud = DATA.filter(a => a.alu_cud === 'SI').length;
-            const m = DATA.filter(a => a.sexo === 'F').length;
-            
-            document.getElementById('supervision_stats').innerHTML = `
-                <div class="border p-2">TOTAL: ${tot}</div>
-                <div class="border p-2">ARGENTINOS: ${((arg/tot)*100).toFixed(1)}%</div>
-                <div class="border p-2">PARAGUAYOS: ${((par/tot)*100).toFixed(1)}%</div>
-                <div class="border p-2">CON CUD: ${cud}</div>
-                <div class="border p-2">MUJERES: ${m}</div>
-            `;
-            // Gráfico automático
-            new Chart(document.getElementById('grafico'), {
-                type: 'bar',
-                data: { labels: ['ARG', 'PAR', 'CUD'], datasets: [{ label: 'Población', data: [arg, par, cud], backgroundColor: '#dfff00' }] }
-            });
-        }
-
-        function exportarExcel() {
-            let csv = "NOMBRE,DNI,NACIONALIDAD,SALA\n";
-            DATA.forEach(a => csv += `${a.alu_nombre},${a.alu_dni},${a.alu_nac},${a.alu_sala}\n`);
-            const a = document.createElement('a');
-            a.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
-            a.download = "Auditoria_Titanium_Oficial.csv";
-            a.click();
-        }
-
-        function buscar() {
-            const q = document.getElementById('q').value.toUpperCase();
-            const res = DATA.filter(a => a.alu_dni.includes(q) || a.alu_nombre.includes(q));
-            document.getElementById('visor').innerHTML = res.map(a => `
-                <div class="border-b p-1">${a.alu_nombre} | Sala: ${a.alu_sala}</div>
+        function renderSalas() {
+            const salas = ["3ºA", "3ºB", "4ºA", "4ºB"]; // Ajustar según tu JSON
+            document.getElementById('salas_grid').innerHTML = salas.map(s => `
+                <div class="border p-2 cursor-pointer hover:bg-zinc-900" onclick="filtrarSala('${s}')">
+                    SALA ${s}<br>${DATA.filter(a=>a.alu_sala==s).length} ALUMNOS
+                </div>
             `).join('');
+        }
+
+        function filtrarSala(sala) {
+            tab('v1');
+            const res = DATA.filter(a => a.alu_sala === sala);
+            renderVisor(res);
+        }
+
+        function renderVisor(lista) {
+            document.getElementById('visor').innerHTML = lista.map(a => `
+                <div class="border-b p-1 cursor-pointer" onclick="verLegajo('${a.alu_dni}')">
+                    ${a.alu_nombre} | DNI: ${a.alu_dni}
+                </div>
+            `).join('');
+        }
+
+        function verLegajo(dni) {
+            const a = DATA.find(x => x.alu_dni == dni);
+            alert(`--- FICHA DE LEGAJO 360 ---\n
+Alumno: ${a.alu_nombre}\n
+Nacimiento: ${a.alu_f_nac}\n
+Madre: ${a.m_nombre} | Tel: ${a.m_tel}\n
+Estudios Madre: ${a.m_est}\n
+AUH: ${a.alu_auh}\n
+Domicilio: ${a.alu_dom}`);
+        }
+
+        function renderStats() {
+            const tot = DATA.length;
+            const arg = DATA.filter(a => a.alu_nac == 'ARG').length;
+            document.getElementById('stats').innerHTML = `TOTAL MATRÍCULA: ${tot}<br>TOTAL ARGENTINOS: ${arg}`;
+        }
+
+        function exportar() {
+            let csv = "NOMBRE,DNI,SALA,MADRE\n" + DATA.map(a => `${a.alu_nombre},${a.alu_dni},${a.alu_sala},${a.m_nombre}`).join('\n');
+            const blob = new Blob([csv], {type: 'text/csv'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'SUPERVISION_TITANIUM.csv'; a.click();
         }
     </script>
 </body>
