@@ -2,98 +2,96 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TITANIUM 360 PRO | AUDITORÍA TOTAL</title>
+    <title>TITANIUM 360 | GESTIÓN INSTITUCIONAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-lime-400 p-2 font-mono text-[10px]">
-    <header class="border-b border-lime-400 pb-2 mb-2">
-        <h1 class="font-black text-lg">TITANIUM 360 PRO | SISTEMA INSTITUCIONAL</h1>
-        <input type="file" onchange="iniciarProcesamiento(event)" class="w-full bg-zinc-900 mt-1">
+<body class="bg-black text-lime-400 font-mono p-4">
+    <header class="border-b border-lime-400 pb-2 mb-4">
+        <h1 class="text-lime-400 font-black text-lg">TITANIUM 360 | SISTEMA INSTITUCIONAL</h1>
+        <input type="file" id="fileInput" onchange="cargarDatos(event)" class="text-[10px] w-full mt-2 border border-lime-400 p-1">
     </header>
 
-    <div class="grid grid-cols-3 gap-1 mb-4">
-        <button onclick="mostrar('LEGAJOS')" class="border p-1 bg-zinc-900">1. LEGAJOS</button>
-        <button onclick="mostrar('SALAS')" class="border p-1 bg-zinc-900">2. SALAS</button>
-        <button onclick="mostrar('STATS')" class="border p-1 bg-zinc-900">3. STATS</button>
+    <nav class="flex gap-2 text-[10px] font-bold mb-4">
+        <button onclick="cambiarVista('v1')" class="border p-2 hover:bg-lime-900">LEGAJOS</button>
+        <button onclick="cambiarVista('v2')" class="border p-2 hover:bg-lime-900">SALAS</button>
+        <button onclick="cambiarVista('v3')" class="border p-2 hover:bg-lime-900">ESTADÍSTICAS</button>
+    </nav>
+
+    <div id="v1" class="vista hidden">
+        <input type="text" id="buscador" onkeyup="buscar()" class="w-full bg-black border p-2 mb-4" placeholder="🔍 BUSCAR DNI O NOMBRE...">
+        <div id="contenedorLegajos" class="grid gap-2"></div>
     </div>
 
-    <div id="LEGAJOS" class="panel block">
-        <input id="q" onkeyup="filtrarRadar()" class="w-full bg-black border border-lime-400 p-1 mb-2" placeholder="RADAR: DNI O APELLIDO...">
-        <div id="lista_alumnos" class="h-96 overflow-y-auto"></div>
+    <div id="v2" class="vista hidden">
+        <div id="contenedorSalas" class="grid grid-cols-2 gap-4"></div>
     </div>
 
-    <div id="SALAS" class="panel hidden">
-        <div id="grid_salas" class="grid grid-cols-2 gap-2"></div>
-    </div>
-
-    <div id="STATS" class="panel hidden">
-        <div id="resumen_stats" class="border p-2 space-y-2"></div>
-        <button onclick="exportarExcel()" class="mt-4 w-full bg-lime-400 text-black font-black p-2">📥 DESCARGAR EXCEL OFICIAL</button>
+    <div id="v3" class="vista hidden">
+        <div id="contenedorStats" class="p-4 border"></div>
+        <button onclick="descargarExcel()" class="mt-4 bg-lime-400 text-black font-black p-4 w-full">DESCARGAR EXCEL OFICIAL</button>
     </div>
 
     <script>
-        let DATA = [];
+        let baseDatos = [];
 
-        function mostrar(id) {
-            document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
+        function cambiarVista(id) {
+            document.querySelectorAll('.vista').forEach(v => v.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         }
 
-        function iniciarProcesamiento(e) {
-            const r = new FileReader();
-            r.onload = (ev) => {
-                const raw = JSON.parse(ev.target.result);
-                DATA = raw.mat;
-                alert("SISTEMA CARGADO: " + DATA.length + " REGISTROS PROCESADOS.");
-                renderizarSalas();
-                renderizarStats();
-                filtrarRadar();
+        function cargarDatos(event) {
+            const archivo = event.target.files[0];
+            const lector = new FileReader();
+            lector.onload = function(e) {
+                try {
+                    const datos = JSON.parse(e.target.result);
+                    // Accedemos a la matriz principal. Si el JSON tiene una clave, úsala aquí.
+                    baseDatos = datos.mat || datos; 
+                    alert("✅ DATOS CARGADOS: " + baseDatos.length + " REGISTROS.");
+                    renderizar();
+                } catch (error) {
+                    alert("❌ ERROR AL LEER JSON: " + error.message);
+                }
             };
-            r.readAsText(e.target.files[0]);
+            lector.readAsText(archivo);
         }
 
-        function renderizarSalas() {
-            const salas = [...new Set(DATA.map(a => a.alu_sala))];
-            document.getElementById('grid_salas').innerHTML = salas.map(s => `
-                <div class="border p-4 cursor-pointer hover:bg-zinc-800" onclick="alert('Sala ${s}: ${DATA.filter(a=>a.alu_sala==s).length} alumnos')">
-                    <span class="text-xl font-black">${s}</span><br>
-                    TOTAL: ${DATA.filter(a=>a.alu_sala==s).length}
+        function renderizar() {
+            // Render de Legajos Inicial
+            const cont = document.getElementById('contenedorLegajos');
+            cont.innerHTML = baseDatos.map(a => `
+                <div class="border p-2" onclick="verDetalle('${a.alu_dni}')">
+                    ${a.alu_nombre} - ${a.alu_sala}
                 </div>
+            `).join('');
+
+            // Render de Salas
+            const salas = [...new Set(baseDatos.map(a => a.alu_sala))];
+            document.getElementById('contenedorSalas').innerHTML = salas.map(s => `
+                <div class="border p-4 text-center">SALA ${s} <br> ${baseDatos.filter(a=>a.alu_sala==s).length}</div>
             `).join('');
         }
 
-        function renderizarStats() {
-            const tot = DATA.length;
-            const arg = DATA.filter(a => a.alu_nac === 'ARG').length;
-            document.getElementById('resumen_stats').innerHTML = `
-                <div>TOTAL MATRÍCULA: ${tot}</div>
-                <div>ARGENTINOS: ${arg} (${((arg/tot)*100).toFixed(1)}%)</div>
-                <div>AUH: ${DATA.filter(a => a.alu_auh === 'SI').length}</div>
-            `;
+        function verDetalle(dni) {
+            const alu = baseDatos.find(a => a.alu_dni == dni);
+            alert("NOMBRE: " + alu.alu_nombre + "\nMADRE: " + alu.m_nombre + "\nSALA: " + alu.alu_sala + "\nTEL: " + alu.m_tel);
         }
 
-        function filtrarRadar() {
-            const q = document.getElementById('q').value.toUpperCase();
-            const res = DATA.filter(a => a.alu_dni.toString().includes(q) || a.alu_nombre.toUpperCase().includes(q));
-            document.getElementById('lista_alumnos').innerHTML = res.map(a => `
-                <div class="border-b border-zinc-800 p-2 cursor-pointer" onclick="verLegajo('${a.alu_dni}')">
-                    ${a.alu_nombre} | SALA: ${a.alu_sala}
-                </div>
+        function buscar() {
+            const q = document.getElementById('buscador').value.toUpperCase();
+            const filtrados = baseDatos.filter(a => a.alu_dni.includes(q) || a.alu_nombre.toUpperCase().includes(q));
+            document.getElementById('contenedorLegajos').innerHTML = filtrados.map(a => `
+                <div class="border p-2">${a.alu_nombre}</div>
             `).join('');
         }
 
-        function verLegajo(dni) {
-            const a = DATA.find(x => x.alu_dni == dni);
-            alert(`--- LEGAJO 360 REAL ---\nAlumno: ${a.alu_nombre}\nMadre: ${a.m_nombre}\nTel: ${a.m_tel}\nDomicilio: ${a.alu_dom}\nAUH: ${a.alu_auh}`);
-        }
-
-        function exportarExcel() {
-            let csv = "NOMBRE,DNI,SALA,MADRE,TEL\n" + DATA.map(a => `${a.alu_nombre},${a.alu_dni},${a.alu_sala},${a.m_nombre},${a.m_tel}`).join('\n');
+        function descargarExcel() {
+            let csv = "NOMBRE,DNI,SALA,MADRE\n";
+            baseDatos.forEach(a => { csv += `${a.alu_nombre},${a.alu_dni},${a.alu_sala},${a.m_nombre}\n`; });
             const blob = new Blob([csv], {type: 'text/csv'});
+            const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = "AUDITORIA_OFICIAL.csv";
-            a.click();
+            a.href = url; a.download = 'gestion_institucional.csv'; a.click();
         }
     </script>
 </body>
