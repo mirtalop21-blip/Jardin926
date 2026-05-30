@@ -2,45 +2,40 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TITANIUM 360 ELITE | OPERATIVO</title>
+    <title>TITANIUM 360 ELITE - GESTIÓN TOTAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
-        :root { --nuke: #dfff00; --bg: #05070a; }
-        body { background: var(--bg); color: #e1e1e1; font-family: monospace; }
-        .card { border: 1px solid #333; padding: 10px; margin-bottom: 5px; cursor: pointer; }
-        .tab { display: none; }
-        .active { display: block; }
+        body { background: #05070a; color: #e1e1e1; font-family: monospace; }
+        .tab { display: none; } .active { display: block; }
+        .input-data { background: #000; border: 1px solid #333; padding: 4px; color: #dfff00; }
     </style>
 </head>
 <body class="p-4">
-    <header class="border-b-2 border-nuke mb-4">
-        <h1 class="text-nuke font-black text-xl italic">TITANIUM 360 ELITE - OPERATIVO</h1>
-        <input type="file" onchange="cargarJSON(event)" class="text-[9px] bg-zinc-900 p-2">
+    <header class="border-b border-lime-400 mb-4 pb-2">
+        <h1 class="text-lime-400 font-black">TITANIUM 360 ELITE | AUDITORÍA ACTIVA</h1>
+        <input type="file" onchange="cargarMatricula(event)" class="text-[10px] bg-zinc-900 mt-2">
     </header>
 
-    <nav class="flex gap-4 mb-4 text-[10px] font-black uppercase">
-        <button onclick="show('v1')">Legajos</button>
-        <button onclick="show('v2')">Salas</button>
-        <button onclick="show('v4')">Asistencia</button>
-        <button onclick="show('v5')">Supervisión</button>
+    <nav class="flex gap-2 text-[9px] font-black uppercase mb-4">
+        <button onclick="show('v1')" class="border p-1">Legajos</button>
+        <button onclick="show('v5')" class="border p-1">Supervisión</button>
+        <button onclick="show('v6')" class="border p-1">OCR Asistencia</button>
     </nav>
 
-    <section id="v1" class="tab active">
-        <input id="search" onkeyup="buscar()" class="w-full bg-black border border-nuke p-2 mb-2" placeholder="RADAR: DNI O NOMBRE...">
-        <div id="lista" class="h-96 overflow-y-auto"></div>
-    </section>
+    <div id="v1" class="tab active">
+        <input id="search" onkeyup="buscar()" class="input-data w-full" placeholder="BUSCAR DNI O NOMBRE...">
+        <div id="visor" class="mt-2 text-[10px]"></div>
+    </div>
 
-    <section id="v2" class="tab">
-        <div id="salas_grid" class="grid grid-cols-2 gap-4"></div>
-    </section>
+    <div id="v5" class="tab">
+        <div id="metricas" class="grid grid-cols-2 gap-2 text-[10px]"></div>
+    </div>
 
-    <section id="v4" class="tab">
-        <div id="asistencia_nomina"></div>
-    </section>
-
-    <section id="v5" class="tab text-[11px]">
-        <div id="estadisticas" class="grid grid-cols-2 gap-4"></div>
-    </section>
+    <div id="v6" class="tab">
+        <input type="file" onchange="escanear(event)">
+        <div id="ocr_res" class="mt-2 p-2 bg-zinc-900 text-[10px]"></div>
+    </div>
 
     <script>
         let DATA = [];
@@ -50,43 +45,40 @@
             document.getElementById(id).classList.add('active');
         }
 
-        function cargarJSON(e) {
+        function cargarMatricula(e) {
             const r = new FileReader();
             r.onload = (ev) => {
-                const j = JSON.parse(ev.target.result);
-                DATA = j.mat;
-                renderizar();
+                DATA = JSON.parse(ev.target.result).mat;
+                alert("CARGADOS: " + DATA.length + " ALUMNOS.");
+                renderMetricas();
             };
             r.readAsText(e.target.files[0]);
         }
 
-        function renderizar() {
-            // Renderizar Salas
-            const salas = [...new Set(DATA.map(a => a.alu_sala))];
-            document.getElementById('salas_grid').innerHTML = salas.map(s => `
-                <div class="card bg-zinc-900">
-                    <p class="text-nuke font-bold">${s}</p>
-                    <p class="text-2xl">${DATA.filter(a => a.alu_sala === s).length}</p>
-                </div>
-            `).join('');
-            
-            // Renderizar Supervisión
+        function renderMetricas() {
             const total = DATA.length;
-            const auh = DATA.filter(a => a.alu_auh === 'SI').length;
-            document.getElementById('estadisticas').innerHTML = `
-                <div class="p-4 border">MATRÍCULA: ${total}</div>
-                <div class="p-4 border">AUH TOTAL: ${((auh/total)*100).toFixed(1)}%</div>
+            const arg = DATA.filter(a => a.alu_nac === "ARG").length;
+            const auh = DATA.filter(a => a.alu_auh === "SI").length;
+            document.getElementById('metricas').innerHTML = `
+                <div class="border p-2">Total Matrícula: ${total}</div>
+                <div class="border p-2">Arg: ${arg} (${((arg/total)*100).toFixed(1)}%)</div>
+                <div class="border p-2">AUH: ${auh} (${((auh/total)*100).toFixed(1)}%)</div>
             `;
         }
 
         function buscar() {
             const q = document.getElementById('search').value.toUpperCase();
             const res = DATA.filter(a => a.alu_dni.includes(q) || a.alu_nombre.includes(q));
-            document.getElementById('lista').innerHTML = res.map(a => `
-                <div class="card" onclick="alert('${a.alu_nombre} | Madre: ${a.m_nombre} | Tel: ${a.m_tel}')">
-                    ${a.alu_nombre} - ${a.alu_dni}
+            document.getElementById('visor').innerHTML = res.map(a => `
+                <div class="border-b p-1">
+                    ${a.alu_nombre} | Sala: ${a.alu_sala} | Madre: ${a.m_nombre}
                 </div>
             `).join('');
+        }
+
+        async function escanear(e) {
+            const { data: { text } } = await Tesseract.recognize(e.target.files[0], 'spa');
+            document.getElementById('ocr_res').innerText = text;
         }
     </script>
 </body>
