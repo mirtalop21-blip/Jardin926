@@ -2,83 +2,91 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TITANIUM 360 ELITE - GESTIÓN TOTAL</title>
+    <title>TITANIUM 360 ELITE | AUDITORÍA TOTAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
-    <style>
-        body { background: #05070a; color: #e1e1e1; font-family: monospace; }
-        .tab { display: none; } .active { display: block; }
-        .input-data { background: #000; border: 1px solid #333; padding: 4px; color: #dfff00; }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="p-4">
-    <header class="border-b border-lime-400 mb-4 pb-2">
-        <h1 class="text-lime-400 font-black">TITANIUM 360 ELITE | AUDITORÍA ACTIVA</h1>
-        <input type="file" onchange="cargarMatricula(event)" class="text-[10px] bg-zinc-900 mt-2">
+<body class="bg-black text-lime-400 font-mono p-4">
+    <header class="border-b border-lime-400 pb-2 mb-4">
+        <h1 class="text-lime-400 font-black text-lg">TITANIUM 360 ELITE - AUDITORÍA INTEGRAL</h1>
+        <input type="file" onchange="procesarArchivo(event)" class="text-[9px] mt-2">
     </header>
 
-    <nav class="flex gap-2 text-[9px] font-black uppercase mb-4">
-        <button onclick="show('v1')" class="border p-1">Legajos</button>
-        <button onclick="show('v5')" class="border p-1">Supervisión</button>
-        <button onclick="show('v6')" class="border p-1">OCR Asistencia</button>
+    <nav class="flex gap-2 text-[10px] font-bold mb-4 uppercase overflow-x-auto">
+        <button onclick="show('v1')" class="border p-1">1. Legajo</button>
+        <button onclick="show('v2')" class="border p-1">2. Salas/Bajas</button>
+        <button onclick="show('v3')" class="border p-1">3. Espera</button>
+        <button onclick="show('v4')" class="border p-1">4. Asistencia</button>
+        <button onclick="show('v5')" class="border p-1">5. Supervisión</button>
     </nav>
 
-    <div id="v1" class="tab active">
-        <input id="search" onkeyup="buscar()" class="input-data w-full" placeholder="BUSCAR DNI O NOMBRE...">
-        <div id="visor" class="mt-2 text-[10px]"></div>
-    </div>
-
-    <div id="v5" class="tab">
-        <div id="metricas" class="grid grid-cols-2 gap-2 text-[10px]"></div>
-    </div>
-
-    <div id="v6" class="tab">
-        <input type="file" onchange="escanear(event)">
-        <div id="ocr_res" class="mt-2 p-2 bg-zinc-900 text-[10px]"></div>
+    <div id="v1" class="tab block"><input id="q" onkeyup="buscar()" class="w-full bg-black border p-2 mb-2" placeholder="RADAR: NOMBRE O DNI..."> <div id="visor"></div></div>
+    
+    <div id="v2" class="tab hidden"><div id="bitacora_container"></div></div>
+    
+    <div id="v3" class="tab hidden"><h2 class="font-bold">LISTA DE ESPERA</h2><input id="new_espera" class="w-full bg-black border p-2" placeholder="CARGAR NUEVO ASPIRANTE..."></div>
+    
+    <div id="v4" class="tab hidden"><h2 class="font-bold">ASISTENCIA MENSUAL</h2><div id="asis_stats"></div></div>
+    
+    <div id="v5" class="tab hidden">
+        <div id="supervision_stats" class="grid grid-cols-2 gap-2 text-[10px]"></div>
+        <canvas id="grafico" class="mt-4 bg-zinc-900"></canvas>
+        <button onclick="exportarExcel()" class="mt-4 w-full bg-lime-400 text-black font-black p-2">📥 DESCARGAR EXCEL OFICIAL</button>
     </div>
 
     <script>
         let DATA = [];
 
         function show(id) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.tab').forEach(t => t.classList.add('hidden', 'tab'));
+            document.getElementById(id).classList.remove('hidden');
         }
 
-        function cargarMatricula(e) {
+        function procesarArchivo(e) {
             const r = new FileReader();
             r.onload = (ev) => {
                 DATA = JSON.parse(ev.target.result).mat;
-                alert("CARGADOS: " + DATA.length + " ALUMNOS.");
-                renderMetricas();
+                renderSupervision();
             };
             r.readAsText(e.target.files[0]);
         }
 
-        function renderMetricas() {
-            const total = DATA.length;
-            const arg = DATA.filter(a => a.alu_nac === "ARG").length;
-            const auh = DATA.filter(a => a.alu_auh === "SI").length;
-            document.getElementById('metricas').innerHTML = `
-                <div class="border p-2">Total Matrícula: ${total}</div>
-                <div class="border p-2">Arg: ${arg} (${((arg/total)*100).toFixed(1)}%)</div>
-                <div class="border p-2">AUH: ${auh} (${((auh/total)*100).toFixed(1)}%)</div>
+        function renderSupervision() {
+            const tot = DATA.length;
+            const arg = DATA.filter(a => a.alu_nac === 'ARG').length;
+            const par = DATA.filter(a => a.alu_nac === 'PAR').length;
+            const cud = DATA.filter(a => a.alu_cud === 'SI').length;
+            const m = DATA.filter(a => a.sexo === 'F').length;
+            
+            document.getElementById('supervision_stats').innerHTML = `
+                <div class="border p-2">TOTAL: ${tot}</div>
+                <div class="border p-2">ARGENTINOS: ${((arg/tot)*100).toFixed(1)}%</div>
+                <div class="border p-2">PARAGUAYOS: ${((par/tot)*100).toFixed(1)}%</div>
+                <div class="border p-2">CON CUD: ${cud}</div>
+                <div class="border p-2">MUJERES: ${m}</div>
             `;
+            // Gráfico automático
+            new Chart(document.getElementById('grafico'), {
+                type: 'bar',
+                data: { labels: ['ARG', 'PAR', 'CUD'], datasets: [{ label: 'Población', data: [arg, par, cud], backgroundColor: '#dfff00' }] }
+            });
+        }
+
+        function exportarExcel() {
+            let csv = "NOMBRE,DNI,NACIONALIDAD,SALA\n";
+            DATA.forEach(a => csv += `${a.alu_nombre},${a.alu_dni},${a.alu_nac},${a.alu_sala}\n`);
+            const a = document.createElement('a');
+            a.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+            a.download = "Auditoria_Titanium_Oficial.csv";
+            a.click();
         }
 
         function buscar() {
-            const q = document.getElementById('search').value.toUpperCase();
+            const q = document.getElementById('q').value.toUpperCase();
             const res = DATA.filter(a => a.alu_dni.includes(q) || a.alu_nombre.includes(q));
             document.getElementById('visor').innerHTML = res.map(a => `
-                <div class="border-b p-1">
-                    ${a.alu_nombre} | Sala: ${a.alu_sala} | Madre: ${a.m_nombre}
-                </div>
+                <div class="border-b p-1">${a.alu_nombre} | Sala: ${a.alu_sala}</div>
             `).join('');
-        }
-
-        async function escanear(e) {
-            const { data: { text } } = await Tesseract.recognize(e.target.files[0], 'spa');
-            document.getElementById('ocr_res').innerText = text;
         }
     </script>
 </body>
