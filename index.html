@@ -6,489 +6,392 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --nuke: #dfff00; --bg: #05070a; --panel: #111; --border: #333; }
-        body { background: var(--bg); color: #e1e1e1; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 11px; }
-        .input-elite { background: #000; border: 1px solid var(--border); padding: 8px; color: var(--nuke); width: 100%; text-transform: uppercase; border-radius: 4px; }
-        .input-elite:focus { border-color: var(--nuke); outline: none; }
-        .tab-content { display: none; } .active-tab { display: block; }
-        .btn-nuke { background: var(--nuke); color: #000; font-weight: bold; padding: 10px; text-transform: uppercase; cursor: pointer; border-radius: 4px; }
-        .btn-dark { background: #222; border: 1px solid #555; color: #fff; padding: 8px; cursor: pointer; border-radius: 4px; font-weight: bold; }
+        :root { --nuke: #dfff00; --bg: #05070a; --border: #333; }
+        body { background: var(--bg); color: #e1e1e1; font-family: 'Segoe UI', sans-serif; font-size: 11px; }
+        .input-elite { background: #000; border: 1px solid var(--border); padding: 8px; color: var(--nuke); width: 100%; text-transform: uppercase; border-radius: 4px; outline: none; }
+        .input-elite:focus { border-color: var(--nuke); }
+        .tab-content { display: none; } .active-tab { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .btn-nuke { background: var(--nuke); color: #000; font-weight: bold; padding: 10px; cursor: pointer; border-radius: 4px; border: none; transition: 0.2s; }
+        .btn-nuke:hover { background: #bfe600; transform: scale(1.02); }
+        .btn-dark { background: #222; border: 1px solid #555; color: #fff; padding: 8px; cursor: pointer; border-radius: 4px; font-weight: bold; transition: 0.2s; }
         .btn-dark:hover { background: #333; border-color: var(--nuke); }
         .card-sala { cursor: pointer; transition: 0.2s; border: 1px solid #444; border-radius: 8px; background: #111; }
         .card-sala:hover { transform: translateY(-3px); border-color: var(--nuke); box-shadow: 0 4px 15px rgba(223, 255, 0, 0.2); }
+        .table-elite w-full { text-align: left; border-collapse: collapse; }
+        .table-elite th, .table-elite td { padding: 8px; border-bottom: 1px solid #333; }
+        .table-elite th { color: var(--nuke); }
     </style>
 </head>
 <body class="p-4" onload="initSystem()">
 
-    <header class="mb-4 p-4 bg-zinc-900 border border-zinc-800 rounded shadow-lg flex justify-between items-center">
+    <!-- HEADER -->
+    <header class="mb-4 p-4 bg-zinc-900 border border-zinc-800 rounded flex justify-between items-center">
         <div>
-            <h1 class="text-2xl font-black text-nuke italic tracking-widest">TITANIUM 360 <span class="text-white text-sm">| JARDÍN 926</span></h1>
+            <h1 class="text-2xl font-black text-nuke italic">TITANIUM 360 <span class="text-white text-sm">| J926</span></h1>
             <p id="status_db" class="text-gray-400 font-bold mt-1">SISTEMA INICIANDO...</p>
         </div>
         <div class="flex gap-2">
-            <button onclick="document.getElementById('import_json').click()" class="btn-nuke text-xs shadow-[0_0_10px_#dfff00]">📥 IMPORTAR JSON OFICIAL</button>
-            <input type="file" id="import_json" class="hidden" accept=".json" onchange="importarJSON(event)">
-            <button onclick="exportarExcel()" class="btn-dark text-xs text-green-400 border-green-600">📊 EXPORTAR EXCEL</button>
+            <input type="file" id="import_excel" class="hidden" accept=".xlsx, .xls" onchange="importarExcelReal(event)">
+            <button onclick="document.getElementById('import_excel').click()" class="btn-nuke text-xs">📥 IMPORTAR EXCEL OFICIAL</button>
+            <button onclick="limpiarSistema()" class="btn-dark text-xs border-red-500 hover:bg-red-900">⚠️ RESETEAR SISTEMA</button>
         </div>
     </header>
 
-    <nav class="flex overflow-x-auto gap-2 mb-6 border-b border-zinc-800 pb-4 text-xs font-black uppercase">
-        <button onclick="show('v_legajo')" class="btn-dark hover:text-nuke">1. LEGAJO 360 / RADAR</button>
-        <button onclick="show('v_salas')" class="btn-dark hover:text-nuke">2. SALAS INTERACTIVAS</button>
-        <button onclick="show('v_espera')" class="btn-dark hover:text-orange-400 border-orange-900">3. LISTA ESPERA PRO</button>
-        <button onclick="show('v_bajas')" class="btn-dark hover:text-red-500 border-red-900">4. BITÁCORA BAJAS</button>
-        <button onclick="show('v_asistencia')" class="btn-dark hover:text-blue-400 border-blue-900">5. ASISTENCIA</button>
-        <button onclick="show('v_supervision')" class="btn-dark hover:text-nuke">6. SUPERVISIÓN ÉLITE</button>
+    <!-- NAVEGACIÓN -->
+    <nav class="flex gap-2 mb-6 border-b border-zinc-800 pb-4 text-xs font-black uppercase overflow-x-auto">
+        <button onclick="show('v_salas')" class="btn-dark hover:text-nuke">1. FOTO SALAS</button>
+        <button onclick="show('v_legajo')" class="btn-dark hover:text-nuke">2. LEGAJO / RADAR</button>
+        <button onclick="show('v_espera')" class="btn-dark hover:text-orange-400">3. LISTA ESPERA PRO</button>
+        <button onclick="show('v_bajas')" class="btn-dark hover:text-red-500">4. BITÁCORA BAJAS</button>
     </nav>
 
-    <section id="v_legajo" class="tab-content active-tab">
-        <div class="mb-4 flex gap-2">
-            <input type="text" id="radar" onkeyup="buscarRadar()" class="input-elite text-lg border-nuke" placeholder="🔍 RADAR: BUSCAR POR DNI O APELLIDO...">
-            <button onclick="limpiarFormulario()" class="btn-dark w-32">NUEVO LEGAJO</button>
-        </div>
-
-        <div class="grid md:grid-cols-3 gap-4" id="form_master">
-            <div class="space-y-2 border border-zinc-800 p-4 rounded bg-black">
-                <h2 class="text-nuke font-black uppercase mb-2">I. ALUMNO</h2>
-                <input id="a_id" type="hidden">
-                <input id="alu_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
-                <input id="alu_dni" type="number" class="input-elite" placeholder="DNI">
-                <input id="alu_nac" class="input-elite" placeholder="NACIONALIDAD (ARG, PAR, BOL...)">
-                <div class="flex gap-2">
-                    <input type="date" id="alu_f_nac" class="input-elite" onchange="calcularEdad(this.value, 'alu_edad')" title="Fecha Nacimiento">
-                    <input id="alu_edad" class="input-elite bg-zinc-900" placeholder="EDAD AL 30/6" readonly>
-                </div>
-                <select id="sexo" class="input-elite"><option value="">SEXO...</option><option value="M">MASCULINO</option><option value="F">FEMENINO</option></select>
-                <input id="alu_dom" class="input-elite" placeholder="DOMICILIO">
-                <select id="alu_sala" class="input-elite font-bold text-nuke">
-                    <option value="">ASIGNAR SALA...</option>
-                    <option value="3ºA">SALA 3ºA</option><option value="3ºB">SALA 3ºB</option><option value="3ºC">SALA 3ºC</option><option value="3ºD">SALA 3ºD</option><option value="3ºE">SALA 3ºE</option><option value="3ºF">SALA 3ºF</option>
-                    <option value="ME A">MULTI EDAD A</option><option value="ME B">MULTI EDAD B</option>
-                    <option value="1ºA">SALA 1ºA</option><option value="1ºB">SALA 1ºB</option>
-                    <option value="2ºA">SALA 2ºA</option><option value="2ºB">SALA 2ºB</option><option value="2ºC">SALA 2ºC</option><option value="2ºD">SALA 2ºD</option>
-                </select>
-                <input id="alu_salud" class="input-elite" placeholder="FICHA DE SALUD / CUD / ALERGIAS">
-                <select id="alu_auh" class="input-elite"><option value="NO">AUH: NO</option><option value="SI">AUH: SI</option></select>
-            </div>
-
-            <div class="space-y-2 border border-zinc-800 p-4 rounded bg-black">
-                <h2 class="text-blue-400 font-black uppercase mb-2">II. MADRE / TUTOR 1</h2>
-                <input id="m_nombre" class="input-elite" placeholder="NOMBRE COMPLETO">
-                <input id="m_dni" class="input-elite" placeholder="DNI">
-                <input id="m_nac" class="input-elite" placeholder="NACIONALIDAD">
-                <input id="m_tel" class="input-elite" placeholder="TELÉFONO">
-                <input id="m_ocu" class="input-elite" placeholder="OCUPACIÓN">
-                <select id="m_est" class="input-elite">
-                    <option value="S/D">ESTUDIOS...</option>
-                    <option value="SIN ESTUDIOS">SIN ESTUDIOS</option><option value="PRIMARIA INCOMP.">PRIMARIA INCOMPLETA</option><option value="PRIMARIA COMP.">PRIMARIA COMPLETA</option>
-                    <option value="SECUNDARIA INCOMP.">SECUNDARIA INCOMPLETA</option><option value="SECUNDARIA COMP.">SECUNDARIA COMPLETA</option>
-                    <option value="TERCIARIA/UNI COMP.">SUPERIOR COMPLETO</option>
-                </select>
-            </div>
-
-            <div class="space-y-2 border border-zinc-800 p-4 rounded bg-black">
-                <h2 class="text-red-400 font-black uppercase mb-2">III. PADRE / TUTOR 2</h2>
-                <input id="p_nombre" class="input-elite" placeholder="NOMBRE COMPLETO">
-                <input id="p_dni" class="input-elite" placeholder="DNI">
-                <input id="p_nac" class="input-elite" placeholder="NACIONALIDAD">
-                <input id="p_tel" class="input-elite" placeholder="TELÉFONO">
-                <input id="p_ocu" class="input-elite" placeholder="OCUPACIÓN">
-                <select id="p_est" class="input-elite">
-                    <option value="S/D">ESTUDIOS...</option>
-                    <option value="SIN ESTUDIOS">SIN ESTUDIOS</option><option value="PRIMARIA INCOMP.">PRIMARIA INCOMPLETA</option><option value="PRIMARIA COMP.">PRIMARIA COMPLETA</option>
-                    <option value="SECUNDARIA INCOMP.">SECUNDARIA INCOMPLETA</option><option value="SECUNDARIA COMP.">SECUNDARIA COMPLETA</option>
-                    <option value="TERCIARIA/UNI COMP.">SUPERIOR COMPLETO</option>
-                </select>
-            </div>
-        </div>
-        
-        <div class="flex gap-2 mt-4">
-            <button onclick="guardarLegajo('ACTIVO')" class="btn-nuke w-3/4">💾 CONSOLIDAR LEGAJO 360</button>
-            <button onclick="procesarBaja()" class="btn-dark w-1/4 bg-red-900 border-red-500 text-white hover:bg-red-700">🚨 DAR DE BAJA</button>
-        </div>
-    </section>
-
-    <section id="v_salas" class="tab-content">
+    <!-- V1: SALAS INTERACTIVAS -->
+    <section id="v_salas" class="tab-content active-tab">
+        <h2 class="text-xl font-black text-white mb-4">MAPA DE MATRÍCULA EN TIEMPO REAL</h2>
         <div id="grid_salas" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4"></div>
+        
         <div id="modal_sala" class="hidden mt-6 p-4 border border-zinc-700 bg-black rounded">
-            <h3 id="modal_sala_titulo" class="font-black text-nuke text-xl mb-4 border-b border-zinc-800 pb-2"></h3>
-            <div id="modal_sala_lista" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div>
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-2 mb-4">
+                <h3 id="modal_sala_titulo" class="font-black text-nuke text-xl"></h3>
+                <button onclick="document.getElementById('modal_sala').classList.add('hidden')" class="text-red-500 font-bold">X CERRAR</button>
+            </div>
+            <div id="modal_sala_lista" class="grid grid-cols-1 md:grid-cols-3 gap-2"></div>
         </div>
     </section>
 
+    <!-- V2: LEGAJO 360 Y RADAR -->
+    <section id="v_legajo" class="tab-content">
+        <div class="mb-4">
+            <input type="text" id="radar" onkeyup="buscarRadar()" class="input-elite text-lg border-nuke" placeholder="🔍 RADAR: BUSCAR POR DNI O APELLIDO DEL ALUMNO...">
+        </div>
+        <div class="grid md:grid-cols-2 gap-4" id="form_master">
+            <div class="space-y-2 border border-zinc-800 p-4 rounded bg-black">
+                <h2 class="text-nuke font-black uppercase mb-2">I. DATOS DEL ALUMNO (SOLO LECTURA EXCEL)</h2>
+                <input id="alu_nombre" class="input-elite text-gray-400" placeholder="APELLIDO Y NOMBRE" readonly>
+                <input id="alu_dni" type="text" class="input-elite text-gray-400" placeholder="DNI" readonly>
+                <input id="alu_sala" class="input-elite text-gray-400" placeholder="SALA ASIGNADA" readonly>
+                <input id="alu_dom" class="input-elite text-gray-400" placeholder="DOMICILIO" readonly>
+            </div>
+            <div class="space-y-2 border border-zinc-800 p-4 rounded bg-black">
+                <h2 class="text-blue-400 font-black uppercase mb-2">II. CONTACTO FAMILIAR (EDITABLE)</h2>
+                <input id="m_nombre" class="input-elite" placeholder="NOMBRE MADRE/PADRE/TUTOR">
+                <input id="m_tel" class="input-elite" placeholder="TELÉFONO DE EMERGENCIA">
+                <input id="m_obs" class="input-elite" placeholder="OBSERVACIONES MÉDICAS / GENERALES">
+                <button onclick="guardarLegajoAdicional()" class="btn-nuke w-full mt-2">💾 GUARDAR DATOS DE CONTACTO</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- V3: LISTA DE ESPERA PRO -->
     <section id="v_espera" class="tab-content">
-        <div class="border border-orange-900 bg-orange-950/20 p-6 rounded mb-6">
-            <h2 class="text-orange-400 font-black text-lg mb-4">CARGA RÁPIDA / ESCÁNER DNI</h2>
-            <p class="text-xs text-gray-400 mb-2">Posiciona el cursor en el campo y dispara el lector de código de barras del DNI.</p>
-            <input type="text" id="escaner_dni" onchange="procesarDNI(this.value)" class="input-elite border-orange-500 mb-4" placeholder="PISTOLERA DNI AQUÍ (O CARGA MANUAL ABAJO)..." autocomplete="off">
-            
-            <div class="grid grid-cols-3 gap-2">
-                <input id="e_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
-                <input id="e_dni" type="number" class="input-elite" placeholder="DNI">
-                <input type="date" id="e_nac" class="input-elite" onchange="calcularEdad(this.value, 'e_edad')">
-                <input id="e_edad" class="input-elite bg-zinc-900" placeholder="EDAD 30/6" readonly>
-                <input id="e_tel" class="input-elite" placeholder="TELÉFONO CONTACTO">
-                <select id="e_sala" class="input-elite"><option value="">SALA SOLICITADA...</option><option value="1º">SALA 1</option><option value="2º">SALA 2</option><option value="3º">SALA 3</option></select>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="col-span-1 bg-black border border-zinc-800 p-4 rounded">
+                <h2 class="text-orange-400 font-black text-lg mb-4">AÑADIR A ESPERA</h2>
+                <input id="esp_nombre" class="input-elite mb-2" placeholder="NOMBRE DEL POSTULANTE">
+                <input id="esp_tel" class="input-elite mb-2" placeholder="TELÉFONO DE CONTACTO">
+                <input id="esp_sala" class="input-elite mb-4" placeholder="SALA DESEADA (Ej: 3ºA)">
+                <button onclick="agregarEspera()" class="btn-nuke w-full !bg-orange-400 !text-white">➕ REGISTRAR POSTULANTE</button>
             </div>
-            <button onclick="guardarEspera()" class="w-full bg-orange-600 text-white font-bold p-3 mt-4 rounded">➕ AGREGAR A LISTA DE ESPERA</button>
+            <div class="col-span-2 bg-black border border-zinc-800 p-4 rounded overflow-auto h-96">
+                <h2 class="text-white font-black text-lg mb-4">REGISTRO HISTÓRICO DE ESPERA</h2>
+                <table class="table-elite w-full text-left">
+                    <thead><tr><th>FECHA</th><th>POSTULANTE</th><th>CONTACTO</th><th>SALA</th><th>ACCIÓN</th></tr></thead>
+                    <tbody id="tabla_espera"></tbody>
+                </table>
+            </div>
         </div>
-        <div id="lista_espera_render"></div>
     </section>
 
+    <!-- V4: BITÁCORA DE BAJAS -->
     <section id="v_bajas" class="tab-content">
-        <div class="bg-red-950/20 border border-red-900 p-6 rounded">
-            <h2 class="text-red-500 font-black text-xl mb-4">SEGUIMIENTO DE BAJAS ANUAL</h2>
-            <div id="lista_bajas_render" class="space-y-2"></div>
-        </div>
-    </section>
-
-    <section id="v_asistencia" class="tab-content">
-        <div class="grid md:grid-cols-2 gap-6">
-            <div class="border border-zinc-800 p-4 bg-black rounded">
-                <h2 class="font-black text-blue-400 mb-4">SELECCIONE SALA PARA ASISTENCIA</h2>
-                <select id="asis_sala" class="input-elite mb-4" onchange="cargarAsistenciaSala()"></select>
-                <div id="asis_lista_alumnos" class="space-y-1 h-64 overflow-y-auto pr-2"></div>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="col-span-1 bg-black border border-zinc-800 p-4 rounded">
+                <h2 class="text-red-500 font-black text-lg mb-4">REGISTRAR BAJA</h2>
+                <input id="baja_nombre" class="input-elite mb-2" placeholder="NOMBRE DEL ALUMNO">
+                <input id="baja_motivo" class="input-elite mb-4" placeholder="MOTIVO (Ej: Mudanza, Económico)">
+                <button onclick="agregarBaja()" class="btn-nuke w-full !bg-red-600 !text-white">🚨 CONFIRMAR BAJA</button>
             </div>
-            <div class="border border-zinc-800 p-4 bg-black rounded flex flex-col justify-center text-center">
-                <button onclick="calcularAsistencia()" class="btn-nuke text-xl py-6 mb-6">📊 OBTENER MÉTRICAS DEL DÍA</button>
-                <div id="asis_resultados" class="text-xl font-black space-y-4"></div>
+            <div class="col-span-2 bg-black border border-zinc-800 p-4 rounded overflow-auto h-96">
+                <h2 class="text-white font-black text-lg mb-4">HISTORIAL DE BAJAS</h2>
+                <table class="table-elite w-full text-left">
+                    <thead><tr><th>FECHA</th><th>ALUMNO</th><th>MOTIVO</th><th>ACCIÓN</th></tr></thead>
+                    <tbody id="tabla_bajas"></tbody>
+                </table>
             </div>
         </div>
     </section>
 
-    <section id="v_supervision" class="tab-content">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" id="stats_rapidos"></div>
-        <div class="grid md:grid-cols-2 gap-6">
-            <div class="border border-zinc-800 bg-black p-4 rounded">
-                <h3 class="text-nuke font-bold mb-4 border-b border-zinc-800 pb-2">MATRÍCULA POR SALA</h3>
-                <div id="supervision_salas" class="space-y-1 text-xs"></div>
-            </div>
-            <div class="border border-zinc-800 bg-black p-4 rounded">
-                <h3 class="text-blue-400 font-bold mb-4 border-b border-zinc-800 pb-2">PERFIL SOCIODEMOGRÁFICO</h3>
-                <div id="supervision_socio" class="space-y-2 text-xs"></div>
-            </div>
-        </div>
-    </section>
-
+    <!-- JAVASCRIPT -->
     <script>
-        // ESTRUCTURA DE BASE DE DATOS
         let DB = { mat: [], esp: [], bajas: [] };
-        const SALAS_NOMBRES = ["1ºA", "1ºB", "2ºA", "2ºB", "2ºC", "2ºD", "3ºA", "3ºB", "3ºC", "3ºD", "3ºE", "3ºF", "ME A", "ME B"];
+        let alumnoSeleccionadoDNI = null;
 
         function initSystem() {
-            // Intentar cargar de LocalStorage
-            const local = JSON.parse(localStorage.getItem('T360_J926'));
-            if(local && local.mat) DB = local;
+            const local = JSON.parse(localStorage.getItem('T360_J926_PRO'));
+            if(local) {
+                if(local.mat) DB.mat = local.mat;
+                if(local.esp) DB.esp = local.esp;
+                if(local.bajas) DB.bajas = local.bajas;
+            }
             actualizarEstado();
-            show('v_legajo');
+            show('v_salas');
         }
 
         function actualizarEstado() {
-            localStorage.setItem('T360_J926', JSON.stringify(DB));
-            document.getElementById('status_db').innerText = `CONECTADO | ACTIVA: ${DB.mat.length} | ESPERA: ${DB.esp.length} | BAJAS: ${DB.bajas.length}`;
+            localStorage.setItem('T360_J926_PRO', JSON.stringify(DB));
+            document.getElementById('status_db').innerText = `MATRÍCULA: ${DB.mat.length} | ESPERA: ${DB.esp.length} | BAJAS: ${DB.bajas.length}`;
         }
 
-        // ==========================================
-        // 1. MOTOR DE IMPORTACIÓN JSON REAL
-        // ==========================================
-        function importarJSON(e) {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                try {
-                    const data = JSON.parse(evt.target.result);
-                    // Adaptación exacta al formato que subiste
-                    if(data.mat) {
-                        DB.mat = data.mat;
-                        // Si el JSON no traía listas de espera o bajas, las creamos vacías
-                        DB.esp = data.esp || [];
-                        DB.bajas = data.bajas || [];
-                    } else if (Array.isArray(data)) {
-                        DB.mat = data;
-                    }
-                    actualizarEstado();
-                    alert(`✅ IMPORTACIÓN EXITOSA.\nSe cargaron ${DB.mat.length} alumnos de la institución: ${data.institucion || 'Desconocida'}`);
-                    show('v_salas');
-                } catch(error) {
-                    alert("❌ Error leyendo el archivo. Verifique el formato JSON.");
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // ==========================================
-        // 2. CAPTURA Y PARSEO DE DNI (Lector de Código)
-        // ==========================================
-        function procesarDNI(codigo) {
-            // Formato DNI Argentino PDF417: Tramite@Apellido@Nombre@Sexo@DNI@Ejemplar@FechaNac@FechaEmision
-            const partes = codigo.split('@');
-            if(partes.length >= 7) {
-                document.getElementById('e_nombre').value = partes[1] + " " + partes[2]; // Apellido + Nombre
-                document.getElementById('e_dni').value = partes[4]; // DNI
-                
-                // Procesar Fecha DD/MM/YYYY a YYYY-MM-DD para el input type="date"
-                const fechaArr = partes[6].split('/');
-                if(fechaArr.length === 3) {
-                    const fechaFmt = `${fechaArr[2]}-${fechaArr[1]}-${fechaArr[0]}`;
-                    document.getElementById('e_nac').value = fechaFmt;
-                    calcularEdad(fechaFmt, 'e_edad');
-                }
-                document.getElementById('escaner_dni').value = ''; // Limpiar pistola
-                document.getElementById('e_tel').focus(); // Pasar al siguiente campo
-            } else {
-                alert("Lectura no estándar. Intente carga manual.");
+        function limpiarSistema() {
+            if(confirm("⚠️ ADVERTENCIA: Esto borrará TODOS los datos (matrícula, listas de espera y bajas). ¿Estás seguro?")) {
+                DB = { mat: [], esp: [], bajas: [] };
+                actualizarEstado();
+                location.reload();
             }
         }
 
-        function calcularEdad(fecha, outputId) {
-            if(!fecha) return;
-            const nac = new Date(fecha);
-            const añoLectivo = new Date().getFullYear();
-            const corte = new Date(añoLectivo, 5, 30); // 30 de Junio (Mes 5 en JS index 0)
-            
-            let edad = corte.getFullYear() - nac.getFullYear();
-            let m = corte.getMonth() - nac.getMonth();
-            if (m < 0 || (m === 0 && corte.getDate() < nac.getDate())) { edad--; }
-            
-            document.getElementById(outputId).value = `${edad} AÑOS AL 30/06`;
-        }
-
-        // ==========================================
-        // 3. NAVEGACIÓN Y VISTAS
-        // ==========================================
         function show(id) {
             document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active-tab'));
             document.getElementById(id).classList.add('active-tab');
-            if(id === 'v_salas') renderSalas();
+            if(id === 'v_salas') renderSalasReales();
             if(id === 'v_espera') renderEspera();
             if(id === 'v_bajas') renderBajas();
-            if(id === 'v_asistencia') llenarSelectAsistencia();
-            if(id === 'v_supervision') generarSupervision();
         }
 
         // ==========================================
-        // CRUD LEGAJO 360 & BITÁCORA DE BAJAS
+        // 1. IMPORTAR EXCEL 
         // ==========================================
-        function guardarLegajo() {
-            const dni = document.getElementById('alu_dni').value;
-            if(!dni) return alert("El DNI es obligatorio.");
-
-            const alumno = {
-                alu_nombre: document.getElementById('alu_nombre').value,
-                alu_dni: dni,
-                alu_f_nac: document.getElementById('alu_f_nac').value,
-                alu_nac: document.getElementById('alu_nac').value || 'ARG',
-                sexo: document.getElementById('sexo').value,
-                alu_dom: document.getElementById('alu_dom').value,
-                alu_sala: document.getElementById('alu_sala').value,
-                alu_auh: document.getElementById('alu_auh').value,
-                alu_salud: document.getElementById('alu_salud').value,
-                m_nombre: document.getElementById('m_nombre').value,
-                m_dni: document.getElementById('m_dni').value,
-                m_tel: document.getElementById('m_tel').value,
-                m_ocu: document.getElementById('m_ocu').value,
-                m_est: document.getElementById('m_est').value,
-                p_nombre: document.getElementById('p_nombre').value,
-                p_tel: document.getElementById('p_tel').value,
-                p_ocu: document.getElementById('p_ocu').value,
-                p_est: document.getElementById('p_est').value
+        function importarExcelReal(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            
+            reader.onload = function(evt) {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                let nuevosAlumnos = [];
+                
+                workbook.SheetNames.forEach(sheetName => {
+                    const sheet = workbook.Sheets[sheetName];
+                    const filas = XLSX.utils.sheet_to_json(sheet, {defval: ""});
+                    
+                    filas.forEach(fila => {
+                        let nombre = fila["APELLIDO Y NOMBRE DE LOS ALUMNOS"] || fila["APELLIDO Y NOMBRE"] || fila["ALUMNOS"];
+                        let dni = fila["DOC. IDENTIDAD"] || fila["DNI"];
+                        let grado = fila["GRADO"];
+                        let seccion = fila["SECCION"] || fila["SECCIÓN"];
+                        let domicilio = fila["DOMICILIO"];
+                        
+                        if (nombre && dni && grado && seccion) {
+                            let salaFormateada = grado.toString().trim() + " " + seccion.toString().trim();
+                            
+                            // Mantener datos adicionales si el alumno ya existía
+                            let existe = DB.mat.find(a => a.alu_dni === dni.toString());
+                            
+                            nuevosAlumnos.push({
+                                alu_nombre: nombre.toUpperCase(),
+                                alu_dni: dni.toString(),
+                                alu_sala: salaFormateada,
+                                alu_dom: domicilio ? domicilio.toString().toUpperCase() : "S/D",
+                                m_nombre: existe ? existe.m_nombre : "",
+                                m_tel: existe ? existe.m_tel : "",
+                                m_obs: existe ? existe.m_obs : ""
+                            });
+                        }
+                    });
+                });
+                
+                if(nuevosAlumnos.length > 0) {
+                    DB.mat = nuevosAlumnos;
+                    actualizarEstado();
+                    alert(`✅ EXCEL PROCESADO CON ÉXITO.\nSe cargaron ${nuevosAlumnos.length} alumnos.`);
+                    renderSalasReales();
+                } else {
+                    alert("❌ Error: No se detectaron columnas válidas (Verifica que existan GRADO, SECCION, DOC. IDENTIDAD y APELLIDO Y NOMBRE).");
+                }
             };
-
-            const idx = DB.mat.findIndex(a => a.alu_dni === dni);
-            if(idx > -1) DB.mat[idx] = alumno; else DB.mat.push(alumno);
-            
-            actualizarEstado();
-            alert("LEGAJO CONSOLIDADO");
-            limpiarFormulario();
+            reader.readAsArrayBuffer(file);
         }
 
-        function procesarBaja() {
-            const dni = document.getElementById('alu_dni').value;
-            if(!dni) return alert("Seleccione un alumno primero (Use el radar).");
+        // ==========================================
+        // 2. FOTO SALAS
+        // ==========================================
+        function renderSalasReales() {
+            const grid = document.getElementById('grid_salas');
+            grid.innerHTML = '';
+            const salasUnicas = [...new Set(DB.mat.map(item => item.alu_sala))].sort();
             
-            const idx = DB.mat.findIndex(a => a.alu_dni === dni);
-            if(idx > -1) {
-                const motivo = prompt("MOTIVO DE LA BAJA (Obligatorio):");
-                if(!motivo) return;
-                
-                let aluBaja = DB.mat.splice(idx, 1)[0]; // Saca de activa
-                aluBaja.fecha_baja = new Date().toLocaleDateString();
-                aluBaja.motivo_baja = motivo.toUpperCase();
-                
-                DB.bajas.push(aluBaja); // Manda a bitácora
-                actualizarEstado();
-                alert(`ALUMNO DADO DE BAJA.\nEnviado a Bitácora Histórica.`);
-                limpiarFormulario();
+            if(salasUnicas.length === 0) {
+                grid.innerHTML = `<p class="text-gray-500 col-span-4">No hay alumnos. Por favor, importa tu archivo Excel oficial.</p>`;
+                return;
             }
+
+            salasUnicas.forEach(sala => {
+                if(!sala || sala === " ") return;
+                const cantidad = DB.mat.filter(a => a.alu_sala === sala).length;
+                grid.innerHTML += `
+                    <div class="card-sala p-4 text-center border-t-4 border-nuke" onclick="verAlumnosSala('${sala}')">
+                        <p class="font-black text-white text-xs">SALA</p>
+                        <p class="font-black text-nuke text-xl">${sala}</p>
+                        <div class="mt-2 text-sm bg-zinc-800 rounded py-1">${cantidad} ALUMNOS</div>
+                    </div>`;
+            });
+        }
+
+        function verAlumnosSala(sala) {
+            document.getElementById('modal_sala').classList.remove('hidden');
+            document.getElementById('modal_sala_titulo').innerText = `LISTADO | SALA: ${sala}`;
+            const lista = document.getElementById('modal_sala_lista');
+            lista.innerHTML = '';
+            
+            DB.mat.filter(a => a.alu_sala === sala).forEach(a => {
+                lista.innerHTML += `
+                    <div class="flex justify-between items-center p-2 border border-zinc-800 bg-zinc-900 cursor-pointer hover:border-nuke" onclick="abrirEnRadar('${a.alu_dni}')">
+                        <span class="font-bold text-[10px] uppercase">${a.alu_nombre}</span>
+                        <span class="text-[10px] text-nuke font-bold">> VER</span>
+                    </div>`;
+            });
+        }
+
+        // ==========================================
+        // 3. RADAR Y LEGAJO
+        // ==========================================
+        function abrirEnRadar(dni) {
+            show('v_legajo');
+            document.getElementById('radar').value = dni;
+            buscarRadar();
         }
 
         function buscarRadar() {
             const q = document.getElementById('radar').value.toUpperCase();
+            document.getElementById('alu_nombre').value = "";
+            document.getElementById('alu_dni').value = "";
+            document.getElementById('alu_sala').value = "";
+            document.getElementById('alu_dom').value = "";
+            document.getElementById('m_nombre').value = "";
+            document.getElementById('m_tel').value = "";
+            document.getElementById('m_obs').value = "";
+            alumnoSeleccionadoDNI = null;
+
             if(q.length < 3) return;
             const res = DB.mat.find(a => a.alu_dni.includes(q) || a.alu_nombre.includes(q));
+            
             if(res) {
-                for(let key in res) {
-                    if(document.getElementById(key)) document.getElementById(key).value = res[key];
-                }
-                if(res.alu_f_nac) calcularEdad(res.alu_f_nac, 'alu_edad');
+                alumnoSeleccionadoDNI = res.alu_dni;
+                document.getElementById('alu_nombre').value = res.alu_nombre;
+                document.getElementById('alu_dni').value = res.alu_dni;
+                document.getElementById('alu_sala').value = res.alu_sala;
+                document.getElementById('alu_dom').value = res.alu_dom;
+                document.getElementById('m_nombre').value = res.m_nombre || "";
+                document.getElementById('m_tel').value = res.m_tel || "";
+                document.getElementById('m_obs').value = res.m_obs || "";
             }
         }
 
-        function limpiarFormulario() {
-            document.querySelectorAll('#form_master input').forEach(i => i.value = '');
-            document.querySelectorAll('#form_master select').forEach(i => i.selectedIndex = 0);
-            document.getElementById('radar').value = '';
+        function guardarLegajoAdicional() {
+            if(!alumnoSeleccionadoDNI) {
+                alert("Primero busca y selecciona un alumno en el Radar.");
+                return;
+            }
+            let index = DB.mat.findIndex(a => a.alu_dni === alumnoSeleccionadoDNI);
+            if(index !== -1) {
+                DB.mat[index].m_nombre = document.getElementById('m_nombre').value.toUpperCase();
+                DB.mat[index].m_tel = document.getElementById('m_tel').value;
+                DB.mat[index].m_obs = document.getElementById('m_obs').value.toUpperCase();
+                actualizarEstado();
+                alert("Datos de contacto actualizados correctamente.");
+            }
         }
 
         // ==========================================
-        // VISTAS Y RENDERIZADOS SECUNDARIOS
+        // 4. LISTA DE ESPERA
         // ==========================================
-        function renderSalas() {
-            const grid = document.getElementById('grid_salas');
-            grid.innerHTML = '';
-            SALAS_NOMBRES.forEach(s => {
-                const cant = DB.mat.filter(a => a.alu_sala === s).length;
-                grid.innerHTML += `
-                    <div class="card-sala p-4 text-center border-t-4 border-nuke" onclick="verSalaDetalle('${s}')">
-                        <p class="font-black text-white">${s}</p>
-                        <h2 class="text-3xl text-nuke mt-2">${cant}</h2>
-                    </div>`;
+        function agregarEspera() {
+            const nombre = document.getElementById('esp_nombre').value.toUpperCase();
+            const tel = document.getElementById('esp_tel').value;
+            const sala = document.getElementById('esp_sala').value.toUpperCase();
+            
+            if(!nombre) return alert("Falta el nombre.");
+            
+            DB.esp.push({
+                id: Date.now(),
+                fecha: new Date().toLocaleDateString(),
+                nombre: nombre,
+                tel: tel || "S/D",
+                sala: sala || "S/D"
             });
-        }
-
-        function verSalaDetalle(sala) {
-            document.getElementById('modal_sala').classList.remove('hidden');
-            document.getElementById('modal_sala_titulo').innerText = `ALUMNOS: SALA ${sala}`;
-            const lista = document.getElementById('modal_sala_lista');
-            lista.innerHTML = '';
-            DB.mat.filter(a => a.alu_sala === sala).forEach(a => {
-                lista.innerHTML += `
-                    <div class="flex justify-between items-center p-2 border border-zinc-800 hover:bg-zinc-800 cursor-pointer" onclick="abrirLegajoDesdeSala('${a.alu_dni}')">
-                        <span class="font-bold">${a.alu_nombre}</span>
-                        <span class="text-xs text-gray-500">DNI: ${a.alu_dni}</span>
-                    </div>`;
-            });
-        }
-
-        function abrirLegajoDesdeSala(dni) {
-            document.getElementById('radar').value = dni;
-            buscarRadar();
-            show('v_legajo');
-        }
-
-        function guardarEspera() {
-            const e = {
-                nombre: document.getElementById('e_nombre').value,
-                dni: document.getElementById('e_dni').value,
-                tel: document.getElementById('e_tel').value,
-                sala: document.getElementById('e_sala').value,
-                fecha_solicitud: new Date().toLocaleDateString()
-            };
-            if(!e.dni) return alert("DNI requerido");
-            DB.esp.push(e);
+            
+            document.getElementById('esp_nombre').value = '';
+            document.getElementById('esp_tel').value = '';
+            document.getElementById('esp_sala').value = '';
+            
             actualizarEstado();
-            document.querySelectorAll('#v_espera input').forEach(i => i.value = '');
             renderEspera();
         }
 
         function renderEspera() {
-            const div = document.getElementById('lista_espera_render');
-            div.innerHTML = DB.esp.map((e, idx) => `
-                <div class="bg-black p-3 border border-orange-900 mb-2 flex justify-between items-center">
-                    <div>
-                        <p class="font-bold text-orange-400">${e.nombre} | Sala Solicitada: ${e.sala}</p>
-                        <p class="text-xs">DNI: ${e.dni} | Tel: ${e.tel} | Solicitud: ${e.fecha_solicitud}</p>
-                    </div>
-                    <button onclick="promoverMatricula(${idx})" class="bg-green-600 px-3 py-1 font-bold rounded">ADMITIR</button>
-                </div>
-            `).join('');
+            const tabla = document.getElementById('tabla_espera');
+            tabla.innerHTML = '';
+            DB.esp.forEach(e => {
+                tabla.innerHTML += `
+                    <tr>
+                        <td class="text-gray-400">${e.fecha}</td>
+                        <td class="font-bold">${e.nombre}</td>
+                        <td>${e.tel}</td>
+                        <td><span class="bg-orange-500/20 text-orange-400 px-2 py-1 rounded">${e.sala}</span></td>
+                        <td><button onclick="borrarEspera(${e.id})" class="text-red-500 hover:text-white">BORRAR</button></td>
+                    </tr>`;
+            });
+        }
+
+        function borrarEspera(id) {
+            DB.esp = DB.esp.filter(e => e.id !== id);
+            actualizarEstado();
+            renderEspera();
+        }
+
+        // ==========================================
+        // 5. BITÁCORA DE BAJAS
+        // ==========================================
+        function agregarBaja() {
+            const nombre = document.getElementById('baja_nombre').value.toUpperCase();
+            const motivo = document.getElementById('baja_motivo').value.toUpperCase();
+            
+            if(!nombre) return alert("Ingresa el nombre del alumno.");
+            
+            DB.bajas.push({
+                id: Date.now(),
+                fecha: new Date().toLocaleDateString(),
+                nombre: nombre,
+                motivo: motivo || "SIN ESPECIFICAR"
+            });
+            
+            document.getElementById('baja_nombre').value = '';
+            document.getElementById('baja_motivo').value = '';
+            
+            actualizarEstado();
+            renderBajas();
         }
 
         function renderBajas() {
-            const div = document.getElementById('lista_bajas_render');
-            div.innerHTML = DB.bajas.map(b => `
-                <div class="bg-black p-3 border border-red-900 mb-2">
-                    <p class="font-bold text-red-500">${b.alu_nombre} | Sala de Origen: ${b.alu_sala || 'S/D'}</p>
-                    <p class="text-xs">DNI: ${b.alu_dni} | <strong>Fecha Baja:</strong> ${b.fecha_baja} | <strong>Motivo:</strong> ${b.motivo_baja}</p>
-                </div>
-            `).join('');
+            const tabla = document.getElementById('tabla_bajas');
+            tabla.innerHTML = '';
+            DB.bajas.forEach(b => {
+                tabla.innerHTML += `
+                    <tr>
+                        <td class="text-gray-400">${b.fecha}</td>
+                        <td class="font-bold">${b.nombre}</td>
+                        <td>${b.motivo}</td>
+                        <td><button onclick="borrarBaja(${b.id})" class="text-gray-500 hover:text-white">ELIMINAR</button></td>
+                    </tr>`;
+            });
         }
 
-        // ==========================================
-        // ASISTENCIA Y SUPERVISIÓN ESTADÍSTICA
-        // ==========================================
-        function llenarSelectAsistencia() {
-            const sel = document.getElementById('asis_sala');
-            sel.innerHTML = '<option value="">SELECCIONAR SALA...</option>';
-            SALAS_NOMBRES.forEach(s => sel.innerHTML += `<option value="${s}">${s}</option>`);
-        }
-
-        function cargarAsistenciaSala() {
-            const s = document.getElementById('asis_sala').value;
-            const div = document.getElementById('asis_lista_alumnos');
-            div.innerHTML = DB.mat.filter(a => a.alu_sala === s).map(a => `
-                <label class="flex justify-between items-center p-2 border-b border-zinc-800 cursor-pointer">
-                    <span>${a.alu_nombre}</span>
-                    <input type="checkbox" class="asis-chk w-5 h-5 accent-nuke" checked>
-                </label>
-            `).join('');
-        }
-
-        function calcularAsistencia() {
-            const checks = document.querySelectorAll('.asis-chk');
-            if(checks.length === 0) return;
-            const pre = document.querySelectorAll('.asis-chk:checked').length;
-            const aus = checks.length - pre;
-            const pct = ((pre / checks.length) * 100).toFixed(1);
-            document.getElementById('asis_resultados').innerHTML = `
-                <div class="text-green-500">PRESENTES: ${pre}</div>
-                <div class="text-red-500">AUSENTES: ${aus}</div>
-                <div class="text-nuke text-3xl mt-4">ASISTENCIA MEDIA: ${pct}%</div>
-            `;
-        }
-
-        function generarSupervision() {
-            const tot = DB.mat.length;
-            if(tot === 0) return;
-            
-            // Stats rápidos
-            const auh = DB.mat.filter(a => a.alu_auh === 'SI').length;
-            const nacExt = DB.mat.filter(a => a.alu_nac && a.alu_nac !== 'ARG').length;
-            const monoparental = DB.mat.filter(a => a.p_nombre === 'S/D' || !a.p_nombre).length;
-            
-            document.getElementById('stats_rapidos').innerHTML = `
-                <div class="bg-black p-4 border border-zinc-800 text-center"><p class="text-gray-400">MATRÍCULA ACTIVA</p><h3 class="text-2xl text-nuke">${tot}</h3></div>
-                <div class="bg-black p-4 border border-zinc-800 text-center"><p class="text-gray-400">COBERTURA AUH</p><h3 class="text-2xl text-blue-400">${((auh/tot)*100).toFixed(1)}%</h3></div>
-                <div class="bg-black p-4 border border-zinc-800 text-center"><p class="text-gray-400">MATRÍCULA EXTRANJERA</p><h3 class="text-2xl text-orange-400">${((nacExt/tot)*100).toFixed(1)}%</h3></div>
-                <div class="bg-black p-4 border border-zinc-800 text-center"><p class="text-gray-400">MONOPARENTALES (Decl.)</p><h3 class="text-2xl text-purple-400">${((monoparental/tot)*100).toFixed(1)}%</h3></div>
-            `;
-
-            // Salas
-            const divSalas = document.getElementById('supervision_salas');
-            divSalas.innerHTML = SALAS_NOMBRES.map(s => {
-                const c = DB.mat.filter(a => a.alu_sala === s).length;
-                const pc = ((c/tot)*100).toFixed(1);
-                return `<div class="flex justify-between border-b border-zinc-800 py-1"><span>${s}</span> <span class="text-nuke">${c} (${pc}%)</span></div>`;
-            }).join('');
-
-            // Socio - Nivel Educativo Madres (Muestra)
-            const edu = {};
-            DB.mat.forEach(a => { if(a.m_est && a.m_est !== 'S/D') edu[a.m_est] = (edu[a.m_est] || 0) + 1; });
-            const divSocio = document.getElementById('supervision_socio');
-            divSocio.innerHTML = '<p class="text-gray-400 mb-2">EDUCACIÓN MATERNA (SOBRE DECLARADOS):</p>';
-            for(let k in edu) {
-                divSocio.innerHTML += `<div class="flex justify-between border-b border-zinc-800 py-1"><span>${k}</span> <span class="text-blue-400">${edu[k]}</span></div>`;
-            }
-        }
-
-        // Exportar a Excel
-        function exportarExcel() {
-            if(DB.mat.length === 0) return alert("Base vacía.");
-            const ws = XLSX.utils.json_to_sheet(DB.mat);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "TITANIUM_ACTIVOS");
-            if(DB.bajas.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(DB.bajas), "BAJAS");
-            XLSX.writeFile(wb, "TITANIUM_360_SUPERVISION.xlsx");
+        function borrarBaja(id) {
+            DB.bajas = DB.bajas.filter(b => b.id !== id);
+            actualizarEstado();
+            renderBajas();
         }
     </script>
 </body>
