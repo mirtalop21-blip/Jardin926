@@ -2,131 +2,107 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TITANIUM 360 ELITE | GESTIÓN INTEGRAL J926</title>
+    <title>TITANIUM 360 | AUDITORÍA TOTAL J926</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --nuke: #dfff00; --bg: #05070a; }
-        body { background: var(--bg); color: #fff; font-family: monospace; }
-        .input-elite { background: #111; border: 1px solid #333; padding: 8px; color: var(--nuke); width: 100%; }
-        .neon-border { border: 1px solid var(--nuke); box-shadow: 0 0 10px rgba(223, 255, 0, 0.2); }
+        body { background: var(--bg); color: #e1e1e1; font-family: sans-serif; font-size: 11px; }
+        .input-elite { background: #000; border: 1px solid #444; padding: 8px; color: var(--nuke); width: 100%; text-transform: uppercase; }
+        .tab-content { display: none; }
+        .active-tab { display: block; }
     </style>
 </head>
-<body class="p-4" onload="init()">
+<body class="p-4">
 
-    <header class="mb-6 border-b border-nuke pb-4">
-        <h1 class="text-2xl font-black text-nuke orbitron">TITANIUM 360 | AUDITORÍA INTEGRAL</h1>
-        <div class="flex gap-2 mt-2">
-            <button onclick="exportarExcel()" class="bg-green-600 px-4 py-1 text-[10px] font-bold">EXPORTAR OFICIAL</button>
-            <input type="file" onchange="importarJSON(this)" class="text-[10px]">
-        </div>
-    </header>
+    <nav class="flex gap-2 mb-6 border-b border-zinc-800 pb-2">
+        <button onclick="show('v1')">1. LEGAJO 360</button>
+        <button onclick="show('v2')">2. FOTO SALAS</button>
+        <button onclick="show('v3')">3. ESPERA</button>
+        <button onclick="show('v4')">4. ASISTENCIA</button>
+        <button onclick="show('v5')">5. SUPERVISIÓN</button>
+    </nav>
 
-    <div class="flex gap-2 mb-6 overflow-x-auto">
-        <button onclick="cambiarSeccion('v1')" class="border p-2">1. LEGAJO 360</button>
-        <button onclick="cambiarSeccion('v2')" class="border p-2">2. FOTO SALAS</button>
-        <button onclick="cambiarSeccion('v5')" class="border p-2">3. SUPERVISIÓN</button>
-    </div>
-
-    <section id="v1" class="space-y-4">
-        <input type="text" id="radar" onkeyup="buscar()" placeholder="RADAR: DNI O APELLIDO..." class="input-elite text-xl">
-        <div class="grid md:grid-cols-3 gap-4" id="form_master">
+    <section id="v1" class="tab-content active-tab">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="form_master">
             <div class="space-y-2 border p-4">
-                <h2 class="text-nuke">I. ALUMNO</h2>
+                <h2 class="text-nuke font-black">I. ALUMNO</h2>
                 <input id="alu_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
                 <input id="alu_dni" class="input-elite" placeholder="DNI">
-                <input type="date" id="alu_f_nac" class="input-elite" onchange="calcularEdad()">
-                <select id="alu_sala" class="input-elite">
-                    <option value="ROSA">ROSA</option><option value="ROJA">ROJA</option>
-                    <option value="NARANJA">NARANJA</option><option value="CELESTE">CELESTE</option>
-                    <option value="VIOLETA">VIOLETA</option><option value="AZUL">AZUL</option>
-                    <option value="AMARILLA">AMARILLA</option><option value="VERDE">VERDE</option>
-                </select>
-                <select id="alu_auh" class="input-elite"><option value="NO">AUH: NO</option><option value="SI">SI</option></select>
-                <input id="alu_cud" class="input-elite" placeholder="CUD (SI/NO)">
+                <input type="date" id="alu_nac" class="input-elite">
+                <input id="alu_domicilio" class="input-elite" placeholder="DOMICILIO">
+                <input type="number" id="alu_hermanos" class="input-elite" placeholder="CANT. HERMANOS">
+                <select id="alu_her_jardin" class="input-elite"><option>HERMANO EN JARDÍN: NO</option><option>SI</option></select>
+                <textarea id="alu_salud" class="input-elite" placeholder="FICHA SALUD / ALERGIAS"></textarea>
             </div>
             <div class="space-y-2 border p-4">
-                <h2 class="text-blue-400">II. PADRES</h2>
-                <input id="m_nombre" class="input-elite" placeholder="MADRE">
-                <input id="p_nombre" class="input-elite" placeholder="PADRE">
+                <h2 class="text-blue-400 font-black">II. MADRE</h2>
+                <input id="m_nombre" class="input-elite" placeholder="NOMBRE Y APELLIDO">
+                <input id="m_dni" class="input-elite" placeholder="DNI">
+                <input id="m_tel" class="input-elite" placeholder="TELÉFONO">
                 <select id="m_estudios" class="input-elite">
-                    <option>PRIMARIA COMPLETA</option><option>SECUNDARIA COMPLETA</option>
-                    <option>TERCIARIA COMPLETA</option><option>UNIVERSITARIA COMPLETA</option>
+                    <option value="SIN">SIN ESTUDIOS</option><option value="PRIMARIA">PRIMARIA COMP/INC</option>
+                    <option value="SECUNDARIA">SECUNDARIA COMP/INC</option><option value="TERCIARIA">TERCIARIA COMP/INC</option>
+                    <option value="UNIVERSITARIA">UNIVERSITARIA COMP/INC</option>
+                </select>
+                <select id="m_auh" class="input-elite"><option>AUH: NO</option><option>SI</option></select>
+            </div>
+            <div class="space-y-2 border p-4">
+                <h2 class="text-red-400 font-black">III. PADRE</h2>
+                <input id="p_nombre" class="input-elite" placeholder="NOMBRE Y APELLIDO">
+                <input id="p_dni" class="input-elite" placeholder="DNI">
+                <input id="p_tel" class="input-elite" placeholder="TELÉFONO">
+                <select id="p_estudios" class="input-elite">
+                    <option value="SIN">SIN ESTUDIOS</option><option value="PRIMARIA">PRIMARIA COMP/INC</option>
+                    <option value="SECUNDARIA">SECUNDARIA COMP/INC</option><option value="TERCIARIA">TERCIARIA COMP/INC</option>
+                    <option value="UNIVERSITARIA">UNIVERSITARIA COMP/INC</option>
                 </select>
             </div>
-            <div class="p-4"><button onclick="guardarLegajo()" class="w-full bg-nuke text-black font-black p-4">CONSOLIDAR LEGAJO</button></div>
         </div>
+        <button onclick="guardar()" class="mt-4 bg-nuke text-black w-full p-4 font-black">CONSOLIDAR LEGAJO 360</button>
     </section>
 
-    <section id="v2" class="hidden">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="mapa_salas"></div>
+    <section id="v2" class="tab-content">
+        <h2 class="text-xl font-black mb-4">FOTO INSTITUCIONAL - MAPA DE SALAS</h2>
+        <div id="grid_salas" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
     </section>
 
-    <section id="v5" class="hidden">
-        <div id="stats_panel" class="grid grid-cols-3 gap-4"></div>
-        <canvas id="chartGeneral" class="mt-8"></canvas>
+    <section id="v5" class="tab-content">
+        <h2 class="text-xl font-black mb-4">SUPERVISIÓN POBLACIONAL</h2>
+        <div id="stats_panel" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
     </section>
 
     <script>
         let DATA = JSON.parse(localStorage.getItem('T360_DB')) || { mat: [] };
 
-        function init() { renderSalas(); }
+        function show(id) {
+            document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active-tab'));
+            document.getElementById(id).classList.add('active-tab');
+        }
 
-        function guardarLegajo() {
+        function guardar() {
             const alu = {};
-            document.querySelectorAll('input, select').forEach(i => alu[i.id] = i.value);
+            document.querySelectorAll('input, select, textarea').forEach(i => alu[i.id] = i.value);
             DATA.mat.push(alu);
             localStorage.setItem('T360_DB', JSON.stringify(DATA));
-            alert("LEGAJO CONSOLIDADO");
+            alert("LEGAJO GUARDADO");
             renderSalas();
         }
 
         function renderSalas() {
-            const container = document.getElementById('mapa_salas');
-            container.innerHTML = '';
-            ['ROSA','ROJA','NARANJA','CELESTE','VIOLETA','AZUL','AMARILLA','VERDE'].forEach(sala => {
-                const total = DATA.mat.filter(a => a.alu_sala === sala).length;
-                container.innerHTML += `<div class="p-4 border neon-border cursor-pointer" onclick="verSala('${sala}')">
-                    <p>${sala}</p><h2 class="text-3xl font-black">${total}</h2>
+            const grid = document.getElementById('grid_salas');
+            grid.innerHTML = '';
+            const salas = ['ROSA','ROJA','NARANJA','CELESTE','VIOLETA','AZUL','AMARILLA','VERDE'];
+            salas.forEach(s => {
+                const total = DATA.mat.filter(a => a.alu_sala === s).length;
+                grid.innerHTML += `<div class="border p-4 neon-border text-center">
+                    <p class="font-black">${s}</p>
+                    <h2 class="text-3xl text-nuke">${total}</h2>
                 </div>`;
             });
         }
 
-        function verSala(sala) {
-            cambiarSeccion('v1');
-            const lista = DATA.mat.filter(a => a.alu_sala === sala);
-            console.log("Alumnos en sala:", lista);
-        }
-
-        function cambiarSeccion(id) {
-            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-        }
-
-        function calcularEdad() {
-            // Lógica al 30/06/2026
-            const fechaNac = new Date(document.getElementById('alu_f_nac').value);
-            const ref = new Date('2026-06-30');
-            let edad = ref.getFullYear() - fechaNac.getFullYear();
-            console.log("Edad calculada:", edad);
-        }
-
-        function exportarExcel() {
-            const ws = XLSX.utils.json_to_sheet(DATA.mat);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "MATRICULA_360");
-            XLSX.writeFile(wb, "SUPERVISION_OFICIAL_J926.xlsx");
-        }
-
-        function importarJSON(input) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                DATA = JSON.parse(e.target.result);
-                renderSalas();
-            };
-            reader.readAsText(input.files[0]);
-        }
+        function init() { renderSalas(); }
+        init();
     </script>
 </body>
 </html>
