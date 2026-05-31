@@ -4,105 +4,93 @@
     <meta charset="UTF-8">
     <title>TITANIUM 360 | AUDITORÍA TOTAL J926</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
     <style>
         :root { --nuke: #dfff00; --bg: #05070a; }
-        body { background: var(--bg); color: #e1e1e1; font-family: sans-serif; font-size: 11px; }
+        body { background: var(--bg); color: #e1e1e1; font-family: monospace; font-size: 11px; }
         .input-elite { background: #000; border: 1px solid #444; padding: 8px; color: var(--nuke); width: 100%; text-transform: uppercase; }
         .tab-content { display: none; }
         .active-tab { display: block; }
+        .neon-border { border: 1px solid var(--nuke); }
     </style>
 </head>
 <body class="p-4">
 
-    <nav class="flex gap-2 mb-6 border-b border-zinc-800 pb-2">
-        <button onclick="show('v1')">1. LEGAJO 360</button>
-        <button onclick="show('v2')">2. FOTO SALAS</button>
-        <button onclick="show('v3')">3. ESPERA</button>
-        <button onclick="show('v4')">4. ASISTENCIA</button>
-        <button onclick="show('v5')">5. SUPERVISIÓN</button>
+    <div class="mb-6">
+        <input type="text" id="radar" onkeyup="buscarRadar()" class="input-elite text-2xl border-nuke" placeholder="RADAR: DNI O APELLIDO...">
+        <div class="flex gap-2 mt-2">
+            <button onclick="iniciarVoz()" class="bg-red-600 px-4 py-1 text-white">🎤 CARGA POR VOZ</button>
+            <button onclick="activarCamara()" class="bg-blue-600 px-4 py-1">📷 ESCANEAR DNI</button>
+        </div>
+    </div>
+
+    <nav class="flex gap-2 mb-6 border-b border-zinc-800 pb-2 uppercase font-bold">
+        <button onclick="show('v1')">1. Legajo</button>
+        <button onclick="show('v2')">2. Salas</button>
+        <button onclick="show('v3')">3. Espera</button>
+        <button onclick="show('v4')">4. Asistencia</button>
+        <button onclick="show('v5')">5. Supervisión</button>
     </nav>
 
     <section id="v1" class="tab-content active-tab">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="form_master">
-            <div class="space-y-2 border p-4">
-                <h2 class="text-nuke font-black">I. ALUMNO</h2>
-                <input id="alu_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
-                <input id="alu_dni" class="input-elite" placeholder="DNI">
-                <input type="date" id="alu_nac" class="input-elite">
-                <input id="alu_domicilio" class="input-elite" placeholder="DOMICILIO">
-                <input type="number" id="alu_hermanos" class="input-elite" placeholder="CANT. HERMANOS">
-                <select id="alu_her_jardin" class="input-elite"><option>HERMANO EN JARDÍN: NO</option><option>SI</option></select>
-                <textarea id="alu_salud" class="input-elite" placeholder="FICHA SALUD / ALERGIAS"></textarea>
             </div>
-            <div class="space-y-2 border p-4">
-                <h2 class="text-blue-400 font-black">II. MADRE</h2>
-                <input id="m_nombre" class="input-elite" placeholder="NOMBRE Y APELLIDO">
-                <input id="m_dni" class="input-elite" placeholder="DNI">
-                <input id="m_tel" class="input-elite" placeholder="TELÉFONO">
-                <select id="m_estudios" class="input-elite">
-                    <option value="SIN">SIN ESTUDIOS</option><option value="PRIMARIA">PRIMARIA COMP/INC</option>
-                    <option value="SECUNDARIA">SECUNDARIA COMP/INC</option><option value="TERCIARIA">TERCIARIA COMP/INC</option>
-                    <option value="UNIVERSITARIA">UNIVERSITARIA COMP/INC</option>
-                </select>
-                <select id="m_auh" class="input-elite"><option>AUH: NO</option><option>SI</option></select>
-            </div>
-            <div class="space-y-2 border p-4">
-                <h2 class="text-red-400 font-black">III. PADRE</h2>
-                <input id="p_nombre" class="input-elite" placeholder="NOMBRE Y APELLIDO">
-                <input id="p_dni" class="input-elite" placeholder="DNI">
-                <input id="p_tel" class="input-elite" placeholder="TELÉFONO">
-                <select id="p_estudios" class="input-elite">
-                    <option value="SIN">SIN ESTUDIOS</option><option value="PRIMARIA">PRIMARIA COMP/INC</option>
-                    <option value="SECUNDARIA">SECUNDARIA COMP/INC</option><option value="TERCIARIA">TERCIARIA COMP/INC</option>
-                    <option value="UNIVERSITARIA">UNIVERSITARIA COMP/INC</option>
-                </select>
-            </div>
-        </div>
-        <button onclick="guardar()" class="mt-4 bg-nuke text-black w-full p-4 font-black">CONSOLIDAR LEGAJO 360</button>
     </section>
 
-    <section id="v2" class="tab-content">
-        <h2 class="text-xl font-black mb-4">FOTO INSTITUCIONAL - MAPA DE SALAS</h2>
-        <div id="grid_salas" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
-    </section>
-
-    <section id="v5" class="tab-content">
-        <h2 class="text-xl font-black mb-4">SUPERVISIÓN POBLACIONAL</h2>
-        <div id="stats_panel" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+    <section id="v4" class="tab-content">
+        <h2 class="text-nuke font-black text-lg">GESTIÓN DE ASISTENCIA</h2>
+        <div id="asis_lista" class="mt-4"></div>
+        <button onclick="calcularAsistencia()" class="mt-4 bg-green-700 px-4 py-2">CALCULAR PORCENTAJES</button>
     </section>
 
     <script>
         let DATA = JSON.parse(localStorage.getItem('T360_DB')) || { mat: [] };
 
+        // 1. BUSCADOR RADAR
+        function buscarRadar() {
+            const q = document.getElementById('radar').value.toUpperCase();
+            const res = DATA.mat.find(a => a.alu_dni === q || a.alu_nombre.includes(q));
+            if(res) {
+                for(let key in res) {
+                    if(document.getElementById(key)) document.getElementById(key).value = res[key];
+                }
+            }
+        }
+
+        // 2. CARGA BIÓNICA POR VOZ
+        function iniciarVoz() {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'es-ES';
+            recognition.start();
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('alu_nombre').value = transcript.toUpperCase();
+            };
+        }
+
+        // 3. ESCANEO DE DNI
+        function activarCamara() {
+            let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+            Instascan.Camera.getCameras().then(c => {
+                if(c.length > 0) scanner.start(c[0]);
+            });
+            scanner.addListener('scan', content => {
+                document.getElementById('alu_dni').value = content;
+                buscarRadar();
+            });
+        }
+
+        // 4. LÓGICA ASISTENCIA
+        function calcularAsistencia() {
+            const presentes = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const total = DATA.mat.length;
+            alert(`ASISTENCIA MEDIA: ${((presentes/total)*100).toFixed(2)}%`);
+        }
+
         function show(id) {
             document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active-tab'));
             document.getElementById(id).classList.add('active-tab');
         }
-
-        function guardar() {
-            const alu = {};
-            document.querySelectorAll('input, select, textarea').forEach(i => alu[i.id] = i.value);
-            DATA.mat.push(alu);
-            localStorage.setItem('T360_DB', JSON.stringify(DATA));
-            alert("LEGAJO GUARDADO");
-            renderSalas();
-        }
-
-        function renderSalas() {
-            const grid = document.getElementById('grid_salas');
-            grid.innerHTML = '';
-            const salas = ['ROSA','ROJA','NARANJA','CELESTE','VIOLETA','AZUL','AMARILLA','VERDE'];
-            salas.forEach(s => {
-                const total = DATA.mat.filter(a => a.alu_sala === s).length;
-                grid.innerHTML += `<div class="border p-4 neon-border text-center">
-                    <p class="font-black">${s}</p>
-                    <h2 class="text-3xl text-nuke">${total}</h2>
-                </div>`;
-            });
-        }
-
-        function init() { renderSalas(); }
-        init();
     </script>
 </body>
 </html>
