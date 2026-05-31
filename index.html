@@ -2,78 +2,130 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TITANIUM 360 ELITE | AUDITORÍA TOTAL</title>
+    <title>TITANIUM 360 ELITE | GESTIÓN INTEGRAL J926</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --nuke: #dfff00; --bg: #05070a; }
+        body { background: var(--bg); color: #fff; font-family: monospace; }
+        .input-elite { background: #111; border: 1px solid #333; padding: 8px; color: var(--nuke); width: 100%; }
+        .neon-border { border: 1px solid var(--nuke); box-shadow: 0 0 10px rgba(223, 255, 0, 0.2); }
+    </style>
 </head>
-<body class="bg-black text-lime-400 p-4 font-mono text-[11px]">
-    <header class="border-b border-lime-400 pb-2 mb-4">
-        <h1 class="text-xl font-black">TITANIUM 360 | AUDITORÍA TOTAL</h1>
-        <input type="file" id="file" onchange="procesarCSV(event)" class="mt-2 w-full border p-1">
+<body class="p-4" onload="init()">
+
+    <header class="mb-6 border-b border-nuke pb-4">
+        <h1 class="text-2xl font-black text-nuke orbitron">TITANIUM 360 | AUDITORÍA INTEGRAL</h1>
+        <div class="flex gap-2 mt-2">
+            <button onclick="exportarExcel()" class="bg-green-600 px-4 py-1 text-[10px] font-bold">EXPORTAR OFICIAL</button>
+            <input type="file" onchange="importarJSON(this)" class="text-[10px]">
+        </div>
     </header>
 
-    <div class="flex gap-2 mb-4">
-        <button onclick="show('v1')" class="border p-2">1. LEGAJOS</button>
-        <button onclick="show('v2')" class="border p-2">2. SALAS</button>
-        <button onclick="show('v3')" class="border p-2">3. ESTADÍSTICAS</button>
+    <div class="flex gap-2 mb-6 overflow-x-auto">
+        <button onclick="cambiarSeccion('v1')" class="border p-2">1. LEGAJO 360</button>
+        <button onclick="cambiarSeccion('v2')" class="border p-2">2. FOTO SALAS</button>
+        <button onclick="cambiarSeccion('v5')" class="border p-2">3. SUPERVISIÓN</button>
     </div>
 
-    <div id="v1" class="vista block">
-        <input id="q" onkeyup="buscar()" class="w-full bg-black border p-2 mb-2" placeholder="BUSCAR DNI O NOMBRE...">
-        <div id="lista" class="h-64 overflow-y-auto"></div>
-    </div>
+    <section id="v1" class="space-y-4">
+        <input type="text" id="radar" onkeyup="buscar()" placeholder="RADAR: DNI O APELLIDO..." class="input-elite text-xl">
+        <div class="grid md:grid-cols-3 gap-4" id="form_master">
+            <div class="space-y-2 border p-4">
+                <h2 class="text-nuke">I. ALUMNO</h2>
+                <input id="alu_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
+                <input id="alu_dni" class="input-elite" placeholder="DNI">
+                <input type="date" id="alu_f_nac" class="input-elite" onchange="calcularEdad()">
+                <select id="alu_sala" class="input-elite">
+                    <option value="ROSA">ROSA</option><option value="ROJA">ROJA</option>
+                    <option value="NARANJA">NARANJA</option><option value="CELESTE">CELESTE</option>
+                    <option value="VIOLETA">VIOLETA</option><option value="AZUL">AZUL</option>
+                    <option value="AMARILLA">AMARILLA</option><option value="VERDE">VERDE</option>
+                </select>
+                <select id="alu_auh" class="input-elite"><option value="NO">AUH: NO</option><option value="SI">SI</option></select>
+                <input id="alu_cud" class="input-elite" placeholder="CUD (SI/NO)">
+            </div>
+            <div class="space-y-2 border p-4">
+                <h2 class="text-blue-400">II. PADRES</h2>
+                <input id="m_nombre" class="input-elite" placeholder="MADRE">
+                <input id="p_nombre" class="input-elite" placeholder="PADRE">
+                <select id="m_estudios" class="input-elite">
+                    <option>PRIMARIA COMPLETA</option><option>SECUNDARIA COMPLETA</option>
+                    <option>TERCIARIA COMPLETA</option><option>UNIVERSITARIA COMPLETA</option>
+                </select>
+            </div>
+            <div class="p-4"><button onclick="guardarLegajo()" class="w-full bg-nuke text-black font-black p-4">CONSOLIDAR LEGAJO</button></div>
+        </div>
+    </section>
 
-    <div id="v2" class="vista hidden grid grid-cols-2 gap-2" id="grid_salas"></div>
-    <div id="v3" class="vista hidden p-4 border" id="stats"></div>
+    <section id="v2" class="hidden">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="mapa_salas"></div>
+    </section>
+
+    <section id="v5" class="hidden">
+        <div id="stats_panel" class="grid grid-cols-3 gap-4"></div>
+        <canvas id="chartGeneral" class="mt-8"></canvas>
+    </section>
 
     <script>
-        let DATA = { mat: [] };
+        let DATA = JSON.parse(localStorage.getItem('T360_DB')) || { mat: [] };
 
-        function show(id) {
-            document.querySelectorAll('.vista').forEach(v => v.classList.add('hidden'));
+        function init() { renderSalas(); }
+
+        function guardarLegajo() {
+            const alu = {};
+            document.querySelectorAll('input, select').forEach(i => alu[i.id] = i.value);
+            DATA.mat.push(alu);
+            localStorage.setItem('T360_DB', JSON.stringify(DATA));
+            alert("LEGAJO CONSOLIDADO");
+            renderSalas();
+        }
+
+        function renderSalas() {
+            const container = document.getElementById('mapa_salas');
+            container.innerHTML = '';
+            ['ROSA','ROJA','NARANJA','CELESTE','VIOLETA','AZUL','AMARILLA','VERDE'].forEach(sala => {
+                const total = DATA.mat.filter(a => a.alu_sala === sala).length;
+                container.innerHTML += `<div class="p-4 border neon-border cursor-pointer" onclick="verSala('${sala}')">
+                    <p>${sala}</p><h2 class="text-3xl font-black">${total}</h2>
+                </div>`;
+            });
+        }
+
+        function verSala(sala) {
+            cambiarSeccion('v1');
+            const lista = DATA.mat.filter(a => a.alu_sala === sala);
+            console.log("Alumnos en sala:", lista);
+        }
+
+        function cambiarSeccion(id) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         }
 
-        function procesarCSV(e) {
-            const r = new FileReader();
-            r.onload = (ev) => {
-                const lineas = ev.target.result.split('\n');
-                // Salteamos las primeras 4 filas de tus CSV (encabezados)
-                for (let i = 4; i < lineas.length; i++) {
-                    const c = lineas[i].split(',');
-                    if (c[9]) { // Si hay nombre en la columna 9
-                        DATA.mat.push({
-                            alu_nombre: c[9],
-                            alu_dni: c[10] || "S/D",
-                            alu_sala: c[8] + " " + (c[9] ? c[9] : ""), // Ajuste dinámico
-                            m_nombre: c[24] || "N/A"
-                        });
-                    }
-                }
-                alert("CARGA EXITOSA: " + DATA.mat.length + " REGISTROS.");
-                render();
+        function calcularEdad() {
+            // Lógica al 30/06/2026
+            const fechaNac = new Date(document.getElementById('alu_f_nac').value);
+            const ref = new Date('2026-06-30');
+            let edad = ref.getFullYear() - fechaNac.getFullYear();
+            console.log("Edad calculada:", edad);
+        }
+
+        function exportarExcel() {
+            const ws = XLSX.utils.json_to_sheet(DATA.mat);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "MATRICULA_360");
+            XLSX.writeFile(wb, "SUPERVISION_OFICIAL_J926.xlsx");
+        }
+
+        function importarJSON(input) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                DATA = JSON.parse(e.target.result);
+                renderSalas();
             };
-            r.readAsText(e.target.files[0]);
-        }
-
-        function render() {
-            // Render Salas
-            const salas = [...new Set(DATA.mat.map(a => a.alu_sala))];
-            document.getElementById('grid_salas').innerHTML = salas.map(s => `
-                <div class="border p-2">SALA ${s}<br>TOTAL: ${DATA.mat.filter(a=>a.alu_sala==s).length}</div>
-            `).join('');
-
-            // Stats
-            document.getElementById('stats').innerHTML = "TOTAL MATRÍCULA: " + DATA.mat.length;
-        }
-
-        function buscar() {
-            const q = document.getElementById('q').value.toUpperCase();
-            const res = DATA.mat.filter(a => a.alu_nombre.toUpperCase().includes(q) || a.alu_dni.includes(q));
-            document.getElementById('lista').innerHTML = res.map(a => `
-                <div class="border-b p-2" onclick="alert('MADRE: ${a.m_nombre}')">
-                    ${a.alu_nombre} | DNI: ${a.alu_dni}
-                </div>
-            `).join('');
+            reader.readAsText(input.files[0]);
         }
     </script>
 </body>
