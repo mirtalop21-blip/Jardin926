@@ -2,115 +2,477 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TITANIUM 360 | GESTIÓN INTEGRAL J926</title>
+    <title>TITANIUM 360 PRO | GESTIÓN ÉLITE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --nuke: #dfff00; --bg: #05070a; }
-        body { background: var(--bg); color: #e1e1e1; font-family: monospace; font-size: 12px; }
-        .input-elite { background: #000; border: 1px solid #444; padding: 10px; color: var(--nuke); width: 100%; text-transform: uppercase; }
+        :root { --nuke: #dfff00; --bg: #05070a; --panel: #111; --border: #333; }
+        body { background: var(--bg); color: #e1e1e1; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 12px; }
+        .input-elite { background: #000; border: 1px solid var(--border); padding: 8px; color: var(--nuke); width: 100%; text-transform: uppercase; border-radius: 4px; }
+        .input-elite:focus { border-color: var(--nuke); outline: none; }
         .tab-content { display: none; } .active-tab { display: block; }
-        .neon-border { border: 1px solid var(--nuke); box-shadow: 0 0 10px rgba(223, 255, 0, 0.2); }
+        .btn-nuke { background: var(--nuke); color: #000; font-weight: bold; padding: 10px; text-transform: uppercase; cursor: pointer; border-radius: 4px; }
+        .btn-dark { background: #222; border: 1px solid #555; color: #fff; padding: 10px; cursor: pointer; }
+        .card-sala { cursor: pointer; transition: 0.2s; border: 1px solid #444; border-radius: 8px; }
+        .card-sala:hover { transform: scale(1.02); border-color: var(--nuke); }
     </style>
 </head>
 <body class="p-4">
 
-    <header class="mb-6 p-4 border border-zinc-800 bg-zinc-900/50">
-        <h1 class="text-xl font-black text-nuke mb-4">TITANIUM 360 | AUDITORÍA TOTAL</h1>
-        <div class="flex gap-2">
-            <input type="text" id="radar" onkeyup="buscarRadar()" class="input-elite w-full" placeholder="RADAR: DNI O APELLIDO...">
-            <button onclick="iniciarVoz()" class="bg-red-600 px-4 font-black">🎤 VOZ</button>
-            <button onclick="activarCamara()" class="bg-blue-600 px-4 font-black">📷 SCAN</button>
+    <header class="mb-4 p-4 bg-zinc-900 border border-zinc-800 rounded">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-black text-nuke">TITANIUM 360 PRO</h1>
+            <div id="alerta_directivo" class="text-red-500 font-bold hidden">⚠️ ALERTA DIRECTIVO ENVIADA</div>
         </div>
-        <video id="preview" class="w-full h-32 mt-2 bg-black hidden"></video>
+        <div class="flex gap-2">
+            <input type="text" id="radar" onkeyup="buscarRadar()" class="input-elite text-lg" placeholder="RADAR DE BÚSQUEDA: DNI O APELLIDO...">
+            <button onclick="activarCamara()" class="btn-dark">📷 SCAN DNI</button>
+        </div>
+        <video id="preview" class="w-full h-40 mt-2 bg-black hidden rounded"></video>
     </header>
 
-    <nav class="flex gap-2 mb-6 border-b border-zinc-800 pb-2 overflow-x-auto">
-        <button onclick="show('v1')" class="p-2 border">1. LEGAJO</button>
-        <button onclick="show('v2')" class="p-2 border">2. SALAS</button>
-        <button onclick="show('v3')" class="p-2 border">3. ESPERA</button>
-        <button onclick="show('v4')" class="p-2 border">4. ASISTENCIA</button>
-        <button onclick="show('v5')" class="p-2 border" onclick="procesarSupervision()">5. SUPERVISIÓN</button>
+    <nav class="flex flex-wrap gap-2 mb-6 border-b border-zinc-800 pb-4 font-bold text-sm">
+        <button onclick="show('v_legajo')" class="btn-dark hover:text-nuke">1. LEGAJO 360</button>
+        <button onclick="show('v_salas')" class="btn-dark hover:text-nuke">2. SALAS (14)</button>
+        <button onclick="show('v_espera')" class="btn-dark hover:text-nuke">3. LISTA ESPERA</button>
+        <button onclick="show('v_bajas')" class="btn-dark hover:text-nuke">4. BITÁCORA BAJAS</button>
+        <button onclick="show('v_asistencia')" class="btn-dark hover:text-nuke">5. ASISTENCIA</button>
+        <button onclick="show('v_supervision')" class="btn-dark hover:text-nuke">6. SUPERVISIÓN</button>
+        <button onclick="show('v_datos')" class="btn-dark hover:text-nuke">7. GESTIÓN DATOS</button>
     </nav>
 
-    <section id="v1" class="tab-content active-tab">
+    <section id="v_legajo" class="tab-content active-tab">
         <div class="grid md:grid-cols-3 gap-4" id="form_master">
-            <div class="space-y-2 border p-4">
-                <h2 class="text-nuke font-bold">I. ALUMNO</h2>
-                <input id="alu_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
-                <input id="alu_dni" class="input-elite" placeholder="DNI">
-                <input id="alu_nacionalidad" class="input-elite" placeholder="NACIONALIDAD">
-                <input id="alu_sala" class="input-elite" placeholder="SALA (EJ: ROSA)">
+            <div class="space-y-2 border border-zinc-800 p-4 rounded bg-[#0a0a0a]">
+                <h2 class="text-nuke font-black uppercase text-lg mb-2">I. ALUMNO</h2>
+                <input id="a_id" type="hidden">
+                <input id="a_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
+                <input id="a_dni" type="number" class="input-elite" placeholder="DNI">
+                <input id="a_nacionalidad" class="input-elite" placeholder="NACIONALIDAD (Ej: ARG, BOL, PAR)">
+                <div class="flex gap-2">
+                    <input type="date" id="a_nac" class="input-elite" onchange="calcularEdad30Junio()" title="Fecha de Nacimiento">
+                    <input id="a_edad_30j" class="input-elite bg-zinc-900" placeholder="EDAD AL 30/06" readonly>
+                </div>
+                <select id="a_sexo" class="input-elite"><option value="">SEXO...</option><option>MASCULINO</option><option>FEMENINO</option></select>
+                <input type="number" id="a_hermanos" class="input-elite" placeholder="CANT. HERMANOS TOTALES">
+                <select id="a_hermanos_jardin" class="input-elite"><option value="NO">HERMANOS EN JARDÍN: NO</option><option value="SI">HERMANOS EN JARDÍN: SÍ</option></select>
+                <input id="a_domicilio" class="input-elite" placeholder="DOMICILIO COMPLETO">
+                <textarea id="a_salud" class="input-elite h-20" placeholder="FICHA DE SALUD / ALERGIAS / CUD"></textarea>
+                <select id="a_cud" class="input-elite"><option value="NO">TIENE CUD: NO</option><option value="SI">TIENE CUD: SÍ</option></select>
+                <select id="a_sala" class="input-elite text-nuke font-bold">
+                    <option value="">ASIGNAR SALA...</option>
+                    <option value="LACTANTES">LACTANTES</option><option value="DEAMBULADORES">DEAMBULADORES</option>
+                    <option value="2 AÑOS A">2 AÑOS A</option><option value="2 AÑOS B">2 AÑOS B</option>
+                    <option value="3 AÑOS A">3 AÑOS A</option><option value="3 AÑOS B">3 AÑOS B</option>
+                    <option value="3 AÑOS C">3 AÑOS C</option><option value="3 AÑOS D">3 AÑOS D</option>
+                    <option value="4 AÑOS A">4 AÑOS A</option><option value="4 AÑOS B">4 AÑOS B</option>
+                    <option value="4 AÑOS C">4 AÑOS C</option><option value="5 AÑOS A">5 AÑOS A</option>
+                    <option value="5 AÑOS B">5 AÑOS B</option><option value="5 AÑOS C">5 AÑOS C</option>
+                </select>
+                <select id="a_estado" class="input-elite"><option value="ACTIVO">ESTADO: ACTIVO</option><option value="ESPERA">ESTADO: EN ESPERA</option><option value="BAJA">ESTADO: BAJA</option></select>
             </div>
-            <div class="space-y-2 border p-4">
-                <h2 class="text-blue-400 font-bold">II. MADRE</h2>
-                <input id="m_nombre" class="input-elite" placeholder="NOMBRE MADRE">
-                <select id="m_estudios" class="input-elite"><option>SIN ESTUDIOS</option><option>PRIMARIA</option><option>SECUNDARIA</option><option>TERCIARIA/UNI</option></select>
-                <select id="m_auh" class="input-elite"><option>AUH: NO</option><option>SI</option></select>
+
+            <div class="space-y-2 border border-zinc-800 p-4 rounded bg-[#0a0a0a]">
+                <h2 class="text-blue-400 font-black uppercase text-lg mb-2">II. MADRE / TUTOR 1</h2>
+                <input id="m_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
+                <input id="m_dni" type="number" class="input-elite" placeholder="DNI">
+                <input id="m_nacionalidad" class="input-elite" placeholder="NACIONALIDAD">
+                <input id="m_ocupacion" class="input-elite" placeholder="OCUPACIÓN">
+                <select id="m_estudios" class="input-elite">
+                    <option value="">NIVEL EDUCATIVO...</option>
+                    <option>SIN ESTUDIOS</option><option>PRIMARIA INCOMPLETA</option><option>PRIMARIA COMPLETA</option>
+                    <option>SECUNDARIA INCOMPLETA</option><option>SECUNDARIA COMPLETA</option>
+                    <option>TERCIARIA INCOMPLETA</option><option>TERCIARIA COMPLETA</option>
+                    <option>UNIVERSITARIA INCOMPLETA</option><option>UNIVERSITARIA COMPLETA</option>
+                </select>
+                <input id="m_domicilio" class="input-elite" placeholder="DOMICILIO">
+                <input id="m_telefono" type="tel" class="input-elite" placeholder="TELÉFONO">
+                <select id="m_auh" class="input-elite"><option value="NO">PERCIBE AUH: NO</option><option value="SI">PERCIBE AUH: SÍ</option></select>
             </div>
-            <div class="space-y-2 border p-4">
-                <h2 class="text-red-400 font-bold">III. PADRE</h2>
-                <input id="p_nombre" class="input-elite" placeholder="NOMBRE PADRE">
-                <select id="p_estudios" class="input-elite"><option>SIN ESTUDIOS</option><option>PRIMARIA</option><option>SECUNDARIA</option><option>TERCIARIA/UNI</option></select>
+
+            <div class="space-y-2 border border-zinc-800 p-4 rounded bg-[#0a0a0a]">
+                <h2 class="text-red-400 font-black uppercase text-lg mb-2">III. PADRE / TUTOR 2</h2>
+                <input id="p_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
+                <input id="p_dni" type="number" class="input-elite" placeholder="DNI">
+                <input id="p_nacionalidad" class="input-elite" placeholder="NACIONALIDAD">
+                <input id="p_ocupacion" class="input-elite" placeholder="OCUPACIÓN">
+                <select id="p_estudios" class="input-elite">
+                    <option value="">NIVEL EDUCATIVO...</option>
+                    <option>SIN ESTUDIOS</option><option>PRIMARIA INCOMPLETA</option><option>PRIMARIA COMPLETA</option>
+                    <option>SECUNDARIA INCOMPLETA</option><option>SECUNDARIA COMPLETA</option>
+                    <option>TERCIARIA INCOMPLETA</option><option>TERCIARIA COMPLETA</option>
+                    <option>UNIVERSITARIA INCOMPLETA</option><option>UNIVERSITARIA COMPLETA</option>
+                </select>
+                <input id="p_domicilio" class="input-elite" placeholder="DOMICILIO">
+                <input id="p_telefono" type="tel" class="input-elite" placeholder="TELÉFONO">
             </div>
         </div>
-        <button onclick="guardar()" class="mt-4 w-full bg-nuke text-black font-black p-4">CONSOLIDAR LEGAJO 360</button>
+        <div class="flex gap-2 mt-4">
+            <button onclick="guardarLegajo()" class="btn-nuke w-full text-lg">💾 GUARDAR / ACTUALIZAR LEGAJO</button>
+            <button onclick="limpiarFormulario()" class="btn-dark w-1/4">NUEVO</button>
+        </div>
     </section>
 
-    <section id="v5" class="tab-content">
-        <h2 class="text-lg font-black text-white mb-4">MÉTRICAS POBLACIONALES</h2>
-        <div id="stats_display" class="grid grid-cols-2 gap-4"></div>
+    <section id="v_salas" class="tab-content">
+        <h2 class="text-xl font-black mb-4 uppercase">MAPA DE SALAS INSTITUCIONAL</h2>
+        <div id="grid_salas" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
+        
+        <div id="modal_sala" class="hidden mt-8 border border-zinc-700 p-4 bg-zinc-900 rounded">
+            <h3 id="modal_sala_titulo" class="text-nuke font-bold text-lg mb-4">ALUMNOS DE LA SALA</h3>
+            <div id="modal_sala_lista" class="space-y-2"></div>
+        </div>
+    </section>
+
+    <section id="v_espera" class="tab-content">
+        <h2 class="text-xl font-black mb-4 uppercase text-nuke">LISTA DE ESPERA PRO</h2>
+        <p class="mb-4 text-gray-400">Los alumnos con estado "ESPERA" en el legajo aparecerán aquí.</p>
+        <div id="lista_espera_render" class="space-y-2"></div>
+    </section>
+
+    <section id="v_bajas" class="tab-content">
+        <h2 class="text-xl font-black mb-4 uppercase text-red-500">BITÁCORA DE BAJAS</h2>
+        <p class="mb-4 text-gray-400">Seguimiento anual de matrículas dadas de baja.</p>
+        <div id="lista_bajas_render" class="space-y-2"></div>
+    </section>
+
+    <section id="v_asistencia" class="tab-content">
+        <h2 class="text-xl font-black mb-4 uppercase">CONTROL DE ASISTENCIA DIARIA</h2>
+        <div class="flex gap-2 mb-4">
+            <select id="asis_sala" class="input-elite w-1/3" onchange="cargarAsistenciaSala()"></select>
+            <input type="file" id="foto_registro" class="input-elite w-1/3" accept="image/*" title="Subir foto del registro">
+            <button onclick="alert('Módulo OCR de foto en desarrollo. Usa el control manual abajo.')" class="btn-dark w-1/3">PROCESAR FOTO REGISTRO</button>
+        </div>
+        <div id="asis_lista_alumnos" class="bg-zinc-900 p-4 rounded border border-zinc-800 space-y-2 mb-4"></div>
+        <button onclick="calcularAsistencia()" class="btn-nuke w-full">📊 CALCULAR MÉTRICAS DE ASISTENCIA</button>
+        <div id="asis_resultados" class="mt-4 text-lg font-bold"></div>
+    </section>
+
+    <section id="v_supervision" class="tab-content">
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="border border-zinc-700 p-4 bg-zinc-900 rounded">
+                <h2 class="text-nuke font-black text-xl mb-4">SUPERVISIÓN TOTAL</h2>
+                <div id="stats_total" class="space-y-2 text-sm uppercase"></div>
+            </div>
+            <div class="border border-zinc-700 p-4 bg-zinc-900 rounded">
+                <h2 class="text-blue-400 font-black text-xl mb-4">SUPERVISIÓN ÉLITE (POR SALA)</h2>
+                <select id="sup_sala_selector" class="input-elite mb-4" onchange="generarSupervisionElite()"></select>
+                <div id="stats_elite" class="space-y-2 text-sm uppercase"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="v_datos" class="tab-content">
+        <h2 class="text-xl font-black mb-4 uppercase">GESTIÓN DE BASES DE DATOS (JSON/EXCEL)</h2>
+        <div class="grid grid-cols-2 gap-4 max-w-lg">
+            <button onclick="exportarJSON()" class="btn-dark border-blue-500">📥 EXPORTAR BACKUP (JSON)</button>
+            <button onclick="document.getElementById('import_json').click()" class="btn-dark border-blue-500">📤 IMPORTAR BACKUP (JSON)</button>
+            <input type="file" id="import_json" class="hidden" accept=".json" onchange="importarJSON(event)">
+            
+            <button onclick="exportarExcel()" class="btn-dark border-green-500">📊 EXPORTAR A EXCEL (.XLSX)</button>
+            <div class="col-span-2 border border-zinc-800 p-4 mt-4">
+                <h3 class="font-bold text-nuke mb-2">ALERTA DIRECTIVO</h3>
+                <input type="tel" id="tel_directivo" class="input-elite mb-2" placeholder="TELÉFONO DEL DIRECTIVO">
+                <button onclick="notificarDirectivo()" class="btn-dark w-full bg-red-900">🚨 ENVIAR ALERTA DE NOVEDAD</button>
+            </div>
+        </div>
     </section>
 
     <script>
-        let DATA = JSON.parse(localStorage.getItem('T360_DB')) || { mat: [] };
+        // CONFIGURACIÓN DE LAS 14 SALAS
+        const SALAS_CONFIG = [
+            { nombre: "LACTANTES", color: "#fca5a5" }, { nombre: "DEAMBULADORES", color: "#fdba74" },
+            { nombre: "2 AÑOS A", color: "#fcd34d" }, { nombre: "2 AÑOS B", color: "#fde047" },
+            { nombre: "3 AÑOS A", color: "#bef264" }, { nombre: "3 AÑOS B", color: "#86efac" },
+            { nombre: "3 AÑOS C", color: "#6ee7b7" }, { nombre: "3 AÑOS D", color: "#5eead4" },
+            { nombre: "4 AÑOS A", color: "#7dd3fc" }, { nombre: "4 AÑOS B", color: "#93c5fd" },
+            { nombre: "4 AÑOS C", color: "#a5b4fc" }, { nombre: "5 AÑOS A", color: "#c4b5fd" },
+            { nombre: "5 AÑOS B", color: "#d8b4fe" }, { nombre: "5 AÑOS C", color: "#f0abfc" }
+        ];
 
+        // BASE DE DATOS LOCAL
+        let DB = JSON.parse(localStorage.getItem('T360_PRO_DB')) || [];
+
+        // NAVEGACIÓN
         function show(id) {
             document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active-tab'));
             document.getElementById(id).classList.add('active-tab');
-            if(id === 'v5') procesarSupervision();
-        }
-
-        function guardar() {
-            const obj = {};
-            document.querySelectorAll('input, select').forEach(i => obj[i.id] = i.value);
-            DATA.mat.push(obj);
-            localStorage.setItem('T360_DB', JSON.stringify(DATA));
-            alert("LEGAJO CONSOLIDADO");
-        }
-
-        function procesarSupervision() {
-            const total = DATA.mat.length;
-            const auh = DATA.mat.filter(a => a.m_auh === 'SI').length;
-            const display = document.getElementById('stats_display');
-            display.innerHTML = `
-                <div class="border p-4">TOTAL MATRÍCULA: <span class="text-nuke">${total}</span></div>
-                <div class="border p-4">TOTAL AUH: <span class="text-nuke">${auh}</span></div>
-                <div class="border p-4">PORCENTAJE AUH: <span class="text-nuke">${total > 0 ? ((auh/total)*100).toFixed(1) : 0}%</span></div>
-            `;
-        }
-
-        // Radar, Voz y Scanner se mantienen igual que en la versión anterior
-        function buscarRadar() {
-            const q = document.getElementById('radar').value.toUpperCase();
-            const res = DATA.mat.find(a => a.alu_dni === q || (a.alu_nombre && a.alu_nombre.includes(q)));
-            if(res) {
-                for(let key in res) if(document.getElementById(key)) document.getElementById(key).value = res[key];
+            if(id === 'v_salas') renderSalas();
+            if(id === 'v_espera') renderListaEspera();
+            if(id === 'v_bajas') renderBitacoraBajas();
+            if(id === 'v_asistencia') llenarSelectSalas('asis_sala');
+            if(id === 'v_supervision') {
+                llenarSelectSalas('sup_sala_selector');
+                generarSupervisionTotal();
             }
         }
 
-        function iniciarVoz() {
-            const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            rec.lang = 'es-ES';
-            rec.start();
-            rec.onresult = (e) => { document.getElementById('alu_nombre').value = e.results[0][0].transcript.toUpperCase(); };
+        // LÓGICA DE EDAD AL 30 DE JUNIO
+        function calcularEdad30Junio() {
+            const fechaNac = new Date(document.getElementById('a_nac').value);
+            if(isNaN(fechaNac)) return;
+            const añoActual = new Date().getFullYear();
+            const fechaCorte = new Date(añoActual, 5, 30); // 30 de Junio (Mes 5 en JS)
+            let edad = añoActual - fechaNac.getFullYear();
+            if (fechaNac > new Date(fechaNac.getFullYear(), 5, 30)) edad--;
+            document.getElementById('a_edad_30j').value = edad + " AÑOS";
+        }
+
+        // CRUD LEGAJO
+        function guardarLegajo() {
+            const id = document.getElementById('a_id').value || Date.now().toString();
+            const alumno = {
+                id: id,
+                a_nombre: document.getElementById('a_nombre').value.toUpperCase(),
+                a_dni: document.getElementById('a_dni').value,
+                a_nacionalidad: document.getElementById('a_nacionalidad').value.toUpperCase(),
+                a_nac: document.getElementById('a_nac').value,
+                a_sexo: document.getElementById('a_sexo').value,
+                a_hermanos: document.getElementById('a_hermanos').value,
+                a_hermanos_jardin: document.getElementById('a_hermanos_jardin').value,
+                a_domicilio: document.getElementById('a_domicilio').value.toUpperCase(),
+                a_salud: document.getElementById('a_salud').value.toUpperCase(),
+                a_cud: document.getElementById('a_cud').value,
+                a_sala: document.getElementById('a_sala').value,
+                a_estado: document.getElementById('a_estado').value,
+                // Madre
+                m_nombre: document.getElementById('m_nombre').value.toUpperCase(),
+                m_dni: document.getElementById('m_dni').value,
+                m_nacionalidad: document.getElementById('m_nacionalidad').value.toUpperCase(),
+                m_ocupacion: document.getElementById('m_ocupacion').value.toUpperCase(),
+                m_estudios: document.getElementById('m_estudios').value,
+                m_domicilio: document.getElementById('m_domicilio').value.toUpperCase(),
+                m_telefono: document.getElementById('m_telefono').value,
+                m_auh: document.getElementById('m_auh').value,
+                // Padre
+                p_nombre: document.getElementById('p_nombre').value.toUpperCase(),
+                p_dni: document.getElementById('p_dni').value,
+                p_nacionalidad: document.getElementById('p_nacionalidad').value.toUpperCase(),
+                p_ocupacion: document.getElementById('p_ocupacion').value.toUpperCase(),
+                p_estudios: document.getElementById('p_estudios').value,
+                p_domicilio: document.getElementById('p_domicilio').value.toUpperCase(),
+                p_telefono: document.getElementById('p_telefono').value
+            };
+
+            const index = DB.findIndex(x => x.id === id);
+            if(index > -1) {
+                if(alumno.a_estado === 'BAJA' && DB[index].a_estado !== 'BAJA') {
+                    alumno.motivo_baja = prompt("INGRESE MOTIVO DE BAJA:") || "NO ESPECIFICADO";
+                }
+                DB[index] = alumno;
+            } else {
+                DB.push(alumno);
+            }
+            
+            localStorage.setItem('T360_PRO_DB', JSON.stringify(DB));
+            alert("✅ LEGAJO GUARDADO CON ÉXITO");
+            limpiarFormulario();
+        }
+
+        function limpiarFormulario() {
+            document.querySelectorAll('#form_master input, #form_master textarea').forEach(i => i.value = '');
+            document.querySelectorAll('#form_master select').forEach(i => i.selectedIndex = 0);
+            document.getElementById('a_estado').value = 'ACTIVO';
+        }
+
+        function cargarLegajo(id) {
+            const alu = DB.find(x => x.id === id);
+            if(!alu) return;
+            for(let key in alu) {
+                if(document.getElementById(key)) document.getElementById(key).value = alu[key];
+            }
+            calcularEdad30Junio();
+            show('v_legajo');
+        }
+
+        // BÚSQUEDA Y ESCÁNER
+        function buscarRadar() {
+            const q = document.getElementById('radar').value.toUpperCase();
+            if(q.length < 3) return;
+            const res = DB.find(a => a.a_dni === q || a.a_nombre.includes(q));
+            if(res) cargarLegajo(res.id);
         }
 
         function activarCamara() {
+            document.getElementById('preview').classList.remove('hidden');
             let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-            Instascan.Camera.getCameras().then(c => { if(c.length > 0) { document.getElementById('preview').classList.remove('hidden'); scanner.start(c[0]); }});
-            scanner.addListener('scan', c => { document.getElementById('alu_dni').value = c; buscarRadar(); });
+            Instascan.Camera.getCameras().then(c => { if(c.length > 0) scanner.start(c[0]); });
+            scanner.addListener('scan', c => { document.getElementById('a_dni').value = c; document.getElementById('radar').value = c; buscarRadar(); });
         }
+
+        // RENDER 14 SALAS
+        function renderSalas() {
+            const grid = document.getElementById('grid_salas');
+            grid.innerHTML = '';
+            SALAS_CONFIG.forEach(s => {
+                const activos = DB.filter(a => a.a_sala === s.nombre && a.a_estado === 'ACTIVO').length;
+                grid.innerHTML += `
+                    <div class="card-sala p-4 text-center" style="background-color: ${s.color}22; border-color: ${s.color}" onclick="abrirSala('${s.nombre}')">
+                        <p class="font-black text-white">${s.nombre}</p>
+                        <h2 class="text-3xl font-bold mt-2" style="color: ${s.color}">${activos}</h2>
+                    </div>
+                `;
+            });
+        }
+
+        function abrirSala(nombreSala) {
+            document.getElementById('modal_sala').classList.remove('hidden');
+            document.getElementById('modal_sala_titulo').innerText = `ALUMNOS: ${nombreSala}`;
+            const lista = document.getElementById('modal_sala_lista');
+            lista.innerHTML = '';
+            const alumnos = DB.filter(a => a.a_sala === nombreSala && a.a_estado === 'ACTIVO');
+            alumnos.forEach(a => {
+                lista.innerHTML += `
+                    <div class="flex justify-between items-center bg-black p-2 border border-zinc-800">
+                        <span><strong>${a.a_nombre}</strong> | DNI: ${a.a_dni}</span>
+                        <button onclick="cargarLegajo('${a.id}')" class="bg-blue-600 px-3 py-1 rounded text-white text-xs font-bold">VER LEGAJO / EDITAR</button>
+                    </div>
+                `;
+            });
+        }
+
+        // ESPERA Y BAJAS
+        function renderListaEspera() {
+            const lista = document.getElementById('lista_espera_render');
+            lista.innerHTML = '';
+            DB.filter(a => a.a_estado === 'ESPERA').forEach(a => {
+                lista.innerHTML += `<div class="bg-black p-3 border border-zinc-800 mb-2">
+                    <p class="font-bold text-nuke">${a.a_nombre} (DNI: ${a.a_dni})</p>
+                    <p class="text-sm">Sala Solicitada: ${a.a_sala || 'NO ASIGNADA'} | Tel: ${a.m_telefono || a.p_telefono}</p>
+                    <button onclick="cargarLegajo('${a.id}')" class="mt-2 text-blue-400 underline text-xs">Aprobar Vacante</button>
+                </div>`;
+            });
+        }
+
+        function renderBitacoraBajas() {
+            const lista = document.getElementById('lista_bajas_render');
+            lista.innerHTML = '';
+            DB.filter(a => a.a_estado === 'BAJA').forEach(a => {
+                lista.innerHTML += `<div class="bg-black p-3 border border-red-900 mb-2">
+                    <p class="font-bold text-red-500">${a.a_nombre} | Sala: ${a.a_sala}</p>
+                    <p class="text-sm">Motivo: ${a.motivo_baja || 'No especificado'}</p>
+                </div>`;
+            });
+        }
+
+        // ASISTENCIA MATEMÁTICA
+        function llenarSelectSalas(idElemento) {
+            const select = document.getElementById(idElemento);
+            select.innerHTML = '<option value="">SELECCIONE SALA...</option>';
+            SALAS_CONFIG.forEach(s => select.innerHTML += `<option value="${s.nombre}">${s.nombre}</option>`);
+        }
+
+        function cargarAsistenciaSala() {
+            const sala = document.getElementById('asis_sala').value;
+            const lista = document.getElementById('asis_lista_alumnos');
+            lista.innerHTML = '';
+            DB.filter(a => a.a_sala === sala && a.a_estado === 'ACTIVO').forEach(a => {
+                lista.innerHTML += `
+                    <label class="flex items-center gap-3 p-2 border-b border-zinc-800 cursor-pointer hover:bg-zinc-800">
+                        <input type="checkbox" class="asis-check w-5 h-5 accent-nuke" checked>
+                        <span>${a.a_nombre}</span>
+                    </label>
+                `;
+            });
+        }
+
+        function calcularAsistencia() {
+            const checks = document.querySelectorAll('.asis-check');
+            if(checks.length === 0) return;
+            const presentes = document.querySelectorAll('.asis-check:checked').length;
+            const ausentes = checks.length - presentes;
+            const porcentaje = ((presentes / checks.length) * 100).toFixed(1);
+            document.getElementById('asis_resultados').innerHTML = `
+                <span class="text-green-400">PRESENTES: ${presentes}</span> | 
+                <span class="text-red-400">AUSENTES: ${ausentes}</span> <br>
+                <span class="text-nuke text-2xl">ASISTENCIA MEDIA: ${porcentaje}%</span>
+            `;
+        }
+
+        // SUPERVISIÓN ANALÍTICA
+        function generarSupervisionTotal() {
+            const activos = DB.filter(a => a.a_estado === 'ACTIVO');
+            const total = activos.length;
+            const bajas = DB.filter(a => a.a_estado === 'BAJA').length;
+            const varones = activos.filter(a => a.a_sexo === 'MASCULINO').length;
+            const cud = activos.filter(a => a.a_cud === 'SI').length;
+            const sinDni = activos.filter(a => !a.a_dni || a.a_dni.trim() === '').length;
+            
+            const nac = { ARG: 0, BOL: 0, PAR: 0, PER: 0, OTROS: 0 };
+            activos.forEach(a => {
+                const n = a.a_nacionalidad ? a.a_nacionalidad.substring(0,3) : '';
+                if(nac[n] !== undefined) nac[n]++; else nac.OTROS++;
+            });
+
+            document.getElementById('stats_total').innerHTML = `
+                <p><span class="text-gray-400">MATRÍCULA ACTIVA:</span> <strong class="text-nuke text-lg">${total}</strong></p>
+                <p><span class="text-gray-400">BAJAS ANUALES:</span> <strong class="text-red-500">${bajas} (${total>0 ? ((bajas/(total+bajas))*100).toFixed(1) : 0}%)</strong></p>
+                <hr class="border-zinc-700 my-2">
+                <p><span class="text-gray-400">GÉNERO:</span> VARONES: ${varones} | MUJERES: ${total - varones}</p>
+                <p><span class="text-gray-400">VULNERABILIDAD:</span> CUD: ${cud} | SIN DNI CARGADO: ${sinDni}</p>
+                <hr class="border-zinc-700 my-2">
+                <p class="text-gray-400 mb-1">NACIONALIDADES:</p>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div>ARGENTINOS: ${nac.ARG}</div><div>BOLIVIANOS: ${nac.BOL}</div>
+                    <div>PARAGUAYOS: ${nac.PAR}</div><div>PERUANOS: ${nac.PER}</div>
+                    <div>OTROS: ${nac.OTROS}</div>
+                </div>
+            `;
+        }
+
+        function generarSupervisionElite() {
+            const sala = document.getElementById('sup_sala_selector').value;
+            const alumnos = DB.filter(a => a.a_sala === sala && a.a_estado === 'ACTIVO');
+            const total = alumnos.length;
+            if(total === 0) { document.getElementById('stats_elite').innerHTML = 'SALA VACÍA'; return; }
+            
+            const auh = alumnos.filter(a => a.m_auh === 'SI').length;
+            document.getElementById('stats_elite').innerHTML = `
+                <p><span class="text-gray-400">TOTAL ALUMNOS:</span> <strong>${total}</strong></p>
+                <p><span class="text-gray-400">COBERTURA AUH:</span> <strong class="text-blue-400">${auh} (${((auh/total)*100).toFixed(1)}%)</strong></p>
+                <p class="mt-2 text-xs text-nuke">Nota: Las métricas de ocupación y estudios parentales requieren procesamiento detallado en el reporte Excel.</p>
+            `;
+        }
+
+        // ARCHIVOS Y ALERTAS
+        function notificarDirectivo() {
+            const tel = document.getElementById('tel_directivo').value;
+            if(!tel) return alert("Ingrese el teléfono del directivo");
+            document.getElementById('alerta_directivo').classList.remove('hidden');
+            setTimeout(() => document.getElementById('alerta_directivo').classList.add('hidden'), 3000);
+            window.open(`https://wa.me/${tel}?text=TITANIUM%20360:%20Alerta%20de%20novedad%20en%20el%20establecimiento.`, '_blank');
+        }
+
+        function exportarJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(DB));
+            const a = document.createElement('a');
+            a.setAttribute("href", dataStr);
+            a.setAttribute("download", "T360_Backup.json");
+            a.click();
+        }
+
+        function importarJSON(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                DB = JSON.parse(evt.target.result);
+                localStorage.setItem('T360_PRO_DB', JSON.stringify(DB));
+                alert("BASE DE DATOS RESTAURADA");
+                show('v_salas');
+            };
+            reader.readAsText(file);
+        }
+
+        function exportarExcel() {
+            if(DB.length === 0) return alert("No hay datos para exportar");
+            const ws = XLSX.utils.json_to_sheet(DB);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Alumnos");
+            XLSX.writeFile(wb, "T360_Reporte_Total.xlsx");
+        }
+
+        // Init
+        show('v_legajo');
     </script>
 </body>
 </html>
