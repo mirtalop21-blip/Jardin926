@@ -2,96 +2,78 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TITANIUM 360 | GESTIÓN INSTITUCIONAL</title>
+    <title>TITANIUM 360 ELITE | AUDITORÍA TOTAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-lime-400 font-mono p-4">
+<body class="bg-black text-lime-400 p-4 font-mono text-[11px]">
     <header class="border-b border-lime-400 pb-2 mb-4">
-        <h1 class="text-lime-400 font-black text-lg">TITANIUM 360 | SISTEMA INSTITUCIONAL</h1>
-        <input type="file" id="fileInput" onchange="cargarDatos(event)" class="text-[10px] w-full mt-2 border border-lime-400 p-1">
+        <h1 class="text-xl font-black">TITANIUM 360 | AUDITORÍA TOTAL</h1>
+        <input type="file" id="file" onchange="procesarCSV(event)" class="mt-2 w-full border p-1">
     </header>
 
-    <nav class="flex gap-2 text-[10px] font-bold mb-4">
-        <button onclick="cambiarVista('v1')" class="border p-2 hover:bg-lime-900">LEGAJOS</button>
-        <button onclick="cambiarVista('v2')" class="border p-2 hover:bg-lime-900">SALAS</button>
-        <button onclick="cambiarVista('v3')" class="border p-2 hover:bg-lime-900">ESTADÍSTICAS</button>
-    </nav>
-
-    <div id="v1" class="vista hidden">
-        <input type="text" id="buscador" onkeyup="buscar()" class="w-full bg-black border p-2 mb-4" placeholder="🔍 BUSCAR DNI O NOMBRE...">
-        <div id="contenedorLegajos" class="grid gap-2"></div>
+    <div class="flex gap-2 mb-4">
+        <button onclick="show('v1')" class="border p-2">1. LEGAJOS</button>
+        <button onclick="show('v2')" class="border p-2">2. SALAS</button>
+        <button onclick="show('v3')" class="border p-2">3. ESTADÍSTICAS</button>
     </div>
 
-    <div id="v2" class="vista hidden">
-        <div id="contenedorSalas" class="grid grid-cols-2 gap-4"></div>
+    <div id="v1" class="vista block">
+        <input id="q" onkeyup="buscar()" class="w-full bg-black border p-2 mb-2" placeholder="BUSCAR DNI O NOMBRE...">
+        <div id="lista" class="h-64 overflow-y-auto"></div>
     </div>
 
-    <div id="v3" class="vista hidden">
-        <div id="contenedorStats" class="p-4 border"></div>
-        <button onclick="descargarExcel()" class="mt-4 bg-lime-400 text-black font-black p-4 w-full">DESCARGAR EXCEL OFICIAL</button>
-    </div>
+    <div id="v2" class="vista hidden grid grid-cols-2 gap-2" id="grid_salas"></div>
+    <div id="v3" class="vista hidden p-4 border" id="stats"></div>
 
     <script>
-        let baseDatos = [];
+        let DATA = { mat: [] };
 
-        function cambiarVista(id) {
+        function show(id) {
             document.querySelectorAll('.vista').forEach(v => v.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         }
 
-        function cargarDatos(event) {
-            const archivo = event.target.files[0];
-            const lector = new FileReader();
-            lector.onload = function(e) {
-                try {
-                    const datos = JSON.parse(e.target.result);
-                    // Accedemos a la matriz principal. Si el JSON tiene una clave, úsala aquí.
-                    baseDatos = datos.mat || datos; 
-                    alert("✅ DATOS CARGADOS: " + baseDatos.length + " REGISTROS.");
-                    renderizar();
-                } catch (error) {
-                    alert("❌ ERROR AL LEER JSON: " + error.message);
+        function procesarCSV(e) {
+            const r = new FileReader();
+            r.onload = (ev) => {
+                const lineas = ev.target.result.split('\n');
+                // Salteamos las primeras 4 filas de tus CSV (encabezados)
+                for (let i = 4; i < lineas.length; i++) {
+                    const c = lineas[i].split(',');
+                    if (c[9]) { // Si hay nombre en la columna 9
+                        DATA.mat.push({
+                            alu_nombre: c[9],
+                            alu_dni: c[10] || "S/D",
+                            alu_sala: c[8] + " " + (c[9] ? c[9] : ""), // Ajuste dinámico
+                            m_nombre: c[24] || "N/A"
+                        });
+                    }
                 }
+                alert("CARGA EXITOSA: " + DATA.mat.length + " REGISTROS.");
+                render();
             };
-            lector.readAsText(archivo);
+            r.readAsText(e.target.files[0]);
         }
 
-        function renderizar() {
-            // Render de Legajos Inicial
-            const cont = document.getElementById('contenedorLegajos');
-            cont.innerHTML = baseDatos.map(a => `
-                <div class="border p-2" onclick="verDetalle('${a.alu_dni}')">
-                    ${a.alu_nombre} - ${a.alu_sala}
-                </div>
+        function render() {
+            // Render Salas
+            const salas = [...new Set(DATA.mat.map(a => a.alu_sala))];
+            document.getElementById('grid_salas').innerHTML = salas.map(s => `
+                <div class="border p-2">SALA ${s}<br>TOTAL: ${DATA.mat.filter(a=>a.alu_sala==s).length}</div>
             `).join('');
 
-            // Render de Salas
-            const salas = [...new Set(baseDatos.map(a => a.alu_sala))];
-            document.getElementById('contenedorSalas').innerHTML = salas.map(s => `
-                <div class="border p-4 text-center">SALA ${s} <br> ${baseDatos.filter(a=>a.alu_sala==s).length}</div>
-            `).join('');
-        }
-
-        function verDetalle(dni) {
-            const alu = baseDatos.find(a => a.alu_dni == dni);
-            alert("NOMBRE: " + alu.alu_nombre + "\nMADRE: " + alu.m_nombre + "\nSALA: " + alu.alu_sala + "\nTEL: " + alu.m_tel);
+            // Stats
+            document.getElementById('stats').innerHTML = "TOTAL MATRÍCULA: " + DATA.mat.length;
         }
 
         function buscar() {
-            const q = document.getElementById('buscador').value.toUpperCase();
-            const filtrados = baseDatos.filter(a => a.alu_dni.includes(q) || a.alu_nombre.toUpperCase().includes(q));
-            document.getElementById('contenedorLegajos').innerHTML = filtrados.map(a => `
-                <div class="border p-2">${a.alu_nombre}</div>
+            const q = document.getElementById('q').value.toUpperCase();
+            const res = DATA.mat.filter(a => a.alu_nombre.toUpperCase().includes(q) || a.alu_dni.includes(q));
+            document.getElementById('lista').innerHTML = res.map(a => `
+                <div class="border-b p-2" onclick="alert('MADRE: ${a.m_nombre}')">
+                    ${a.alu_nombre} | DNI: ${a.alu_dni}
+                </div>
             `).join('');
-        }
-
-        function descargarExcel() {
-            let csv = "NOMBRE,DNI,SALA,MADRE\n";
-            baseDatos.forEach(a => { csv += `${a.alu_nombre},${a.alu_dni},${a.alu_sala},${a.m_nombre}\n`; });
-            const blob = new Blob([csv], {type: 'text/csv'});
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = 'gestion_institucional.csv'; a.click();
         }
     </script>
 </body>
