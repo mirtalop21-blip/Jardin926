@@ -2,94 +2,114 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TITANIUM 360 | AUDITORÍA TOTAL J926</title>
+    <title>TITANIUM 360 | GESTIÓN INTEGRAL J926</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
     <style>
         :root { --nuke: #dfff00; --bg: #05070a; }
-        body { background: var(--bg); color: #e1e1e1; font-family: monospace; font-size: 11px; }
-        .input-elite { background: #000; border: 1px solid #444; padding: 8px; color: var(--nuke); width: 100%; text-transform: uppercase; }
-        .tab-content { display: none; }
-        .active-tab { display: block; }
-        .neon-border { border: 1px solid var(--nuke); }
+        body { background: var(--bg); color: #e1e1e1; font-family: monospace; font-size: 12px; }
+        .input-elite { background: #000; border: 1px solid #444; padding: 10px; color: var(--nuke); width: 100%; text-transform: uppercase; }
+        .tab-content { display: none; } .active-tab { display: block; }
+        .neon-border { border: 1px solid var(--nuke); box-shadow: 0 0 10px rgba(223, 255, 0, 0.2); }
     </style>
 </head>
 <body class="p-4">
 
-    <div class="mb-6">
-        <input type="text" id="radar" onkeyup="buscarRadar()" class="input-elite text-2xl border-nuke" placeholder="RADAR: DNI O APELLIDO...">
-        <div class="flex gap-2 mt-2">
-            <button onclick="iniciarVoz()" class="bg-red-600 px-4 py-1 text-white">🎤 CARGA POR VOZ</button>
-            <button onclick="activarCamara()" class="bg-blue-600 px-4 py-1">📷 ESCANEAR DNI</button>
+    <header class="mb-6 p-4 border border-zinc-800 bg-zinc-900/50">
+        <h1 class="text-xl font-black text-nuke mb-4">TITANIUM 360 | AUDITORÍA TOTAL</h1>
+        <div class="flex gap-2">
+            <input type="text" id="radar" onkeyup="buscarRadar()" class="input-elite w-full" placeholder="RADAR: DNI O APELLIDO...">
+            <button onclick="iniciarVoz()" class="bg-red-600 px-4 font-black">🎤 VOZ</button>
+            <button onclick="activarCamara()" class="bg-blue-600 px-4 font-black">📷 SCAN</button>
         </div>
-    </div>
+        <video id="preview" class="w-full h-32 mt-2 bg-black hidden"></video>
+    </header>
 
-    <nav class="flex gap-2 mb-6 border-b border-zinc-800 pb-2 uppercase font-bold">
-        <button onclick="show('v1')">1. Legajo</button>
-        <button onclick="show('v2')">2. Salas</button>
-        <button onclick="show('v3')">3. Espera</button>
-        <button onclick="show('v4')">4. Asistencia</button>
-        <button onclick="show('v5')">5. Supervisión</button>
+    <nav class="flex gap-2 mb-6 border-b border-zinc-800 pb-2 overflow-x-auto">
+        <button onclick="show('v1')" class="p-2 border">1. LEGAJO</button>
+        <button onclick="show('v2')" class="p-2 border">2. SALAS</button>
+        <button onclick="show('v3')" class="p-2 border">3. ESPERA</button>
+        <button onclick="show('v4')" class="p-2 border">4. ASISTENCIA</button>
+        <button onclick="show('v5')" class="p-2 border" onclick="procesarSupervision()">5. SUPERVISIÓN</button>
     </nav>
 
     <section id="v1" class="tab-content active-tab">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="form_master">
+        <div class="grid md:grid-cols-3 gap-4" id="form_master">
+            <div class="space-y-2 border p-4">
+                <h2 class="text-nuke font-bold">I. ALUMNO</h2>
+                <input id="alu_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
+                <input id="alu_dni" class="input-elite" placeholder="DNI">
+                <input id="alu_nacionalidad" class="input-elite" placeholder="NACIONALIDAD">
+                <input id="alu_sala" class="input-elite" placeholder="SALA (EJ: ROSA)">
             </div>
+            <div class="space-y-2 border p-4">
+                <h2 class="text-blue-400 font-bold">II. MADRE</h2>
+                <input id="m_nombre" class="input-elite" placeholder="NOMBRE MADRE">
+                <select id="m_estudios" class="input-elite"><option>SIN ESTUDIOS</option><option>PRIMARIA</option><option>SECUNDARIA</option><option>TERCIARIA/UNI</option></select>
+                <select id="m_auh" class="input-elite"><option>AUH: NO</option><option>SI</option></select>
+            </div>
+            <div class="space-y-2 border p-4">
+                <h2 class="text-red-400 font-bold">III. PADRE</h2>
+                <input id="p_nombre" class="input-elite" placeholder="NOMBRE PADRE">
+                <select id="p_estudios" class="input-elite"><option>SIN ESTUDIOS</option><option>PRIMARIA</option><option>SECUNDARIA</option><option>TERCIARIA/UNI</option></select>
+            </div>
+        </div>
+        <button onclick="guardar()" class="mt-4 w-full bg-nuke text-black font-black p-4">CONSOLIDAR LEGAJO 360</button>
     </section>
 
-    <section id="v4" class="tab-content">
-        <h2 class="text-nuke font-black text-lg">GESTIÓN DE ASISTENCIA</h2>
-        <div id="asis_lista" class="mt-4"></div>
-        <button onclick="calcularAsistencia()" class="mt-4 bg-green-700 px-4 py-2">CALCULAR PORCENTAJES</button>
+    <section id="v5" class="tab-content">
+        <h2 class="text-lg font-black text-white mb-4">MÉTRICAS POBLACIONALES</h2>
+        <div id="stats_display" class="grid grid-cols-2 gap-4"></div>
     </section>
 
     <script>
         let DATA = JSON.parse(localStorage.getItem('T360_DB')) || { mat: [] };
 
-        // 1. BUSCADOR RADAR
-        function buscarRadar() {
-            const q = document.getElementById('radar').value.toUpperCase();
-            const res = DATA.mat.find(a => a.alu_dni === q || a.alu_nombre.includes(q));
-            if(res) {
-                for(let key in res) {
-                    if(document.getElementById(key)) document.getElementById(key).value = res[key];
-                }
-            }
-        }
-
-        // 2. CARGA BIÓNICA POR VOZ
-        function iniciarVoz() {
-            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.lang = 'es-ES';
-            recognition.start();
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                document.getElementById('alu_nombre').value = transcript.toUpperCase();
-            };
-        }
-
-        // 3. ESCANEO DE DNI
-        function activarCamara() {
-            let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-            Instascan.Camera.getCameras().then(c => {
-                if(c.length > 0) scanner.start(c[0]);
-            });
-            scanner.addListener('scan', content => {
-                document.getElementById('alu_dni').value = content;
-                buscarRadar();
-            });
-        }
-
-        // 4. LÓGICA ASISTENCIA
-        function calcularAsistencia() {
-            const presentes = document.querySelectorAll('input[type="checkbox"]:checked').length;
-            const total = DATA.mat.length;
-            alert(`ASISTENCIA MEDIA: ${((presentes/total)*100).toFixed(2)}%`);
-        }
-
         function show(id) {
             document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active-tab'));
             document.getElementById(id).classList.add('active-tab');
+            if(id === 'v5') procesarSupervision();
+        }
+
+        function guardar() {
+            const obj = {};
+            document.querySelectorAll('input, select').forEach(i => obj[i.id] = i.value);
+            DATA.mat.push(obj);
+            localStorage.setItem('T360_DB', JSON.stringify(DATA));
+            alert("LEGAJO CONSOLIDADO");
+        }
+
+        function procesarSupervision() {
+            const total = DATA.mat.length;
+            const auh = DATA.mat.filter(a => a.m_auh === 'SI').length;
+            const display = document.getElementById('stats_display');
+            display.innerHTML = `
+                <div class="border p-4">TOTAL MATRÍCULA: <span class="text-nuke">${total}</span></div>
+                <div class="border p-4">TOTAL AUH: <span class="text-nuke">${auh}</span></div>
+                <div class="border p-4">PORCENTAJE AUH: <span class="text-nuke">${total > 0 ? ((auh/total)*100).toFixed(1) : 0}%</span></div>
+            `;
+        }
+
+        // Radar, Voz y Scanner se mantienen igual que en la versión anterior
+        function buscarRadar() {
+            const q = document.getElementById('radar').value.toUpperCase();
+            const res = DATA.mat.find(a => a.alu_dni === q || (a.alu_nombre && a.alu_nombre.includes(q)));
+            if(res) {
+                for(let key in res) if(document.getElementById(key)) document.getElementById(key).value = res[key];
+            }
+        }
+
+        function iniciarVoz() {
+            const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            rec.lang = 'es-ES';
+            rec.start();
+            rec.onresult = (e) => { document.getElementById('alu_nombre').value = e.results[0][0].transcript.toUpperCase(); };
+        }
+
+        function activarCamara() {
+            let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+            Instascan.Camera.getCameras().then(c => { if(c.length > 0) { document.getElementById('preview').classList.remove('hidden'); scanner.start(c[0]); }});
+            scanner.addListener('scan', c => { document.getElementById('alu_dni').value = c; buscarRadar(); });
         }
     </script>
 </body>
