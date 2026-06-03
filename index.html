@@ -2,98 +2,108 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TITANIUM 360 PRO | JARDÍN 926</title>
+    <title>TITANIUM 360 PRO | GESTIÓN ÉLITE J926</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --nuke: #dfff00; --bg: #05070a; }
-        body { background: var(--bg); color: #ccc; font-family: sans-serif; font-size: 12px; }
-        .input-elite { background: #000; border: 1px solid #333; padding: 5px; color: var(--nuke); width: 100%; }
-        .btn-nuke { background: var(--nuke); color: #000; font-weight: bold; padding: 10px; cursor: pointer; }
+        :root { --nuke: #dfff00; --bg: #05070a; --panel: #111; --border: #333; }
+        body { background: var(--bg); color: #e1e1e1; font-family: 'Segoe UI', sans-serif; font-size: 11px; }
+        .input-elite { background: #000; border: 1px solid var(--border); padding: 8px; color: var(--nuke); width: 100%; text-transform: uppercase; border-radius: 4px; }
         .tab-content { display: none; } .active-tab { display: block; }
-        table { width: 100%; border-collapse: collapse; }
-        td, th { border: 1px solid #333; padding: 8px; text-align: center; }
+        .btn-nuke { background: var(--nuke); color: #000; font-weight: bold; padding: 10px; cursor: pointer; border-radius: 4px; border: none; }
+        .btn-dark { background: #222; border: 1px solid #555; color: #fff; padding: 8px; cursor: pointer; border-radius: 4px; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; } th, td { border: 1px solid #333; padding: 8px; text-align: center; }
     </style>
 </head>
-<body class="p-4">
+<body class="p-4" onload="initSystem()">
 
-    <header class="mb-6 border-b border-zinc-800 pb-4">
-        <h1 class="text-xl font-black text-nuke">TITANIUM 360 | JARDÍN 926</h1>
-        <div class="flex gap-2 mt-2">
-            <button onclick="show('v_legajo')" class="p-2 bg-zinc-800">LEGAJOS</button>
-            <button onclick="show('v_asis')" class="p-2 bg-zinc-800">ASISTENCIA 2.0</button>
-            <button onclick="show('v_super')" class="p-2 bg-zinc-800">SUPERVISIÓN</button>
+    <header class="mb-4 p-4 bg-zinc-900 border border-zinc-800 rounded flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-black text-nuke italic tracking-widest">TITANIUM 360 <span class="text-white text-sm">| JARDÍN 926</span></h1>
+            <p id="status_db" class="text-gray-400 font-bold mt-1">SISTEMA INICIANDO...</p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="exportarExcelOficial()" class="btn-nuke text-xs bg-blue-900 text-white">📥 EXCEL OFICIAL</button>
         </div>
     </header>
 
-    <!-- SECCIÓN 5: ASISTENCIA 2.0 -->
-    <section id="v_asis" class="tab-content">
-        <h2 class="text-nuke font-bold mb-4">REGISTRO MENSUAL DE ASISTENCIA</h2>
-        <div id="asis_area">
-            <select id="sala_asis" class="input-elite mb-4" onchange="renderPlanillaAsistencia()">
-                <option value="">SELECCIONE SALA...</option>
-                <!-- Opciones cargadas dinámicamente -->
-            </select>
-            <div id="grid_asis" class="overflow-x-auto"></div>
-            <button onclick="calcularPromedioAsistencia()" class="btn-nuke mt-4">CALCULAR PROMEDIOS MENSUALES</button>
-        </div>
+    <nav class="flex gap-2 mb-6 border-b border-zinc-800 pb-4 text-xs font-black uppercase">
+        <button onclick="show('v_legajo')" class="btn-dark">1. LEGAJOS</button>
+        <button onclick="show('v_asistencia')" class="btn-dark">5. ASISTENCIA 2.0</button>
+        <button onclick="show('v_supervision')" class="btn-dark">6. SUPERVISIÓN ÉLITE</button>
+    </nav>
+
+    <!-- SECCIÓN ASISTENCIA 2.0 -->
+    <section id="v_asistencia" class="tab-content">
+        <h2 class="text-nuke font-bold mb-4">REGISTRO MENSUAL ESPECULAR</h2>
+        <select id="sala_asis" class="input-elite mb-4" onchange="renderPlanillaAsistencia()"></select>
+        <div id="grid_asis" class="overflow-x-auto"></div>
+        <button onclick="calcularPromedios()" class="btn-nuke mt-4">CALCULAR PROMEDIOS MENSUALES</button>
     </section>
 
-    <!-- SECCIÓN 6: SUPERVISIÓN ÉLITE -->
-    <section id="v_super" class="tab-content">
+    <!-- SECCIÓN SUPERVISIÓN ÉLITE -->
+    <section id="v_supervision" class="tab-content">
         <h2 class="text-nuke font-bold mb-4">TABLERO DE SUPERVISIÓN</h2>
-        <div id="stats_panel" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <!-- Estadísticas dinámicas -->
-        </div>
+        <div id="stats_panel" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"></div>
+        <div id="supervision_detalle" class="grid md:grid-cols-2 gap-4"></div>
     </section>
 
     <script>
-        let DB = { mat: [] }; 
+        let DB = { mat: [] };
 
         function show(id) {
             document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active-tab'));
             document.getElementById(id).classList.add('active-tab');
-            if(id === 'v_super') actualizarSupervision();
+            if(id === 'v_supervision') actualizarSupervision();
         }
 
+        // --- LÓGICA DE SUPERVISIÓN ÉLITE ---
         function actualizarSupervision() {
             const total = DB.mat.length;
             const varones = DB.mat.filter(a => a.sexo === 'M').length;
             const mujeres = DB.mat.filter(a => a.sexo === 'F').length;
             const arg = DB.mat.filter(a => a.alu_nac === 'ARG').length;
+            const cud = DB.mat.filter(a => a.cud === 'SI').length;
             
-            const panel = document.getElementById('stats_panel');
-            panel.innerHTML = `
+            document.getElementById('stats_panel').innerHTML = `
                 <div class="bg-zinc-900 p-4 border border-zinc-700">
-                    <p>TOTAL ALUMNOS</p>
-                    <h3 class="text-2xl text-nuke">${total}</h3>
+                    <p>TOTAL ALUMNOS</p><h3 class="text-3xl text-nuke">${total}</h3>
                 </div>
                 <div class="bg-zinc-900 p-4 border border-zinc-700">
-                    <p>VARONES / MUJERES</p>
-                    <h3 class="text-2xl">${varones} / ${mujeres}</h3>
+                    <p>SEXO (M/F)</p><h3 class="text-xl">${varones} / ${mujeres}</h3>
                 </div>
                 <div class="bg-zinc-900 p-4 border border-zinc-700">
-                    <p>ARGENTINOS</p>
-                    <h3 class="text-2xl text-nuke">${arg} (${((arg/total)*100).toFixed(0)}%)</h3>
+                    <p>ARGENTINOS %</p><h3 class="text-3xl text-nuke">${((arg/total)*100).toFixed(0)}%</h3>
+                </div>
+                <div class="bg-zinc-900 p-4 border border-zinc-700">
+                    <p>CUD ACTIVOS</p><h3 class="text-3xl text-red-500">${cud}</h3>
                 </div>
             `;
         }
 
+        // --- LÓGICA DE EXPORTACIÓN ---
+        function exportarExcelOficial() {
+            const ws = XLSX.utils.json_to_sheet(DB.mat);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "SUPERVISION_OFICIAL");
+            XLSX.writeFile(wb, "SUPERVISION_JARDIN_926_OFICIAL.xlsx");
+        }
+
+        // --- LÓGICA ASISTENCIA 2.0 (PLANILLA ESPEJO) ---
         function renderPlanillaAsistencia() {
             const grid = document.getElementById('grid_asis');
             const sala = document.getElementById('sala_asis').value;
             const alumnos = DB.mat.filter(a => a.alu_sala === sala);
-            
-            let html = `<table><tr><th>ALUMNO</th><th>ASISTENCIA MENSUAL</th></tr>`;
+            let html = `<table><tr><th>ALUMNO</th><th>ASISTENCIA MENSUAL (DÍAS)</th></tr>`;
             alumnos.forEach(a => {
-                html += `<tr><td>${a.alu_nombre}</td><td><input type="number" class="w-16 bg-black text-nuke" placeholder="Días"></td></tr>`;
+                html += `<tr><td>${a.alu_nombre}</td><td><input type="number" class="w-16 bg-black text-nuke border border-zinc-700"></td></tr>`;
             });
             html += `</table>`;
             grid.innerHTML = html;
         }
 
-        // --- INICIALIZACIÓN ---
-        // (Aquí iría la lógica de carga de tu archivo JSON que ya tienes funcional)
+        // (Mantener tus funciones base de initSystem y otros legajos aquí)
+        async function initSystem() { /* ... tu código de carga ... */ }
     </script>
 </body>
 </html>
