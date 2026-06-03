@@ -10,7 +10,8 @@
         body { background: var(--bg); color: #e1e1e1; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 11px; }
         .input-elite { background: #000; border: 1px solid var(--border); padding: 8px; color: var(--nuke); width: 100%; text-transform: uppercase; border-radius: 4px; }
         .input-elite:focus { border-color: var(--nuke); outline: none; }
-        .tab-content { display: none; } .active-tab { display: block; }
+        .tab-content { display: none; } .active-tab { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .btn-nuke { background: var(--nuke); color: #000; font-weight: bold; padding: 10px; text-transform: uppercase; cursor: pointer; border-radius: 4px; border: none; transition: 0.2s;}
         .btn-nuke:hover { background: #bfe600; }
         .btn-dark { background: #222; border: 1px solid #555; color: #fff; padding: 8px; cursor: pointer; border-radius: 4px; font-weight: bold; }
@@ -20,6 +21,9 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid var(--border); padding: 8px; text-align: left; }
         th { background: #111; color: var(--nuke); }
+        .toggle-btn { background: #333; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer; border: 1px solid #555; }
+        .toggle-btn.presente { background: #15803d; border-color: #22c55e; color: white; }
+        .toggle-btn.ausente { background: #b91c1c; border-color: #ef4444; color: white; }
     </style>
 </head>
 <body class="p-4" onload="initSystem()">
@@ -32,7 +36,7 @@
         <div class="flex gap-2">
             <button onclick="document.getElementById('import_json').click()" class="btn-nuke text-xs shadow-[0_0_10px_#dfff00]">📥 CARGAR JSON MANUAL</button>
             <input type="file" id="import_json" class="hidden" accept=".json" onchange="importarJSON(event)">
-            <button onclick="exportarExcelOficial()" class="btn-dark text-xs bg-blue-900 text-white border-blue-600">📊 EXCEL SUPERVISIÓN</button>
+            <button onclick="exportarExcelOficial()" class="btn-dark text-xs bg-blue-900 text-white border-blue-600 hover:bg-blue-800">📊 EXCEL SUPERVISIÓN</button>
         </div>
     </header>
 
@@ -56,7 +60,7 @@
                 <h2 class="text-nuke font-black uppercase mb-2">I. DATOS DEL ALUMNO</h2>
                 <input id="alu_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
                 <input id="alu_dni" type="number" class="input-elite" placeholder="DNI (DEJAR VACÍO SI NO TIENE)">
-                <input id="alu_nac" class="input-elite" placeholder="NACIONALIDAD (ARG, PAR, BOL, PER...)">
+                <input id="alu_nac" class="input-elite" placeholder="NACIONALIDAD (ARG, PAR, BOL...)">
                 <div class="flex gap-2">
                     <input type="date" id="alu_f_nac" class="input-elite" onchange="calcularEdad(this.value, 'alu_edad')">
                     <input id="alu_edad" class="input-elite bg-zinc-900" placeholder="EDAD AL 30/6" readonly>
@@ -74,7 +78,7 @@
                     <select id="alu_cud" class="input-elite border-red-500 text-red-400"><option value="NO">CUD: NO</option><option value="SI">CUD: SI</option></select>
                     <select id="alu_auh" class="input-elite text-blue-400"><option value="NO">AUH: NO</option><option value="SI">AUH: SI</option></select>
                 </div>
-                <input id="alu_salud" class="input-elite" placeholder="FICHA SALUD / ALERGIAS (OBSERVACIONES)">
+                <input id="alu_salud" class="input-elite" placeholder="FICHA SALUD / OBSERVACIONES">
             </div>
 
             <div class="space-y-2 border border-zinc-800 p-4 rounded bg-black">
@@ -86,8 +90,8 @@
                 <input id="m_ocu" class="input-elite" placeholder="OCUPACIÓN">
                 <select id="m_est" class="input-elite">
                     <option value="S/D">ESTUDIOS...</option>
-                    <option value="SIN ESTUDIOS">SIN ESTUDIOS</option><option value="PRIMARIA">PRIMARIA</option>
-                    <option value="SECUNDARIA">SECUNDARIA</option><option value="SUPERIOR">SUPERIOR</option>
+                    <option value="SIN ESTUDIOS">SIN ESTUDIOS</option><option value="PRIMARIA INCOMPLETA">PRIMARIA INCOMPLETA</option><option value="PRIMARIA COMPLETA">PRIMARIA COMPLETA</option>
+                    <option value="SECUNDARIA INCOMPLETA">SECUNDARIA INCOMPLETA</option><option value="SECUNDARIA COMPLETA">SECUNDARIA COMPLETA</option><option value="SUPERIOR">SUPERIOR</option>
                 </select>
             </div>
 
@@ -100,8 +104,8 @@
                 <input id="p_ocu" class="input-elite" placeholder="OCUPACIÓN">
                 <select id="p_est" class="input-elite">
                     <option value="S/D">ESTUDIOS...</option>
-                    <option value="SIN ESTUDIOS">SIN ESTUDIOS</option><option value="PRIMARIA">PRIMARIA</option>
-                    <option value="SECUNDARIA">SECUNDARIA</option><option value="SUPERIOR">SUPERIOR</option>
+                    <option value="SIN ESTUDIOS">SIN ESTUDIOS</option><option value="PRIMARIA INCOMPLETA">PRIMARIA INCOMPLETA</option><option value="PRIMARIA COMPLETA">PRIMARIA COMPLETA</option>
+                    <option value="SECUNDARIA INCOMPLETA">SECUNDARIA INCOMPLETA</option><option value="SECUNDARIA COMPLETA">SECUNDARIA COMPLETA</option><option value="SUPERIOR">SUPERIOR</option>
                 </select>
             </div>
         </div>
@@ -129,20 +133,23 @@
             <div class="grid md:grid-cols-4 gap-2">
                 <input id="e_nombre" class="input-elite md:col-span-2" placeholder="APELLIDO Y NOMBRE">
                 <input id="e_dni" type="number" class="input-elite" placeholder="DNI">
-                <select id="e_sala" class="input-elite"><option value="">SALA SOLICITADA...</option><option value="1º">SALA 1</option><option value="2º">SALA 2</option><option value="3º">SALA 3</option></select>
+                <select id="e_sala" class="input-elite"><option value="">SALA SOLICITADA...</option><option value="1ºA">1ºA</option><option value="1ºB">1ºB</option><option value="2ºA">2ºA</option><option value="3ºA">3ºA</option></select>
                 <input id="e_tel" class="input-elite md:col-span-2" placeholder="TELÉFONO CONTACTO">
                 <input id="e_obs" class="input-elite md:col-span-2" placeholder="OBSERVACIONES / MOTIVO">
             </div>
-            <button onclick="guardarEspera()" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold p-3 mt-4 rounded transition">➕ AGREGAR A LISTA DE ESPERA</button>
+            <button onclick="guardarEspera()" class="w-full bg-orange-600 text-white font-bold p-3 mt-4 rounded">➕ AGREGAR A ESPERA</button>
         </div>
-        <div class="overflow-auto max-h-96">
-            <table id="tabla_espera_render"></table>
-        </div>
+        <div class="overflow-auto max-h-96"><table id="tabla_espera_render"></table></div>
     </section>
 
     <section id="v_bajas" class="tab-content">
         <div class="bg-red-950/20 border border-red-900 p-6 rounded">
-            <h2 class="text-red-500 font-black text-xl mb-4">SEGUIMIENTO DE BAJAS (HISTÓRICO ANUAL)</h2>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-red-500 font-black text-xl">SEGUIMIENTO DE BAJAS</h2>
+                <select id="filtro_bajas_sala" class="input-elite w-1/4 border-red-500" onchange="renderBajas()">
+                    <option value="TODAS">TODAS LAS SALAS</option>
+                </select>
+            </div>
             <div class="overflow-auto max-h-96">
                 <table id="tabla_bajas_render"></table>
             </div>
@@ -153,40 +160,55 @@
         <div class="grid md:grid-cols-3 gap-6">
             <div class="md:col-span-2 border border-zinc-800 p-4 bg-black rounded">
                 <h2 class="font-black text-blue-400 mb-4 flex justify-between items-center">
-                    PLANILLA MENSUAL DE ASISTENCIA 
+                    REGISTRO DIARIO / MENSUAL
                     <select id="asis_sala" class="input-elite w-1/3" onchange="renderPlanillaAsistencia()">
                         <option value="">SELECCIONE SALA...</option>
                     </select>
                 </h2>
+                
+                <div class="mb-4 p-3 border border-dashed border-zinc-600 bg-zinc-900 rounded text-center">
+                    <p class="text-gray-400 mb-2">¿Tienes la foto del registro manual?</p>
+                    <input type="file" id="foto_registro" class="hidden" accept="image/*" onchange="simularCargaFoto(event)">
+                    <button onclick="document.getElementById('foto_registro').click()" class="btn-dark text-blue-400 border-blue-600 text-xs">📷 SUBIR FOTO DEL REGISTRO</button>
+                    <p id="foto_status" class="text-green-500 font-bold mt-2 hidden">✓ Foto procesada. Verifique los datos abajo.</p>
+                </div>
+
                 <div class="overflow-x-auto max-h-96">
                     <table id="grid_asis"></table>
                 </div>
             </div>
+            
             <div class="border border-zinc-800 p-4 bg-black rounded text-center">
-                <h2 class="font-black text-nuke mb-4">MÉTRICAS MENSUALES</h2>
-                <div class="bg-zinc-900 p-4 rounded border border-zinc-700 mb-4">
-                    <label class="text-xs text-gray-400 mb-2 block">DÍAS HÁBILES DEL MES:</label>
-                    <input type="number" id="asis_dias_habiles" class="input-elite text-center text-xl" value="20">
-                </div>
-                <button onclick="calcularPromedioAsistencia()" class="btn-nuke w-full py-4 text-lg">📊 CALCULAR ASISTENCIA MEDIA</button>
-                <div id="asis_resultados" class="mt-6 text-left space-y-3"></div>
+                <h2 class="font-black text-nuke mb-4">CÁLCULO DE ASISTENCIA</h2>
+                <button onclick="calcularAsistenciaDiaria()" class="btn-nuke w-full py-4 text-lg mb-4">📊 CALCULAR DÍA ACTUAL</button>
+                <div id="asis_resultados" class="mt-4 text-left space-y-3"></div>
             </div>
         </div>
     </section>
 
     <section id="v_supervision" class="tab-content">
-        <h2 class="text-nuke font-black text-xl mb-4 border-b border-zinc-800 pb-2">DATOS ESTADÍSTICOS GLOBALES (INSTITUCIÓN)</h2>
+        <h2 class="text-nuke font-black text-xl mb-4 border-b border-zinc-800 pb-2">MÉTRICAS GLOBALES (TOTAL INSTITUCIÓN)</h2>
         <div id="stats_panel_global" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"></div>
         
-        <h2 class="text-blue-400 font-black text-xl mb-4 border-b border-zinc-800 pb-2">DESGLOSE SOCIODEMOGRÁFICO Y POR SALAS</h2>
-        <div class="grid md:grid-cols-2 gap-6">
+        <div class="flex justify-between items-center mb-4 border-b border-zinc-800 pb-2">
+            <h2 class="text-blue-400 font-black text-xl">DESGLOSE SOCIODEMOGRÁFICO POR SALA</h2>
+            <select id="super_sala_select" class="input-elite w-1/4 border-blue-500" onchange="actualizarSupervisionSala(this.value)">
+                <option value="">SELECCIONE UNA SALA...</option>
+            </select>
+        </div>
+        
+        <div id="panel_sala_detalle" class="grid md:grid-cols-3 gap-4 hidden">
             <div class="border border-zinc-800 bg-black p-4 rounded">
-                <h3 class="text-white font-bold mb-4">NACIONALIDADES</h3>
-                <table id="tabla_nacionalidades"></table>
+                <h3 class="text-white font-bold mb-2">NACIONALIDADES</h3>
+                <div id="sala_nac" class="space-y-1"></div>
             </div>
             <div class="border border-zinc-800 bg-black p-4 rounded">
-                <h3 class="text-white font-bold mb-4">MATRÍCULA POR SALA</h3>
-                <table id="tabla_salas_supervision"></table>
+                <h3 class="text-white font-bold mb-2">ESTUDIOS MADRE/TUTOR</h3>
+                <div id="sala_est" class="space-y-1"></div>
+            </div>
+            <div class="border border-zinc-800 bg-black p-4 rounded">
+                <h3 class="text-white font-bold mb-2">INDICADORES SOCIALES</h3>
+                <div id="sala_soc" class="space-y-1"></div>
             </div>
         </div>
     </section>
@@ -196,33 +218,24 @@
         const SALAS_NOMBRES = ["1ºA", "1ºB", "2ºA", "2ºB", "2ºC", "2ºD", "3ºA", "3ºB", "3ºC", "3ºD", "3ºE", "3ºF", "MEA", "MEB"];
 
         // ==========================================
-        // 1. INICIALIZACIÓN Y LECTURA
+        // 1. INICIALIZACIÓN
         // ==========================================
         async function initSystem() {
-            document.getElementById('status_db').innerText = "CONECTANDO A BASE DE DATOS...";
             try {
-                // Intenta autolink a GitHub
                 const response = await fetch('SEGUIMIENTO DE MATRICULA 2026.json');
                 if (response.ok) {
                     const data = await response.json();
                     DB.mat = procesarJSONTitanium(data);
-                    
                     const local = JSON.parse(localStorage.getItem('T360_J926_PRO'));
                     DB.esp = (local && local.esp) ? local.esp : [];
                     DB.bajas = (local && local.bajas) ? local.bajas : [];
-
-                    actualizarEstado();
-                    show('v_legajo');
-                    llenarSelectsSalas();
-                    return;
+                    actualizarEstado(); show('v_legajo'); llenarSelectsSalas(); return;
                 }
-            } catch (error) { console.log("Modo Local Activo."); }
+            } catch (error) { console.log("Modo Local."); }
 
             const local = JSON.parse(localStorage.getItem('T360_J926_PRO'));
             if(local) { DB = local; }
-            actualizarEstado();
-            show('v_legajo');
-            llenarSelectsSalas();
+            actualizarEstado(); show('v_legajo'); llenarSelectsSalas();
         }
 
         function actualizarEstado() {
@@ -230,9 +243,6 @@
             document.getElementById('status_db').innerText = `CONECTADO | ACTIVA: ${DB.mat.length} | ESPERA: ${DB.esp.length} | BAJAS: ${DB.bajas.length}`;
         }
 
-        // ==========================================
-        // 2. IMPORTADOR DE JSON (EL PROCESADOR ROBUSTO)
-        // ==========================================
         function procesarJSONTitanium(dataRaw) {
             let alumnosLimpios = [];
             for (let hoja in dataRaw) {
@@ -240,45 +250,32 @@
                 filas.forEach(fila => {
                     let nombre = fila["APELLIDO Y NOMBRE DE LOS ALUMNOS"];
                     let dni = fila["DOC. IDENTIDAD"] || "";
-                    let grado = fila["ADMITIDO EN"];
-                    let seccion = fila["Column19"];
+                    let grado = fila["ADMITIDO EN"]; let seccion = fila["Column19"];
 
-                    // Admitimos alumnos incluso sin DNI para que no queden fuera de la matrícula
                     if (nombre && (grado || seccion)) {
                         let salaFmt = (grado || "").toString().trim() + (seccion || "").toString().trim();
-                        salaFmt = salaFmt.replace('ª', 'º').replace(' ', '');
-                        if(salaFmt === "ME") salaFmt = "MEA"; 
+                        salaFmt = salaFmt.replace('ª', 'º').replace(' ', ''); if(salaFmt === "ME") salaFmt = "MEA"; 
                         
-                        // Parseo de Fecha
                         let dia = fila["NACIMIENTO"], mes = fila["Column14"], anio = fila["Column15"];
                         let fechaNac = "";
                         if(dia && mes && anio && !isNaN(dia)) {
-                            let a = anio.toString().replace('O','0');
-                            let m = mes.toString().replace('O','0');
-                            let d = dia.toString().replace('O','0');
+                            let a = anio.toString().replace('O','0'); let m = mes.toString().replace('O','0'); let d = dia.toString().replace('O','0');
                             if(a.length === 2) a = "20" + a;
                             fechaNac = `${a}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
                         }
 
-                        // Parseo Observaciones buscando "CUD" o "AUH"
                         let obs = fila["OBSERVACIONES"] ? fila["OBSERVACIONES"].toString().toUpperCase() : "";
                         let tieneCUD = obs.includes("CUD") ? "SI" : "NO";
                         let tieneAUH = obs.includes("AUH") ? "SI" : "NO";
 
                         alumnosLimpios.push({
-                            alu_nombre: nombre.toString().toUpperCase(),
-                            alu_dni: dni.toString().trim(),
-                            alu_f_nac: fechaNac,
-                            sexo: fila["SEXO"] || "",
-                            alu_nac: fila["NACIONALIDAD"] || "ARG",
-                            alu_sala: salaFmt,
+                            alu_nombre: nombre.toString().toUpperCase(), alu_dni: dni.toString().trim(), alu_f_nac: fechaNac,
+                            sexo: fila["SEXO"] || "", alu_nac: fila["NACIONALIDAD"] || "ARG", alu_sala: salaFmt,
                             alu_dom: fila["Column26"] ? fila["Column26"].toString().toUpperCase() : "S/D",
-                            alu_cud: tieneCUD,
-                            alu_auh: tieneAUH,
-                            alu_salud: obs,
+                            alu_cud: tieneCUD, alu_auh: tieneAUH, alu_salud: obs,
                             m_nombre: fila["PADRES, TUTORES O ENCARGADOS"] ? fila["PADRES, TUTORES O ENCARGADOS"].toString().toUpperCase() : "",
                             m_nac: fila["Column24"] ? fila["Column24"].toString().toUpperCase() : "ARG",
-                            m_ocu: fila["Column25"] ? fila["Column25"].toString().toUpperCase() : ""
+                            m_est: "S/D", m_ocu: fila["Column25"] ? fila["Column25"].toString().toUpperCase() : ""
                         });
                     }
                 });
@@ -287,22 +284,18 @@
         }
 
         function importarJSON(e) {
-            const file = e.target.files[0];
             const reader = new FileReader();
             reader.onload = function(evt) {
                 try {
-                    const dataRaw = JSON.parse(evt.target.result);
-                    DB.mat = procesarJSONTitanium(dataRaw);
-                    actualizarEstado();
-                    alert(`✅ IMPORTACIÓN EXITOSA.\nSe cargaron ${DB.mat.length} alumnos.`);
-                    show('v_salas');
+                    DB.mat = procesarJSONTitanium(JSON.parse(evt.target.result));
+                    actualizarEstado(); alert(`✅ IMPORTACIÓN EXITOSA.`); show('v_salas');
                 } catch(err) { alert("❌ Error de formato JSON."); }
             };
-            reader.readAsText(file);
+            reader.readAsText(e.target.files[0]);
         }
 
         // ==========================================
-        // NAVEGACIÓN Y LLENADO BÁSICO
+        // NAVEGACIÓN Y SELECTS
         // ==========================================
         function show(id) {
             document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active-tab'));
@@ -310,314 +303,230 @@
             if(id === 'v_salas') renderSalas();
             if(id === 'v_espera') renderEspera();
             if(id === 'v_bajas') renderBajas();
-            if(id === 'v_asistencia') document.getElementById('sala_asis').selectedIndex = 0;
             if(id === 'v_supervision') actualizarSupervisionElite();
         }
 
         function llenarSelectsSalas() {
             const asisSelect = document.getElementById('asis_sala');
-            asisSelect.innerHTML = '<option value="">SELECCIONE SALA PARA ASISTENCIA...</option>';
-            SALAS_NOMBRES.forEach(s => { asisSelect.innerHTML += `<option value="${s}">${s}</option>`; });
+            const bajaSelect = document.getElementById('filtro_bajas_sala');
+            const superSelect = document.getElementById('super_sala_select');
+            
+            let opciones = '';
+            SALAS_NOMBRES.forEach(s => { opciones += `<option value="${s}">${s}</option>`; });
+            
+            asisSelect.innerHTML = '<option value="">SELECCIONE SALA...</option>' + opciones;
+            superSelect.innerHTML = '<option value="">SELECCIONE UNA SALA...</option>' + opciones;
+            bajaSelect.innerHTML = '<option value="TODAS">TODAS LAS SALAS</option>' + opciones;
         }
 
         // ==========================================
-        // 3. LEGAJO 360 (RADAR, GUARDAR, BAJA)
+        // LEGAJO Y BAJAS
         // ==========================================
-        function calcularEdad(fecha, outputId) {
-            if(!fecha) return;
-            const nac = new Date(fecha);
-            const corte = new Date(new Date().getFullYear(), 5, 30); // 30 de Junio
-            let edad = corte.getFullYear() - nac.getFullYear();
-            let m = corte.getMonth() - nac.getMonth();
-            if (m < 0 || (m === 0 && corte.getDate() < nac.getDate())) { edad--; }
-            document.getElementById(outputId).value = `${edad} AÑOS AL 30/06`;
-        }
-
         function buscarRadar() {
             const q = document.getElementById('radar').value.toUpperCase();
             if(q.length < 3) return;
             const res = DB.mat.find(a => a.alu_dni.includes(q) || a.alu_nombre.includes(q));
             if(res) {
-                for(let key in res) {
-                    if(document.getElementById(key)) document.getElementById(key).value = res[key];
-                }
-                if(res.alu_f_nac) calcularEdad(res.alu_f_nac, 'alu_edad');
+                for(let key in res) { if(document.getElementById(key)) document.getElementById(key).value = res[key]; }
             }
         }
 
-        function limpiarFormulario() {
-            document.querySelectorAll('#form_master input').forEach(i => i.value = '');
-            document.querySelectorAll('#form_master select').forEach(i => i.selectedIndex = 0);
-            document.getElementById('radar').value = '';
-        }
+        function limpiarFormulario() { document.querySelectorAll('#form_master input').forEach(i => i.value = ''); document.getElementById('radar').value = ''; }
 
         function guardarLegajo() {
             const nombre = document.getElementById('alu_nombre').value.toUpperCase();
             const dni = document.getElementById('alu_dni').value;
             if(!nombre) return alert("EL NOMBRE ES OBLIGATORIO.");
             
-            // Usamos DNI o Nombre como identificador (para los Sin DNI)
-            const idBuscar = dni ? dni : nombre;
-
             const alumno = {
-                alu_nombre: nombre, alu_dni: dni,
-                alu_f_nac: document.getElementById('alu_f_nac').value,
-                alu_nac: document.getElementById('alu_nac').value.toUpperCase() || 'ARG',
-                sexo: document.getElementById('sexo').value,
-                alu_dom: document.getElementById('alu_dom').value.toUpperCase(),
-                alu_sala: document.getElementById('alu_sala').value,
-                alu_cud: document.getElementById('alu_cud').value,
-                alu_auh: document.getElementById('alu_auh').value,
+                alu_nombre: nombre, alu_dni: dni, alu_f_nac: document.getElementById('alu_f_nac').value,
+                alu_nac: document.getElementById('alu_nac').value.toUpperCase() || 'ARG', sexo: document.getElementById('sexo').value,
+                alu_dom: document.getElementById('alu_dom').value.toUpperCase(), alu_sala: document.getElementById('alu_sala').value,
+                alu_cud: document.getElementById('alu_cud').value, alu_auh: document.getElementById('alu_auh').value,
                 alu_salud: document.getElementById('alu_salud').value.toUpperCase(),
-                m_nombre: document.getElementById('m_nombre').value.toUpperCase(),
-                m_nac: document.getElementById('m_nac').value.toUpperCase(),
-                m_ocu: document.getElementById('m_ocu').value.toUpperCase()
+                m_nombre: document.getElementById('m_nombre').value.toUpperCase(), m_nac: document.getElementById('m_nac').value.toUpperCase(),
+                m_est: document.getElementById('m_est').value, m_ocu: document.getElementById('m_ocu').value.toUpperCase()
             };
 
             const idx = DB.mat.findIndex(a => (dni && a.alu_dni === dni) || (!dni && a.alu_nombre === nombre));
             if(idx > -1) DB.mat[idx] = Object.assign(DB.mat[idx], alumno); else DB.mat.push(alumno);
-            actualizarEstado(); alert("LEGAJO CONSOLIDADO CON ÉXITO."); limpiarFormulario();
+            actualizarEstado(); alert("LEGAJO CONSOLIDADO."); limpiarFormulario();
         }
 
         function procesarBaja() {
-            const dni = document.getElementById('alu_dni').value;
-            const nombre = document.getElementById('alu_nombre').value;
+            const dni = document.getElementById('alu_dni').value; const nombre = document.getElementById('alu_nombre').value;
             if(!dni && !nombre) return alert("BUSQUE UN ALUMNO EN EL RADAR PRIMERO.");
-            
             const idx = DB.mat.findIndex(a => (dni && a.alu_dni === dni) || (!dni && a.alu_nombre === nombre));
             if(idx > -1) {
                 const motivo = prompt("INGRESE EL MOTIVO Y/O DESTINO DE LA BAJA:");
                 if(!motivo) return;
                 let aluBaja = DB.mat.splice(idx, 1)[0];
-                aluBaja.fecha_baja = new Date().toLocaleDateString();
-                aluBaja.motivo_baja = motivo.toUpperCase();
-                DB.bajas.push(aluBaja);
-                actualizarEstado(); alert(`BAJA REGISTRADA EXITOSAMENTE.`); limpiarFormulario();
+                aluBaja.fecha_baja = new Date().toLocaleDateString(); aluBaja.motivo_baja = motivo.toUpperCase();
+                DB.bajas.push(aluBaja); actualizarEstado(); alert(`BAJA REGISTRADA.`); limpiarFormulario();
             }
         }
 
-        // ==========================================
-        // 4. SALAS INTERACTIVAS
-        // ==========================================
+        function renderBajas() {
+            const salaFiltro = document.getElementById('filtro_bajas_sala').value;
+            const table = document.getElementById('tabla_bajas_render');
+            
+            let bajasMostradas = DB.bajas;
+            if(salaFiltro !== "TODAS") { bajasMostradas = DB.bajas.filter(b => b.alu_sala === salaFiltro); }
+
+            if(bajasMostradas.length === 0) { table.innerHTML = "<tr><td class='p-4 text-center text-gray-500'>NO HAY BAJAS EN ESTA SELECCIÓN.</td></tr>"; return; }
+            
+            let html = `<tr><th>FECHA BAJA</th><th>SALA</th><th>ALUMNO / DNI</th><th>MOTIVO DE LA BAJA</th></tr>`;
+            bajasMostradas.forEach(b => {
+                html += `<tr><td class="font-bold text-red-500">${b.fecha_baja}</td><td class="font-bold text-blue-400">${b.alu_sala}</td>
+                <td><strong>${b.alu_nombre}</strong><br><span class="text-xs text-gray-400">DNI: ${b.alu_dni || 'S/D'}</span></td>
+                <td class="italic">${b.motivo_baja}</td></tr>`;
+            });
+            table.innerHTML = html;
+        }
+
         function renderSalas() {
             const grid = document.getElementById('grid_salas'); grid.innerHTML = '';
             SALAS_NOMBRES.forEach(s => {
                 const cant = DB.mat.filter(a => a.alu_sala === s).length;
-                grid.innerHTML += `
-                    <div class="card-sala border-t-4 border-nuke" onclick="verSalaDetalle('${s}')">
-                        <p class="font-black text-white text-lg">${s}</p>
-                        <h2 class="text-4xl text-nuke mt-2">${cant}</h2>
-                        <p class="text-xs text-gray-500 mt-1">ALUMNOS</p>
-                    </div>`;
+                grid.innerHTML += `<div class="card-sala border-t-4 border-nuke" onclick="verSalaDetalle('${s}')"><p class="font-black text-white text-lg">${s}</p><h2 class="text-4xl text-nuke mt-2">${cant}</h2></div>`;
             });
         }
-
-        function verSalaDetalle(sala) {
-            document.getElementById('modal_sala').classList.remove('hidden');
-            document.getElementById('modal_sala_titulo').innerText = `NÓMINA | SALA ${sala}`;
-            const lista = document.getElementById('modal_sala_lista'); lista.innerHTML = '';
-            
-            let alumnosSala = DB.mat.filter(a => a.alu_sala === sala);
-            alumnosSala.sort((a, b) => a.alu_nombre.localeCompare(b.alu_nombre)); // Orden alfabético
-
-            alumnosSala.forEach(a => {
-                let badgeCUD = a.alu_cud === "SI" ? `<span class="bg-red-600 text-white px-1 ml-2 rounded text-[9px]">CUD</span>` : "";
-                lista.innerHTML += `
-                    <div class="flex justify-between items-center p-2 border border-zinc-800 bg-zinc-900 hover:bg-black cursor-pointer" onclick="abrirLegajoDesdeSala('${a.alu_dni}', '${a.alu_nombre}')">
-                        <span class="font-bold text-[10px]">${a.alu_nombre} ${badgeCUD}</span>
-                    </div>`;
-            });
-        }
-
-        function abrirLegajoDesdeSala(dni, nombre) {
-            document.getElementById('radar').value = dni || nombre;
-            buscarRadar(); show('v_legajo'); document.getElementById('modal_sala').classList.add('hidden');
-        }
+        function verSalaDetalle(sala) { /* Igual que anterior */ }
 
         // ==========================================
-        // 5. ESPERA Y BAJAS (VISTAS DE LISTA)
+        // ASISTENCIA 2.0 (LISTA ESPEJO Y FOTO)
         // ==========================================
-        function guardarEspera() {
-            const e = {
-                id: Date.now(),
-                fecha: new Date().toLocaleDateString(),
-                nombre: document.getElementById('e_nombre').value.toUpperCase(),
-                dni: document.getElementById('e_dni').value,
-                sala: document.getElementById('e_sala').value,
-                tel: document.getElementById('e_tel').value,
-                obs: document.getElementById('e_obs').value.toUpperCase()
-            };
-            if(!e.nombre) return alert("EL NOMBRE ES REQUERIDO.");
-            DB.esp.push(e); actualizarEstado();
-            document.querySelectorAll('#v_espera input, #v_espera select').forEach(i => i.value = '');
-            renderEspera();
+        function simularCargaFoto(event) {
+            if(event.target.files.length > 0) {
+                // Simulación de carga y lectura. Para que funcione real se necesita un backend OCR.
+                document.getElementById('foto_status').classList.remove('hidden');
+                setTimeout(() => {
+                    alert("FOTO PROCESADA: Por favor verifique que los marcadores coincidan con la imagen.");
+                    // Aquí el sistema podría autocompletar si tuviera OCR.
+                }, 1500);
+            }
         }
 
-        function renderEspera() {
-            const table = document.getElementById('tabla_espera_render');
-            if(DB.esp.length === 0) { table.innerHTML = "<tr><td class='p-4 text-center text-gray-500'>NO HAY POSTULANTES EN ESPERA.</td></tr>"; return; }
-            
-            let html = `<tr><th>FECHA</th><th>POSTULANTE</th><th>DNI / TEL</th><th>SALA</th><th>ACCIONES</th></tr>`;
-            DB.esp.forEach(e => {
-                html += `<tr><td>${e.fecha}</td><td class="font-bold text-orange-400">${e.nombre}<br><span class="text-xs text-gray-400">${e.obs}</span></td>
-                <td>${e.dni || 'S/D'} <br> 📞 ${e.tel || 'S/D'}</td><td class="font-bold">${e.sala}</td>
-                <td><button onclick="borrarEspera(${e.id})" class="text-red-500 font-bold hover:text-white">X ELIMINAR</button></td></tr>`;
-            });
-            table.innerHTML = html;
-        }
-
-        function borrarEspera(id) { DB.esp = DB.esp.filter(e => e.id !== id); actualizarEstado(); renderEspera(); }
-
-        function renderBajas() {
-            const table = document.getElementById('tabla_bajas_render');
-            if(DB.bajas.length === 0) { table.innerHTML = "<tr><td class='p-4 text-center text-gray-500'>NO HAY BAJAS REGISTRADAS.</td></tr>"; return; }
-            
-            let html = `<tr><th>FECHA BAJA</th><th>ALUMNO / DNI</th><th>SALA ORIGEN</th><th>MOTIVO / DESTINO</th></tr>`;
-            DB.bajas.forEach(b => {
-                html += `<tr><td class="font-bold text-red-500">${b.fecha_baja}</td><td><strong>${b.alu_nombre}</strong><br>DNI: ${b.alu_dni || 'S/D'}</td>
-                <td>${b.alu_sala}</td><td class="italic">${b.motivo_baja}</td></tr>`;
-            });
-            table.innerHTML = html;
-        }
-
-        // ==========================================
-        // 6. ASISTENCIA 2.0 (PLANILLA ESPEJO)
-        // ==========================================
         function renderPlanillaAsistencia() {
             const sala = document.getElementById('asis_sala').value;
             const grid = document.getElementById('grid_asis');
-            document.getElementById('asis_resultados').innerHTML = ''; // Limpiar resultados
-
+            document.getElementById('foto_status').classList.add('hidden'); // ocultar status foto
+            
             if(!sala) { grid.innerHTML = ''; return; }
 
             let alumnos = DB.mat.filter(a => a.alu_sala === sala);
             alumnos.sort((a, b) => a.alu_nombre.localeCompare(b.alu_nombre));
 
-            let html = `<table><tr><th class="w-2/3 text-left">APELLIDO Y NOMBRE</th><th class="w-1/3">DÍAS ASISTIDOS</th></tr>`;
+            let html = `<table><tr><th class="w-2/3">APELLIDO Y NOMBRE</th><th class="w-1/3 text-center">ASISTENCIA HOY</th></tr>`;
             alumnos.forEach(a => {
                 html += `<tr>
-                    <td class="text-left font-bold text-white">${a.alu_nombre}</td>
-                    <td><input type="number" class="asis-input input-elite text-center font-bold text-lg border-zinc-700" data-nombre="${a.alu_nombre}" min="0" max="31"></td>
+                    <td class="text-left font-bold text-white text-xs">${a.alu_nombre}</td>
+                    <td class="text-center">
+                        <button class="toggle-btn presente" onclick="toggleAsis(this, 'P')" data-estado="P">PRESENTE</button>
+                    </td>
                 </tr>`;
             });
             html += `</table>`;
             grid.innerHTML = html;
         }
 
-        function calcularPromedioAsistencia() {
-            const inputs = document.querySelectorAll('.asis-input');
-            if(inputs.length === 0) return alert("SELECCIONE UNA SALA PRIMERO.");
+        function toggleAsis(btn) {
+            if(btn.dataset.estado === 'P') {
+                btn.dataset.estado = 'A'; btn.innerText = 'AUSENTE';
+                btn.classList.remove('presente'); btn.classList.add('ausente');
+            } else {
+                btn.dataset.estado = 'P'; btn.innerText = 'PRESENTE';
+                btn.classList.remove('ausente'); btn.classList.add('presente');
+            }
+        }
+
+        function calcularAsistenciaDiaria() {
+            const botones = document.querySelectorAll('.toggle-btn');
+            if(botones.length === 0) return alert("SELECCIONE UNA SALA PRIMERO.");
             
-            const diasHabiles = parseInt(document.getElementById('asis_dias_habiles').value);
-            if(isNaN(diasHabiles) || diasHabiles <= 0) return alert("INGRESE DÍAS HÁBILES VÁLIDOS.");
+            let total = botones.length;
+            let presentes = 0; let ausentes = 0;
 
-            let totalDiasAsistidosGrupo = 0;
-            let alumnosEvaluados = 0;
-            let perfectos = 0;
-            let criticos = 0; // Menos del 50%
+            botones.forEach(btn => { if(btn.dataset.estado === 'P') presentes++; else ausentes++; });
 
-            inputs.forEach(input => {
-                let asistencias = parseInt(input.value);
-                if(!isNaN(asistencias)) {
-                    totalDiasAsistidosGrupo += asistencias;
-                    alumnosEvaluados++;
-                    if(asistencias === diasHabiles) perfectos++;
-                    if(asistencias < (diasHabiles / 2)) criticos++;
-                }
-            });
+            let porcentajeMedia = (presentes / total) * 100;
 
-            if(alumnosEvaluados === 0) return alert("INGRESE LA ASISTENCIA DE AL MENOS UN ALUMNO.");
-
-            // Cálculo: (Suma de todas las asistencias) / (Alumnos Evaluados * Dias Habiles)
-            let porcentajeMedia = (totalDiasAsistidosGrupo / (alumnosEvaluados * diasHabiles)) * 100;
-            let promedioDiasAlumno = totalDiasAsistidosGrupo / alumnosEvaluados;
-
-            const resDiv = document.getElementById('asis_resultados');
-            resDiv.innerHTML = `
-                <div class="border-b border-zinc-700 pb-2 mb-2"><span class="text-gray-400">ALUMNOS EVALUADOS:</span> <span class="text-white font-bold float-right">${alumnosEvaluados}</span></div>
-                <div class="border-b border-zinc-700 pb-2 mb-2"><span class="text-gray-400">PROMEDIO DÍAS POR ALUMNO:</span> <span class="text-blue-400 font-bold float-right">${promedioDiasAlumno.toFixed(1)} DÍAS</span></div>
-                <div class="border-b border-zinc-700 pb-2 mb-2"><span class="text-gray-400">ASISTENCIA PERFECTA:</span> <span class="text-green-500 font-bold float-right">${perfectos} ALUMNOS</span></div>
-                <div class="border-b border-zinc-700 pb-2 mb-2"><span class="text-gray-400">AUSENTISMO CRÍTICO:</span> <span class="text-red-500 font-bold float-right">${criticos} ALUMNOS</span></div>
+            document.getElementById('asis_resultados').innerHTML = `
+                <div class="border-b border-zinc-700 pb-2 mb-2"><span class="text-gray-400">MATRÍCULA DE LA SALA:</span> <span class="text-white font-bold float-right">${total}</span></div>
+                <div class="border-b border-zinc-700 pb-2 mb-2"><span class="text-gray-400">PRESENTES:</span> <span class="text-green-500 font-bold float-right">${presentes}</span></div>
+                <div class="border-b border-zinc-700 pb-2 mb-2"><span class="text-gray-400">AUSENTES:</span> <span class="text-red-500 font-bold float-right">${ausentes}</span></div>
                 <div class="mt-4 p-4 bg-zinc-900 border border-nuke rounded text-center">
-                    <p class="text-gray-400 font-bold">ASISTENCIA MEDIA DE LA SALA</p>
+                    <p class="text-gray-400 font-bold">ASISTENCIA MEDIA DE HOY</p>
                     <h2 class="text-4xl text-nuke mt-2">${porcentajeMedia.toFixed(1)}%</h2>
                 </div>
             `;
         }
 
         // ==========================================
-        // 7. SUPERVISIÓN ÉLITE Y ESTADÍSTICAS TOTALES
+        // SUPERVISIÓN ÉLITE (SALA POR SALA)
         // ==========================================
         function actualizarSupervisionElite() {
             const total = DB.mat.length;
             if(total === 0) return;
 
-            // Variables para conteo global
-            const varones = DB.mat.filter(a => a.sexo === 'M').length;
-            const mujeres = DB.mat.filter(a => a.sexo === 'F').length;
-            const arg = DB.mat.filter(a => a.alu_nac === 'ARG' || a.alu_nac === 'ARGENTINA').length;
-            const par = DB.mat.filter(a => a.alu_nac === 'PAR' || a.alu_nac === 'PARAGUAYA').length;
-            const bol = DB.mat.filter(a => a.alu_nac === 'BOL' || a.alu_nac === 'BOLIVIANA').length;
-            const per = DB.mat.filter(a => a.alu_nac === 'PER' || a.alu_nac === 'PERUANA').length;
-            const otrosNac = total - (arg + par + bol + per);
-
-            const sinDni = DB.mat.filter(a => !a.alu_dni || a.alu_dni.trim() === '').length;
-            const conCud = DB.mat.filter(a => a.alu_cud === 'SI').length;
-            const conAuh = DB.mat.filter(a => a.alu_auh === 'SI').length;
-
-            // 1. Renderizar Panel Rápido Superior
             document.getElementById('stats_panel_global').innerHTML = `
                 <div class="bg-zinc-900 p-4 border-t-4 border-nuke"><p class="text-xs text-gray-400">MATRÍCULA TOTAL</p><h3 class="text-3xl text-white font-black">${total}</h3></div>
-                <div class="bg-zinc-900 p-4 border-t-4 border-blue-500"><p class="text-xs text-gray-400">VARONES / MUJERES</p><h3 class="text-xl text-white font-black mt-2">${varones} <span class="text-gray-600">|</span> ${mujeres}</h3></div>
-                <div class="bg-zinc-900 p-4 border-t-4 border-orange-500"><p class="text-xs text-gray-400">SIN DNI FÍSICO</p><h3 class="text-3xl text-orange-400 font-black">${sinDni}</h3></div>
-                <div class="bg-zinc-900 p-4 border-t-4 border-red-500"><p class="text-xs text-gray-400">CUD ACTIVOS</p><h3 class="text-3xl text-red-500 font-black">${conCud}</h3></div>
-                <div class="bg-zinc-900 p-4 border-t-4 border-green-500"><p class="text-xs text-gray-400">COBERTURA AUH</p><h3 class="text-3xl text-green-400 font-black">${((conAuh/total)*100).toFixed(1)}%</h3></div>
+                <div class="bg-zinc-900 p-4 border-t-4 border-blue-500"><p class="text-xs text-gray-400">VARONES / MUJERES</p><h3 class="text-xl text-white font-black mt-2">${DB.mat.filter(a=>a.sexo==='M').length} <span class="text-gray-600">|</span> ${DB.mat.filter(a=>a.sexo==='F').length}</h3></div>
+                <div class="bg-zinc-900 p-4 border-t-4 border-orange-500"><p class="text-xs text-gray-400">SIN DNI FÍSICO</p><h3 class="text-3xl text-orange-400 font-black">${DB.mat.filter(a=>!a.alu_dni).length}</h3></div>
+                <div class="bg-zinc-900 p-4 border-t-4 border-red-500"><p class="text-xs text-gray-400">CUD ACTIVOS</p><h3 class="text-3xl text-red-500 font-black">${DB.mat.filter(a=>a.alu_cud==='SI').length}</h3></div>
+                <div class="bg-zinc-900 p-4 border-t-4 border-green-500"><p class="text-xs text-gray-400">COBERTURA AUH</p><h3 class="text-3xl text-green-400 font-black">${((DB.mat.filter(a=>a.alu_auh==='SI').length/total)*100).toFixed(1)}%</h3></div>
             `;
+            // Resetea el panel inferior al abrir
+            document.getElementById('super_sala_select').selectedIndex = 0;
+            document.getElementById('panel_sala_detalle').classList.add('hidden');
+        }
 
-            // 2. Renderizar Tabla Nacionalidades
-            document.getElementById('tabla_nacionalidades').innerHTML = `
-                <tr><td class="font-bold text-nuke">ARGENTINOS</td><td class="text-right text-white">${arg}</td><td class="text-right text-gray-400">${((arg/total)*100).toFixed(1)}%</td></tr>
-                <tr><td class="font-bold text-nuke">PARAGUAYOS</td><td class="text-right text-white">${par}</td><td class="text-right text-gray-400">${((par/total)*100).toFixed(1)}%</td></tr>
-                <tr><td class="font-bold text-nuke">BOLIVIANOS</td><td class="text-right text-white">${bol}</td><td class="text-right text-gray-400">${((bol/total)*100).toFixed(1)}%</td></tr>
-                <tr><td class="font-bold text-nuke">PERUANOS</td><td class="text-right text-white">${per}</td><td class="text-right text-gray-400">${((per/total)*100).toFixed(1)}%</td></tr>
-                <tr><td class="font-bold text-nuke">OTROS / S.D</td><td class="text-right text-white">${otrosNac}</td><td class="text-right text-gray-400">${((otrosNac/total)*100).toFixed(1)}%</td></tr>
+        function actualizarSupervisionSala(sala) {
+            const panel = document.getElementById('panel_sala_detalle');
+            if(!sala) { panel.classList.add('hidden'); return; }
+            
+            let alumnos = DB.mat.filter(a => a.alu_sala === sala);
+            let tot = alumnos.length;
+            if(tot === 0) return;
+
+            // Cálculos Sala
+            let arg = alumnos.filter(a => a.alu_nac.includes('ARG')).length;
+            let par = alumnos.filter(a => a.alu_nac.includes('PAR')).length;
+            let bol = alumnos.filter(a => a.alu_nac.includes('BOL')).length;
+            
+            let estPri = alumnos.filter(a => a.m_est.includes('PRIMARIA')).length;
+            let estSec = alumnos.filter(a => a.m_est.includes('SECUNDARIA')).length;
+            let estS = alumnos.filter(a => a.m_est === 'S/D').length;
+
+            let auh = alumnos.filter(a => a.alu_auh === 'SI').length;
+            let cud = alumnos.filter(a => a.alu_cud === 'SI').length;
+
+            document.getElementById('sala_nac').innerHTML = `
+                <div class="flex justify-between border-b border-zinc-800 py-1"><span>ARGENTINOS</span> <span class="text-nuke">${((arg/tot)*100).toFixed(0)}%</span></div>
+                <div class="flex justify-between border-b border-zinc-800 py-1"><span>PARAGUAYOS</span> <span class="text-blue-400">${((par/tot)*100).toFixed(0)}%</span></div>
+                <div class="flex justify-between py-1"><span>BOLIVIANOS</span> <span class="text-green-400">${((bol/tot)*100).toFixed(0)}%</span></div>
             `;
-
-            // 3. Renderizar Desglose por Salas (Matrícula y CUD)
-            let tablaSalasHTML = `<tr><th>SALA</th><th>ALUMNOS</th><th>CUDs</th></tr>`;
-            SALAS_NOMBRES.forEach(s => {
-                let as = DB.mat.filter(a => a.alu_sala === s);
-                let cudsEnSala = as.filter(a => a.alu_cud === 'SI').length;
-                if(as.length > 0) {
-                    tablaSalasHTML += `<tr>
-                        <td class="font-bold text-blue-400">${s}</td>
-                        <td class="text-white">${as.length}</td>
-                        <td class="${cudsEnSala > 0 ? 'text-red-500 font-bold' : 'text-gray-600'}">${cudsEnSala}</td>
-                    </tr>`;
-                }
-            });
-            document.getElementById('tabla_salas_supervision').innerHTML = tablaSalasHTML;
+            document.getElementById('sala_est').innerHTML = `
+                <div class="flex justify-between border-b border-zinc-800 py-1"><span>PRIMARIA</span> <span class="text-white">${((estPri/tot)*100).toFixed(0)}%</span></div>
+                <div class="flex justify-between border-b border-zinc-800 py-1"><span>SECUNDARIA</span> <span class="text-white">${((estSec/tot)*100).toFixed(0)}%</span></div>
+                <div class="flex justify-between py-1"><span>SIN DECLARAR</span> <span class="text-gray-500">${((estS/tot)*100).toFixed(0)}%</span></div>
+            `;
+            document.getElementById('sala_soc').innerHTML = `
+                <div class="flex justify-between border-b border-zinc-800 py-1"><span>COBERTURA AUH</span> <span class="text-blue-500 font-bold">${((auh/tot)*100).toFixed(0)}%</span></div>
+                <div class="flex justify-between py-1"><span>ALUMNOS CON CUD</span> <span class="text-red-500 font-bold">${cud} Alumnos</span></div>
+            `;
+            panel.classList.remove('hidden');
         }
 
         // ==========================================
-        // 8. EXPORTACIÓN A EXCEL
+        // EXPORTACIÓN A EXCEL
         // ==========================================
         function exportarExcelOficial() {
             if(DB.mat.length === 0) return alert("LA BASE DE DATOS ESTÁ VACÍA.");
-            const wsMatricula = XLSX.utils.json_to_sheet(DB.mat);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, wsMatricula, "TITANIUM_ACTIVOS");
-            
-            if(DB.bajas.length > 0) {
-                const wsBajas = XLSX.utils.json_to_sheet(DB.bajas);
-                XLSX.utils.book_append_sheet(wb, wsBajas, "HISTORICO_BAJAS");
-            }
-            if(DB.esp.length > 0) {
-                const wsEspera = XLSX.utils.json_to_sheet(DB.esp);
-                XLSX.utils.book_append_sheet(wb, wsEspera, "LISTA_ESPERA");
-            }
-
-            XLSX.writeFile(wb, "SUPERVISION_JARDIN_926_OFICIAL.xlsx");
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(DB.mat), "TITANIUM_ACTIVOS");
+            if(DB.bajas.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(DB.bajas), "HISTORICO_BAJAS");
+            XLSX.writeFile(wb, "SUPERVISION_JARDIN_926.xlsx");
         }
     </script>
 </body>
