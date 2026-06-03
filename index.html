@@ -2,157 +2,132 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TITANIUM 360 TOTAL | J926</title>
+    <title>TITANIUM 360 PRO | GESTIÓN ÉLITE J926</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --nuke: #dfff00; --bg: #05070a; }
+        :root { --nuke: #dfff00; --bg: #05070a; --panel: #111; --border: #333; }
         body { background: var(--bg); color: #e1e1e1; font-family: sans-serif; font-size: 11px; }
-        .input-elite { background: #000; border: 1px solid #333; padding: 8px; color: var(--nuke); width: 100%; text-transform: uppercase; border-radius: 4px; }
+        .input-elite { background: #000; border: 1px solid var(--border); padding: 8px; color: var(--nuke); width: 100%; text-transform: uppercase; border-radius: 4px; }
         .tab-content { display: none; } .active-tab { display: block; }
-        .card-sala { cursor: pointer; border: 1px solid #444; background: #111; padding: 15px; text-align: center; border-radius: 8px; }
-        .card-sala:hover { border-color: var(--nuke); }
-        .btn-nuke { background: var(--nuke); color: #000; font-weight: bold; padding: 10px; cursor: pointer; border-radius: 4px; border: none; }
+        .btn-nuke { background: var(--nuke); color: #000; font-weight: bold; padding: 10px; cursor: pointer; border-radius: 4px; }
+        .btn-dark { background: #222; border: 1px solid #555; color: #fff; padding: 8px; cursor: pointer; border-radius: 4px; }
+        .toggle-btn { padding: 5px 10px; border-radius: 4px; cursor: pointer; border: 1px solid #555; }
+        .presente { background: #15803d; color: white; }
+        .ausente { background: #b91c1c; color: white; }
     </style>
 </head>
-<body class="p-4">
+<body class="p-4" onload="initSystem()">
 
-    <!-- Navegación -->
-    <nav class="flex gap-2 mb-6 border-b border-zinc-800 pb-4 overflow-x-auto text-xs font-bold uppercase">
-        <button onclick="show('v1')" class="text-nuke">1. LEGAJO 360</button>
-        <button onclick="show('v2')" class="text-white">2. SALAS</button>
-        <button onclick="show('v4')" class="text-red-500">4. BAJAS</button>
-        <button onclick="show('v5')" class="text-blue-400">5. ASISTENCIA</button>
-        <button onclick="show('v6')" class="text-orange-400">6. SUPERVISIÓN</button>
+    <header class="mb-4 p-4 bg-zinc-900 border border-zinc-800 rounded flex justify-between items-center">
+        <h1 class="text-xl font-black text-nuke italic">TITANIUM 360 | JARDÍN 926</h1>
+        <div id="status_db" class="text-gray-400 font-bold">CARGANDO...</div>
+    </header>
+
+    <nav class="flex gap-2 mb-6 border-b border-zinc-800 pb-4">
+        <button onclick="show('v_legajo')" class="btn-dark">1. LEGAJOS</button>
+        <button onclick="show('v_salas')" class="btn-dark">2. SALAS</button>
+        <button onclick="show('v_asistencia')" class="btn-dark">3. ASISTENCIA</button>
+        <button onclick="show('v_supervision')" class="btn-dark">4. SUPERVISIÓN</button>
     </nav>
 
-    <!-- V1: LEGAJO 360 (Con niveles de estudio detallados) -->
-    <section id="v1" class="tab-content active-tab">
-        <input type="text" id="radar" onkeyup="buscarRadar()" class="input-elite mb-4 border-nuke" placeholder="🔍 BUSCAR DNI O APELLIDO...">
-        <div class="grid md:grid-cols-3 gap-4">
-            <div class="space-y-2 border border-zinc-700 p-4 rounded">
-                <h2 class="text-nuke font-black">I. DATOS ALUMNO</h2>
+    <section id="v_legajo" class="tab-content active-tab">
+        <div class="grid md:grid-cols-3 gap-4" id="form_master">
+            <div class="p-4 bg-black border border-zinc-800 rounded">
+                <h2 class="text-nuke font-bold mb-2">DATOS ALUMNO</h2>
                 <input id="alu_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
-                <input id="alu_dni" class="input-elite" placeholder="DNI">
-                <input id="alu_sala" class="input-elite" placeholder="SALA (EJ: 1ºA)">
+                <select id="alu_sala" class="input-elite mt-2"></select>
+                <button onclick="guardarLegajo()" class="btn-nuke mt-4 w-full">GUARDAR LEGAJO</button>
             </div>
-            <div class="space-y-2 border border-zinc-700 p-4 rounded">
-                <h2 class="text-blue-400 font-black">II. MADRE/TUTOR</h2>
-                <input id="m_nombre" class="input-elite" placeholder="NOMBRE">
-                <select id="m_est" class="input-elite">
-                    <option value="">NIVEL ESTUDIOS...</option>
-                    <option value="SIN ESTUDIOS">SIN ESTUDIOS</option>
-                    <option value="PRIMARIA INCOMPLETA">PRIMARIA INCOMPLETA</option>
-                    <option value="PRIMARIA COMPLETA">PRIMARIA COMPLETA</option>
-                    <option value="SECUNDARIA INCOMPLETA">SECUNDARIA INCOMPLETA</option>
-                    <option value="SECUNDARIA COMPLETA">SECUNDARIA COMPLETA</option>
-                    <option value="TERCIARIA INCOMPLETA">TERCIARIA INCOMPLETA</option>
-                    <option value="TERCIARIA COMPLETA">TERCIARIA COMPLETA</option>
-                    <option value="UNIVERSITARIA INCOMPLETA">UNIVERSITARIA INCOMPLETA</option>
-                    <option value="UNIVERSITARIA COMPLETA">UNIVERSITARIA COMPLETA</option>
-                </select>
-            </div>
-            <div class="space-y-2 border border-zinc-700 p-4 rounded">
-                <h2 class="text-red-400 font-black">III. PADRE/TUTOR</h2>
-                <input id="p_nombre" class="input-elite" placeholder="NOMBRE">
-                <select id="p_est" class="input-elite">
-                    <option value="">NIVEL ESTUDIOS...</option>
-                    <option value="SIN ESTUDIOS">SIN ESTUDIOS</option>
-                    <option value="PRIMARIA INCOMPLETA">PRIMARIA INCOMPLETA</option>
-                    <option value="PRIMARIA COMPLETA">PRIMARIA COMPLETA</option>
-                    <option value="SECUNDARIA INCOMPLETA">SECUNDARIA INCOMPLETA</option>
-                    <option value="SECUNDARIA COMPLETA">SECUNDARIA COMPLETA</option>
-                    <option value="TERCIARIA INCOMPLETA">TERCIARIA INCOMPLETA</option>
-                    <option value="TERCIARIA COMPLETA">TERCIARIA COMPLETA</option>
-                    <option value="UNIVERSITARIA INCOMPLETA">UNIVERSITARIA INCOMPLETA</option>
-                    <option value="UNIVERSITARIA COMPLETA">UNIVERSITARIA COMPLETA</option>
-                </select>
-            </div>
-        </div>
-        <div class="flex gap-2 mt-4">
-            <button onclick="guardarLegajo()" class="btn-nuke w-full">💾 GUARDAR / ACTUALIZAR LEGAJO</button>
-            <button onclick="darDeBaja()" class="bg-red-900 text-white p-2 px-4 rounded font-bold">🚨 BAJA</button>
         </div>
     </section>
 
-    <!-- V2: SALAS -->
-    <section id="v2" class="tab-content">
-        <div id="grid_salas" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"></div>
-        <div id="detalle_sala" class="hidden bg-zinc-900 p-4 rounded border border-zinc-700">
-            <h2 id="sala_titulo" class="text-nuke font-black text-lg mb-4"></h2>
-            <table class="w-full text-left">
-                <tbody id="tabla_sala"></tbody>
-            </table>
+    <section id="v_salas" class="tab-content">
+        <div id="grid_salas" class="grid grid-cols-4 gap-4"></div>
+    </section>
+
+    <section id="v_asistencia" class="tab-content">
+        <select id="asis_sala" class="input-elite w-full mb-4" onchange="renderPlanillaAsistencia()"></select>
+        <table id="grid_asis" class="w-full border border-zinc-800"></table>
+        <button onclick="calcularAsistenciaDiaria()" class="btn-nuke mt-4">CALCULAR DÍA</button>
+        <div id="asis_resultados" class="mt-4"></div>
+    </section>
+
+    <section id="v_supervision" class="tab-content">
+        <select id="super_sala_select" class="input-elite w-full mb-4" onchange="actualizarSupervisionSala(this.value)"></select>
+        <div id="panel_sala_detalle" class="grid grid-cols-3 gap-4">
+            <div id="sala_nac" class="p-4 border border-zinc-800"></div>
+            <div id="sala_est" class="p-4 border border-zinc-800"></div>
+            <div id="sala_soc" class="p-4 border border-zinc-800"></div>
         </div>
     </section>
 
     <script>
-        let DB = JSON.parse(localStorage.getItem('T360_J926_PRO')) || { mat: [], bajas: [] };
+        let DB = { mat: [], esp: [], bajas: [] };
+        const SALAS = ["1ºA", "1ºB", "2ºA", "2ºB", "3ºA", "3ºB", "MEA", "MEB"];
+
+        async function initSystem() {
+            const local = JSON.parse(localStorage.getItem('T360_J926_PRO'));
+            if(local) DB = local;
+            llenarSelects();
+            actualizarEstado();
+        }
 
         function show(id) {
             document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active-tab'));
             document.getElementById(id).classList.add('active-tab');
-            if(id === 'v2') renderSalas();
         }
 
-        function renderSalas() {
-            const grid = document.getElementById('grid_salas');
-            grid.innerHTML = '';
-            const salas = ["1ºA", "1ºB", "2ºA", "2ºB", "2ºC", "2ºD", "3ºA", "3ºB", "3ºC", "3ºD", "3ºE", "3ºF"];
-            salas.forEach(s => {
-                const cant = DB.mat.filter(a => a.alu_sala === s).length;
-                grid.innerHTML += `<div class="card-sala" onclick="verDetalle('${s}')"><p class="text-white">${s}</p><h2 class="text-2xl text-nuke">${cant}</h2></div>`;
+        function llenarSelects() {
+            const selects = ['alu_sala', 'asis_sala', 'super_sala_select'];
+            selects.forEach(id => {
+                const el = document.getElementById(id);
+                el.innerHTML = '<option value="">SELECCIONE SALA...</option>';
+                SALAS.forEach(s => el.innerHTML += `<option value="${s}">${s}</option>`);
             });
         }
 
-        function verDetalle(sala) {
-            document.getElementById('detalle_sala').classList.remove('hidden');
-            document.getElementById('sala_titulo').innerText = "LISTADO: " + sala;
-            const tabla = document.getElementById('tabla_sala');
-            tabla.innerHTML = "<tr><th class='text-nuke'>ALUMNO</th><th>DNI</th><th>ACCIÓN</th></tr>";
-            DB.mat.filter(a => a.alu_sala === sala).forEach(a => {
-                tabla.innerHTML += `<tr class='border-b border-zinc-800'>
-                    <td class='py-2'>${a.alu_nombre}</td><td>${a.alu_dni || 'S/D'}</td>
-                    <td><button onclick="editarAlumno('${a.alu_dni || a.alu_nombre}')" class='bg-zinc-700 p-1 px-2 rounded'>VER LEGAJO</button></td>
-                </tr>`;
-            });
+        function renderPlanillaAsistencia() {
+            const sala = document.getElementById('asis_sala').value;
+            const tabla = document.getElementById('grid_asis');
+            const alumnos = DB.mat.filter(a => a.alu_sala === sala);
+            tabla.innerHTML = alumnos.map(a => `
+                <tr class="border-b border-zinc-800">
+                    <td class="p-2">${a.alu_nombre}</td>
+                    <td class="p-2"><button class="toggle-btn presente" onclick="toggleAsis(this)">PRESENTE</button></td>
+                </tr>`).join('');
         }
 
-        function editarAlumno(id) {
-            const alu = DB.mat.find(a => (a.alu_dni === id || a.alu_nombre === id));
-            if(alu) {
-                for(let key in alu) { if(document.getElementById(key)) document.getElementById(key).value = alu[key]; }
-                show('v1');
-            }
+        function toggleAsis(btn) {
+            btn.classList.toggle('presente'); btn.classList.toggle('ausente');
+            btn.innerText = btn.classList.contains('presente') ? 'PRESENTE' : 'AUSENTE';
+        }
+
+        function calcularAsistenciaDiaria() {
+            const pres = document.querySelectorAll('.presente').length;
+            const total = document.querySelectorAll('.toggle-btn').length;
+            document.getElementById('asis_resultados').innerHTML = `Efectividad: ${((pres/total)*100).toFixed(1)}%`;
+        }
+
+        function actualizarSupervisionSala(sala) {
+            const alus = DB.mat.filter(a => a.alu_sala === sala);
+            document.getElementById('sala_nac').innerHTML = "NACIONALIDADES: " + alus.length;
+            document.getElementById('sala_est').innerHTML = "DATOS PADRES: " + alus.length;
+            document.getElementById('sala_soc').innerHTML = "CASOS AUH/CUD: " + alus.length;
         }
 
         function guardarLegajo() {
-            const dni = document.getElementById('alu_dni').value;
-            const alu = {
+            DB.mat.push({
                 alu_nombre: document.getElementById('alu_nombre').value.toUpperCase(),
-                alu_dni: dni,
-                alu_sala: document.getElementById('alu_sala').value,
-                m_nombre: document.getElementById('m_nombre').value.toUpperCase(),
-                m_est: document.getElementById('m_est').value,
-                p_nombre: document.getElementById('p_nombre').value.toUpperCase(),
-                p_est: document.getElementById('p_est').value
-            };
-            const idx = DB.mat.findIndex(a => a.alu_dni === dni);
-            if(idx > -1) DB.mat[idx] = alu; else DB.mat.push(alu);
-            localStorage.setItem('T360_J926_PRO', JSON.stringify(DB));
-            alert("DATOS CONSOLIDADOS.");
+                alu_sala: document.getElementById('alu_sala').value
+            });
+            actualizarEstado();
+            alert("Legajo guardado");
         }
 
-        function buscarRadar() {
-            const q = document.getElementById('radar').value.toUpperCase();
-            if(q.length < 3) return;
-            const res = DB.mat.find(a => a.alu_dni.includes(q) || a.alu_nombre.includes(q));
-            if(res) {
-                for(let key in res) { if(document.getElementById(key)) document.getElementById(key).value = res[key]; }
-            }
+        function actualizarEstado() {
+            localStorage.setItem('T360_J926_PRO', JSON.stringify(DB));
+            document.getElementById('status_db').innerText = `TOTAL ALUMNOS: ${DB.mat.length}`;
         }
-        
-        // Carga inicial
-        window.onload = () => { renderSalas(); };
     </script>
 </body>
 </html>
