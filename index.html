@@ -389,16 +389,69 @@
             show('v_legajo');
         }
 
-        function generarSupervision() {
-            const tot = DB.mat.length;
-            if(tot === 0) return;
-            document.getElementById('stats_rapidos').innerHTML = `<div class="bg-black p-4 border border-zinc-800 text-center"><p class="text-gray-400">MATRÍCULA ACTIVA</p><h3 class="text-2xl text-nuke">${tot}</h3></div>`;
-            const divSalas = document.getElementById('supervision_salas');
-            divSalas.innerHTML = SALAS_NOMBRES.map(s => {
-                const c = DB.mat.filter(a => a.alu_sala === s).length;
-                return `<div class="flex justify-between border-b border-zinc-800 py-1"><span>${s}</span> <span class="text-nuke">${c}</span></div>`;
-            }).join('');
-        }
+        <!-- ... [Mantener el <head> y <header> de tu código anterior] ... -->
+
+    <!-- SECCIÓN 5: ASISTENCIA Y MÉTRICAS -->
+    <section id="v_asistencia" class="tab-content">
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="border border-zinc-800 p-4 bg-black rounded">
+                <h2 class="font-black text-blue-400 mb-4">REGISTRO MENSUAL DE ASISTENCIA</h2>
+                <select id="asis_sala_select" class="input-elite" onchange="iniciarRegistroAsistencia()"></select>
+                <div id="asis_grid" class="mt-4"></div>
+            </div>
+            <div class="border border-zinc-800 p-4 bg-black rounded">
+                <h2 class="font-black text-nuke mb-4">PROMEDIOS MENSUALES</h2>
+                <div id="asis_resultados" class="space-y-2"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN 6: SUPERVISIÓN ÉLITE -->
+    <section id="v_supervision" class="tab-content">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <button onclick="generarReporteSupervision('TOTAL')" class="btn-nuke">REPORTE GLOBAL</button>
+            <select id="super_sala_select" class="input-elite" onchange="generarReporteSupervision(this.value)"></select>
+        </div>
+        <div id="dashboard_supervision" class="grid md:grid-cols-3 gap-4"></div>
+    </section>
+
+<script>
+    // --- NUEVAS FUNCIONES PARA EL MOTOR ---
+
+    function generarReporteSupervision(sala) {
+        const data = (sala === 'TOTAL') ? DB.mat : DB.mat.filter(a => a.alu_sala === sala);
+        const total = data.length;
+        if(total === 0) return alert("Sin datos.");
+
+        // Contadores
+        const metrics = {
+            sexo: { M: 0, F: 0 },
+            nac: { ARG: 0, PAR: 0, BOL: 0, PER: 0, OTR: 0 },
+            auh: { SI: 0, NO: 0 },
+            cud: { SI: 0, NO: 0 } // Asumiendo que agregamos campo 'cud' en el futuro
+        };
+
+        data.forEach(a => {
+            metrics.sexo[a.sexo] = (metrics.sexo[a.sexo] || 0) + 1;
+            metrics.nac[a.alu_nac] = (metrics.nac[a.alu_nac] || 0) + 1;
+            metrics.auh[a.alu_auh] = (metrics.auh[a.alu_auh] || 0) + 1;
+        });
+
+        // Renderizado simplificado de Dashboard
+        const dash = document.getElementById('dashboard_supervision');
+        dash.innerHTML = `
+            <div class="p-4 bg-zinc-900"><h3>SEXO</h3><p>Varones: ${metrics.sexo.M} (${((metrics.sexo.M/total)*100).toFixed(1)}%)</p></div>
+            <div class="p-4 bg-zinc-900"><h3>NACIONALIDAD</h3><p>Arg: ${metrics.nac.ARG} | Par: ${metrics.nac.PAR} | Bol: ${metrics.nac.BOL}</p></div>
+        `;
+    }
+
+    function iniciarRegistroAsistencia() {
+        // Lógica para renderizar los 40 alumnos de la planilla de papel
+        // y calcular promedios mes a mes basados en inputs de "Presente/Ausente"
+    }
+
+    // --- (Mantener el resto de tus funciones de guardado y carga) ---
+</script>
 
         function exportarExcel() {
             if(DB.mat.length === 0) return alert("Base vacía.");
