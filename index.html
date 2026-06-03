@@ -2,466 +2,98 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TITANIUM 360 PRO | GESTIÓN ÉLITE J926</title>
+    <title>TITANIUM 360 PRO | JARDÍN 926</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --nuke: #dfff00; --bg: #05070a; --panel: #111; --border: #333; }
-        body { background: var(--bg); color: #e1e1e1; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 11px; }
-        .input-elite { background: #000; border: 1px solid var(--border); padding: 8px; color: var(--nuke); width: 100%; text-transform: uppercase; border-radius: 4px; }
-        .input-elite:focus { border-color: var(--nuke); outline: none; }
+        :root { --nuke: #dfff00; --bg: #05070a; }
+        body { background: var(--bg); color: #ccc; font-family: sans-serif; font-size: 12px; }
+        .input-elite { background: #000; border: 1px solid #333; padding: 5px; color: var(--nuke); width: 100%; }
+        .btn-nuke { background: var(--nuke); color: #000; font-weight: bold; padding: 10px; cursor: pointer; }
         .tab-content { display: none; } .active-tab { display: block; }
-        .btn-nuke { background: var(--nuke); color: #000; font-weight: bold; padding: 10px; text-transform: uppercase; cursor: pointer; border-radius: 4px; border: none; }
-        .btn-nuke:hover { background: #bfe600; }
-        .btn-dark { background: #222; border: 1px solid #555; color: #fff; padding: 8px; cursor: pointer; border-radius: 4px; font-weight: bold; }
-        .btn-dark:hover { background: #333; border-color: var(--nuke); }
-        .card-sala { cursor: pointer; transition: 0.2s; border: 1px solid #444; border-radius: 8px; background: #111; }
-        .card-sala:hover { transform: translateY(-3px); border-color: var(--nuke); box-shadow: 0 4px 15px rgba(223, 255, 0, 0.2); }
+        table { width: 100%; border-collapse: collapse; }
+        td, th { border: 1px solid #333; padding: 8px; text-align: center; }
     </style>
 </head>
-<body class="p-4" onload="initSystem()">
+<body class="p-4">
 
-    <header class="mb-4 p-4 bg-zinc-900 border border-zinc-800 rounded shadow-lg flex justify-between items-center">
-        <div>
-            <h1 class="text-2xl font-black text-nuke italic tracking-widest">TITANIUM 360 <span class="text-white text-sm">| JARDÍN 926</span></h1>
-            <p id="status_db" class="text-gray-400 font-bold mt-1">SISTEMA INICIANDO...</p>
-        </div>
-        <div class="flex gap-2">
-            <button onclick="document.getElementById('import_json').click()" class="btn-nuke text-xs shadow-[0_0_10px_#dfff00]">📥 IMPORTAR JSON MANUAL</button>
-            <input type="file" id="import_json" class="hidden" accept=".json" onchange="importarJSON(event)">
-            <button onclick="exportarExcel()" class="btn-dark text-xs text-green-400 border-green-600">📊 EXPORTAR EXCEL</button>
+    <header class="mb-6 border-b border-zinc-800 pb-4">
+        <h1 class="text-xl font-black text-nuke">TITANIUM 360 | JARDÍN 926</h1>
+        <div class="flex gap-2 mt-2">
+            <button onclick="show('v_legajo')" class="p-2 bg-zinc-800">LEGAJOS</button>
+            <button onclick="show('v_asis')" class="p-2 bg-zinc-800">ASISTENCIA 2.0</button>
+            <button onclick="show('v_super')" class="p-2 bg-zinc-800">SUPERVISIÓN</button>
         </div>
     </header>
 
-    <nav class="flex overflow-x-auto gap-2 mb-6 border-b border-zinc-800 pb-4 text-xs font-black uppercase">
-        <button onclick="show('v_legajo')" class="btn-dark hover:text-nuke">1. LEGAJO 360 / RADAR</button>
-        <button onclick="show('v_salas')" class="btn-dark hover:text-nuke">2. SALAS INTERACTIVAS</button>
-        <button onclick="show('v_espera')" class="btn-dark hover:text-orange-400 border-orange-900">3. LISTA ESPERA PRO</button>
-        <button onclick="show('v_bajas')" class="btn-dark hover:text-red-500 border-red-900">4. BITÁCORA BAJAS</button>
-        <button onclick="show('v_asistencia')" class="btn-dark hover:text-blue-400 border-blue-900">5. ASISTENCIA</button>
-        <button onclick="show('v_supervision')" class="btn-dark hover:text-nuke">6. SUPERVISIÓN ÉLITE</button>
-    </nav>
-
-    <section id="v_legajo" class="tab-content active-tab">
-        <div class="mb-4 flex gap-2">
-            <input type="text" id="radar" onkeyup="buscarRadar()" class="input-elite text-lg border-nuke" placeholder="🔍 RADAR: BUSCAR POR DNI O APELLIDO...">
-            <button onclick="limpiarFormulario()" class="btn-dark w-32">NUEVO LEGAJO</button>
-        </div>
-
-        <div class="grid md:grid-cols-3 gap-4" id="form_master">
-            <div class="space-y-2 border border-zinc-800 p-4 rounded bg-black">
-                <h2 class="text-nuke font-black uppercase mb-2">I. ALUMNO</h2>
-                <input id="alu_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
-                <input id="alu_dni" type="number" class="input-elite" placeholder="DNI">
-                <input id="alu_nac" class="input-elite" placeholder="NACIONALIDAD">
-                <div class="flex gap-2">
-                    <input type="date" id="alu_f_nac" class="input-elite" onchange="calcularEdad(this.value, 'alu_edad')">
-                    <input id="alu_edad" class="input-elite bg-zinc-900" placeholder="EDAD AL 30/6" readonly>
-                </div>
-                <select id="sexo" class="input-elite"><option value="">SEXO...</option><option value="M">MASCULINO</option><option value="F">FEMENINO</option></select>
-                <input id="alu_dom" class="input-elite" placeholder="DOMICILIO">
-                <select id="alu_sala" class="input-elite font-bold text-nuke">
-                    <option value="">ASIGNAR SALA...</option>
-                    <option value="3ºA">SALA 3ºA</option><option value="3ºB">SALA 3ºB</option><option value="3ºC">SALA 3ºC</option><option value="3ºD">SALA 3ºD</option><option value="3ºE">SALA 3ºE</option><option value="3ºF">SALA 3ºF</option>
-                    <option value="MEA">MULTI EDAD A</option><option value="MEB">MULTI EDAD B</option>
-                    <option value="1ºA">SALA 1ºA</option><option value="1ºB">SALA 1ºB</option>
-                    <option value="2ºA">SALA 2ºA</option><option value="2ºB">SALA 2ºB</option><option value="2ºC">SALA 2ºC</option><option value="2ºD">SALA 2ºD</option>
-                </select>
-                <input id="alu_salud" class="input-elite" placeholder="FICHA SALUD / ALERGIAS">
-                <select id="alu_auh" class="input-elite"><option value="NO">AUH: NO</option><option value="SI">AUH: SI</option></select>
-            </div>
-
-            <div class="space-y-2 border border-zinc-800 p-4 rounded bg-black">
-                <h2 class="text-blue-400 font-black uppercase mb-2">II. MADRE / TUTOR 1</h2>
-                <input id="m_nombre" class="input-elite" placeholder="NOMBRE COMPLETO">
-                <input id="m_dni" class="input-elite" placeholder="DNI">
-                <input id="m_nac" class="input-elite" placeholder="NACIONALIDAD">
-                <input id="m_tel" class="input-elite" placeholder="TELÉFONO">
-                <input id="m_ocu" class="input-elite" placeholder="OCUPACIÓN">
-                <select id="m_est" class="input-elite">
-                    <option value="S/D">ESTUDIOS...</option>
-                    <option value="SIN ESTUDIOS">SIN ESTUDIOS</option><option value="PRIMARIA">PRIMARIA</option>
-                    <option value="SECUNDARIA">SECUNDARIA</option><option value="SUPERIOR">SUPERIOR</option>
-                </select>
-            </div>
-
-            <div class="space-y-2 border border-zinc-800 p-4 rounded bg-black">
-                <h2 class="text-red-400 font-black uppercase mb-2">III. PADRE / TUTOR 2</h2>
-                <input id="p_nombre" class="input-elite" placeholder="NOMBRE COMPLETO">
-                <input id="p_dni" class="input-elite" placeholder="DNI">
-                <input id="p_nac" class="input-elite" placeholder="NACIONALIDAD">
-                <input id="p_tel" class="input-elite" placeholder="TELÉFONO">
-                <input id="p_ocu" class="input-elite" placeholder="OCUPACIÓN">
-                <select id="p_est" class="input-elite">
-                    <option value="S/D">ESTUDIOS...</option>
-                    <option value="SIN ESTUDIOS">SIN ESTUDIOS</option><option value="PRIMARIA">PRIMARIA</option>
-                    <option value="SECUNDARIA">SECUNDARIA</option><option value="SUPERIOR">SUPERIOR</option>
-                </select>
-            </div>
-        </div>
-        
-        <div class="flex gap-2 mt-4">
-            <button onclick="guardarLegajo()" class="btn-nuke w-3/4">💾 CONSOLIDAR LEGAJO 360</button>
-            <button onclick="procesarBaja()" class="btn-dark w-1/4 bg-red-900 border-red-500 text-white hover:bg-red-700">🚨 DAR DE BAJA</button>
-        </div>
-    </section>
-
-    <section id="v_salas" class="tab-content">
-        <div id="grid_salas" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4"></div>
-        <div id="modal_sala" class="hidden mt-6 p-4 border border-zinc-700 bg-black rounded">
-            <div class="flex justify-between items-center border-b border-zinc-800 pb-2 mb-4">
-                <h3 id="modal_sala_titulo" class="font-black text-nuke text-xl"></h3>
-                <button onclick="document.getElementById('modal_sala').classList.add('hidden')" class="text-red-500 font-bold">X CERRAR</button>
-            </div>
-            <div id="modal_sala_lista" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div>
-        </div>
-    </section>
-
-    <section id="v_espera" class="tab-content">
-        <div class="border border-orange-900 bg-orange-950/20 p-6 rounded mb-6">
-            <h2 class="text-orange-400 font-black text-lg mb-4">AÑADIR A ESPERA</h2>
-            <div class="grid grid-cols-3 gap-2">
-                <input id="e_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
-                <input id="e_dni" type="number" class="input-elite" placeholder="DNI">
-                <input id="e_tel" class="input-elite" placeholder="TELÉFONO CONTACTO">
-                <select id="e_sala" class="input-elite"><option value="">SALA SOLICITADA...</option><option value="1º">SALA 1</option><option value="2º">SALA 2</option><option value="3º">SALA 3</option></select>
-            </div>
-            <button onclick="guardarEspera()" class="w-full bg-orange-600 text-white font-bold p-3 mt-4 rounded">➕ AGREGAR A LISTA DE ESPERA</button>
-        </div>
-        <div id="lista_espera_render"></div>
-    </section>
-
-    <section id="v_bajas" class="tab-content">
-        <div class="bg-red-950/20 border border-red-900 p-6 rounded">
-            <h2 class="text-red-500 font-black text-xl mb-4">SEGUIMIENTO DE BAJAS ANUAL</h2>
-            <div id="lista_bajas_render" class="space-y-2"></div>
-        </div>
-    </section>
-
-    <section id="v_asistencia" class="tab-content">
-        <div class="grid md:grid-cols-2 gap-6">
-            <div class="border border-zinc-800 p-4 bg-black rounded">
-                <h2 class="font-black text-blue-400 mb-4">SELECCIONE SALA PARA ASISTENCIA</h2>
-                <select id="asis_sala" class="input-elite mb-4" onchange="cargarAsistenciaSala()"></select>
-                <div id="asis_lista_alumnos" class="space-y-1 h-64 overflow-y-auto pr-2"></div>
-            </div>
-            <div class="border border-zinc-800 p-4 bg-black rounded flex flex-col justify-center text-center">
-                <button onclick="calcularAsistencia()" class="btn-nuke text-xl py-6 mb-6">📊 OBTENER MÉTRICAS DEL DÍA</button>
-                <div id="asis_resultados" class="text-xl font-black space-y-4"></div>
-            </div>
-        </div>
-    </section>
-
-    <section id="v_supervision" class="tab-content">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" id="stats_rapidos"></div>
-        <div class="grid md:grid-cols-2 gap-6">
-            <div class="border border-zinc-800 bg-black p-4 rounded">
-                <h3 class="text-nuke font-bold mb-4 border-b border-zinc-800 pb-2">MATRÍCULA POR SALA</h3>
-                <div id="supervision_salas" class="space-y-1 text-xs"></div>
-            </div>
-        </div>
-    </section>
-
-    <script>
-        let DB = { mat: [], esp: [], bajas: [] };
-        const SALAS_NOMBRES = ["1ºA", "1ºB", "2ºA", "2ºB", "2ºC", "2ºD", "3ºA", "3ºB", "3ºC", "3ºD", "3ºE", "3ºF", "MEA", "MEB"];
-
-        // ==========================================
-        // 1. INICIALIZACIÓN Y AUTO-CARGA GITHUB
-        // ==========================================
-        async function initSystem() {
-            document.getElementById('status_db').innerText = "BUSCANDO DATOS EN SERVIDOR...";
-            
-            try {
-                // Intenta buscar el archivo directamente si está hosteado en GitHub
-                const response = await fetch('SEGUIMIENTO DE MATRICULA 2026.json');
-                if (response.ok) {
-                    const data = await response.json();
-                    DB.mat = procesarJSONTitanium(data);
-                    
-                    // Rescatar listas de espera/bajas de la compu si existen
-                    const local = JSON.parse(localStorage.getItem('T360_J926'));
-                    DB.esp = (local && local.esp) ? local.esp : [];
-                    DB.bajas = (local && local.bajas) ? local.bajas : [];
-
-                    actualizarEstado();
-                    show('v_legajo');
-                    alert(`✅ BASE DE DATOS SINCRONIZADA.\nSe cargaron automáticamente ${DB.mat.length} alumnos reales.`);
-                    return;
-                }
-            } catch (error) {
-                console.log("Servidor no detectado, intentando memoria local...");
-            }
-
-            // Fallback: Memoria local si no hay internet
-            const local = JSON.parse(localStorage.getItem('T360_J926'));
-            if(local && local.mat) DB = local;
-            actualizarEstado();
-            show('v_legajo');
-        }
-
-        function actualizarEstado() {
-            localStorage.setItem('T360_J926', JSON.stringify(DB));
-            document.getElementById('status_db').innerText = `CONECTADO | ACTIVA: ${DB.mat.length} | ESPERA: ${DB.esp.length} | BAJAS: ${DB.bajas.length}`;
-        }
-
-        // ==========================================
-        // 2. PARSER INTELIGENTE DEL JSON BRUTO
-        // ==========================================
-        function procesarJSONTitanium(dataRaw) {
-            let alumnosLimpios = [];
-            
-            // Recorrer cada hoja de tu archivo (3° A y B, etc)
-            for (let hoja in dataRaw) {
-                let filas = dataRaw[hoja];
-                
-                filas.forEach(fila => {
-                    let nombre = fila["APELLIDO Y NOMBRE DE LOS ALUMNOS"];
-                    let dni = fila["DOC. IDENTIDAD"];
-                    let grado = fila["ADMITIDO EN"];
-                    let seccion = fila["Column19"];
-
-                    // Filtrar solo filas que sean realmente alumnos (que tengan DNI numérico)
-                    if (nombre && dni && !isNaN(dni)) {
-                        
-                        // Limpiar la sala (Ej: "3ª" y "B" -> "3ºB")
-                        let salaFmt = (grado || "").toString().trim() + (seccion || "").toString().trim();
-                        salaFmt = salaFmt.replace('ª', 'º').replace(' ', ''); // Quita espacios y arregla el símbolo
-                        if(salaFmt === "ME") salaFmt = "MEA"; // Corrección por si falta letra
-
-                        // Formatear Fecha de Nacimiento
-                        let dia = fila["NACIMIENTO"], mes = fila["Column14"], anio = fila["Column15"];
-                        let fechaNac = "";
-                        if(dia && mes && anio && !isNaN(dia)) {
-                            let a = anio.toString().replace('O','0'); // Corrección de errores de tipeo O por 0
-                            let m = mes.toString().replace('O','0');
-                            let d = dia.toString().replace('O','0');
-                            if(a.length === 2) a = "20" + a;
-                            fechaNac = `${a}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
-                        }
-
-                        alumnosLimpios.push({
-                            alu_nombre: nombre.toString().toUpperCase(),
-                            alu_dni: dni.toString(),
-                            alu_f_nac: fechaNac,
-                            sexo: fila["SEXO"] || "",
-                            alu_nac: fila["NACIONALIDAD"] || "ARG",
-                            alu_sala: salaFmt,
-                            alu_dom: fila["Column26"] ? fila["Column26"].toString().toUpperCase() : "S/D",
-                            alu_auh: "NO",
-                            m_nombre: fila["PADRES, TUTORES O ENCARGADOS"] ? fila["PADRES, TUTORES O ENCARGADOS"].toString().toUpperCase() : "",
-                            m_nac: fila["Column24"] ? fila["Column24"].toString().toUpperCase() : "ARG",
-                            m_ocu: fila["Column25"] ? fila["Column25"].toString().toUpperCase() : ""
-                        });
-                    }
-                });
-            }
-            return alumnosLimpios;
-        }
-
-        function importarJSON(e) {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                try {
-                    const dataRaw = JSON.parse(evt.target.result);
-                    DB.mat = procesarJSONTitanium(dataRaw);
-                    actualizarEstado();
-                    alert(`✅ IMPORTACIÓN EXITOSA.\nSe extrajeron y limpiaron ${DB.mat.length} alumnos reales de tu archivo.`);
-                    show('v_salas');
-                } catch(error) {
-                    alert("❌ Error leyendo el archivo JSON. Verifique que sea el correcto.");
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // ==========================================
-        // 3. FUNCIONES GENERALES DEL SISTEMA
-        // ==========================================
-        function show(id) {
-            document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active-tab'));
-            document.getElementById(id).classList.add('active-tab');
-            if(id === 'v_salas') renderSalas();
-            if(id === 'v_espera') renderEspera();
-            if(id === 'v_bajas') renderBajas();
-            if(id === 'v_asistencia') llenarSelectAsistencia();
-            if(id === 'v_supervision') generarSupervision();
-        }
-
-        function calcularEdad(fecha, outputId) {
-            if(!fecha) return;
-            const nac = new Date(fecha);
-            const corte = new Date(new Date().getFullYear(), 5, 30); // 30 de Junio
-            let edad = corte.getFullYear() - nac.getFullYear();
-            let m = corte.getMonth() - nac.getMonth();
-            if (m < 0 || (m === 0 && corte.getDate() < nac.getDate())) { edad--; }
-            document.getElementById(outputId).value = `${edad} AÑOS AL 30/06`;
-        }
-
-        function buscarRadar() {
-            const q = document.getElementById('radar').value.toUpperCase();
-            if(q.length < 3) return;
-            const res = DB.mat.find(a => a.alu_dni.includes(q) || a.alu_nombre.includes(q));
-            if(res) {
-                for(let key in res) {
-                    if(document.getElementById(key)) document.getElementById(key).value = res[key];
-                }
-                if(res.alu_f_nac) calcularEdad(res.alu_f_nac, 'alu_edad');
-            }
-        }
-
-        function limpiarFormulario() {
-            document.querySelectorAll('#form_master input').forEach(i => i.value = '');
-            document.querySelectorAll('#form_master select').forEach(i => i.selectedIndex = 0);
-            document.getElementById('radar').value = '';
-        }
-
-        function guardarLegajo() {
-            const dni = document.getElementById('alu_dni').value;
-            if(!dni) return alert("El DNI es obligatorio.");
-            const alumno = {
-                alu_nombre: document.getElementById('alu_nombre').value.toUpperCase(),
-                alu_dni: dni,
-                alu_f_nac: document.getElementById('alu_f_nac').value,
-                alu_nac: document.getElementById('alu_nac').value.toUpperCase(),
-                sexo: document.getElementById('sexo').value,
-                alu_dom: document.getElementById('alu_dom').value.toUpperCase(),
-                alu_sala: document.getElementById('alu_sala').value,
-                alu_auh: document.getElementById('alu_auh').value,
-                m_nombre: document.getElementById('m_nombre').value.toUpperCase(),
-                m_nac: document.getElementById('m_nac').value.toUpperCase(),
-                m_ocu: document.getElementById('m_ocu').value.toUpperCase(),
-            };
-            const idx = DB.mat.findIndex(a => a.alu_dni === dni);
-            if(idx > -1) DB.mat[idx] = Object.assign(DB.mat[idx], alumno); else DB.mat.push(alumno);
-            actualizarEstado();
-            alert("LEGAJO CONSOLIDADO");
-            limpiarFormulario();
-        }
-
-        function procesarBaja() {
-            const dni = document.getElementById('alu_dni').value;
-            if(!dni) return;
-            const idx = DB.mat.findIndex(a => a.alu_dni === dni);
-            if(idx > -1) {
-                const motivo = prompt("MOTIVO DE LA BAJA (Obligatorio):");
-                if(!motivo) return;
-                let aluBaja = DB.mat.splice(idx, 1)[0];
-                aluBaja.fecha_baja = new Date().toLocaleDateString();
-                aluBaja.motivo_baja = motivo.toUpperCase();
-                DB.bajas.push(aluBaja);
-                actualizarEstado();
-                alert(`ALUMNO DADO DE BAJA.`);
-                limpiarFormulario();
-            }
-        }
-
-        function renderSalas() {
-            const grid = document.getElementById('grid_salas');
-            grid.innerHTML = '';
-            SALAS_NOMBRES.forEach(s => {
-                const cant = DB.mat.filter(a => a.alu_sala === s).length;
-                grid.innerHTML += `
-                    <div class="card-sala p-4 text-center border-t-4 border-nuke" onclick="verSalaDetalle('${s}')">
-                        <p class="font-black text-white">${s}</p>
-                        <h2 class="text-3xl text-nuke mt-2">${cant}</h2>
-                    </div>`;
-            });
-        }
-
-        function verSalaDetalle(sala) {
-            document.getElementById('modal_sala').classList.remove('hidden');
-            document.getElementById('modal_sala_titulo').innerText = `ALUMNOS: SALA ${sala}`;
-            const lista = document.getElementById('modal_sala_lista');
-            lista.innerHTML = '';
-            DB.mat.filter(a => a.alu_sala === sala).forEach(a => {
-                lista.innerHTML += `
-                    <div class="flex justify-between items-center p-2 border border-zinc-800 hover:bg-zinc-800 cursor-pointer" onclick="abrirLegajoDesdeSala('${a.alu_dni}')">
-                        <span class="font-bold text-[10px]">${a.alu_nombre}</span>
-                    </div>`;
-            });
-        }
-
-        function abrirLegajoDesdeSala(dni) {
-            document.getElementById('radar').value = dni;
-            buscarRadar();
-            show('v_legajo');
-        }
-
-        <!-- ... [Mantener el <head> y <header> de tu código anterior] ... -->
-
-    <!-- SECCIÓN 5: ASISTENCIA Y MÉTRICAS -->
-    <section id="v_asistencia" class="tab-content">
-        <div class="grid md:grid-cols-2 gap-6">
-            <div class="border border-zinc-800 p-4 bg-black rounded">
-                <h2 class="font-black text-blue-400 mb-4">REGISTRO MENSUAL DE ASISTENCIA</h2>
-                <select id="asis_sala_select" class="input-elite" onchange="iniciarRegistroAsistencia()"></select>
-                <div id="asis_grid" class="mt-4"></div>
-            </div>
-            <div class="border border-zinc-800 p-4 bg-black rounded">
-                <h2 class="font-black text-nuke mb-4">PROMEDIOS MENSUALES</h2>
-                <div id="asis_resultados" class="space-y-2"></div>
-            </div>
+    <!-- SECCIÓN 5: ASISTENCIA 2.0 -->
+    <section id="v_asis" class="tab-content">
+        <h2 class="text-nuke font-bold mb-4">REGISTRO MENSUAL DE ASISTENCIA</h2>
+        <div id="asis_area">
+            <select id="sala_asis" class="input-elite mb-4" onchange="renderPlanillaAsistencia()">
+                <option value="">SELECCIONE SALA...</option>
+                <!-- Opciones cargadas dinámicamente -->
+            </select>
+            <div id="grid_asis" class="overflow-x-auto"></div>
+            <button onclick="calcularPromedioAsistencia()" class="btn-nuke mt-4">CALCULAR PROMEDIOS MENSUALES</button>
         </div>
     </section>
 
     <!-- SECCIÓN 6: SUPERVISIÓN ÉLITE -->
-    <section id="v_supervision" class="tab-content">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <button onclick="generarReporteSupervision('TOTAL')" class="btn-nuke">REPORTE GLOBAL</button>
-            <select id="super_sala_select" class="input-elite" onchange="generarReporteSupervision(this.value)"></select>
+    <section id="v_super" class="tab-content">
+        <h2 class="text-nuke font-bold mb-4">TABLERO DE SUPERVISIÓN</h2>
+        <div id="stats_panel" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- Estadísticas dinámicas -->
         </div>
-        <div id="dashboard_supervision" class="grid md:grid-cols-3 gap-4"></div>
     </section>
 
-<script>
-    // --- NUEVAS FUNCIONES PARA EL MOTOR ---
+    <script>
+        let DB = { mat: [] }; 
 
-    function generarReporteSupervision(sala) {
-        const data = (sala === 'TOTAL') ? DB.mat : DB.mat.filter(a => a.alu_sala === sala);
-        const total = data.length;
-        if(total === 0) return alert("Sin datos.");
-
-        // Contadores
-        const metrics = {
-            sexo: { M: 0, F: 0 },
-            nac: { ARG: 0, PAR: 0, BOL: 0, PER: 0, OTR: 0 },
-            auh: { SI: 0, NO: 0 },
-            cud: { SI: 0, NO: 0 } // Asumiendo que agregamos campo 'cud' en el futuro
-        };
-
-        data.forEach(a => {
-            metrics.sexo[a.sexo] = (metrics.sexo[a.sexo] || 0) + 1;
-            metrics.nac[a.alu_nac] = (metrics.nac[a.alu_nac] || 0) + 1;
-            metrics.auh[a.alu_auh] = (metrics.auh[a.alu_auh] || 0) + 1;
-        });
-
-        // Renderizado simplificado de Dashboard
-        const dash = document.getElementById('dashboard_supervision');
-        dash.innerHTML = `
-            <div class="p-4 bg-zinc-900"><h3>SEXO</h3><p>Varones: ${metrics.sexo.M} (${((metrics.sexo.M/total)*100).toFixed(1)}%)</p></div>
-            <div class="p-4 bg-zinc-900"><h3>NACIONALIDAD</h3><p>Arg: ${metrics.nac.ARG} | Par: ${metrics.nac.PAR} | Bol: ${metrics.nac.BOL}</p></div>
-        `;
-    }
-
-    function iniciarRegistroAsistencia() {
-        // Lógica para renderizar los 40 alumnos de la planilla de papel
-        // y calcular promedios mes a mes basados en inputs de "Presente/Ausente"
-    }
-
-    // --- (Mantener el resto de tus funciones de guardado y carga) ---
-</script>
-
-        function exportarExcel() {
-            if(DB.mat.length === 0) return alert("Base vacía.");
-            const ws = XLSX.utils.json_to_sheet(DB.mat);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "TITANIUM_ACTIVOS");
-            XLSX.writeFile(wb, "TITANIUM_360_SUPERVISION.xlsx");
+        function show(id) {
+            document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active-tab'));
+            document.getElementById(id).classList.add('active-tab');
+            if(id === 'v_super') actualizarSupervision();
         }
-        
-        // (Las funciones de Espera, Asistencia y Bajas se mantienen activas internamente igual que en tu código anterior)
+
+        function actualizarSupervision() {
+            const total = DB.mat.length;
+            const varones = DB.mat.filter(a => a.sexo === 'M').length;
+            const mujeres = DB.mat.filter(a => a.sexo === 'F').length;
+            const arg = DB.mat.filter(a => a.alu_nac === 'ARG').length;
+            
+            const panel = document.getElementById('stats_panel');
+            panel.innerHTML = `
+                <div class="bg-zinc-900 p-4 border border-zinc-700">
+                    <p>TOTAL ALUMNOS</p>
+                    <h3 class="text-2xl text-nuke">${total}</h3>
+                </div>
+                <div class="bg-zinc-900 p-4 border border-zinc-700">
+                    <p>VARONES / MUJERES</p>
+                    <h3 class="text-2xl">${varones} / ${mujeres}</h3>
+                </div>
+                <div class="bg-zinc-900 p-4 border border-zinc-700">
+                    <p>ARGENTINOS</p>
+                    <h3 class="text-2xl text-nuke">${arg} (${((arg/total)*100).toFixed(0)}%)</h3>
+                </div>
+            `;
+        }
+
+        function renderPlanillaAsistencia() {
+            const grid = document.getElementById('grid_asis');
+            const sala = document.getElementById('sala_asis').value;
+            const alumnos = DB.mat.filter(a => a.alu_sala === sala);
+            
+            let html = `<table><tr><th>ALUMNO</th><th>ASISTENCIA MENSUAL</th></tr>`;
+            alumnos.forEach(a => {
+                html += `<tr><td>${a.alu_nombre}</td><td><input type="number" class="w-16 bg-black text-nuke" placeholder="Días"></td></tr>`;
+            });
+            html += `</table>`;
+            grid.innerHTML = html;
+        }
+
+        // --- INICIALIZACIÓN ---
+        // (Aquí iría la lógica de carga de tu archivo JSON que ya tienes funcional)
     </script>
 </body>
 </html>
