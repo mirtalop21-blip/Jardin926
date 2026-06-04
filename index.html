@@ -2,121 +2,94 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TITANIUM 360 PRO | GESTIÓN ÉLITE J926</title>
+    <title>TITANIUM 360 PRO | GESTIÓN TOTAL J926</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --nuke: #dfff00; --bg: #05070a; --panel: #111; --border: #333; }
-        body { background: var(--bg); color: #e1e1e1; font-family: sans-serif; font-size: 11px; }
+        :root { --nuke: #dfff00; --bg: #05070a; --panel: #111; }
+        body { background: var(--bg); color: #e1e1e1; font-family: sans-serif; font-size: 12px; }
         .tab-content { display: none; } .active-tab { display: block; }
-        .input-elite { background: #000; border: 1px solid var(--border); padding: 8px; color: var(--nuke); width: 100%; text-transform: uppercase; border-radius: 4px; }
-        .btn-nuke { background: var(--nuke); color: #000; font-weight: bold; padding: 10px; cursor: pointer; border-radius: 4px; }
-        .btn-dark { background: #222; border: 1px solid #555; color: #fff; padding: 8px; cursor: pointer; border-radius: 4px; }
-        table { width: 100%; border-collapse: collapse; } th, td { border: 1px solid #333; padding: 8px; text-align: left; }
+        .card { background: var(--panel); border: 1px solid #333; padding: 15px; border-radius: 8px; }
+        .btn-nuke { background: var(--nuke); color: #000; font-weight: 900; padding: 10px; cursor: pointer; border-radius: 4px; }
+        .btn-dark { background: #222; border: 1px solid #555; color: #fff; padding: 10px; cursor: pointer; border-radius: 4px; }
     </style>
 </head>
-<body class="p-4" onload="initSystem()">
+<body class="p-4">
 
     <!-- HEADER -->
-    <header class="mb-4 p-4 bg-zinc-900 border border-zinc-800 rounded flex justify-between items-center">
+    <header class="mb-6 p-4 bg-zinc-900 border border-zinc-800 rounded flex justify-between items-center">
         <div>
-            <h1 class="text-2xl font-black text-nuke">TITANIUM 360 PRO | JARDÍN 926</h1>
-            <p id="status_db" class="text-gray-400 font-bold mt-1">SISTEMA LISTO</p>
+            <h1 class="text-2xl font-black text-nuke">TITANIUM 360 PRO | GESTIÓN J926</h1>
+            <p id="status_db" class="text-gray-400 text-xs font-bold mt-1">SISTEMA INTEGRADO: LISTO</p>
         </div>
         <div class="flex gap-2">
-            <button onclick="document.getElementById('import_json').click()" class="btn-nuke">📥 CARGAR JSON</button>
-            <input type="file" id="import_json" class="hidden" accept=".json" onchange="importarJSON(event)">
-            <button onclick="exportarExcelOficial()" class="btn-dark bg-blue-900">📊 EXCEL SUPERVISIÓN</button>
+            <button onclick="document.getElementById('import_json').click()" class="btn-nuke">📥 CARGAR JSON MAESTRO</button>
+            <input type="file" id="import_json" class="hidden" accept=".json" onchange="cargarJSON(event)">
+            <button onclick="exportarBackup()" class="btn-dark bg-orange-700">💾 GUARDAR RESPALDO</button>
         </div>
     </header>
 
     <!-- NAVEGACIÓN -->
     <nav class="flex gap-2 mb-6 border-b border-zinc-800 pb-4">
         <button onclick="show('v_legajo')" class="btn-dark">1. LEGAJOS</button>
-        <button onclick="show('v_salas')" class="btn-dark">2. SALAS</button>
+        <button onclick="show('v_espera')" class="btn-dark">3. LISTA DE ESPERA</button>
+        <button onclick="show('v_bajas')" class="btn-dark">4. BITÁCORA BAJAS</button>
         <button onclick="show('v_asistencia')" class="btn-dark">5. ASISTENCIA</button>
         <button onclick="show('v_supervision')" class="btn-dark">6. SUPERVISIÓN ÉLITE</button>
     </nav>
 
-    <!-- SECCIONES (v_legajo, v_salas... igual que tenías) -->
-    <section id="v_legajo" class="tab-content active-tab"> <!-- ... Contenido Legajo ... --></section>
-    <section id="v_salas" class="tab-content"> <!-- ... Contenido Salas ... --></section>
-    <section id="v_asistencia" class="tab-content">
-        <h2 class="text-blue-400 font-black">ASISTENCIA 2.0</h2>
-        <button onclick="document.getElementById('foto_registro').click()" class="btn-dark">📷 SUBIR FOTO REGISTRO</button>
-        <input type="file" id="foto_registro" class="hidden" onchange="procesarAsistenciaReal(event)">
-        <div id="asis_resultados" class="mt-4 p-4 bg-black border border-blue-900"></div>
-    </section>
-
-    <section id="v_supervision" class="tab-content">
-        <h2 class="text-nuke font-black text-xl mb-4">MÉTRICAS GLOBALES ÉLITE</h2>
-        <div id="stats_panel_global" class="grid grid-cols-4 gap-4 mb-8"></div>
-        <div id="panel_sala_detalle" class="p-4 border border-zinc-700 bg-black"></div>
-    </section>
+    <!-- SECCIONES -->
+    <section id="v_espera" class="tab-content"><div class="card"><h2 class="text-nuke font-bold mb-4">LISTA DE ESPERA</h2><div id="lista_espera"></div></div></section>
+    <section id="v_bajas" class="tab-content"><div class="card"><h2 class="text-red-500 font-bold mb-4">BITÁCORA DE BAJAS</h2><div id="lista_bajas"></div></div></section>
+    <section id="v_asistencia" class="tab-content"><div class="card"><h2 class="text-blue-400 font-bold">ASISTENCIA COMPLETA</h2><div id="asis_resultados"></div></div></section>
+    <section id="v_supervision" class="tab-content"><div id="stats_panel_global" class="grid grid-cols-4 gap-4"></div></section>
 
     <script>
         let DB = { mat: [], esp: [], bajas: [] };
-        const SALAS_NOMBRES = ["1ºA", "1ºB", "2ºA", "2ºB", "2ºC", "2ºD", "3ºA", "3ºB", "3ºC", "3ºD", "3ºE", "3ºF", "MEA", "MEB"];
+
+        function cargarJSON(e) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                DB = JSON.parse(event.target.result);
+                renderizarTablas();
+                actualizarSupervisionElite();
+                document.getElementById('status_db').innerText = "✅ DATOS SINCRONIZADOS";
+            };
+            reader.readAsText(e.target.files[0]);
+        }
+
+        function renderizarTablas() {
+            // Render Espera
+            document.getElementById('lista_espera').innerHTML = DB.esp.map(a => `<div>${a.nombre} - Prioridad: ${a.prioridad}</div>`).join('');
+            // Render Bajas
+            document.getElementById('lista_bajas').innerHTML = DB.bajas.map(a => `<div>${a.nombre} - Fecha: ${a.fecha}</div>`).join('');
+        }
 
         function actualizarSupervisionElite() {
             const total = DB.mat.length;
-            if (total === 0) return;
+            const bajas = DB.bajas.length;
+            const espera = DB.esp.length;
             
-            const varones = DB.mat.filter(a => a.sexo === 'M').length;
-            const mujeres = total - varones;
-            const arg = DB.mat.filter(a => a.alu_nac.includes("ARG")).length;
-            const par = DB.mat.filter(a => a.alu_nac.includes("PAR")).length;
-            const bol = DB.mat.filter(a => a.alu_nac.includes("BOL")).length;
-            const per = DB.mat.filter(a => a.alu_nac.includes("PER")).length;
-            const sinDni = DB.mat.filter(a => !a.alu_dni).length;
-            const conCud = DB.mat.filter(a => a.alu_cud === 'SI').length;
-
             document.getElementById('stats_panel_global').innerHTML = `
-                <div class="bg-zinc-900 p-4 border border-zinc-700">Total: ${total}</div>
-                <div class="bg-zinc-900 p-4 border border-zinc-700">Varones: ${varones} (${((varones/total)*100).toFixed(1)}%)</div>
-                <div class="bg-zinc-900 p-4 border border-zinc-700">Mujeres: ${mujeres} (${((mujeres/total)*100).toFixed(1)}%)</div>
-                <div class="bg-zinc-900 p-4 border border-zinc-700">Sin DNI: ${sinDni}</div>
-                <div class="bg-zinc-900 p-4 border border-zinc-700">CUD: ${conCud}</div>
-                <div class="bg-zinc-900 p-4 border border-zinc-700">ARG: ${((arg/total)*100).toFixed(1)}%</div>
-                <div class="bg-zinc-900 p-4 border border-zinc-700">PAR: ${((par/total)*100).toFixed(1)}%</div>
+                <div class="card">Matrícula: <b class="text-xl block">${total}</b></div>
+                <div class="card">En Espera: <b class="text-xl block text-nuke">${espera}</b></div>
+                <div class="card">Bajas Totales: <b class="text-xl block text-red-500">${bajas}</b></div>
+                <div class="card">Eficiencia: <b class="text-xl block">${total > 0 ? ((total/(total+bajas))*100).toFixed(1) : 0}%</b></div>
             `;
         }
 
-        function exportarExcelOficial() {
-            let wb = XLSX.utils.book_new();
-            SALAS_NOMBRES.forEach(s => {
-                let data = DB.mat.filter(a => a.alu_sala === s);
-                if(data.length > 0) {
-                    let ws = XLSX.utils.json_to_sheet(data);
-                    XLSX.utils.book_append_sheet(wb, ws, s);
-                }
-            });
-            XLSX.writeFile(wb, "SUPERVISION_OFICIAL_J926.xlsx");
-        }
-
-        function procesarAsistenciaReal(e) {
-            const total = DB.mat.length;
-            const presentes = Math.floor(total * 0.85); // Simulación lógica
-            const ausentes = total - presentes;
-            document.getElementById('asis_resultados').innerHTML = `
-                <p class="text-lg">TOTAL ALUMNOS: <b>${total}</b></p>
-                <p class="text-green-400">PRESENTES: ${presentes} (${((presentes/total)*100).toFixed(1)}%)</p>
-                <p class="text-red-400">AUSENTES: ${ausentes} (${((ausentes/total)*100).toFixed(1)}%)</p>
-            `;
+        function exportarBackup() {
+            const blob = new Blob([JSON.stringify(DB, null, 2)], {type: "application/json"});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `RESPALDO_J926_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
         }
 
         function show(id) {
             document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active-tab'));
             document.getElementById(id).classList.add('active-tab');
-            if(id === 'v_supervision') actualizarSupervisionElite();
         }
-
-        function initSystem() { 
-            const local = JSON.parse(localStorage.getItem('T360_J926_PRO'));
-            if(local) DB = local;
-        }
-
-        // --- MANTENER TUS OTRAS FUNCIONES (importarJSON, guardarLegajo, etc) ABAJO ---
     </script>
 </body>
 </html>
