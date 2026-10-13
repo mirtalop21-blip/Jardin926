@@ -5,6 +5,8 @@
     <title>TITANIUM 360 PRO | GESTIÓN ÉLITE J926</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Librería Tesseract.js para el escáner OCR de DNI/Partida -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
         :root { --nuke: #dfff00; --bg: #05070a; --panel: #111; --border: #333; }
         body { background: var(--bg); color: #e1e1e1; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 11px; }
@@ -47,7 +49,57 @@
         <button onclick="show('v_bajas')" class="btn-dark hover:text-red-500 border-red-900">4. BITÁCORA BAJAS</button>
         <button onclick="show('v_asistencia')" class="btn-dark hover:text-blue-400 border-blue-900">5. ASISTENCIA 2.0</button>
         <button onclick="show('v_supervision')" class="btn-dark hover:text-nuke">6. SUPERVISIÓN ÉLITE</button>
+        <button onclick="show('v_inscripcion')" class="btn-dark hover:text-nuke border-nuke bg-zinc-900">7. 📷 ESCÁNER E INSCRIPCIÓN</button>
     </nav>
+
+    <!-- SECCIÓN 7: NUEVA PESTAÑA DE INSCRIPCIÓN CON ESCÁNER OCR -->
+    <section id="v_inscripcion" class="tab-content">
+        <div class="border border-zinc-700 bg-black p-6 rounded mb-6">
+            <h2 class="text-nuke font-black text-lg mb-2">NUEVA INSCRIPCIÓN (NUEVO INGRESO / HERMANO)</h2>
+            <p class="text-gray-400 mb-4">Escaneá o subí la foto del DNI o partida de nacimiento para extraer datos automáticamente, o cargalos de forma manual.</p>
+            
+            <div class="mb-4 p-4 border border-dashed border-zinc-600 bg-zinc-900 rounded text-center">
+                <input type="file" id="foto_dni_ocr" class="hidden" accept="image/*" capture="environment" onchange="escanearDocumentoInscripcion(event)">
+                <button onclick="document.getElementById('foto_dni_ocr').click()" class="btn-nuke text-xs">📷 TOMAR FOTO / SUBIR DNI O PARTIDA</button>
+                <p id="status_ocr_inscripcion" class="text-nuke font-bold mt-2 hidden">⏳ Procesando imagen con inteligencia artificial...</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="space-y-2">
+                    <label class="text-gray-400 block font-bold">APELLIDO Y NOMBRE</label>
+                    <input id="ins_nombre" class="input-elite" placeholder="APELLIDO Y NOMBRE">
+                    <label class="text-gray-400 block font-bold">DNI</label>
+                    <input id="ins_dni" type="number" class="input-elite" placeholder="DNI (O CONSIGNAR MANUAL)">
+                    <label class="text-gray-400 block font-bold">FECHA DE NACIMIENTO</label>
+                    <input type="date" id="ins_fnac" class="input-elite" onchange="calcularEdadInscripcion(this.value)">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-gray-400 block font-bold">EDAD CALCULADA (AL 30/6)</label>
+                    <input id="ins_edad_texto" class="input-elite bg-zinc-900" placeholder="SE CALCULA AUTOMÁTICO" readonly>
+                    <label class="text-gray-400 block font-bold">TURNO REQUERIDO</label>
+                    <select id="ins_turno" class="input-elite">
+                        <option value="MAÑANA">TURNO MAÑANA</option>
+                        <option value="TARDE">TURNO TARDE</option>
+                    </select>
+                    <label class="text-gray-400 block font-bold">TIPO DE INSCRIPCIÓN</label>
+                    <select id="ins_tipo" class="input-elite">
+                        <option value="NUEVO">ALUMNO NUEVO</option>
+                        <option value="HERMANO">HERMANO DE ALUMNO REGULAR</option>
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-gray-400 block font-bold">MADRE / PADRE / TUTOR</label>
+                    <input id="ins_tutor" class="input-elite" placeholder="NOMBRE DEL ADULTO RESPONSABLE">
+                    <label class="text-gray-400 block font-bold">TELÉFONO</label>
+                    <input id="ins_tel" class="input-elite" placeholder="TELÉFONO DE CONTACTO">
+                    <label class="text-gray-400 block font-bold">DIRECCIÓN</label>
+                    <input id="ins_dom" class="input-elite" placeholder="DOMICILIO">
+                </div>
+            </div>
+
+            <button onclick="guardarInscripcionNueva()" class="btn-nuke w-full mt-6 py-3 text-lg">💾 REGISTRAR E INSCRIBIR EN SALA CORRESPONDIENTE</button>
+        </div>
+    </section>
 
     <section id="v_legajo" class="tab-content active-tab">
         <div class="mb-4 flex gap-2">
@@ -350,6 +402,88 @@
             let m = corte.getMonth() - nac.getMonth();
             if (m < 0 || (m === 0 && corte.getDate() < nac.getDate())) { edad--; }
             document.getElementById(outputId).value = `${edad} AÑOS AL 30/06`;
+        }
+
+        // LÓGICA ESPECÍFICA PARA LA NUEVA SECCIÓN DE INSCRIPCIÓN Y CÁLCULO AL 30/6
+        function calcularEdadInscripcion(fecha) {
+            if(!fecha) return;
+            const nac = new Date(fecha);
+            const corte = new Date(new Date().getFullYear(), 5, 30); // 30 de Junio
+            let edad = corte.getFullYear() - nac.getFullYear();
+            let m = corte.getMonth() - nac.getMonth();
+            if (m < 0 || (m === 0 && corte.getDate() < nac.getDate())) { edad--; }
+            
+            document.getElementById('ins_edad_texto').value = `${edad} AÑOS AL 30/06`;
+        }
+
+        function escanearDocumentoInscripcion(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            document.getElementById('status_ocr_inscripcion').classList.remove('hidden');
+
+            Tesseract.recognize(
+                file,
+                'spa',
+                { logger: m => console.log(m) }
+            ).then(({ data: { text } }) => {
+                document.getElementById('status_ocr_inscripcion').classList.add('hidden');
+                
+                // Intento automático de extraer DNI del texto
+                const dniMatch = text.match(/\b\d{7,8}\b/);
+                if(dniMatch) {
+                    document.getElementById('ins_dni').value = dniMatch[0];
+                }
+
+                alert("¡Documento procesado con éxito! Verificá y completá los datos que necesites.");
+            }).catch(err => {
+                document.getElementById('status_ocr_inscripcion').classList.add('hidden');
+                alert("No se pudo leer automáticamente. Podés ingresar todos los datos manualmente sin problemas.");
+            });
+        }
+
+        function guardarInscripcionNueva() {
+            const nombre = document.getElementById('ins_nombre').value.toUpperCase();
+            const dni = document.getElementById('ins_dni').value;
+            const fnac = document.getElementById('ins_fnac').value;
+            const turno = document.getElementById('ins_turno').value;
+            const tipo = document.getElementById('ins_tipo').value;
+            const tutor = document.getElementById('ins_tutor').value.toUpperCase();
+            const tel = document.getElementById('ins_tel').value;
+            const dom = document.getElementById('ins_dom').value.toUpperCase();
+
+            if(!nombre || !fnac) {
+                return alert("EL NOMBRE Y LA FECHA DE NACIMIENTO SON OBLIGATORIOS.");
+            }
+
+            // Calcular edad exacta al 30/6 para asignar la sala automáticamente
+            const nac = new Date(fnac);
+            const corte = new Date(new Date().getFullYear(), 5, 30);
+            let edadAl30 = corte.getFullYear() - nac.getFullYear();
+            let m = corte.getMonth() - nac.getMonth();
+            if (m < 0 || (m === 0 && corte.getDate() < nac.getDate())) { edadAl30--; }
+
+            let salaAsignada = "";
+            if (edadAl30 === 3) salaAsignada = "1ºA"; // Sala de 3 (ej: 1ºA o la que prefieras por defecto)
+            else if (edadAl30 === 4) salaAsignada = "2ºA"; // Sala de 4
+            else if (edadAl30 === 5) salaAsignada = "3ºA"; // Sala de 5
+            else salaAsignada = "MEA"; // Multiedad por defecto si sale de rango
+
+            const nuevoAlumno = {
+                alu_nombre: nombre, alu_dni: dni, alu_f_nac: fnac,
+                sexo: "", alu_nac: "ARG", alu_sala: salaAsignada,
+                alu_hermanos: tipo === 'HERMANO' ? '1' : '0', alu_hermanos_jardin: tipo === 'HERMANO' ? '1' : '0',
+                alu_dom: dom || "S/D", alu_cud: "NO", alu_auh: "NO", alu_salud: `INGRESO: ${tipo} - TURNO: ${turno}`,
+                m_nombre: tutor, m_dni: "", m_nac: "ARG", m_ocu: "", m_est: "S/D", m_dom: dom, m_tel: tel, m_auh: "NO",
+                p_nombre: "", p_dni: "", p_nac: "ARG", p_ocu: "", p_est: "S/D", p_dom: "", p_tel: "", p_auh: "NO"
+            };
+
+            DB.mat.push(nuevoAlumno);
+            actualizarEstado();
+            alert(`✅ ¡INSCRIPCIÓN EXITOSA!\nAlumno asignado automáticamente a la sala: ${salaAsignada} (${edadAl30} años al 30/6, Turno ${turno}).`);
+            
+            // Limpiar formulario de inscripción
+            document.querySelectorAll('#v_inscripcion input').forEach(i => i.value = '');
+            document.getElementById('ins_edad_texto').value = '';
         }
 
         function buscarRadar() {
